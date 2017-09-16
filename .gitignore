@@ -17,6 +17,8 @@
 /logs/*
 !/logs/empty
 
+/tmp/debug_kit.sqlite
+
 # CakePHP 2
 
 /app/tmp/*
