@@ -51,7 +51,7 @@ $this->set('title', 'Create Sales Invoice');
 					
 					<div class="row">
 						<div class="col-md-3">
-								<?php echo $this->Form->input('itembarcode',['class'=>'form-control input-sm itembarcode','label'=>false,'required'=>'required', 'placeholder'=>'Item Code/Bar Code']);
+								<?php echo $this->Form->input('itembarcode',['class'=>'form-control input-sm itembarcode','label'=>false, 'placeholder'=>'Item Code/Bar-Code']);
 								?>
 						</div>
 						<div class="col-md-1" align="left">
@@ -273,8 +273,24 @@ $this->set('title', 'Create Sales Invoice');
 			if(Inputitemcode){
 				var item_id=$('select.bottomSelect option[item_code='+Inputitemcode+']').val();
 				if(item_id){
-					add_row();
-					$('#main_table tbody#main_tbody tr:last select.attrGet').val(item_id).select2();
+					var l=$('#main_table tbody#main_tbody tr:last').length;
+					if(l==1){
+						var is_sel=$('#main_table tbody#main_tbody tr:last select.attrGet').val();
+						if(!is_sel){
+							$('#main_table tbody#main_tbody tr:nth-child(1) select.attrGet').val(item_id).trigger('change').select2();
+							$('.itembarcode').val('');
+						}else{
+							add_row();
+							$('#main_table tbody#main_tbody tr:last select.attrGet').val(item_id).trigger('change').select2();
+							$('.itembarcode').val('');
+						}
+					}else{
+						add_row();
+						$('#main_table tbody#main_tbody tr:last select.attrGet').val(item_id).trigger('change').select2();
+						$('.itembarcode').val('');
+					}
+					console.log(l);
+					
 				}else{
 					alert('Not found any item of this barcode.');
 				}
