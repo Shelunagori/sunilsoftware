@@ -1,0 +1,41 @@
+<?php
+/**
+ * @Author: PHP Poets IT Solutions Pvt. Ltd.
+ */
+$this->set('title', 'Import');
+?>
+<div class="row">
+	<div class="col-md-12">
+		<div class="portlet light ">
+			<div class="portlet-title">
+				<div class="caption">
+					<i class="icon-bar-chart font-green-sharp hide"></i>
+					<span class="caption-subject font-green-sharp bold ">Uplode CSV File</span>
+				</div>
+			</div>
+			<div class="portlet-body">
+				<?= $this->Form->create($FirstTampGrnRecords,['enctype'=>'multipart/form-data']) ?>
+				<div class="row">
+				    <div class="col-md-6">
+					    <div class="row">
+							<div class="col-md-6">
+								<div class="form-group">
+									<label>uplode csv </label>
+									<?php echo $this->Form->input('csv', ['type'=>'file','class' => 'form-control', 'label' => false, 'placeholder' => 'csv upload',]); ?>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-6" style="display:none;">
+						<?php 
+						$url=$this->request->webroot.'samplecsv/importGRNSapmleStep1.csv';
+						?>
+						<a href="<?php echo $url; ?>"><b>Download sample file from here.</b></a>
+					</div>
+				</div>
+				<?= $this->Form->button(__('Submit'),['class'=>'btn btn-success']) ?>
+				<?= $this->Form->end() ?>
+			</div>
+		</div>
+	</div>
+</div>
