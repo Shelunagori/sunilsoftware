@@ -69,7 +69,7 @@ echo '<li>'.$this->Html->link($this->Html->tag('i', '', ['class' => 'icon-home']
 <li class="start ">
 	<a href="javascript:;">
 	<i class="fa fa-square"></i>
-	<span class="title">Inter Location Stock Transfer Vouchers</span>
+	<span class="title">Stock Transfer</span>
 	<span class="arrow "></span>
 	</a>
 	<ul class="sub-menu">
