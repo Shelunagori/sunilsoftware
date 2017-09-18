@@ -79,6 +79,14 @@ $this->set('title', 'Approved Stock Transfer');
 							</table>
 						</div>
 					</div>
+					<div class="row">
+						<div class="col-md-4">
+							<div class="form-group">
+								<label>Narration </label>
+								<?php echo $this->Form->control('narration_to',['class'=>'form-control input-sm ','label'=>false,'placeholder'=>'Narration','rows'=>'2']); ?>
+							</div>
+						</div>
+					</div>
 				
 			</div>
 				<?= $this->Form->button(__('Submit'),['class'=>'btn btn-success']) ?>
