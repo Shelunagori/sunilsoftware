@@ -23,8 +23,12 @@ margin-bottom: 0;
     margin: 0px 0px 0px 0px;  /* this affects the margin in the printer settings */
 }
 </style>
+
 <div style="width:300px;" class="maindiv">
-<table  width="100%" border="0" >
+
+<a style="margin-bottom:5px; background-color:blue; height:60px;width:60px; font-size:18px; padding:5px; color:white; cursor:hand;" onclick="javascript:window.print();" class="hidden-print">Print</a>
+
+<table  width="100%" border="0" style="margin-top:15px;" >
 <tbody>
 <?php foreach($invoiceBills->toArray() as $data){
 		foreach($data->sales_invoice_rows as $sales_invoice_row){?>
