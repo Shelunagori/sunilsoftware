@@ -43,7 +43,7 @@ $this->set('title', 'Import CSV');
 											<?php echo $this->Html->link('Click Here to Download',['controller'=>'FirstTampGrnRecords','action' => 'csvDownload'],['escape'=>false]); ?></span></b>
 										</li>
 										</br>
-										<li><b>Open the CSV file and if Addition Item Data Required is "Yes" then fill the other records( item name, hsn code,unit, gst rate fix or fluid, first gst rate,amount in refence to gst rate(if gst rate is fluid), second gst rate(if gst rate is fluid)) in given format <u>CSV Format For File 2 </u> or .<span><a href="#step_2_format"> Click here to show format</b></a> </b>
+										<li><b>Open the CSV file and if Addition Item Data Required is "Yes" then fill the other records( item name, hsn code,unit, gst rate fix or fluid, first gst rate,amount in refence to gst rate(if gst rate is fluid), second gst rate(if gst rate is fluid),shade,size,description) in given format <u>CSV Format For File 2 </u> or .<span><a href="#step_2_format"> Click here to show format</b></a> </b>
 										</li>
 										<br/>
 										<li><b>Upload the CSV File and submit it, After that Edit the Invalid data if have and Click on Final Import  <span><?php echo $this->Html->link('Click Here to go to link',['controller'=>'Grns','action' => 'ImportStep2'],['escape'=>false]); ?></span></b>
@@ -108,11 +108,14 @@ $this->set('title', 'Import CSV');
 										<th>Is Addition Item Data Required</th>
 										<th>Item Name</th>
 										<th>Hsn Code</th>
-										<th>Provided Unit</th>
+										<th>Unit</th>
 										<th>Gst Rate Fixed or Fluid</th>
 										<th>First Gst Rate</th>
 										<th>Amount In Ref Of Gst Rate</th>
 										<th>Second Gst Rate</th>
+										<th>Shade</th>
+										<th>Size</th>
+										<th>Description</th>
 									</tr>
 									</thead>
 									<tbody>
@@ -124,15 +127,23 @@ $this->set('title', 'Import CSV');
 										<td>1.If yes then fill all next columns else leave empty.</td>
 										<td>1.Mandatory or cannot be empty. </td>
 										<td>1.Optional. </td>
-										<td>1.Mandatory or cannot be empty </br>2. Should be from given List
+										<td>1.Mandatory or cannot be empty. </br>2. Should be from given List
 										<ul><?php foreach ($units as $unit) { ?>
 										<li><?= h($unit->name) ?></li>	
 										<?php } ?></ul></td>
 										<td>1.Mandatory or cannot be empty. </br>2.If gst rate  amount vary then fill fulid else fill fix</td>
-										
 										<td>1.Mandatory or cannot be empty. </br>2.Should be Positive Integer or Decimal only. </td>
 										<td>1.If gst rate fix or fluid column is fluid then fill this.</br>2.Should be Positive Integer or Decimal only</td>
 										<td>1.If gst rate fix or fluid column is fluid then fill this. </br>2.Should be Positive Integer or Decimal only.</td>
+										<td>1.Optional. </br>2. Should be from given List
+										<ul><?php foreach ($shades as $shade) { ?>
+										<li><?= h($shade->name) ?></li>	
+										<?php } ?></ul></td>
+										<td>1.Optional. </br>2. Should be from given List
+										<ul><?php foreach ($sizes as $size) { ?>
+										<li align="left"><?= h($size->name) ?></li>	
+										<?php } ?></ul></td>
+										<td>1.Optional. </td>
 									</tr>
 									</tbody>
 								</table>
