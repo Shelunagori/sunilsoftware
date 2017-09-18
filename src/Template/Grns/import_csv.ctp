@@ -74,7 +74,7 @@ $this->set('title', 'Import CSV');
 									</thead>
 									<tbody>
 									<tr>
-										<td>1. Mandatory or cannot be empty </br>2. Unique Value</td>
+										<td>1.Item code of the particular item. In case Item code is empty, System automatic generate Item Code. </td>
 										<td>1. Mandatory or cannot be empty</br>2.Should be  Positive Integer or Decimal only</td>
 										<td>1. Mandatory or cannot be empty </br>2.Should be Positive Integer or Decimal only</td>
 										<td>1. Mandatory or cannot be empty</br>2.Should be Positive Integer or Decimal only</td>
