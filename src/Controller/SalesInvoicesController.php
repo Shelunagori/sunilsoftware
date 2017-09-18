@@ -557,7 +557,6 @@ public function salesInvoiceBill($id=null)
 	
 	public function ajaxItemQuantity($itemId=null)
     {
-	
 	    $this->viewBuilder()->layout('');
 		$company_id=$this->Auth->User('session_company_id');
 		$stateDetails=$this->Auth->User('session_company');
@@ -568,7 +567,7 @@ public function salesInvoiceBill($id=null)
 					->contain(['Units'])->first();
 					$itemUnit=$items->unit->name;
 		
-		$query = $this->SalesInvoices->SalesInvoiceRows->Items->ItemLedgers->find()->where(['company_id'=>$company_id]);
+		$query = $this->SalesInvoices->SalesInvoiceRows->Items->ItemLedgers->find()->where(['ItemLedgers.company_id'=>$company_id]);
 		$totalInCase = $query->newExpr()
 			->addCase(
 				$query->newExpr()->add(['status' => 'In']),

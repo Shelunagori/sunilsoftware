@@ -4,6 +4,17 @@
  */
 $this->set('title', 'Create Sales Invoice');
 ?>
+<form method="GET" id="barcodeFrom"/>
+	<div class="row">
+		<div class="col-md-3">
+			<?php echo $this->Form->input('itembarcode',['class'=>'form-control input-sm itembarcode','label'=>false, 'placeholder'=>'Item Code/Bar-Code','autofocus'=>'autofocus']);
+			?>
+		</div>
+		<div class="col-md-1" align="left">
+			<button type="submit" class="go btn blue-madison input-sm">Go</button>
+		</div> 
+	</div>
+</form>
 <div class="row">
 	<div class="col-md-12">
 		<div class="portlet light ">
@@ -14,6 +25,7 @@ $this->set('title', 'Create Sales Invoice');
 				</div>
 			</div>
 			<div class="portlet-body">
+				
 				<?= $this->Form->create($salesInvoice,['onsubmit'=>'return checkValidation()']) ?>
 					<div class="row">
 						<div class="col-md-3">
@@ -25,7 +37,7 @@ $this->set('title', 'Create Sales Invoice');
 						<div class="col-md-3">
 							<div class="form-group">
 								<label>Transaction Date <span class="required">*</span></label>
-								<?php echo $this->Form->control('transaction_date',['class'=>'form-control input-sm date-picker','data-date-format'=>'dd-mm-yyyy','label'=>false,'placeholder'=>'DD-MM-YYYY','type'=>'text','data-date-start-date'=>@$coreVariable[fyValidFrom],'data-date-end-date'=>@$coreVariable[fyValidTo],'value'=>date('d-m-Y'), 'autofocus'=>'autofocus']); ?>
+								<?php echo $this->Form->control('transaction_date',['class'=>'form-control input-sm date-picker','data-date-format'=>'dd-mm-yyyy','label'=>false,'placeholder'=>'DD-MM-YYYY','type'=>'text','data-date-start-date'=>@$coreVariable[fyValidFrom],'data-date-end-date'=>@$coreVariable[fyValidTo],'value'=>date('d-m-Y')]); ?>
 							</div>
 						</div>
 						<input type="hidden" name="outOfStock" class="outOfStock" value="0">
@@ -49,15 +61,7 @@ $this->set('title', 'Create Sales Invoice');
 						</div> 
 					</div>
 					
-					<div class="row">
-						<div class="col-md-3">
-								<?php echo $this->Form->input('itembarcode',['class'=>'form-control input-sm itembarcode','label'=>false, 'placeholder'=>'Item Code/Bar-Code']);
-								?>
-						</div>
-						<div class="col-md-1" align="left">
-								<button type="button" class="go btn blue-madison input-sm">Go</button>
-						</div> 
-					</div>
+					
 					
 					
 					<br>
@@ -204,8 +208,8 @@ $this->set('title', 'Create Sales Invoice');
 				<input type="hidden" name="gst_value" class="gstValue calculation" value="">
 				<input type="hidden" name="exactgst_value" class="exactgst_value calculation" value="">
 				<input type="hidden" name="discountvalue" class="discountvalue calculation" value="">
-				<?php echo $this->Form->input('item_id', ['empty'=>'-Item Name-', 'options'=>$itemOptions,'label' => false,'class' =>'form-control input-medium attrGet bottomSelect','required'=>'required']); ?>
-				<span class="itemQty" style="color:red;font-size:10px;"></span>
+				<?php echo $this->Form->input('item_id', ['empty'=>'-Item Name-', 'options'=>$itemOptions,'label' => false,'class' =>'form-control input-medium input-sm attrGet bottomSelect','required'=>'required']); ?>
+				<span class="itemQty" style="color:#4e4d4d;font-size:10px;"></span>
 			</td>			
 			<td>
 				<?php echo $this->Form->input('quantity', ['label' => false,'class' => 'form-control input-sm calculation quantity rightAligntextClass','id'=>'check','required'=>'required','placeholder'=>'Quantity', 'value'=>1]); ?>
@@ -268,7 +272,8 @@ $this->set('title', 'Create Sales Invoice');
 		forward_total_amount();
 		});
 		
-		$('.go').die().live('click',function(){
+		$('#barcodeFrom').die().live('submit',function(e){
+		e.preventDefault();
 			var Inputitemcode=$('.itembarcode').val();
 			if(Inputitemcode){
 				var item_id=$('select.bottomSelect option[item_code='+Inputitemcode+']').val();
@@ -562,10 +567,8 @@ $this->set('title', 'Create Sales Invoice');
 			return false;
 		}
 	}
-	function onkeypress()
-	{
-	alert();
-	}";
+	
+	";
 
 echo $this->Html->scriptBlock($js, array('block' => 'scriptBottom')); 
 ?>
