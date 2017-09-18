@@ -63,7 +63,7 @@ class SalesInvoicesController extends AppController
 		
 		$roundOffId = $this->SalesInvoices->SalesInvoiceRows->Ledgers->find()
 		->where(['Ledgers.company_id'=>$company_id, 'Ledgers.round_off'=>1])->first();
-		$Voucher_no = $this->SalesInvoices->find()->select(['voucher_no'])->where(['company_id'=>$company_id])->order(['voucher_no' => 'DESC'])->first();
+		$Voucher_no = $this->SalesInvoices->find()->select(['voucher_no'])->where(['SalesInvoices.company_id'=>$company_id])->order(['voucher_no' => 'DESC'])->first();
 		if($Voucher_no)
 		{
 			$voucher_no=$Voucher_no->voucher_no+1;
