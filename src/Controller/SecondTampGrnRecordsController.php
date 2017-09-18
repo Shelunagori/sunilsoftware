@@ -335,6 +335,7 @@ class SecondTampGrnRecordsController extends AppController
 		if($SecondTampGrnRecords->count()==0){
 			goto Bottom;
 		}
+		$shade_id=0; $size_id=0;
 		foreach($SecondTampGrnRecords as $SecondTampGrnRecord){
 			
 			$item=$this->SecondTampGrnRecords->Companies->Items->find()
