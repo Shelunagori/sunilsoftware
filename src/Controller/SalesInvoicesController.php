@@ -257,7 +257,10 @@ class SalesInvoicesController extends AppController
 						
 		$gstFigures = $this->SalesInvoices->GstFigures->find('list')
 						->where(['company_id'=>$company_id]);
-		$this->set(compact('salesInvoice', 'companies', 'customerOptions', 'gstFigures', 'voucher_no','company_id','itemOptions','state_id', 'partyOptions', 'Accountledgers', 'location_id'));
+						
+		$CashPartyLedgers = $this->SalesInvoices->SalesInvoiceRows->Ledgers->find()
+							->where(['Ledgers.cash ' =>1,'Ledgers.company_id'=>$company_id])->first();
+		$this->set(compact('salesInvoice', 'companies', 'customerOptions', 'gstFigures', 'voucher_no','company_id','itemOptions','state_id', 'partyOptions', 'Accountledgers', 'location_id', 'CashPartyLedgers'));
         $this->set('_serialize', ['salesInvoice']);
     }	
 

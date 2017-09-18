@@ -366,32 +366,43 @@ class SecondTampGrnRecordsController extends AppController
 				}else{
 					goto DoNotMarkYesValidToImport;
 				}
-				$shade=$this->SecondTampGrnRecords->Companies->Items->Shades->find()
+				if(!empty($SecondTampGrnRecord->provided_shade)){
+					$shade=$this->SecondTampGrnRecords->Companies->Items->Shades->find()
 						->where(['Shades.name LIKE'=>'%'.trim($SecondTampGrnRecord->provided_shade).'%', 'Shades.company_id'=>$company_id])
 						->first();
-				
-				if($shade){
-					$query = $this->SecondTampGrnRecords->query();
-					$query->update()
-						->set(['shade_id' => $shade->id])
-						->where(['SecondTampGrnRecords.id' =>$SecondTampGrnRecord->id])
-						->execute();
-					$shade_id= $shade->id;
+					if($shade){
+						$query = $this->SecondTampGrnRecords->query();
+						$query->update()
+							->set(['shade_id' => $shade->id])
+							->where(['SecondTampGrnRecords.id' =>$SecondTampGrnRecord->id])
+							->execute();
+						$shade_id= $shade->id;
+					}
+				}else{
+					$shade_id=0;
 				}
 				
-				$size=$this->SecondTampGrnRecords->Companies->Items->Sizes->find()
+				
+				
+				
+				
+				if(!empty($SecondTampGrnRecord->provided_shade)){
+					$size=$this->SecondTampGrnRecords->Companies->Items->Sizes->find()
 						->where(['Sizes.name LIKE'=>'%'.trim($SecondTampGrnRecord->provided_size).'%', 'Sizes.company_id'=>$company_id])
 						->first();
 						
-						
-				if($size){
-					$query = $this->SecondTampGrnRecords->query();
-					$query->update()
-						->set(['size_id' => $size->id])
-						->where(['SecondTampGrnRecords.id' =>$SecondTampGrnRecord->id])
-						->execute();
-					$size_id= $size->id;
+					if($size){
+						$query = $this->SecondTampGrnRecords->query();
+						$query->update()
+							->set(['size_id' => $size->id])
+							->where(['SecondTampGrnRecords.id' =>$SecondTampGrnRecord->id])
+							->execute();
+						$size_id= $size->id;
+					}
+				}else{
+					$size_id=0;
 				}
+				
 				
 				$a=['fix','fluid'];
 				
