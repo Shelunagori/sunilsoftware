@@ -35,7 +35,7 @@ $this->set('title', 'Import');
 									</li><br/>
 									<li>
 										<?php if($notvalid_to_importRecords>0) { ?>
-										<span>First fix the invalid records then import command will be appear.<span><br/><?php } else { ?>Your Record is ready to Final Import. <?php echo $this->Html->link('Click here to Import', '/SecondTampGrnRecords/finalImport',['escape' => false,'style'=>'color:green']); ?> <?php } ?>
+										<span>First fix the invalid records then import command will be appear.<span><br/><?php } else { ?>Your Record is ready to Final Import. <?php echo $this->Html->link('Click here to Import', '/SecondTampGrnRecords/finalImport',['escape' => false,'style'=>'color:green','font-weight:bold']); ?> <?php } ?>
 										</li></br><li><span>Delete existing data and start again Step 2. <?php echo $this->Html->link('Delete & Start', '/SecondTampGrnRecords/deleteSecondTempRecords',['escape' => false]); ?> <span>
 									</li>
 										
@@ -62,7 +62,7 @@ $this->set('title', 'Import');
 				</div>
 			</div>
 			<div class="portlet-body">
-				<?= $this->Form->create($grn,['enctype'=>'multipart/form-data']) ?>
+				<?= $this->Form->create($grn,['enctype'=>'multipart/form-data','onsubmit'=>'return checkValidation()']) ?>
 				<div class="row">
 				    <div class="col-md-6">
 					    <div class="row">
@@ -75,10 +75,21 @@ $this->set('title', 'Import');
 						</div>
 					</div>
 				</div>
-				<?= $this->Form->button(__('Submit'),['class'=>'btn btn-success']) ?>
+				<?= $this->Form->button(__('Submit'),['class'=>'btn btn-success submit']) ?>
 				<?= $this->Form->end() ?>
 			</div>
 		</div>
 	</div>
 </div>
 <?php Bottom: ?>
+<?php
+	$js="
+	function checkValidation()
+	{
+	        $('.submit').attr('disabled','disabled');
+	        $('.submit').text('Submiting...');
+    }
+	
+";
+echo $this->Html->scriptBlock($js, array('block' => 'scriptBottom')); 
+?>

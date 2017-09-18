@@ -47,7 +47,7 @@ margin-bottom: 0;
 		style="text-align:center;font-size:16px; padding-bottom:10px;  padding-top:10px;"><b><span><u>GST INVOICE</u></span></b></td>
 	</tr>
 	<tr>
-		<td colspan="4" style="font-size:14px;"><b>Customer Name: <?=ucwords($data->partyDetails->name)?><?php if($data->partyDetails->mobile) { ?>(<?=$data->partyDetails->mobile?> )<?php } ?></b></td>
+		<td colspan="4" style="font-size:14px;"><b>Customer Name: <?=ucwords($data->partyDetails->name)?><?php if(!empty($partyCustomerid)){  if($data->partyDetails->mobile) { ?>(<?=$data->partyDetails->mobile?> )<?php } } ?></b></td>
 	</tr>
 	<tr>
 		<td colspan="4" style="font-size:14px;"><b>Invoice No.: <?= h('#'.str_pad($data->voucher_no, 4, '0', STR_PAD_LEFT)) ?></b></td>

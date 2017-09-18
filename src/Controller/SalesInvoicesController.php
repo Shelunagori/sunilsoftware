@@ -197,7 +197,7 @@ class SalesInvoicesController extends AppController
 			   }
 		   }
 		    $this->Flash->success(__('The sales invoice has been saved.'));
-            return $this->redirect(['action' => 'add']);
+            return $this->redirect(['action' => 'salesInvoiceBill/'.$salesInvoice->id]);
 		 }
 		 $this->Flash->error(__('The sales invoice could not be saved. Please, try again.'));
 		}
@@ -554,7 +554,7 @@ public function salesInvoiceBill($id=null)
 		->contain(['GstFigures']);
         $sale_invoice_rows = ($query);
 		
-		$this->set(compact('invoiceBills','taxable_type','sale_invoice_rows'));
+		$this->set(compact('invoiceBills','taxable_type','sale_invoice_rows','partyCustomerid'));
         $this->set('_serialize', ['invoiceBills']);
     }	
 	
