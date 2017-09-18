@@ -210,17 +210,20 @@ margin-bottom: 0;
 </tbody>
 </table>
 <table border="1"  style="font-size:12px; margin-top:15px; border-collapse: collapse;">
-<tr>
-<td><b>Terms & Condition</b></td></tr>
-<tr>
-<td>
-<li>Cash Memo must be produced for any complaint of exchange.</li>
-<li>All alteration undertaken at customers risk</li>
-<li>Any complaints regarding garments will be forwarded to manufacturer whose decision on subject will be final.</li>
-<li>Any manufacturing defect will be entertained with in 30 days.
-And subject to final decision of company.</li>
-<li>All disputes are subject to Udaipur jurisdiction only. E&OE. </li>
-	</ol></td>
+	<tr>
+		<td><b>Terms & Condition</b></td>
+	</tr>
+	<tr>
+		<td>
+			<ol>
+				<li>Cash Memo must be produced for any complaint of exchange.</li>
+				<li>All alteration undertaken at customers risk</li>
+				<li>Any complaints regarding garments will be forwarded to manufacturer whose decision on subject will be final.</li>
+				<li>Any manufacturing defect will be entertained with in 30 days.
+				And subject to final decision of company.</li>
+				<li>All disputes are subject to Udaipur jurisdiction only. E&OE. </li>
+			</ol>
+		</td>
 	</tr>
 </table>
 </div>
