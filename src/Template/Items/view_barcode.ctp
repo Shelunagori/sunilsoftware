@@ -1,11 +1,19 @@
 
 <style>
+
 @media print{
-	.maindiv{
-		
-		width:100% ;
-		margin:5px !important;
-	}
+	
+    .page {
+        margin: 0;
+        border: initial;
+        border-radius: initial;
+        width: initial;
+        min-height: initial;
+        box-shadow: initial;
+        background: initial;
+        page-break-after: always;
+    }
+	
 	td{
 		width:198.42px !important;
 		height:112.25px !important;
@@ -15,13 +23,7 @@
 		display:none;
 	}
 }
-p{
-margin-bottom: 0;
-}
-.table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
-    padding: 5px !important;
-	font-family:Lato !important;
-}
+
 </style>
 
 <style type="text/css" media="print">
