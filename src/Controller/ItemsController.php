@@ -39,7 +39,7 @@ class ItemsController extends AppController
     {
 		$this->viewBuilder()->layout('index_layout');
 		$company_id=$this->Auth->User('session_company_id');
-		$this->viewBuilder()->layout('index_layout');
+		
         $this->paginate = [
             'contain' => ['Units', 'StockGroups']
         ];
@@ -298,5 +298,47 @@ class ItemsController extends AppController
 		echo json_encode($data);
 		
 		exit;
+	}
+	
+	public function generateBarcode(){
+		
+		$this->viewBuilder()->layout('index_layout');
+		$company_id=$this->Auth->User('session_company_id');
+		$item = $this->Items->newEntity();
+		if ($this->request->is('put','post','patch')) {
+			$item_name = $this->Items->patchEntity($item, $this->request->getData());
+			
+			$itemids=array_filter($item_name->item_name);
+			$encodeitemids=json_encode($itemids);
+			 return $this->redirect(['action' => 'viewBarcode', $encodeitemids]);
+			
+		}
+			
+		$items = $this->Items->find()
+			->where(['Items.company_id'=>$company_id]);
+					
+		$itemOptions=[];
+		foreach($items as $item)
+		{
+			$itemOptions[]=['text' =>$item->item_code.' '.$item->name, 'value' => $item->id, 'gst_figure_tax_name'=>@$item->gst_figure->name];
+		}
+        $this->set(compact('items','item','itemOptions'));
+        $this->set('_serialize', ['item']);
+	}
+	
+	public function viewBarcode($encodeitemids=null){
+		$items=json_decode($encodeitemids);
+		$this->viewBuilder()->layout('');
+		$company_id=$this->Auth->User('session_company_id');
+		$item_barcodes=[];
+		foreach($items as $item){
+			$item_barcodes[] = $this->Items->get($item, [
+				'contain'=>['Shades','Sizes']
+			]);
+			 
+		}
+		
+        $this->set(compact('item_barcodes'));
+        $this->set('_serialize', ['items']);
 	}
 }
