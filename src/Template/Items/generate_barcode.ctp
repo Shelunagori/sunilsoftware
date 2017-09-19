@@ -20,7 +20,7 @@ $this->set('title', 'Generate Barcode');
 					<div class="col-md-4">
 					    <div class="form-group">
 							<label>Row <?php echo ' '.$i+1; ?></label>
-							<?php echo $this->Form->input('item_name[]', ['empty'=>'---Select---','options'=>$itemOptions,'label' => false,'class' => 'form-control input-medium ']); ?>
+							<?php echo $this->Form->input('item_name[]', ['empty'=>'---Select---','options'=>$itemOptions,'label' => false,'class' => 'form-control input-medium ','required'=>'required']); ?>
 						</div>	
 					</div>
 					<?php

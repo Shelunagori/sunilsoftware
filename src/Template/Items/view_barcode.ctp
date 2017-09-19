@@ -2,6 +2,7 @@
 <style>
 @media print{
 	.maindiv{
+		
 		width:100% ;
 		margin:5px !important;
 	}
