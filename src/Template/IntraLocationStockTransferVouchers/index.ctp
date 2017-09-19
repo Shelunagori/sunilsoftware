@@ -11,9 +11,9 @@
 					<input type="text" class="form-control input-sm pull-right" placeholder="Search..." id="search3"  style="width: 200px;">
 					<?php if(@$status=='pending' or @$status==''){
 						$class1="btn btn-xs blue";
-						$class2="btn btn-default";
+						$class2="btn btn-default btn-xs";
 					}else{
-						$class1="btn btn-default";
+						$class1="btn btn-default btn-xs";
 						$class2="btn btn-xs blue";
 					}
 					?>
