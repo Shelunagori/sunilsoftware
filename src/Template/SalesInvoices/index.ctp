@@ -38,7 +38,7 @@ $this->set('title', 'Sales Invoice List');
 								<td class="actions">
 									
 									<?= $this->Html->link(__('Edit'), ['action' => 'edit', $salesInvoice->id]) ?>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-									<?= $this->Html->link(__('View Bill'), ['action' => 'sales_invoice_bill', $salesInvoice->id]) ?>
+									<?= $this->Html->link(__('View Bill'), ['action' => 'sales_invoice_bill', $salesInvoice->id],['escape'=>false,'target'=>'_blank']) ?>
 								</td>
 							</tr>
 							<?php endforeach; ?>

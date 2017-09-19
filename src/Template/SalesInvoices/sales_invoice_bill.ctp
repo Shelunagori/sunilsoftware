@@ -25,9 +25,9 @@ margin-bottom: 0;
 </style>
 
 <div style="width:300px;" class="maindiv">
-
-<a style="margin-bottom:5px; background-color:blue; height:60px;width:60px; font-size:18px; padding:5px; color:white; cursor:hand;" onclick="javascript:window.print();" class="hidden-print">Print</a>
-
+<?php echo $this->Html->link('Print',array(),['escape'=>false,'class'=>'hidden-print','style'=>' background-color:blue;  font-size:18px; padding:5px; color:white; cursor:hand;  float: left','onclick'=>'javascript:window.print()();']);
+ echo $this->Html->link('Close',['controller'=>'SalesInvoices','action'=>'add'],['escape'=>false,'class'=>'hidden-print','style'=>' background-color:blue;  font-size:18px; padding:5px; color:white; cursor:hand;  float: right']);
+?>
 <table  width="100%" border="0" style="margin-top:15px;" >
 <tbody>
 <?php foreach($invoiceBills->toArray() as $data){
@@ -116,7 +116,7 @@ margin-bottom: 0;
 			}
 		?>
 		<tr>
-			<td><?=$sales_invoice_row->item->name ?></td>
+			<td><?=$sales_invoice_row->item->item_code.' ' ?><?=  $sales_invoice_row->item->name ?></td>
 			<td><?php
 			if(!empty($sales_invoice_row->item->size->name))
 			{
