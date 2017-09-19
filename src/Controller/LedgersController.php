@@ -374,7 +374,7 @@ class LedgersController extends AppController
 			
 		}
 		if(!empty($ledger_id) || !empty($from_date) || !empty($to_date))
-		$AccountingLedgers = $this->Ledgers->AccountingEntries->find()->where($where)->contain(['Ledgers','SalesInvoices'])->order(['AccountingEntries.transaction_date'=>'ASC']);
+		$AccountingLedgers = $this->Ledgers->AccountingEntries->find()->where($where)->contain(['Ledgers','SalesInvoices'])->order(['AccountingEntries.transaction_date'=>'DESC']);
 		if(!empty($AccountingLedgers))
 		{ 
 	
@@ -457,7 +457,7 @@ class LedgersController extends AppController
 		}
 		//pr($AccountingLedgers->toArray());exit;
 		$ledgers = $this->Ledgers->find('list')->where(['company_id'=>$company_id]);
-		$this->set(compact('accountLedger','ledgers','openingBalance_debit1','closingBalance_debit1','openingBalance_credit1','closingBalance_credit1','AccountingLedgers','from_date','to_date','voucher_type','voucher_no'));
+		$this->set(compact('accountLedger','ledgers','openingBalance_debit1','closingBalance_debit1','openingBalance_credit1','closingBalance_credit1','AccountingLedgers','from_date','to_date','voucher_type','voucher_no','ledger_id'));
         $this->set('_serialize', ['ledger']);
     }
 }

@@ -65,6 +65,11 @@ class CustomersController extends AppController
 			
 			if ($this->Customers->save($customer)) {
 				
+				$query=$this->Customers->query();
+						$result = $query->update()
+						->set(['customer_id' => $customer->id])
+						->where(['id' => $customer->id])
+						->execute();
 				//Create Ledger//
 				$ledger = $this->Customers->Ledgers->newEntity();
 				$ledger->name = $customer->name;

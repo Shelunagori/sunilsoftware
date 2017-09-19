@@ -20,7 +20,7 @@ $this->set('title', 'Account Ledger report');
 							<div class="form-group">
 								<label>Ledgers</label>
 								<?php 
-								echo $this->Form->input('ledger_id', ['options'=>$ledgers,'label' => false,'class' => 'form-control input-sm select2me' ,'value'=>'']); 
+								echo $this->Form->input('ledger_id', ['options'=>$ledgers,'label' => false,'class' => 'form-control input-sm select2me' ,'value'=>$ledger_id]); 
 								?>
 							</div>
 						</div>
@@ -74,7 +74,15 @@ $this->set('title', 'Account Ledger report');
 					<table class="table table-bordered table-hover table-condensed" width="100%">
 						<thead>
 							<tr>
-								<th colspan="3" style="text-align:right";><b>Opening Balance</b></th>
+								<th colspan="3">
+								<span style="float:left";>
+								<?php foreach($AccountingLedgers as $AccountingLedger)
+									{   
+										echo 'Account Ledger of '; echo $id= $AccountingLedger->ledger->name;
+						            ?>
+							        <?php }?>	
+								</span>
+								<span style="float:right";><b>Opening Balance</b></span></th>
 								<th style="text-align:right";>
 								<?php
 									if(!empty($openingBalance_debit1))
@@ -113,7 +121,9 @@ $this->set('title', 'Account Ledger report');
 						?>
 							<tr>
 								<td><?php echo date("d-m-Y",strtotime($AccountingLedger->transaction_date)); ?></td>
-								<td><?php echo $voucher_type[$id]; ?></td>
+								<td>
+								<?= $this->Html->link(__($voucher_type[$id]), array('controller' => 'SalesInvoices', 'action' => 'salesInvoiceBill', $AccountingLedger->sales_invoice_id))?>
+								</td>
 								<td class="rightAligntextClass"><?php echo $voucher_no[$id]; ?></td>
 								<td style="text-align:right";>
 								<?php 

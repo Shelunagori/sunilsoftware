@@ -31,7 +31,7 @@ $this->set('title', 'Customers');
 						<?php foreach ($customers as $customer): ?>
 						<tr>
 							<td><?= h(++$page_no) ?></td>
-							<td><?= h($customer->name) ?></td>
+							<td><?= h(str_pad($customer->customer_id, 4, '0', STR_PAD_LEFT).' - '.$customer->name) ?></td>
 							<td><?= h($customer->state->name) ?></td>
 							<td><?= $customer->gstin ?></td>
 							<td><?= h($customer->email) ?></td>
