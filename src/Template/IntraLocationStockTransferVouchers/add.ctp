@@ -76,7 +76,7 @@ $this->set('title', 'Create Inter Location stock Transfer Voucher');
 						</div>
 					</div>
 			</div>
-				<?= $this->Form->button(__('Submit'),['class'=>'btn btn-success']) ?>
+				<?= $this->Form->button(__('Submit'),['class'=>'btn btn-success submit']) ?>
 				<?= $this->Form->end() ?>
 		</div>
 	</div>
@@ -211,8 +211,9 @@ $this->set('title', 'Create Inter Location stock Transfer Voucher');
 			}
 			else
 			{
-				
-					return true;
+				$('.submit').attr('disabled','disabled');
+	            $('.submit').text('Submiting...');
+				return true;
 			}
 		}
 	

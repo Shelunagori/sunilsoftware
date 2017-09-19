@@ -17,8 +17,8 @@
 						$class2="btn btn-xs blue";
 					}
 					?>
-						<?php echo $this->Html->link('Pending',['controller'=>'IntraLocationStockTransferVouchers','action' => 'index/Pending'],['escape'=>false,'class'=>$class1,'style'=>'padding: 3px 3px;']); ?>
-						<?php echo $this->Html->link('Approved',['controller'=>'IntraLocationStockTransferVouchers','action' => 'index/Approved'],['escape'=>false,'class'=>$class2,'style'=>'padding: 3px 3px;']); ?>&nbsp;
+						<?php echo $this->Html->link('Pending',['controller'=>'IntraLocationStockTransferVouchers','action' => 'index/Pending'],['escape'=>false,'class'=>$class1,'style'=>'padding: 1px 5px;']); ?>
+						<?php echo $this->Html->link('Approved',['controller'=>'IntraLocationStockTransferVouchers','action' => 'index/Approved'],['escape'=>false,'class'=>$class2,'style'=>'padding: 1px 5px;']); ?>&nbsp;
 					<?php  ?>
 					
 				</div>
@@ -46,20 +46,21 @@
                 <td><?= h($intraLocationStockTransferVoucher->TransferToLocations->name) ?></td>
                <td class="actions">
 			        <?php
-						if($status=='approved')
+						if($status=='approved' && $intraLocationStockTransferVoucher->transfer_to_location_id==$location_id)
 						{
 							$view ="viewApproved";
 							$edit = "editApproved";
 						}
-						else{
+						elseif($status=='pending'){
 							$view ="view";
 							$edit = "edit";
 						}
+						if(!empty($view) && !empty($edit)){
 					?>
                     <?= $this->Html->link(__('View'), ['action' => @$view, $intraLocationStockTransferVoucher->id]) ?>
                     <?= $this->Html->link(__('Edit'), ['action' => @$edit, $intraLocationStockTransferVoucher->id]) ?>
-					<?php 
-					if($status!='approved')
+						<?php  }
+					if($status!='approved' && $intraLocationStockTransferVoucher->transfer_to_location_id==$location_id)
 					{
 					echo  $this->Html->link(__('Approved'), ['action' => 'Approved', $intraLocationStockTransferVoucher->id]); }?>
                 </td>

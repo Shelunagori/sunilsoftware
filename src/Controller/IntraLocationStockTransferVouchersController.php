@@ -22,6 +22,7 @@ class IntraLocationStockTransferVouchersController extends AppController
     {
 		$this->viewBuilder()->layout('index_layout');
 		$company_id=$this->Auth->User('session_company_id');
+		$location_id=$this->Auth->User('session_location_id');
 		$this->viewBuilder()->layout('index_layout');
 		if(!empty($status))
 		{
@@ -35,8 +36,8 @@ class IntraLocationStockTransferVouchersController extends AppController
         $this->paginate = [
             'contain' => ['TransferFromLocations','TransferToLocations']
         ];
-        $intraLocationStockTransferVouchers = $this->paginate($this->IntraLocationStockTransferVouchers->find()->where(['IntraLocationStockTransferVouchers.company_id'=>$company_id,'IntraLocationStockTransferVouchers.status'=>@$where]));
-        $this->set(compact('intraLocationStockTransferVouchers','status'));
+        $intraLocationStockTransferVouchers = $this->paginate($this->IntraLocationStockTransferVouchers->find()->where(['IntraLocationStockTransferVouchers.company_id'=>$company_id,'IntraLocationStockTransferVouchers.location_id'=>$location_id,'IntraLocationStockTransferVouchers.status'=>@$where]));
+        $this->set(compact('intraLocationStockTransferVouchers','status','location_id'));
         $this->set('_serialize', ['intraLocationStockTransferVouchers']);
     }
 

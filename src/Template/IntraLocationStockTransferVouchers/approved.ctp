@@ -14,7 +14,7 @@ $this->set('title', 'Approved Stock Transfer');
 				</div>
 			</div>
 			<div class="portlet-body">
-				<?= $this->Form->create($intraLocationStockTransferVoucher) ?>
+				<?= $this->Form->create($intraLocationStockTransferVoucher,['onsubmit'=>'return checkValidation()']) ?>
 					<div class="row">
 						<div class="col-md-3">
 							<div class="form-group">
@@ -89,7 +89,7 @@ $this->set('title', 'Approved Stock Transfer');
 					</div>
 				
 			</div>
-				<?= $this->Form->button(__('Submit'),['class'=>'btn btn-success']) ?>
+				<?= $this->Form->button(__('Submit'),['class'=>'btn btn-success submit']) ?>
 				<?= $this->Form->end() ?>
 		</div>
 	</div>
@@ -159,6 +159,19 @@ $this->set('title', 'Approved Stock Transfer');
 		});
 			
 	});	
+	
+	function checkValidation() 
+	{
+		
+		if(confirm('Are you sure you want to submit!')){
+			$('.submit').attr('disabled','disabled');
+	        $('.submit').text('Submiting...');
+			return true;
+			}else{
+			
+			        return false;
+			 }
+	}
 	";
 
 echo $this->Html->scriptBlock($js, array('block' => 'scriptBottom')); 

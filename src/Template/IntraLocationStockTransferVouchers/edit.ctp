@@ -91,7 +91,7 @@ $this->set('title', 'Create Inter Location stock Transfer Voucher');
 					</div>
 				
 			</div>
-				<?= $this->Form->button(__('Submit'),['class'=>'btn btn-success']) ?>
+				<?= $this->Form->button(__('Submit'),['class'=>'btn btn-success submit']) ?>
 				<?= $this->Form->end() ?>
 		</div>
 	</div>
@@ -213,22 +213,23 @@ $this->set('title', 'Create Inter Location stock Transfer Voucher');
 	});
 
 	function checkValidation() 
+	{
+		
+		var transfer_from  = $('.transfer_from').val();
+		var transfer_to = $('.transfer_to').val();
+		
+		if(transfer_from == transfer_to)
 		{
-			
-			var transfer_from  = $('.transfer_from').val();
-			var transfer_to = $('.transfer_to').val();
-			
-			if(transfer_from == transfer_to)
-			{
-				alert('Both the transfer location are same. Change the Location and try again...');
-				return false;
-			}
-			else
-			{
-				
-					return true;
-			}
+			alert('Both the transfer location are same. Change the Location and try again...');
+			return false;
 		}
+		else
+		{
+			$('.submit').attr('disabled','disabled');
+			$('.submit').text('Submiting...');
+			return true;
+		}
+	}
 	
 	
 	
