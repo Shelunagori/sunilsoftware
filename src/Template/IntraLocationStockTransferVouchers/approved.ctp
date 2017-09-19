@@ -71,7 +71,7 @@ $this->set('title', 'Approve Stock Transfer');
 									</td>
 									
 									<td width="25%" >
-										<?php echo $this->Form->input('intra_location_stock_transfer_voucher_rows.'.$i.'.receive_quantity', ['label' => false,'class' => 'form-control input-sm checkQty','placeholder'=>'Receive Quantity','value'=>'','required']); ?>
+										<?php echo $this->Form->input('intra_location_stock_transfer_voucher_rows.'.$i.'.receive_quantity', ['label' => false,'class' => 'form-control input-sm checkQty','placeholder'=>'Receive Quantity','value'=>$intra_location_stock_transfer_voucher_row->quantity,'required']); ?>
 									</td>
 								</tr>
 								<?php $i++; }?>	
