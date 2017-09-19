@@ -18,7 +18,7 @@
 					}
 					?>
 						<?php echo $this->Html->link('Pending',['controller'=>'IntraLocationStockTransferVouchers','action' => 'index/Pending'],['escape'=>false,'class'=>$class1,'style'=>'padding: 1px 5px;']); ?>
-						<?php echo $this->Html->link('Approved',['controller'=>'IntraLocationStockTransferVouchers','action' => 'index/Approved'],['escape'=>false,'class'=>$class2,'style'=>'padding: 1px 5px;']); ?>&nbsp;
+						<?php echo $this->Html->link('Approve',['controller'=>'IntraLocationStockTransferVouchers','action' => 'index/Approved'],['escape'=>false,'class'=>$class2,'style'=>'padding: 1px 5px;']); ?>&nbsp;
 					<?php  ?>
 					
 				</div>
@@ -62,7 +62,7 @@
 						<?php  }
 					if($status!='approved' && $intraLocationStockTransferVoucher->transfer_to_location_id==$location_id)
 					{
-					echo  $this->Html->link(__('Approved'), ['action' => 'Approved', $intraLocationStockTransferVoucher->id]); }?>
+					echo  $this->Html->link(__('Approve'), ['action' => 'Approved', $intraLocationStockTransferVoucher->id]); }?>
                 </td>
             </tr>
             <?php $i++; endforeach; ?>

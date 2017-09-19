@@ -2,7 +2,7 @@
 /**
  * @Author: PHP Poets IT Solutions Pvt. Ltd.
  */
-$this->set('title', 'Approved Stock Transfer');
+$this->set('title', 'Approve Stock Transfer');
 ?>
 <div class="row">
 	<div class="col-md-9">
@@ -10,7 +10,7 @@ $this->set('title', 'Approved Stock Transfer');
 			<div class="portlet-title">
 				<div class="caption">
 					<i class="icon-bar-chart font-green-sharp hide"></i>
-					<span class="caption-subject font-green-sharp bold ">Approved Stock Transfer</span>
+					<span class="caption-subject font-green-sharp bold ">Approve Stock Transfer</span>
 				</div>
 			</div>
 			<div class="portlet-body">
