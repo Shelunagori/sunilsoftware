@@ -36,8 +36,8 @@ class IntraLocationStockTransferVouchersController extends AppController
         $this->paginate = [
             'contain' => ['TransferFromLocations','TransferToLocations']
         ];
-        $intraLocationStockTransferVouchers = $this->paginate($this->IntraLocationStockTransferVouchers->find()->where(['IntraLocationStockTransferVouchers.company_id'=>$company_id,'IntraLocationStockTransferVouchers.location_id'=>$location_id,'IntraLocationStockTransferVouchers.status'=>@$where]));
-        $this->set(compact('intraLocationStockTransferVouchers','status','location_id'));
+		$intraLocationStockTransferVouchers = $this->paginate($this->IntraLocationStockTransferVouchers->find()->where(['IntraLocationStockTransferVouchers.company_id'=>$company_id,'IntraLocationStockTransferVouchers.transfer_to_location_id'=>$location_id,'IntraLocationStockTransferVouchers.status'=>@$where]));
+		$this->set(compact('intraLocationStockTransferVouchers','status','location_id'));
         $this->set('_serialize', ['intraLocationStockTransferVouchers']);
     }
 
@@ -114,13 +114,13 @@ class IntraLocationStockTransferVouchersController extends AppController
 					$itemLedger->company_id          = $company_id;
 					$this->IntraLocationStockTransferVouchers->ItemLedgers->save($itemLedger);
 				}
-					$this->Flash->success(__('The intra location stock transfer voucher has been saved.'));
+					$this->Flash->success(__('The inter location stock transfer voucher has been saved.'));
 
 					return $this->redirect(['action' => 'add']);
 					
 				
             }
-            $this->Flash->error(__('The intra location stock transfer voucher could not be saved. Please, try again.'));
+            $this->Flash->error(__('The inter location stock transfer voucher could not be saved. Please, try again.'));
         }
 		$Voucher_no = $this->IntraLocationStockTransferVouchers->find()->select(['voucher_no'])->where(['company_id'=>$company_id])->order(['voucher_no' => 'DESC'])->first();
 		if($Voucher_no){
@@ -132,12 +132,12 @@ class IntraLocationStockTransferVouchersController extends AppController
         $TransferFromLocations = $this->IntraLocationStockTransferVouchers->TransferFromLocations->find('list')->where(['company_id'=>$company_id]);
 		$TransferToLocations = $this->IntraLocationStockTransferVouchers->TransferToLocations->find('list')->where(['company_id'=>$company_id]);
 		
-		$items = $this->IntraLocationStockTransferVouchers->IntraLocationStockTransferVoucherRows->Items->find('list')->where(['company_id'=>$company_id]);
+		$items = $this->IntraLocationStockTransferVouchers->IntraLocationStockTransferVoucherRows->Items->find()->where(['company_id'=>$company_id]);
 		$itemOptions=[];
 		foreach($items as $item){
 			$itemOptions[]=['text'=>$item->item_code.' '.$item->name, 'value'=>$item->id];
 		}
-        $this->set(compact('intraLocationStockTransferVoucher', 'companies', 'TransferFromLocations','TransferToLocations','items','voucher_no','itemOptions'));
+        $this->set(compact('intraLocationStockTransferVoucher', 'companies', 'TransferFromLocations','TransferToLocations','items','voucher_no','itemOptions','location_id'));
         $this->set('_serialize', ['intraLocationStockTransferVoucher']);
     }
 
@@ -184,22 +184,22 @@ class IntraLocationStockTransferVouchersController extends AppController
 					$itemLedger->company_id          = $company_id;
 					$this->IntraLocationStockTransferVouchers->ItemLedgers->save($itemLedger);
 				}
-                $this->Flash->success(__('The intra location stock transfer voucher has been saved.'));
+                $this->Flash->success(__('The inter location stock transfer voucher has been saved.'));
 
                 return $this->redirect(['action' => 'index']);
             }
-            $this->Flash->error(__('The intra location stock transfer voucher could not be saved. Please, try again.'));
+            $this->Flash->error(__('The inter location stock transfer voucher could not be saved. Please, try again.'));
         }
         $companies = $this->IntraLocationStockTransferVouchers->Companies->find('list');
         $TransferFromLocations = $this->IntraLocationStockTransferVouchers->TransferFromLocations->find('list')->where(['company_id'=>$company_id]);
 		$TransferToLocations = $this->IntraLocationStockTransferVouchers->TransferToLocations->find('list')->where(['company_id'=>$company_id]);
 		
-		$items = $this->IntraLocationStockTransferVouchers->IntraLocationStockTransferVoucherRows->Items->find('list')->where(['company_id'=>$company_id]);
+		$items = $this->IntraLocationStockTransferVouchers->IntraLocationStockTransferVoucherRows->Items->find()->where(['company_id'=>$company_id]);
 		$itemOptions=[];
 		foreach($items as $item){
 			$itemOptions[]=['text'=>$item->item_code.' '.$item->name, 'value'=>$item->id];
 		}
-        $this->set(compact('intraLocationStockTransferVoucher', 'companies', 'TransferFromLocations','TransferToLocations','items','voucher_no','itemOptions'));
+        $this->set(compact('intraLocationStockTransferVoucher', 'companies', 'TransferFromLocations','TransferToLocations','items','voucher_no','itemOptions','location_id'));
         $this->set('_serialize', ['intraLocationStockTransferVoucher']);
     }
 
@@ -238,22 +238,22 @@ class IntraLocationStockTransferVouchersController extends AppController
 					$itemLedger->company_id          = $company_id;
 					$this->IntraLocationStockTransferVouchers->ItemLedgers->save($itemLedger);
 				}
-                $this->Flash->success(__('The intra location stock transfer voucher has been saved.'));
+                $this->Flash->success(__('The inter location stock transfer voucher has been approved.'));
 
                 return $this->redirect(['action' => 'index']);
             }
-            $this->Flash->error(__('The intra location stock transfer voucher could not be saved. Please, try again.'));
+            $this->Flash->error(__('The inter location stock transfer voucher could not be saved. Please, try again.'));
         }
         $companies = $this->IntraLocationStockTransferVouchers->Companies->find('list');
         $TransferFromLocations = $this->IntraLocationStockTransferVouchers->TransferFromLocations->find('list')->where(['company_id'=>$company_id]);
 		$TransferToLocations = $this->IntraLocationStockTransferVouchers->TransferToLocations->find('list')->where(['company_id'=>$company_id]);
 		
-		$items = $this->IntraLocationStockTransferVouchers->IntraLocationStockTransferVoucherRows->Items->find('list')->where(['company_id'=>$company_id]);
+		$items = $this->IntraLocationStockTransferVouchers->IntraLocationStockTransferVoucherRows->Items->find()->where(['company_id'=>$company_id]);
 		$itemOptions=[];
 		foreach($items as $item){
 			$itemOptions[]=['text'=>$item->item_code.' '.$item->name, 'value'=>$item->id];
 		}
-        $this->set(compact('intraLocationStockTransferVoucher', 'companies', 'TransferFromLocations','TransferToLocations','items','voucher_no','itemOptions'));
+        $this->set(compact('intraLocationStockTransferVoucher', 'companies', 'TransferFromLocations','TransferToLocations','items','voucher_no','itemOptions','location_id'));
         $this->set('_serialize', ['intraLocationStockTransferVoucher']);
     }
 	
@@ -294,22 +294,22 @@ class IntraLocationStockTransferVouchersController extends AppController
 					$itemLedger->company_id          = $company_id;
 					$this->IntraLocationStockTransferVouchers->ItemLedgers->save($itemLedger);
 				}
-                $this->Flash->success(__('The intra location stock transfer voucher has been saved.'));
+                $this->Flash->success(__('The inter location stock transfer voucher has been saved.'));
 
                 return $this->redirect(['action' => 'index']);
             }
-            $this->Flash->error(__('The intra location stock transfer voucher could not be saved. Please, try again.'));
+            $this->Flash->error(__('The inter location stock transfer voucher could not be saved. Please, try again.'));
         }
         $companies = $this->IntraLocationStockTransferVouchers->Companies->find('list');
         $TransferFromLocations = $this->IntraLocationStockTransferVouchers->TransferFromLocations->find('list')->where(['company_id'=>$company_id]);
 		$TransferToLocations = $this->IntraLocationStockTransferVouchers->TransferToLocations->find('list')->where(['company_id'=>$company_id]);
 		
-		$items = $this->IntraLocationStockTransferVouchers->IntraLocationStockTransferVoucherRows->Items->find('list')->where(['company_id'=>$company_id]);
+		$items = $this->IntraLocationStockTransferVouchers->IntraLocationStockTransferVoucherRows->Items->find()->where(['company_id'=>$company_id]);
 		$itemOptions=[];
 		foreach($items as $item){
 			$itemOptions[]=['text'=>$item->item_code.' '.$item->name, 'value'=>$item->id];
 		}
-        $this->set(compact('intraLocationStockTransferVoucher', 'companies', 'TransferFromLocations','TransferToLocations','items','voucher_no','itemOptions'));
+        $this->set(compact('intraLocationStockTransferVoucher', 'companies', 'TransferFromLocations','TransferToLocations','items','voucher_no','itemOptions','location_id'));
         $this->set('_serialize', ['intraLocationStockTransferVoucher']);
     }
     /**
