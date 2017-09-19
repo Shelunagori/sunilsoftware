@@ -76,12 +76,14 @@ $this->set('title', 'Account Ledger report');
 							<tr>
 								<th colspan="3">
 								<span style="float:left";>
-								<?php foreach($AccountingLedgers as $AccountingLedger)
+								<?php 
+								foreach($AccountingLedgers as $AccountingLedger)
 									{   
 						            ?>
 							        <?php }?>
-		<?php echo 'Account Ledger of '; echo $id= $AccountingLedger->ledger->name; echo ' '; echo 'Date from '; echo $from_date; echo ' to '; echo $to_date;?>							
-								</span>
+									<?php if(@$AccountingLedger->ledger->name){?>
+		<?php echo 'Account Ledger of '; echo @$id= $AccountingLedger->ledger->name; echo ' '; echo 'Date from '; echo $from_date; echo ' to '; echo $to_date;?>
+<?php }?>		</span>
 								<span style="float:right";><b>Opening Balance</b></span></th>
 								<th style="text-align:right";>
 								<?php
@@ -122,7 +124,13 @@ $this->set('title', 'Account Ledger report');
 							<tr>
 								<td><?php echo date("d-m-Y",strtotime($AccountingLedger->transaction_date)); ?></td>
 								<td>
+								<?php if($voucher_type[$id]=='Purchase Vouchers'){?>
+								<?= $this->Html->link(__($voucher_type[$id]), array('controller' => 'PurchaseVouchers', 'action' => 'index', $AccountingLedger->purchase_vouches_id))?>
+								<?php }else if($voucher_type[$id]=='Sales Invoices') {?>
 								<?= $this->Html->link(__($voucher_type[$id]), array('controller' => 'SalesInvoices', 'action' => 'salesInvoiceBill', $AccountingLedger->sales_invoice_id))?>
+								<?php } else{?>
+								<?= $voucher_type[$id] ?>
+								<?php }?>
 								</td>
 								<td class="rightAligntextClass"><?php echo $voucher_no[$id]; ?></td>
 								<td style="text-align:right";>
