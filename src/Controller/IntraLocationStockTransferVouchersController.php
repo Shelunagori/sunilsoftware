@@ -133,7 +133,11 @@ class IntraLocationStockTransferVouchersController extends AppController
 		$TransferToLocations = $this->IntraLocationStockTransferVouchers->TransferToLocations->find('list')->where(['company_id'=>$company_id]);
 		
 		$items = $this->IntraLocationStockTransferVouchers->IntraLocationStockTransferVoucherRows->Items->find('list')->where(['company_id'=>$company_id]);
-        $this->set(compact('intraLocationStockTransferVoucher', 'companies', 'TransferFromLocations','TransferToLocations','items','voucher_no'));
+		$itemOptions=[];
+		foreach($items as $item){
+			$itemOptions[]=['text'=>$item->item_code.' '.$item->name, 'value'=>$item->id];
+		}
+        $this->set(compact('intraLocationStockTransferVoucher', 'companies', 'TransferFromLocations','TransferToLocations','items','voucher_no','itemOptions'));
         $this->set('_serialize', ['intraLocationStockTransferVoucher']);
     }
 
@@ -191,7 +195,11 @@ class IntraLocationStockTransferVouchersController extends AppController
 		$TransferToLocations = $this->IntraLocationStockTransferVouchers->TransferToLocations->find('list')->where(['company_id'=>$company_id]);
 		
 		$items = $this->IntraLocationStockTransferVouchers->IntraLocationStockTransferVoucherRows->Items->find('list')->where(['company_id'=>$company_id]);
-        $this->set(compact('intraLocationStockTransferVoucher', 'companies', 'TransferFromLocations','TransferToLocations','items','voucher_no'));
+		$itemOptions=[];
+		foreach($items as $item){
+			$itemOptions[]=['text'=>$item->item_code.' '.$item->name, 'value'=>$item->id];
+		}
+        $this->set(compact('intraLocationStockTransferVoucher', 'companies', 'TransferFromLocations','TransferToLocations','items','voucher_no','itemOptions'));
         $this->set('_serialize', ['intraLocationStockTransferVoucher']);
     }
 
@@ -241,7 +249,11 @@ class IntraLocationStockTransferVouchersController extends AppController
 		$TransferToLocations = $this->IntraLocationStockTransferVouchers->TransferToLocations->find('list')->where(['company_id'=>$company_id]);
 		
 		$items = $this->IntraLocationStockTransferVouchers->IntraLocationStockTransferVoucherRows->Items->find('list')->where(['company_id'=>$company_id]);
-        $this->set(compact('intraLocationStockTransferVoucher', 'companies', 'TransferFromLocations','TransferToLocations','items','voucher_no'));
+		$itemOptions=[];
+		foreach($items as $item){
+			$itemOptions[]=['text'=>$item->item_code.' '.$item->name, 'value'=>$item->id];
+		}
+        $this->set(compact('intraLocationStockTransferVoucher', 'companies', 'TransferFromLocations','TransferToLocations','items','voucher_no','itemOptions'));
         $this->set('_serialize', ['intraLocationStockTransferVoucher']);
     }
 	
@@ -293,7 +305,11 @@ class IntraLocationStockTransferVouchersController extends AppController
 		$TransferToLocations = $this->IntraLocationStockTransferVouchers->TransferToLocations->find('list')->where(['company_id'=>$company_id]);
 		
 		$items = $this->IntraLocationStockTransferVouchers->IntraLocationStockTransferVoucherRows->Items->find('list')->where(['company_id'=>$company_id]);
-        $this->set(compact('intraLocationStockTransferVoucher', 'companies', 'TransferFromLocations','TransferToLocations','items','voucher_no'));
+		$itemOptions=[];
+		foreach($items as $item){
+			$itemOptions[]=['text'=>$item->item_code.' '.$item->name, 'value'=>$item->id];
+		}
+        $this->set(compact('intraLocationStockTransferVoucher', 'companies', 'TransferFromLocations','TransferToLocations','items','voucher_no','itemOptions'));
         $this->set('_serialize', ['intraLocationStockTransferVoucher']);
     }
     /**

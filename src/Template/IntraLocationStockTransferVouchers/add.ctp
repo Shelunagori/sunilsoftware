@@ -137,7 +137,7 @@ $this->set('title', 'Create Inter Location stock Transfer Voucher');
 		<tr class="main_tr" class="tab">
 			<td width="7%" align="center"></td>
 			<td width="50%">
-				<?php echo $this->Form->control('item_id', ['options' => $items,'label' => false,'class' => 'form-control input-sm','required'=>'required','empty'=>'--select--']); ?>
+				<?php echo $this->Form->control('item_id', ['options' => $itemOptions,'label' => false,'class' => 'form-control input-sm','required'=>'required','empty'=>'--select--']); ?>
 				</td>
 			
 			<td width="25%" >

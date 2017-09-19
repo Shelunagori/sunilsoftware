@@ -61,7 +61,7 @@ $this->set('title', 'Approve Stock Transfer');
 								<tr class="main_tr" class="tab">
 									<td width="7%"><?php echo $i+1;?></td>
 									<td width="50%">
-										<?php echo $this->Form->control('item', ['type'=>'text','label' => false,'class' => 'form-control input-sm','required'=>'required','value'=>$intra_location_stock_transfer_voucher_row->item->name,'readonly'=>'readonly']);
+										<?php echo $this->Form->control('item', ['type'=>'text','label' => false,'class' => 'form-control input-sm','required'=>'required','value'=>$intra_location_stock_transfer_voucher_row->item->item_code.' '.$intra_location_stock_transfer_voucher_row->item->name,'readonly'=>'readonly']);
 										echo $this->Form->control('intra_location_stock_transfer_voucher_rows.'.$i.'.item_id', ['type'=>'hidden','label' => false,'class' => 'form-control input-sm','required'=>'required','value'=>$intra_location_stock_transfer_voucher_row->item_id,'readonly'=>'readonly']);
 										?>
 										</td>
