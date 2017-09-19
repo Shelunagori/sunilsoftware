@@ -147,6 +147,7 @@ class SalesInvoicesController extends AppController
 								])
 						->execute();
 						}
+								
            if($salesInvoice->is_interstate=='0'){
 		   for(@$i=0; $i<2; $i++){
 			   foreach($salesInvoice->sales_invoice_rows as $sales_invoice_row)
