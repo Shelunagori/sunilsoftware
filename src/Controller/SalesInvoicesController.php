@@ -492,7 +492,7 @@ public function edit($id = null)
 	
 public function salesInvoiceBill($id=null)
     {
-		$this->viewBuilder()->layout('index_layout');
+		
 	    $this->viewBuilder()->layout('');
 		$company_id=$this->Auth->User('session_company_id');
 		$stateDetails=$this->Auth->User('session_company');

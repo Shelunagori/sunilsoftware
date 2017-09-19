@@ -19,7 +19,7 @@ $this->set('title', 'Create Inter Location stock Transfer Voucher');
 						<div class="col-md-3">
 							<div class="form-group">
 								<label>Voucher No :</label>&nbsp;&nbsp;
-								<?= h('#'.str_pad($voucher_no, 4, '0', STR_PAD_LEFT)) ?>
+								<?= h(str_pad($voucher_no, 4, '0', STR_PAD_LEFT)) ?>
 							</div>
 						</div>
 						<div class="col-md-3">
@@ -31,7 +31,8 @@ $this->set('title', 'Create Inter Location stock Transfer Voucher');
 						<div class="col-md-3">
 							<div class="form-group">
 								<label>Transfer From</label>
-								<?php echo $this->Form->control('transfer_from_location_id',['options'=>$TransferFromLocations,'class'=>'form-control input-sm transfer_from','label'=>false]); ?>
+								
+								<?php echo $this->Form->control('transfer_from_location_id',['options'=>$TransferFromLocations,'class'=>'form-control input-sm transfer_from','label'=>false,'value'=>$location_id]); ?>
 							</div>
 						</div>
 						<div class="col-md-3">
@@ -137,7 +138,7 @@ $this->set('title', 'Create Inter Location stock Transfer Voucher');
 		<tr class="main_tr" class="tab">
 			<td width="7%" align="center"></td>
 			<td width="50%">
-				<?php echo $this->Form->control('item_id', ['options' => $items,'label' => false,'class' => 'form-control input-sm','required'=>'required','empty'=>'--select--']); ?>
+				<?php echo $this->Form->control('item_id', ['options' => $itemOptions,'label' => false,'class' => 'form-control input-sm','required'=>'required','empty'=>'--select--']); ?>
 				</td>
 			
 			<td width="25%" >

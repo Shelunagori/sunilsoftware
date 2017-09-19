@@ -77,7 +77,9 @@ echo '<li>'.$this->Html->link($this->Html->tag('i', '', ['class' => 'icon-home']
 		<li><?php echo $this->Html->link($this->Html->tag('i', '', ['class' => 'fa fa-list-ul']).' List', '/IntraLocationStockTransferVouchers',['escape' => false]); ?></li>
 	</ul>
 </li>
-
+<?php 
+echo '<li>'.$this->Html->link($this->Html->tag('i', '', ['class' => 'fa fa-file']).'Generate Barcode', '/Items/generateBarcode',['escape' => false]).'</li>';
+?>
 <?php 
 echo '<li>'.$this->Html->link($this->Html->tag('i', '', ['class' => 'fa fa-cogs']).'Masters & Setup', '/Users/masterSetup',['escape' => false]).'</li>';
 ?>
