@@ -53,6 +53,7 @@
 			if($inc==0){ echo '<table style="width:793.70px;" class="print">'; }
 			if($r==0){ echo '<tr>'; }
 			?>
+			
 			<td width="198.42px" height="108px" style="font-size:11px;" valign="middle">
 				<table width="100%" style="font-size:11px;line-height: 9px;">
 					<tr>
