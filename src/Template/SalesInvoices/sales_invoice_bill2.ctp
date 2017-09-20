@@ -33,26 +33,20 @@ margin-bottom: 0;
 <?php foreach($invoiceBills->toArray() as $data){
 		foreach($data->sales_invoice_rows as $sales_invoice_row){?>
 			<?php }}?>
-			<tr>
-	<td colspan="4" align="center">
+	<tr>
+	<td colspan="1" valign="left">
 	<?php echo $this->Html->image('/img/dangilogo.png', ['height' => '50px', 'width' => '50px']); ?>
- 	</tr>
-	<tr>
-		<td colspan="4"
-		style="text-align:center;font-size:18px;"><b><span><?=@$data->company->name?></span></b></td>
-    </tr>
-	<tr>
-	<td colspan="4"
- 		style="text-align:center;font-size:12px !important;"><span><?=@$data->company->address?>, <?=@$data->company->state->name?></span></td>
+	</td>
+	<td colspan="3">
+	<b><span style="text-align:center;font-size:18px;"><?=@$data->company->name?></span></b><br/>
+	<span style="text-align:center;font-size:12px !important;"><?=@$data->company->address?>, <?=@$data->company->state->name?></span><br/>
+	<span style="text-align:center;font-size:12px !important;">Ph - <?=@$data->company->phone_no ?><br/> Mobile - <?=@$data->company->mobile ?><br/> GSTIN NO:
+		<?=@$data->company->gstin ?></span>
+		</td>
 	</tr>
-	<tr><td colspan="4"
- 		style="text-align:center;font-size:12px !important;"><span>Ph - <?=@$data->company->phone_no ?> Mobile - <?=@$data->company->mobile ?><br> GSTIN NO:
-		<?=@$data->company->gstin ?></span></td>
-	</tr>
-	<tr>
-		<td colspan="4"
-		style="text-align:center;font-size:16px; padding-bottom:10px;  padding-top:10px;"><b><span><u>GST INVOICE</u></span></b></td>
-	</tr>
+	<tr><td colspan="4" style="text-align:center;font-size:16px; padding-bottom:10px;  padding-top:10px;"><b><u>GST INVOICE</u></b></td></tr>
+	
+	
 	<tr>
 		<td colspan="4" style="font-size:14px;"><b>Customer Name: 
 		<?php if(!empty($partyCustomerid)){?>

@@ -23,19 +23,26 @@ margin-bottom: 0;
     margin: 0px 0px 0px 0px;  /* this affects the margin in the printer settings */
 }
 </style>
+
 <div style="width:300px;" class="maindiv">
-<table  width="100%" border="0" >
+<?php echo $this->Html->link('Print',array(),['escape'=>false,'class'=>'hidden-print','style'=>' background-color:blue;  font-size:18px; padding:5px; color:white; cursor:hand;  float: left','onclick'=>'javascript:window.print()();']);
+ echo $this->Html->link('Close',['controller'=>'SalesInvoices','action'=>'add'],['escape'=>false,'class'=>'hidden-print','style'=>' background-color:blue;  font-size:18px; padding:5px; color:white; cursor:hand;  float: right']);
+?>
+<table  width="100%" border="0" style="margin-top:15px;" >
 <tbody>
 <?php foreach($invoiceBills->toArray() as $data){
 		foreach($data->sales_invoice_rows as $sales_invoice_row){?>
 			<?php }}?>
+			<tr>
+	<td colspan="4" align="left">
+	<?php echo $this->Html->image('/img/dangilogo.png', ['height' => '50px', 'width' => '50px']); ?>
+ 	</tr>
 	<tr>
 		<td colspan="4"
 		style="text-align:center;font-size:18px;"><b><span><?=@$data->company->name?></span></b></td>
     </tr>
-	
-	
-	<tr><td colspan="4"
+	<tr>
+	<td colspan="4"
  		style="text-align:center;font-size:12px !important;"><span><?=@$data->company->address?>, <?=@$data->company->state->name?></span></td>
 	</tr>
 	<tr><td colspan="4"
@@ -47,7 +54,32 @@ margin-bottom: 0;
 		style="text-align:center;font-size:16px; padding-bottom:10px;  padding-top:10px;"><b><span><u>GST INVOICE</u></span></b></td>
 	</tr>
 	<tr>
-		<td colspan="4" style="text-align:center;font-size:14px;"><b>Customer Name: <?=ucwords($data->partyDetails->name)?> (<?=$data->partyDetails->mobile?> )</b></td>
+		<td colspan="4" style="font-size:14px;"><b>Customer Name: 
+		<?php if(!empty($partyCustomerid)){?>
+		<?= h(str_pad(@$data->partyDetails->customer_id, 4, '0', STR_PAD_LEFT))?>
+		<?php }?>
+		<?=ucwords($data->partyDetails->name)?></b></td>
+	</tr>
+	<?php if(!empty($partyCustomerid)){?>
+	<tr>
+		<td colspan="4" style="font-size:14px;">Mobile No: 
+		<?=$data->partyDetails->mobile?></td>
+	</tr>
+	<tr>
+		<td colspan="4" style="font-size:14px;">GSTIN No: 
+		<?=$data->partyDetails->gstin?></td>
+	</tr>
+	<tr>
+		<td colspan="4" style="font-size:14px;">City: 
+		<?=$data->partyDetails->city->name?></td>
+	</tr>
+	<tr>
+		<td colspan="4" style="font-size:14px;">State: 
+		<?=$data->partyDetails->state->name?></td>
+	</tr>
+	<?php } ?>
+	<tr>
+		<td colspan="4" style="font-size:14px;">Invoice No.: <?= h('#'.str_pad($data->voucher_no, 4, '0', STR_PAD_LEFT)) ?></td>
 	</tr>
 	<tr>
 		<td colspan="4"
@@ -86,7 +118,10 @@ margin-bottom: 0;
 		$igst=0;
 		$totalAmount=0;
 		
-		foreach($data->sales_invoice_rows as $sales_invoice_row){
+		foreach($data->sales_invoice_rows as $sales_invoice_row){ ?>
+		
+		<tr><td colspan="4" style="border-top:1px dashed;"></td></tr>
+		<?php
 			if(@$data->company->state_id==$data->partyDetails->state_id){
 			$gst_type=$sales_invoice_row->gst_figure->tax_percentage;
 			$gst_perc=$gst_type/2;
@@ -101,11 +136,12 @@ margin-bottom: 0;
 			$gstValue=$sales_invoice_row->gst_value;
 			$gst=$gstValue;
 			$igst+=$gst;
+			
+			$totalAmount+=$sales_invoice_row->quantity*$sales_invoice_row->rate;
 			}
 		?>
-		<tr><td colspan="4" style="border-top:1px dashed;"></td></tr>
 		<tr>
-			<td><?=$sales_invoice_row->item->name ?></td>
+			<td><?=$sales_invoice_row->item->item_code.' ' ?><?=  $sales_invoice_row->item->name ?></td>
 			<td><?php
 			if(!empty($sales_invoice_row->item->size->name))
 			{
@@ -164,41 +200,59 @@ margin-bottom: 0;
 		</tr>
 				
 </tbody></table>
-<table width="100%" border="1px" style="font-size:12px; border-collapse: collapse; margin-top:15px;">
+<table width="100%" border="" style="font-size:12px; border-collapse: collapse; margin-top:15px; border-style:dashed">
 <thead>
 	<?php if($taxable_type!= 'IGST') { ?>
 	<tr>
-		<td>Taxable Value</td>
-		<td>CGST (%)</td>
-		<td>CGST Amount</td>
-		<td>SGST (%)</td>
-		<td>SGST Amount</td>
+		<td align="center">Taxable Value</td>
+		<td align="center">CGST (%)</td>
+		<td align="center">CGST Amount</td>
+		<td align="center">SGST (%)</td>
+		<td align="center">SGST Amount</td>
 	</tr>
 </thead>
 <tbody>
 	<?php } else { ?>
 	<tr>
-		<td>Taxable Value</td>
-		<td>IGST(%)</td>
-		<td>IGST Amount</td>
+		<td align="center">Taxable Value</td>
+		<td align="center">IGST(%)</td>
+		<td align="center">IGST Amount</td>
 	</tr>
 	<?php } ?>
 	<?php foreach($sale_invoice_rows as $sale_invoice_row){
 	if($taxable_type!= 'IGST') { ?>
 	<tr>
-		<td style="text-align:right;"><?= h($sale_invoice_row->total_taxable_amount) ?></td>
+		<td  style="text-align:right;"><?php echo number_format($sale_invoice_row->total_taxable_amount,2) ?></td>
+		<td style="text-align:right;"> <?= h($sale_invoice_row->gst_figure->tax_percentage/2) .'%' ?></td>
+		<td style="text-align:right;"><?php echo number_format($sale_invoice_row->total_gst_amount/2,2) ?></td>
 		<td style="text-align:right;"><?= h($sale_invoice_row->gst_figure->tax_percentage/2) .'%' ?></td>
-		<td style="text-align:right;"><?= h($sale_invoice_row->total_gst_amount/2) ?></td>
-		<td style="text-align:right;"><?= h($sale_invoice_row->gst_figure->tax_percentage/2) .'%' ?></td>
-		<td style="text-align:right;"><?= h($sale_invoice_row->total_gst_amount/2) ?></td>
+		<td style="text-align:right;"><?php echo number_format($sale_invoice_row->total_gst_amount/2,2) ?></td>
 	</tr>
 	<?php } else { ?>
 	<tr>
-		<td style="text-align:right;"><?= h($sale_invoice_row->total_taxable_amount) ?></td>
+		<td style="text-align:right;"><?php echo number_format($sale_invoice_row->total_taxable_amount,2) ?></td>
 		<td style="text-align:right;"><?= h($sale_invoice_row->gst_figure->tax_percentage).'%' ?></td>
-		<td style="text-align:right;"><?= h($sale_invoice_row->total_gst_amount) ?></td>
+		<td style="text-align:right;"><?php echo number_format($sale_invoice_row->total_gst_amount,2) ?></td>
 	</tr>
 	<?php } } ?>
+	
 </tbody>
+</table>
+<table border="0"  style="font-size:12px; margin-top:15px; border-collapse: collapse;">
+	<tr>
+		<td><b>Terms & Condition:</b></td>
+	</tr>
+	<tr>
+		<td>
+			<ol>
+				<li>Cash Memo must be produced for any complaint of exchange.</li>
+				<li>All alteration undertaken at customers risk</li>
+				<li>Any complaints regarding garments will be forwarded to manufacturer whose decision on subject will be final.</li>
+				<li>Any manufacturing defect will be entertained with in 30 days.
+				And subject to final decision of company.</li>
+				<li>All disputes are subject to Udaipur jurisdiction only. E&OE. </li>
+			</ol>
+		</td>
+	</tr>
 </table>
 </div>
