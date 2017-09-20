@@ -26,6 +26,14 @@ $this->set('title', 'Report Setup');
 						</div>
 					</div>
 				</div>
+				<!--<div class="row">
+					<div class="col-md-6">
+						<div class="list-group">
+							<?php echo $this->Html->link($this->Html->tag('i', '', ['class' => '']).'Day Book', '/Ledgers/day_book',['escape' => false, 'class'=>'list-group-item']); ?>
+							</div>
+					</div>
+					
+				</div> -->
 			</div>
 		</div>
 	</div>

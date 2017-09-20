@@ -7,20 +7,20 @@ use Cake\ORM\Table;
 use Cake\Validation\Validator;
 
 /**
- * Customers Model
+ * Cities Model
  *
  * @property \App\Model\Table\StatesTable|\Cake\ORM\Association\BelongsTo $States
- * @property \App\Model\Table\LedgersTable|\Cake\ORM\Association\HasMany $Ledgers
+ * @property \App\Model\Table\CustomersTable|\Cake\ORM\Association\HasMany $Customers
  *
- * @method \App\Model\Entity\Customer get($primaryKey, $options = [])
- * @method \App\Model\Entity\Customer newEntity($data = null, array $options = [])
- * @method \App\Model\Entity\Customer[] newEntities(array $data, array $options = [])
- * @method \App\Model\Entity\Customer|bool save(\Cake\Datasource\EntityInterface $entity, $options = [])
- * @method \App\Model\Entity\Customer patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
- * @method \App\Model\Entity\Customer[] patchEntities($entities, array $data, array $options = [])
- * @method \App\Model\Entity\Customer findOrCreate($search, callable $callback = null, $options = [])
+ * @method \App\Model\Entity\City get($primaryKey, $options = [])
+ * @method \App\Model\Entity\City newEntity($data = null, array $options = [])
+ * @method \App\Model\Entity\City[] newEntities(array $data, array $options = [])
+ * @method \App\Model\Entity\City|bool save(\Cake\Datasource\EntityInterface $entity, $options = [])
+ * @method \App\Model\Entity\City patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
+ * @method \App\Model\Entity\City[] patchEntities($entities, array $data, array $options = [])
+ * @method \App\Model\Entity\City findOrCreate($search, callable $callback = null, $options = [])
  */
-class CustomersTable extends Table
+class CitiesTable extends Table
 {
 
     /**
@@ -33,7 +33,7 @@ class CustomersTable extends Table
     {
         parent::initialize($config);
 
-        $this->setTable('customers');
+        $this->setTable('cities');
         $this->setDisplayField('name');
         $this->setPrimaryKey('id');
 
@@ -41,14 +41,9 @@ class CustomersTable extends Table
             'foreignKey' => 'state_id',
             'joinType' => 'INNER'
         ]);
-		 $this->belongsTo('Cities', [
-            'foreignKey' => 'city_id',
-            'joinType' => 'INNER'
+        $this->hasMany('Customers', [
+            'foreignKey' => 'city_id'
         ]);
-       $this->hasOne('Ledgers', [
-            'foreignKey' => 'customer_id'
-        ]);
-		
     }
 
     /**
@@ -66,18 +61,6 @@ class CustomersTable extends Table
         $validator
             ->requirePresence('name', 'create')
             ->notEmpty('name');
-
-        $validator
-            ->email('email')
-            ->allowEmpty('email');
-
-        $validator
-            ->allowEmpty('mobile');
-
-        $validator
-            ->allowEmpty('address');
-
-       
 
         return $validator;
     }

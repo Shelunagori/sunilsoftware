@@ -515,7 +515,7 @@ public function salesInvoiceBill($id=null)
 			{
 				$partyDetails= $this->SalesInvoices->Customers->find()
 				->where(['Customers.id'=>$partyCustomerid])
-				->contain(['States'])->first();
+				->contain(['States', 'Cities'])->first();
 				$data->partyDetails=$partyDetails;
 			}
 			else
@@ -555,6 +555,8 @@ public function salesInvoiceBill($id=null)
 		->autoFields(true)
 		->contain(['GstFigures']);
         $sale_invoice_rows = ($query);
+		
+		//pr($invoiceBills->toArray());exit;
 		
 		$this->set(compact('invoiceBills','taxable_type','sale_invoice_rows','partyCustomerid'));
         $this->set('_serialize', ['invoiceBills']);

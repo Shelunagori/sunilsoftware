@@ -33,13 +33,16 @@ margin-bottom: 0;
 <?php foreach($invoiceBills->toArray() as $data){
 		foreach($data->sales_invoice_rows as $sales_invoice_row){?>
 			<?php }}?>
+			<tr>
+	<td colspan="4" align="center">
+	<?php echo $this->Html->image('/img/dangilogo.png', ['height' => '100px', 'width' => '100px']); ?>
+ 	</tr>
 	<tr>
 		<td colspan="4"
 		style="text-align:center;font-size:18px;"><b><span><?=@$data->company->name?></span></b></td>
     </tr>
-	
-	
-	<tr><td colspan="4"
+	<tr>
+	<td colspan="4"
  		style="text-align:center;font-size:12px !important;"><span><?=@$data->company->address?>, <?=@$data->company->state->name?></span></td>
 	</tr>
 	<tr><td colspan="4"
@@ -51,10 +54,32 @@ margin-bottom: 0;
 		style="text-align:center;font-size:16px; padding-bottom:10px;  padding-top:10px;"><b><span><u>GST INVOICE</u></span></b></td>
 	</tr>
 	<tr>
-		<td colspan="4" style="font-size:14px;"><b>Customer Name: <?=ucwords($data->partyDetails->name)?><?php if(!empty($partyCustomerid)){  if($data->partyDetails->mobile) { ?>(<?=$data->partyDetails->mobile?> )<?php } } ?></b></td>
+		<td colspan="4" style="font-size:14px;"><b>Customer Name: 
+		<?php if(!empty($partyCustomerid)){?>
+		<?= h(str_pad(@$data->partyDetails->customer_id, 4, '0', STR_PAD_LEFT))?>
+		<?php }?>
+		<?=ucwords($data->partyDetails->name)?></b></td>
+	</tr>
+	<?php if(!empty($partyCustomerid)){?>
+	<tr>
+		<td colspan="4" style="font-size:14px;">Mobile No: 
+		<?=$data->partyDetails->mobile?></td>
 	</tr>
 	<tr>
-		<td colspan="4" style="font-size:14px;"><b>Invoice No.: <?= h('#'.str_pad($data->voucher_no, 4, '0', STR_PAD_LEFT)) ?></b></td>
+		<td colspan="4" style="font-size:14px;">GSTIN No: 
+		<?=$data->partyDetails->gstin?></td>
+	</tr>
+	<tr>
+		<td colspan="4" style="font-size:14px;">City: 
+		<?=$data->partyDetails->city->name?></td>
+	</tr>
+	<tr>
+		<td colspan="4" style="font-size:14px;">State: 
+		<?=$data->partyDetails->state->name?></td>
+	</tr>
+	<?php } ?>
+	<tr>
+		<td colspan="4" style="font-size:14px;">Invoice No.: <?= h('#'.str_pad($data->voucher_no, 4, '0', STR_PAD_LEFT)) ?></td>
 	</tr>
 	<tr>
 		<td colspan="4"
