@@ -37,6 +37,7 @@ $this->set('title', 'GRNS');
 								<td class="actions">
 									<?= $this->Html->link(__('View'), ['action' => 'view', $grn->id]) ?>
 									<?= $this->Html->link(__('Edit'), ['action' => 'edit', $grn->id]) ?>
+									<?= $this->Html->link(__('Print-Barcodes'), ['action' => 'printBarcode', $grn->id]) ?>
 								</td>
 							</tr>
 							<?php endforeach; ?>

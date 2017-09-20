@@ -1,59 +1,58 @@
-<style>
-@media print{
-	
-    .page {
-        margin: 0;
-        border: initial;
-        border-radius: initial;
-        width: initial;
-        min-height: initial;
-        box-shadow: initial;
-        background: initial;
-        page-break-after: always;
-    }
-	
-	td{
-		width:198.42px !important;
-		height:112.25px !important;
-		padding:4px !important;
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Page Title</title>
+	<style type="text/css" media="print">
+	@page {
+		size: auto;   /* auto is the initial value */
+		margin: 0px 0px 0px 0px;  /* this affects the margin in the printer settings */
 	}
-	.hidden-print{
-		display:none;
+	.print{
+	page-break-after:always;
 	}
-}
+	</style>
+</head>
+<body style="margin: 0;padding: 0;">
 
-</style>
-
-<style type="text/css" media="print">
-@page {
-	width: 21cm;
-	height: 29.7cm; 
-    size: a4;   /* auto is the initial value */
-    margin: 0px 0px 0px 0px;  /* this affects the margin in the printer settings */
-}
-
-</style>
-
-<div style="width:100%;" class="maindiv">
-<?php echo $this->Html->link('Print',array(),['escape'=>false,'class'=>'hidden-print','style'=>' background-color:blue;  font-size:18px; padding:5px; color:white; cursor:hand;  float: left','onclick'=>'javascript:window.print()();']);
- echo $this->Html->link('Close',['controller'=>'Items','action'=>'generateBarcode'],['escape'=>false,'class'=>'hidden-print','style'=>' background-color:blue;  font-size:18px; padding:5px; color:white; cursor:hand;  float: right']);
-?>
-	<table  width="100%" border="1px" style="font-size:14px; border-collapse: collapse; margin:5px;" >
-	<tbody>
-	<?php 
-	//pr($item_barcodes);
-	//exit;
 	
-	foreach($item_barcodes as $item){  ?>
-		<tr>
-		<?php	for($i=1;$i<=4;$i++){ ?>
-				<td width="198.42px" height="112.25px" style="padding:4px;">Sunil Textiles</br>Item -<?=  $item->name.' ' ?></br>HSN Code -<?=$item->hsn_code.' ' ?></br><?php if($item->shade_id){ ?> Shade - <?=$item->shade->name.' ' ?><?php }  if($item->size_id){ ?>  Size -<?=$item->size->name.' ' ?></br><?php } ?><?= $this->Html->Image('barcode/'.$item->id.'.png') ?></br>Rs:<?=$item->sales_rate ?></td>
-				<?php } ?>
-			</tr>
 		<?php 
-	}
-	?>
+		$r=0; $inc=0;
+		foreach($item_barcodes as $arData){
+			if($inc==0){ echo '<table style="width:793.70px;" class="print">'; }
+			if($r==0){ echo '<tr>'; }
+			?>
+			<td width="198.42px" height="108px" style="font-size:11px;'width:198.42px;height:108px;'" valign="middle">
+				<table width="100%" style="font-size:11px;line-height: 9px;">
+					<tr>
+						<td colspan="2"><?php echo $coreVariable['company_name']; ?></td>
+					</tr>
+					<tr>
+						<td colspan="2">Item : <?= $arData->name ?></td>
+					</tr>
+					<tr>
+						<td>HSN Code : <?= $arData->hsn_code.' ' ?></td>
+						<td>Shade : <?= @$arData->shade->name.' ' ?></td>
+					</tr>
+					<tr>
+						<td>Size : <?= @$arData->size->name.' ' ?></td>
+						<td>Rs : <?=$arData->sales_rate ?></td>
+					</tr>
+				</table>
+				<div align="center"><?= $this->Html->Image('barcode/'.$arData->id.'.png',['width'=>'130px;','height'=>'25px','style'=>'width:130px;height:25px;']) ?></div>
+			</td>
+			<?php
+			
+			if($r==4){ echo '</tr>'; }
+			$r++;
+			if($r==4){ $r=0; }
+			$inc++;
+			if($inc==40){ $inc=0; ?></table><?php }
+			
+			
+		} ?>
+	
 
-	</tbody>
-	</table>
-</div>
+</body>
+</html>
+
+

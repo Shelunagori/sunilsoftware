@@ -49,6 +49,18 @@ class GrnsController extends AppController
         $this->set('grn', $grn);
         $this->set('_serialize', ['grn']);
     }
+	
+	 public function printBarcode($id = null)
+    {
+		$this->viewBuilder()->layout('');
+		$company_id=$this->Auth->User('session_company_id');
+        $grn = $this->Grns->get($id, [
+            'contain' => ['Companies', 'GrnRows'=>['Items']]
+        ]);
+		
+        $this->set('grn', $grn);
+        $this->set('_serialize', ['grn']);
+    }
 
     /**
      * Add method
