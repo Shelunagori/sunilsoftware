@@ -308,9 +308,9 @@ class ItemsController extends AppController
 		if ($this->request->is('put','post','patch')) {
 			$item_name = $this->Items->patchEntity($item, $this->request->getData());
 			
-			$itemids=array_filter($item_name->item_name);
-			$encodeitemids=json_encode($itemids);
-			 return $this->redirect(['action' => 'viewBarcode', $encodeitemids]);
+			//$itemids=array_filter($item_name->item_name);
+			$encodeitemids=json_encode($item_name);
+			return $this->redirect(['action' => 'viewBarcode', $encodeitemids]);
 			
 		}
 			
@@ -328,14 +328,18 @@ class ItemsController extends AppController
 	
 	public function viewBarcode($encodeitemids=null){
 		$items=json_decode($encodeitemids);
+		
 		$this->viewBuilder()->layout('');
 		$company_id=$this->Auth->User('session_company_id');
 		$item_barcodes=[];
-		foreach($items as $item){
-			$item_barcodes[] = $this->Items->get($item, [
-				'contain'=>['Shades','Sizes']
-			]);
-			 
+		
+		foreach($items->item_name as $item){
+			for($q=0; $q<$item->quantity; $q++){
+				$item_barcodes[] = $this->Items->get($item->item_id, [
+					'contain'=>['Shades','Sizes']
+				]);
+			}
+			
 		}
 		
         $this->set(compact('item_barcodes'));

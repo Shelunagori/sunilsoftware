@@ -467,6 +467,11 @@ class LedgersController extends AppController
 		->where(['SalesInvoices.transaction_date'=>$currentDate])
 		->contain(['AccountingEntries'])
 		->order(['id'=>'DESC']);
+		foreach($salesLedgers->toArray() as $data)
+		{
+		$data->voucher_type='Purchase Vouchers';
+		}
+		
 		$this->set(compact('salesLedgers'));
         $this->set('_serialize', ['salesLedgers']);
     }

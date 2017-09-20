@@ -5,19 +5,31 @@
 	<style type="text/css" media="print">
 	@page {
 		size: auto;   /* auto is the initial value */
-		margin: 0px 0px 0px 0px;  /* this affects the margin in the printer settings */
+		margin: 0px 0px 0px 100px;  /* this affects the margin in the printer settings */
 	}
 	.print{
-	page-break-after:always;
+		page-break-after:always;
 	}
 	</style>
 </head>
 <body style="margin: 0px 0px 0px 20px;padding: 0;">
-
+	<?php 
+	$ar=[];
+	foreach($grn->grn_rows as $grn_row){
+		for($i=0; $i<$grn_row->quantity; $i++){
+			$ar[]=$grn_row;
+		}
+	} 
+	foreach($grn->grn_rows as $grn_row){
+		for($i=0; $i<$grn_row->quantity; $i++){
+			$ar[]=$grn_row;
+		}
+	}
+	?>
 	
 		<?php 
 		$r=0; $inc=0;
-		foreach($item_barcodes as $arData){
+		foreach($ar as $arData){
 			if($inc==0){ echo '<table style="width:100%;" class="print">'; }
 			if($r==0){ echo '<tr>'; }
 			?>
@@ -27,18 +39,18 @@
 						<td colspan="2"><?php echo $coreVariable['company_name']; ?></td>
 					</tr>
 					<tr>
-						<td colspan="2">Item : <?= $arData->name ?></td>
+						<td colspan="2">Item : <?= $arData->item->name ?></td>
 					</tr>
 					<tr>
-						<td>HSN Code : <?= $arData->hsn_code.' ' ?></td>
-						<td>Shade : <?= @$arData->shade->name.' ' ?></td>
+						<td>HSN Code : <?= $arData->item->hsn_code.' ' ?></td>
+						<td>Shade : <?= @$arData->item->shade->name.' ' ?></td>
 					</tr>
 					<tr>
-						<td>Size : <?= @$arData->size->name.' ' ?></td>
-						<td>Rs : <?=$arData->sales_rate ?></td>
+						<td>Size : <?= @$arData->item->size->name.' ' ?></td>
+						<td>Rs : <?=$arData->item->sales_rate ?></td>
 					</tr>
 				</table>
-				<div align="center"><?= $this->Html->Image('barcode/'.$arData->id.'.png',['width'=>'130px;','height'=>'25px','style'=>'width:130px;height:25px;']) ?></div>
+				<div align="center"><?= $this->Html->Image('barcode/'.$arData->item->id.'.png',['width'=>'130px;','height'=>'25px','style'=>'width:130px;height:25px;']) ?></div>
 			</td>
 			<?php
 			

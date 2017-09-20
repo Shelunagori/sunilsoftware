@@ -14,8 +14,8 @@ $this->set('title', 'Day Book');
 								<th scope="col">Date</th>
 								<th scope="col" style="text-align:center";>Voucher Type</th>
 								<th scope="col" style="text-align:center";>Voucher No</th>
-								<th scope="col" style="text-align:center";>Credit Amount</th>
 								<th scope="col" style="text-align:center";>Debit Amount</th>
+								<th scope="col" style="text-align:center";>Credit Amount</th>
 								<th scope="col" style="text-align:center";>Inward Qty.</th>
 								<th scope="col" style="text-align:center";>Outward Qty.</th>
 							</tr>
@@ -24,45 +24,32 @@ $this->set('title', 'Day Book');
 						<?php
 								if(!empty($salesLedgers))
 								{
-									$total_credit=0;
-									$total_debit=0;
-									foreach($AccountingLedgers as $AccountingLedger)
+									foreach($salesLedgers as $salesLedger)
 									{   
-										$id= $AccountingLedger->id
+										$id= $salesLedger->id;
 						?>
 							<tr>
-								<td><?php echo date("d-m-Y",strtotime($AccountingLedger->transaction_date)); ?></td>
+								<td><?php echo date("d-m-Y",strtotime($salesLedger->transaction_date)); ?></td>
 								<td>
-								<?= $this->Html->link(__($voucher_type[$id]), array('controller' => 'SalesInvoices', 'action' => 'salesInvoiceBill', $AccountingLedger->sales_invoice_id))?>
+								<?= $this->Html->link(__($salesLedger->voucher_type), array('controller' => 'SalesInvoices', 'action' => 'salesInvoiceBill', $salesLedger->id))?>
 								</td>
-								<td class="rightAligntextClass"><?php echo $voucher_no[$id]; ?></td>
-								<td style="text-align:right";>
-								<?php 
-									if(!empty($AccountingLedger->debit))
-									{
-										echo $AccountingLedger->debit; 
-										$total_debit +=round($AccountingLedger->debit,2);
-									}
-									else
-									{
-										echo "-";
-									}
+								<td class=""><?= 
+								h(str_pad($salesLedger->voucher_no, 4, '0', STR_PAD_LEFT))?></td>
+						        <?php 
+						        foreach($salesLedger->accounting_entries 
+								as $accounting_entry){
 								?>
+								<?php }?>
+								<td><?=$accounting_entry->debit?></td>
+								<td style="";>
+								<?=$accounting_entry->credit?>
 								</td>
-								<td style="text-align:right";>
-								<?php 
-									if(!empty($AccountingLedger->credit))
-									{
-										echo $AccountingLedger->credit; 
-										$total_credit +=round($AccountingLedger->credit,2);
-									}else
-									{
-										echo "-";
-									}
-								?>
+								<td style="";>
+								</td>
+								<td style="";>
 								</td>
 							</tr>
-						<?php   }   } ?>
+						<?php } } ?>
 						</tbody>
 					</table>
 			</div>
