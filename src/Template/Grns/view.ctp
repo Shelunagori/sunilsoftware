@@ -40,7 +40,13 @@ $this->set('title', 'View');
 								</tr>
 							</thead>
 							<tbody id='main_tbody' class="tab">
-								<?php foreach ($grn->grn_rows as $grnRows): ?>
+								<?php
+								$total_qty=0; $total_purchase_rate=0; $total_sales_rate=0;
+								foreach ($grn->grn_rows as $grnRows): 
+								$total_qty+=$grnRows->quantity;
+								$total_purchase_rate+=$grnRows->purchase_rate;
+								$total_sales_rate+=$grnRows->sale_rate;
+								?>
 								<tr class="main_tr" class="tab">
 									<td><?= h($grnRows->item->name) ?></td>
 									<td class="rightAligntextClass"><?= h($grnRows->quantity) ?></td>
@@ -49,11 +55,12 @@ $this->set('title', 'View');
 								</tr>
 								<?php endforeach; ?>
 							</tbody>
-							<!--<tfoot>
-								<td class="rightAligntextClass" colspan="2" ><b>Total</b></td>
-								<td class="rightAligntextClass"><b><?php echo $grn->total_purchase; ?></b></td>
-								<td class="rightAligntextClass"><b><?php echo $grn->total_sale; ?></b></td>
-							</tfoot>-->
+							<tfoot>
+								<td class="rightAligntextClass" ><b>Total</b></td>
+								<td class="rightAligntextClass"><b><?php echo $total_qty; ?></b></td>
+								<td class="rightAligntextClass"><b><?php echo $total_purchase_rate; ?></b></td>
+								<td class="rightAligntextClass"><b><?php echo $total_sales_rate; ?></b></td>
+							</tfoot>
 						</table>
 						<?php endif; ?>
 					</div>
