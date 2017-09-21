@@ -144,8 +144,34 @@ class GrnsController extends AppController
 			$voucher_no=1;
 		} 
         //$locations = $this->Grns->Locations->find('list', ['limit' => 200]);
+		 $partyParentGroups = $this->Grns->GrnRows->Ledgers->AccountingGroups->find()
+						->where(['AccountingGroups.company_id'=>$company_id, 'AccountingGroups.
+						supplier'=>'1']);
+		$partyGroups=[];
+		
+		foreach($partyParentGroups as $partyParentGroup)
+		{
+			$accountingGroups = $this->Grns->GrnRows->Ledgers->AccountingGroups
+			->find('children', ['for' => $partyParentGroup->id])->toArray();
+			$partyGroups[]=$partyParentGroup->id;
+			foreach($accountingGroups as $accountingGroup){
+				$partyGroups[]=$accountingGroup->id;
+			}
+		}
+		if($partyGroups)
+		{  
+			$Partyledgers = $this->Grns->GrnRows->Ledgers->find()
+							->where(['Ledgers.accounting_group_id IN' =>$partyGroups,'Ledgers.company_id'=>$company_id])
+							->contain(['Suppliers']);
+        }
+		
+		$partyOptions=[];
+		foreach($Partyledgers as $Partyledger){
+			$partyOptions[]=['text' =>str_pad(@$Partyledger->supplier->id, 4, '0', STR_PAD_LEFT).' - '.$Partyledger->name, 'value' => $Partyledger->id ,'party_state_id'=>@$Partyledger->supplier->state_id];
+		}
+		
         $companies = $this->Grns->Companies->find('list');
-        $this->set(compact('grn','companies','voucher_no','itemOptions'));
+        $this->set(compact('grn','companies','voucher_no','itemOptions','partyOptions'));
         $this->set('_serialize', ['grn']);
     }
 

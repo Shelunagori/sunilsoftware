@@ -51,6 +51,10 @@ class GrnRowsTable extends Table
 			'joinType' => 'INNER',
 			'saveStrategy' => 'replace'
         ]);
+		$this->belongsTo('Ledgers', [
+            'foreignKey' => 'ledger_id',
+            'joinType' => 'INNER'
+        ]);
     }
 
     /**
