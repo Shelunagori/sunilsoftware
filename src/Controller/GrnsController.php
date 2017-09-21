@@ -26,7 +26,7 @@ class GrnsController extends AppController
             'contain' => ['Companies']
         ];
         $grns = $this->paginate($this->Grns->find()->where(['Grns.company_id'=>$company_id]));
-
+		
         $this->set(compact('grns'));
         $this->set('_serialize', ['grns']);
     }
@@ -43,11 +43,13 @@ class GrnsController extends AppController
 		$this->viewBuilder()->layout('index_layout');
 		$company_id=$this->Auth->User('session_company_id');
         $grn = $this->Grns->get($id, [
-            'contain' => ['Companies', 'GrnRows'=>['Items']]
+            'contain' => ['Companies','GrnRows'=>['Items']]
         ]);
+		$supplier_details= $this->Grns->GrnRows->Ledgers->get($grn->supplier_ledger_id);
+		$supplier_ledger=$supplier_details->name;
 		
-        $this->set('grn', $grn);
-        $this->set('_serialize', ['grn']);
+		$this->set(compact('grn','supplier_ledger'));
+		$this->set('_serialize', ['grn']);
     }
 	
 	 public function printBarcode($id = null)
@@ -246,9 +248,34 @@ class GrnsController extends AppController
 		foreach($items as $item){
 			$itemOptions[]=['text' =>$item->item_code.' '.$item->name, 'value' => $item->id ,'gst_figure_id'=>$item->gst_figure_id, 'gst_figure_tax_name'=>@$item->gst_figure->name];
 		}
+		$partyParentGroups = $this->Grns->GrnRows->Ledgers->AccountingGroups->find()
+						->where(['AccountingGroups.company_id'=>$company_id, 'AccountingGroups.
+						supplier'=>'1']);
+		$partyGroups=[];
+		
+		foreach($partyParentGroups as $partyParentGroup)
+		{
+			$accountingGroups = $this->Grns->GrnRows->Ledgers->AccountingGroups
+			->find('children', ['for' => $partyParentGroup->id])->toArray();
+			$partyGroups[]=$partyParentGroup->id;
+			foreach($accountingGroups as $accountingGroup){
+				$partyGroups[]=$accountingGroup->id;
+			}
+		}
+		if($partyGroups)
+		{  
+			$Partyledgers = $this->Grns->GrnRows->Ledgers->find()
+							->where(['Ledgers.accounting_group_id IN' =>$partyGroups,'Ledgers.company_id'=>$company_id])
+							->contain(['Suppliers']);
+        }
+		
+		$partyOptions=[];
+		foreach($Partyledgers as $Partyledger){
+			$partyOptions[]=['text' =>str_pad(@$Partyledger->supplier->id, 4, '0', STR_PAD_LEFT).' - '.$Partyledger->name, 'value' => $Partyledger->id ,'party_state_id'=>@$Partyledger->supplier->state_id];
+		}
         //$locations = $this->Grns->Locations->find('list', ['limit' => 200]);
         $companies = $this->Grns->Companies->find('list');
-        $this->set(compact('grn','companies','itemOptions'));
+        $this->set(compact('grn','companies','itemOptions','partyOptions'));
         $this->set('_serialize', ['grn']);
     }
 

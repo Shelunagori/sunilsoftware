@@ -19,11 +19,14 @@ $this->set('title', 'View');
 					<div class="col-md-3">
 						<label>Voucher No :<?php echo '#'.str_pad($grn->voucher_no, 4, '0', STR_PAD_LEFT); ?></label>
 					</div>
-					<div class="col-md-4 form-group">
+					<div class="col-md-3 form-group">
 						<label>Transaction Date: <?php echo $grn->transaction_date; ?></label>
 					</div>
 					<div class="col-md-3 form-group">
 						<label>Reference No.: <?php echo $grn->reference_no; ?></label>
+					</div>
+					<div class="col-md-3 form-group">
+						<label>Supplier.: <?php echo $supplier_ledger; ?></label>
 					</div>
 				</div>
 				<br>
