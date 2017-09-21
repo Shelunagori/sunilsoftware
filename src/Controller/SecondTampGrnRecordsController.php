@@ -486,8 +486,9 @@ class SecondTampGrnRecordsController extends AppController
 					$item->item_code=$SecondTampGrnRecord->item_code;
 					$data_to_encode = strtoupper($SecondTampGrnRecord->item_code);
 				}else{
-					$item->item_code=strtoupper(uniqid());
-					$data_to_encode = strtoupper(uniqid());
+					$item_code=strtoupper(uniqid());
+					$item->item_code=$item_code;
+					$data_to_encode = $item_code;
 				}
 				
 				$item->hsn_code=$SecondTampGrnRecord->hsn_code;
