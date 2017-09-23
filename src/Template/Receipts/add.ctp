@@ -93,10 +93,10 @@ $this->set('title', 'Receipt');
 											$option2[]= ['value'=>'Agst Ref','text'=>'Agst Ref'];
 											$option2[]= ['value'=>'Advance','text'=>'Advance'];
 											$option2[]= ['value'=>'On Account','text'=>'On Account'];
-											echo $this->Form->input('type', ['options'=>$option2,'label' =>false,'class' => 'form-control input-sm','required'=>'required']); ?>
+											echo $this->Form->input('type', ['options'=>$option2,'label' =>false,'class' => 'form-control input-sm refClass','required'=>'required']); ?>
 										</td>
-										<td width="20%" >
-											<?php echo $this->Form->input('name', ['label' =>false,'class' => 'form-control input-sm cheque_no','placeholder'=>'Name']); ?>
+										<td width="20%" class="refClass1">
+											<!--<?php echo $this->Form->input('name', ['label' =>false,'class' => 'form-control input-sm cheque_no','placeholder'=>'Name']); ?>-->
 										</td>
 										<td width="20%" >
 											<?php echo $this->Form->input('debit', ['label' =>false,'class' => 'form-control input-sm partydebit','placeholder'=>'Debit']); ?>
@@ -255,10 +255,10 @@ $this->set('title', 'Receipt');
 											$option2[]= ['value'=>'Agst Ref','text'=>'Agst Ref'];
 											$option2[]= ['value'=>'Advance','text'=>'Advance'];
 											$option2[]= ['value'=>'On Account','text'=>'On Account'];
-											echo $this->Form->input('type', ['options'=>$option2,'label' =>false,'class' => 'form-control input-sm','required'=>'required']); ?>
+											echo $this->Form->input('type', ['options'=>$option2,'label' =>false,'class' => 'form-control input-sm refClass','required'=>'required']); ?>
 										</td>
-										<td width="20%" >
-											<?php echo $this->Form->input('name', ['label' =>false,'class' => 'form-control input-sm cheque_no','placeholder'=>'Name']); ?>
+										<td width="20%" class="refClass1">
+											<!--<?php echo $this->Form->input('name', ['label' =>false,'class' => 'form-control input-sm cheque_no','placeholder'=>'Name']); ?>-->
 										</td>
 										<td width="20%" >
 											<?php echo $this->Form->input('debit', ['label' =>false,'class' => 'form-control input-sm partydebit','placeholder'=>'Debit']); ?>
@@ -337,6 +337,35 @@ $this->set('title', 'Receipt');
 			$(this).closest('tr').next('tr').next('tr.partytr').hide();
 			}
 		});
+		
+		$('.refClass').die().live('change',function(){
+		var itemQ=$(this).closest('tr');
+		var itemvalue=$(this).val();
+		//var ledgerId=$(this).closest('tr').previous('.ledger_id option:selected').val();
+		
+		var url='".$this->Url->build(["controller" => "Receipts", "action" => "ajaxItemQuantity"])."';
+		url=url+'/'+itemId
+		$.ajax({
+			url: url,
+			type: 'GET'
+			//dataType: 'text'
+		}).done(function(response) {
+			var fetch=$.parseJSON(response);
+			var text=fetch.text;
+			var type=fetch.type;
+			var mainStock=fetch.mainStock;
+			itemQ.find('.itemQty').html(text);
+			itemQ.find('.totStock').val(mainStock);
+			if(type=='true')
+			{
+				itemQ.find('.outStock').val(1);
+			}
+			else{
+				itemQ.find('.outStock').val(0);
+			}
+		});	 */
+		});
+		
 		$('.calculation').die().live('keyup',function()
 		{ 
 			total_debit_credit();
@@ -396,13 +425,11 @@ $this->set('title', 'Receipt');
 			add_row();
 		}) ;
 
-
 		function add_row()
 		{
 			var tr=$('#sample_table tbody tr.main_tr').clone();
 			$('#main_table tbody#main_tbody').append(tr);
 			$('.banktr').hidden();
-			//rename_rows();
 		}
 		
 		$('.add_row1').click(function(){
@@ -412,8 +439,6 @@ $this->set('title', 'Receipt');
 		{
 			var tr=$('#sample_table1 tbody tr.main_tr1').clone();
 			$('#main_table1 tbody#main_tbody1').append(tr);
-			//$('.banktr').hidden();
-			//rename_rows1();
 		}
 		rename_rows();
 		function rename_rows()
