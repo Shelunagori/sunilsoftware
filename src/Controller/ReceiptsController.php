@@ -1,7 +1,9 @@
 <?php
 namespace App\Controller;
-
 use App\Controller\AppController;
+//	use Cake\View\Helper\HtmlHelper;
+use Cake\View\Helper\FormHelper;
+
 
 /**
  * Receipts Controller
@@ -12,7 +14,6 @@ use App\Controller\AppController;
  */
 class ReceiptsController extends AppController
 {
-
     /**
      * Index method
      *
@@ -134,69 +135,48 @@ class ReceiptsController extends AppController
     }
 	public function ajaxReferenceDetails($itemValue=null)
     {
-	echo $itemValue;
-	exit;
-	    $this->viewBuilder()->layout('');
+		//$html = new HtmlHelper(new \Cake\View\View());
+		$html = new FormHelper(new \Cake\View\View());
+	    //$this->viewBuilder()->layout('');
 		$company_id=$this->Auth->User('session_company_id');
-		$items = $this->Receipts->ReceiptRows->ReferenceDetails->find()
-					->where(['ReferenceDetails.company_id'=>$company_id, 'ReferenceDetails.ref_name'=>$ref_name]);
-		
-		$query = $this->SalesInvoices->SalesInvoiceRows->Items->ItemLedgers->find()->where(['ItemLedgers.company_id'=>$company_id, ]);
+		$query = $this->Receipts->ReceiptRows->ReferenceDetails->find();
 		$totalInCase = $query->newExpr()
 			->addCase(
-				$query->newExpr()->add(['status' => 'In']),
-				$query->newExpr()->add(['quantity']),
+				$query->newExpr()->add(['debit >' => 0]),
+				$query->newExpr()->add(['debit']),
 				'integer'
 			);
 		$totalOutCase = $query->newExpr()
 			->addCase(
-				$query->newExpr()->add(['status' => 'out']),
-				$query->newExpr()->add(['quantity']),
+				$query->newExpr()->add(['credit >' => 0]),
+				$query->newExpr()->add(['credit']),
 				'integer'
 			);
 		$query->select([
 			'total_in' => $query->func()->sum($totalInCase),
-			'total_out' => $query->func()->sum($totalOutCase),'id','item_id'
+			'total_out' => $query->func()->sum($totalOutCase),'id','ledger_id'
 		])
-		->where(['ItemLedgers.item_id' => $itemId, 'ItemLedgers.company_id' => $company_id, 'ItemLedgers.location_id' => $location_id])
-		->group('item_id')
-		->autoFields(true)
-		->contain(['Items']);
-        $itemLedgers = ($query);
-		if($itemLedgers->toArray())
+		->where(['ReferenceDetails.company_id'=>$company_id])
+		->group('ref_name')
+		->autoFields(true);
+        $refdetails = ($query);
+		$partyOptions=[];
+		foreach($refdetails as $data)
 		{
-			  foreach($itemLedgers as $itemLedger){
-				   $available_stock=$itemLedger->total_in;
-				   $stock_issue=$itemLedger->total_out;
-				 @$remaining=number_format($available_stock-$stock_issue, 2);
-				 $mainstock=str_replace(',','',$remaining);
-				 $stock='current stock is '. $remaining. ' ' .$itemUnit;
-				 if($remaining>0)
-				 {
-				 $stockType='false';
-				 }
-				 else{
-				 $stockType='true';
-				 }
-				 $h=array('text'=>$stock, 'type'=>$stockType, 'mainStock'=>$mainstock);
-				 echo  $f=json_encode($h);
-			  }
-		  }
-		  else{
-		 
-				 @$remaining=0;
-				 $stock='current stock is '. $remaining. ' ' .$itemUnit;
-				 if($remaining>0)
-				 {
-				 $stockType='false';
-				 }
-				 else{
-				 $stockType='true';
-				 }
-				 $h=array('text'=>$stock, 'type'=>$stockType);
-				 echo  $f=json_encode($h);
-		  }
-		  exit;
+		           $ref_name=$data->ref_name;
+		           $refeDebitBill=$data->total_in;
+				   $refeCreditBill=$data->total_out;
+				   $tot=$refeDebitBill-$refeCreditBill;
+		$refOptions[]=['text' =>$ref_name.' - '.$tot, 'value' => $ref_name];
+		}
+		if($itemValue=='Agst Ref')
+		{
+		echo $html->input('ref_name', ['options'=>$refOptions,'label' => false,'class' => 'form-control input-medium ref_name','required'=>'required']); 
+		}
+		else{
+		echo $html->input('ref_name', ['label' => false,'class' => 'form-control input-medium ref_name','required'=>'required']); 
+		}
+		exit;
 }	
 
     /**
