@@ -215,7 +215,32 @@ class SecondTampGrnRecordsController extends AppController
 			$voucher_no=1;
 			
 		} 
-		$this->set(compact('SecondTampGrnRecords','grn','voucher_no'));
+		$partyParentGroups = $this->SecondTampGrnRecords->Grns->GrnRows->Ledgers->AccountingGroups->find()
+						->where(['AccountingGroups.company_id'=>$company_id, 'AccountingGroups.
+						supplier'=>'1']);
+		$partyGroups=[];
+		
+		foreach($partyParentGroups as $partyParentGroup)
+		{
+			$accountingGroups = $this->SecondTampGrnRecords->Grns->GrnRows->Ledgers->AccountingGroups
+			->find('children', ['for' => $partyParentGroup->id])->toArray();
+			$partyGroups[]=$partyParentGroup->id;
+			foreach($accountingGroups as $accountingGroup){
+				$partyGroups[]=$accountingGroup->id;
+			}
+		}
+		if($partyGroups)
+		{  
+			$Partyledgers = $this->SecondTampGrnRecords->Grns->GrnRows->Ledgers->find()
+							->where(['Ledgers.accounting_group_id IN' =>$partyGroups,'Ledgers.company_id'=>$company_id])
+							->contain(['Suppliers']);
+        }
+		
+		$partyOptions=[];
+		foreach($Partyledgers as $Partyledger){
+			$partyOptions[]=['text' =>str_pad(@$Partyledger->supplier->id, 4, '0', STR_PAD_LEFT).' - '.$Partyledger->name, 'value' => $Partyledger->id ,'party_state_id'=>@$Partyledger->supplier->state_id];
+		}
+		$this->set(compact('SecondTampGrnRecords','grn','voucher_no','partyOptions'));
         $this->set('_serialize', ['SecondTampGrnRecords']);
 	}
 
@@ -331,7 +356,7 @@ class SecondTampGrnRecordsController extends AppController
 		$location_id=$this->Auth->User('session_location_id');
 		$SecondTampGrnRecords = $this->SecondTampGrnRecords->find()
 								->where(['user_id'=>$user_id,'company_id'=>$company_id,'processed'=>'no'])
-								->limit(1);
+								->limit(5);
 		if($SecondTampGrnRecords->count()==0){
 			goto Bottom;
 		}
@@ -486,8 +511,9 @@ class SecondTampGrnRecordsController extends AppController
 					$item->item_code=$SecondTampGrnRecord->item_code;
 					$data_to_encode = strtoupper($SecondTampGrnRecord->item_code);
 				}else{
-					$item->item_code=strtoupper(uniqid());
-					$data_to_encode = strtoupper(uniqid());
+					$item_code=strtoupper(uniqid());
+					$item->item_code=$item_code;
+					$data_to_encode = $item_code;
 				}
 				
 				$item->hsn_code=$SecondTampGrnRecord->hsn_code;

@@ -5,14 +5,14 @@
 	<style type="text/css" media="print">
 	@page {
 		size: auto;   /* auto is the initial value */
-		margin: 0px 0px 0px 0px;  /* this affects the margin in the printer settings */
+		margin: 0px 0px 0px 100px;  /* this affects the margin in the printer settings */
 	}
 	.print{
-	page-break-after:always;
+		page-break-after:always;
 	}
 	</style>
 </head>
-<body style="margin: 0;padding: 0;">
+<body style="margin: 0px 0px 0px 20px;padding: 0;">
 	<?php 
 	$ar=[];
 	foreach($grn->grn_rows as $grn_row){
@@ -24,36 +24,16 @@
 		for($i=0; $i<$grn_row->quantity; $i++){
 			$ar[]=$grn_row;
 		}
-	} 
-	foreach($grn->grn_rows as $grn_row){
-		for($i=0; $i<$grn_row->quantity; $i++){
-			$ar[]=$grn_row;
-		}
-	} 
-	foreach($grn->grn_rows as $grn_row){
-		for($i=0; $i<$grn_row->quantity; $i++){
-			$ar[]=$grn_row;
-		}
-	} 
-	foreach($grn->grn_rows as $grn_row){
-		for($i=0; $i<$grn_row->quantity; $i++){
-			$ar[]=$grn_row;
-		}
-	} 
-	foreach($grn->grn_rows as $grn_row){
-		for($i=0; $i<$grn_row->quantity; $i++){
-			$ar[]=$grn_row;
-		}
-	} 
+	}
 	?>
 	
 		<?php 
 		$r=0; $inc=0;
 		foreach($ar as $arData){
-			if($inc==0){ echo '<table style="width:793.70px;" class="print">'; }
+			if($inc==0){ echo '<table style="width:100%;" class="print">'; }
 			if($r==0){ echo '<tr>'; }
 			?>
-			<td width="198.42px" height="108px" style="font-size:11px;" valign="middle">
+			<td width="25%" height="108px" style="font-size:11px;" valign="middle">
 				<table width="100%" style="font-size:11px;line-height: 9px;">
 					<tr>
 						<td colspan="2"><?php echo $coreVariable['company_name']; ?></td>
