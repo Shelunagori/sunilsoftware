@@ -138,15 +138,10 @@ class ReceiptsController extends AppController
 	exit;
 	    $this->viewBuilder()->layout('');
 		$company_id=$this->Auth->User('session_company_id');
-		$stateDetails=$this->Auth->User('session_company');
-		$location_id=$this->Auth->User('session_location_id');
-		$state_id=$stateDetails->state_id;
-		$items = $this->SalesInvoices->SalesInvoiceRows->Items->find()
-					->where(['Items.company_id'=>$company_id, 'Items.id'=>$itemId])
-					->contain(['Units'])->first();
-					$itemUnit=$items->unit->name;
+		$items = $this->Receipts->ReceiptRows->ReferenceDetails->find()
+					->where(['ReferenceDetails.company_id'=>$company_id, 'ReferenceDetails.ref_name'=>$ref_name]);
 		
-		$query = $this->SalesInvoices->SalesInvoiceRows->Items->ItemLedgers->find()->where(['ItemLedgers.company_id'=>$company_id]);
+		$query = $this->SalesInvoices->SalesInvoiceRows->Items->ItemLedgers->find()->where(['ItemLedgers.company_id'=>$company_id, ]);
 		$totalInCase = $query->newExpr()
 			->addCase(
 				$query->newExpr()->add(['status' => 'In']),

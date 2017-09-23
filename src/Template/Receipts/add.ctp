@@ -345,11 +345,13 @@ $this->set('title', 'Receipt');
 		
 		var url='".$this->Url->build(["controller" => "Receipts", "action" => "ajaxReferenceDetails"])."';
 		url=url+'/'+itemvalue
+		
 		$.ajax({
 			url: url,
 			type: 'GET'
 			//dataType: 'text'
 		}).done(function(response) {
+		alert(response);
 				itemQ.find('.refClass1').val(response);
 		});	
 		});
