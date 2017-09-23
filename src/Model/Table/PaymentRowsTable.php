@@ -50,6 +50,9 @@ class PaymentRowsTable extends Table
             'foreignKey' => 'ledger_id',
             'joinType' => 'INNER'
         ]);
+		$this->hasMany('PaymentRows', [
+            'foreignKey' => 'payment_row_id'
+        ]);
     }
 
     /**
@@ -63,6 +66,7 @@ class PaymentRowsTable extends Table
         $validator
             ->integer('id')
             ->allowEmpty('id', 'create');
+		
 		
 		return $validator;
     }

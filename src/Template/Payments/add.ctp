@@ -147,9 +147,9 @@ $this->set('title', 'Payment Voucher');
 							</div>
 						</div>
 					</div>
-				<?= $this->Form->button(__('Submit')) ?>
+				<?= $this->Form->button(__('Submit'),['class'=>'btn btn-success submit'])  ?>
 				<?= $this->Form->end() ?>
-			
+			</div>
 		</div>
 	</div>
 </div>
@@ -159,10 +159,6 @@ $this->set('title', 'Payment Voucher');
 		<tr class="main_tr1">
 			<td width="20%">
 				<?php 
-				$option_ref[]= ['value'=>'New Ref','text'=>'New Ref'];
-				$option_ref[]= ['value'=>'Against','text'=>'Against'];
-				$option_ref[]= ['value'=>'Advance','text'=>'Advance'];
-				$option_ref[]= ['value'=>'On Account','text'=>'On Account'];
 				echo $this->Form->input('type', ['options'=>$option_ref,'label' => false,'class' => 'form-control input-sm','required'=>'required']); ?>
 			</td>
 			<td width="15%">
@@ -243,10 +239,6 @@ $this->set('title', 'Payment Voucher');
 							
 							<td width="20%">
 								<?php 
-								$option_ref[]= ['value'=>'New Ref','text'=>'New Ref'];
-								$option_ref[]= ['value'=>'Against','text'=>'Against'];
-								$option_ref[]= ['value'=>'Advance','text'=>'Advance'];
-								$option_ref[]= ['value'=>'On Account','text'=>'On Account'];
 								echo $this->Form->input('type', ['options'=>$option_ref,'label' => false,'class' => 'form-control input-sm','required'=>'required']); ?>
 							</td>
 							<td width="15%">
@@ -439,14 +431,16 @@ $this->set('title', 'Payment Voucher');
 
 		function rename_rows()
 		{
-			var i=0;
-			$('#main_table tbody#main_tbody tr.tr1').each(function(){ 
+			var i=0; 
+			
+			$('#main_table tbody#main_tbody tr.tr1').each(function(){1 
+			var obj=$(this).closest('tr.tr1');
 				$(this).find('td:nth-child(2) select').select2().attr({name:'payment_rows['+i+'][ledger_id]',id:'payment_rows-'+i+'-ledger_id'});	
 				$(this).find('td:nth-child(3) input').attr({name:'payment_rows['+i+'][debit]', id:'payment_rows-'+i+'-debit'});
 				$(this).find('td:nth-child(4) input').attr({name:'payment_rows['+i+'][credit]', id:'payment_rows-'+i+'-credit'});
-
 				i++;
-			});
+				});
+			
 			var i=0;
 			$('#main_table tbody#main_tbody tr.tr2').each(function(){ 
 				$(this).find('td:nth-child(1) input').attr({name:'payment_rows['+i+'][mode_of_payment]',id:'payment_rows-'+i+'-mode_of_payment'});	
@@ -455,14 +449,18 @@ $this->set('title', 'Payment Voucher');
 
 				i++;
 			});
-			var i=0;
-			$('#main_table tbody#main_tbody tr.tr3').each(function(){ 
-				$(this).find('td:nth-child(1) input').attr({name:'reference_details['+i+'][type]',id:'reference_details-'+i+'-type'});	
-				$(this).find('td:nth-child(2) input').attr({name:'reference_details['+i+'][ref_name]', id:'reference_details-'+i+'-ref_name'});
+			
+				var j=0; var i=0;
+				$('#main_table tbody#main_tbody tr.tr3').each(function(){ 
+					
+					$(this).find('td:nth-child(1) select').select2().attr({name:'payment_rows['+i+'][reference_details]['+j+'][type]',id:'payment_rows-'+i+'-reference_details-'+j+'-type'});	
+					$(this).find('td:nth-child(2) input').attr({name:'payment_rows['+i+'][reference_details]['+j+'][ref_name]', id:'payment_rows-'+i+'-reference_details-'+j+'-ref_name'});
+					$(this).find('td:nth-child(4) input').attr({name:'payment_rows['+i+'][reference_details]['+j+'][debit]', id:'payment_rows-'+i+'-reference_details-'+j+'-debit'});
+					$(this).find('td:nth-child(5) input').attr({name:'payment_rows['+i+'][reference_details]['+j+'][credit]', id:'payment_rows-'+i+'-reference_details-'+j+'-credit'});
+					j++;
+				});
 				
-
-				i++;
-			});
+			
 		}
 
 		ComponentsPickers.init();
