@@ -34,13 +34,13 @@ margin-bottom: 0;
 		foreach($data->sales_invoice_rows as $sales_invoice_row){?>
 			<?php }}?>
 	<tr>
-	<td colspan="1" valign="left">
+	<td colspan="1" align="left">
 	<?php echo $this->Html->image('/img/dangilogo.png', ['height' => '50px', 'width' => '50px']); ?>
 	</td>
 	<td colspan="3">
-	<b><span style="text-align:center;font-size:18px;"><?=@$data->company->name?></span></b><br/>
-	<span style="text-align:center;font-size:12px !important;"><?=@$data->company->address?>, <?=@$data->company->state->name?></span><br/>
-	<span style="text-align:center;font-size:12px !important;">Ph - <?=@$data->company->phone_no ?><br/> Mobile - <?=@$data->company->mobile ?><br/> GSTIN NO:
+	<b><span style="text-align:right;font-size:18px;"><?=@$data->company->name?></span></b><br/>
+	<span style="text-align:right;font-size:12px !important;"><?=@$data->company->address?>, <?=@$data->company->state->name?></span><br/>
+	<span style="text-align:right;font-size:12px !important;">Ph - <?=@$data->company->phone_no ?><br/> Mobile - <?=@$data->company->mobile ?><br/> GSTIN NO:
 		<?=@$data->company->gstin ?></span>
 		</td>
 	</tr>
