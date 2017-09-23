@@ -343,27 +343,15 @@ $this->set('title', 'Receipt');
 		var itemvalue=$(this).val();
 		//var ledgerId=$(this).closest('tr').previous('.ledger_id option:selected').val();
 		
-		var url='".$this->Url->build(["controller" => "Receipts", "action" => "ajaxItemQuantity"])."';
-		url=url+'/'+itemId
+		var url='".$this->Url->build(["controller" => "Receipts", "action" => "ajaxReferenceDetails"])."';
+		url=url+'/'+itemvalue
 		$.ajax({
 			url: url,
 			type: 'GET'
 			//dataType: 'text'
 		}).done(function(response) {
-			var fetch=$.parseJSON(response);
-			var text=fetch.text;
-			var type=fetch.type;
-			var mainStock=fetch.mainStock;
-			itemQ.find('.itemQty').html(text);
-			itemQ.find('.totStock').val(mainStock);
-			if(type=='true')
-			{
-				itemQ.find('.outStock').val(1);
-			}
-			else{
-				itemQ.find('.outStock').val(0);
-			}
-		});	 */
+				itemQ.find('.refClass1').val(response);
+		});	
 		});
 		
 		$('.calculation').die().live('keyup',function()

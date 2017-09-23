@@ -132,6 +132,77 @@ class ReceiptsController extends AppController
         $this->set(compact('receipt', 'companies'));
         $this->set('_serialize', ['receipt']);
     }
+	public function ajaxReferenceDetails($itemValue=null)
+    {
+	echo $itemValue;
+	exit;
+	    $this->viewBuilder()->layout('');
+		$company_id=$this->Auth->User('session_company_id');
+		$stateDetails=$this->Auth->User('session_company');
+		$location_id=$this->Auth->User('session_location_id');
+		$state_id=$stateDetails->state_id;
+		$items = $this->SalesInvoices->SalesInvoiceRows->Items->find()
+					->where(['Items.company_id'=>$company_id, 'Items.id'=>$itemId])
+					->contain(['Units'])->first();
+					$itemUnit=$items->unit->name;
+		
+		$query = $this->SalesInvoices->SalesInvoiceRows->Items->ItemLedgers->find()->where(['ItemLedgers.company_id'=>$company_id]);
+		$totalInCase = $query->newExpr()
+			->addCase(
+				$query->newExpr()->add(['status' => 'In']),
+				$query->newExpr()->add(['quantity']),
+				'integer'
+			);
+		$totalOutCase = $query->newExpr()
+			->addCase(
+				$query->newExpr()->add(['status' => 'out']),
+				$query->newExpr()->add(['quantity']),
+				'integer'
+			);
+		$query->select([
+			'total_in' => $query->func()->sum($totalInCase),
+			'total_out' => $query->func()->sum($totalOutCase),'id','item_id'
+		])
+		->where(['ItemLedgers.item_id' => $itemId, 'ItemLedgers.company_id' => $company_id, 'ItemLedgers.location_id' => $location_id])
+		->group('item_id')
+		->autoFields(true)
+		->contain(['Items']);
+        $itemLedgers = ($query);
+		if($itemLedgers->toArray())
+		{
+			  foreach($itemLedgers as $itemLedger){
+				   $available_stock=$itemLedger->total_in;
+				   $stock_issue=$itemLedger->total_out;
+				 @$remaining=number_format($available_stock-$stock_issue, 2);
+				 $mainstock=str_replace(',','',$remaining);
+				 $stock='current stock is '. $remaining. ' ' .$itemUnit;
+				 if($remaining>0)
+				 {
+				 $stockType='false';
+				 }
+				 else{
+				 $stockType='true';
+				 }
+				 $h=array('text'=>$stock, 'type'=>$stockType, 'mainStock'=>$mainstock);
+				 echo  $f=json_encode($h);
+			  }
+		  }
+		  else{
+		 
+				 @$remaining=0;
+				 $stock='current stock is '. $remaining. ' ' .$itemUnit;
+				 if($remaining>0)
+				 {
+				 $stockType='false';
+				 }
+				 else{
+				 $stockType='true';
+				 }
+				 $h=array('text'=>$stock, 'type'=>$stockType);
+				 echo  $f=json_encode($h);
+		  }
+		  exit;
+}	
 
     /**
      * Delete method
