@@ -84,7 +84,9 @@ $this->set('title', 'Payment Voucher');
 													<tr>
 														<td>Ref. Type</td>
 														<td>Ref. No.</td>
-														<td>Amount</td>
+														<td>Dr/Cr</td>
+														<td>Debit</td>
+														<td>Credit</td>
 														<td></td>
 													</tr>
 												</thead>
@@ -92,7 +94,7 @@ $this->set('title', 'Payment Voucher');
 												<tbody id="main_tbody1">
 													<tr class="main_tr1">
 														
-														<td>
+														<td width="20%">
 															<?php 
 															$option_ref[]= ['value'=>'New Ref','text'=>'New Ref'];
 															$option_ref[]= ['value'=>'Against','text'=>'Against'];
@@ -101,10 +103,17 @@ $this->set('title', 'Payment Voucher');
 															echo $this->Form->input('type', ['options'=>$option_ref,'label' => false,'class' => 'form-control input-sm','required'=>'required']); ?>
 														</td>
 														<td width="15%">
-															<?php echo $this->Form->input('name', ['type'=>'text','label' => false,'class' => 'form-control input-medium','required'=>'required']); ?>
+															<?php echo $this->Form->input('ref_name', ['type'=>'text','label' => false,'class' => 'form-control input-medium','required'=>'required']); ?>
 														</td>
-														<td width="25%" >
-															<?php echo $this->Form->input('amount', ['label' => false,'class' => 'form-control input-sm rightAligntextClass']); ?>
+														<td width="10%">
+															<?php 
+															echo $this->Form->input('type_cr_dr', ['options'=>$option,'label' => false,'class' => 'form-control input-sm hide_cr_dr','required'=>'required','value'=>'Dr']); ?>
+														</td>
+														<td width="20%">
+															<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm debit_hide_show calculation rightAligntextClass','placeholder'=>'Debit']); ?>
+														</td>
+														<td width="20%">
+															<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm credit_hide_show calculation rightAligntextClass','placeholder'=>'Credit','style'=>'display:none;']); ?>	
 														</td>
 														
 													</tr>
@@ -148,7 +157,7 @@ $this->set('title', 'Payment Voucher');
 <table id="sample_table1" style="display:none;" width="100%">
 	<tbody>
 		<tr class="main_tr1">
-			<td>
+			<td width="20%">
 				<?php 
 				$option_ref[]= ['value'=>'New Ref','text'=>'New Ref'];
 				$option_ref[]= ['value'=>'Against','text'=>'Against'];
@@ -157,10 +166,17 @@ $this->set('title', 'Payment Voucher');
 				echo $this->Form->input('type', ['options'=>$option_ref,'label' => false,'class' => 'form-control input-sm','required'=>'required']); ?>
 			</td>
 			<td width="15%">
-				<?php echo $this->Form->input('name', ['type'=>'text','label' => false,'class' => 'form-control input-sm','required'=>'required']); ?>
+				<?php echo $this->Form->input('ref_name', ['type'=>'text','label' => false,'class' => 'form-control input-sm','required'=>'required']); ?>
 			</td>
-			<td width="25%" >
-				<?php echo $this->Form->input('amount', ['label' => false,'class' => 'form-control input-sm rightAligntextClass']); ?>
+			<td width="10%">
+				<?php 
+				echo $this->Form->input('type_cr_dr', ['options'=>$option,'label' => false,'class' => 'form-control input-sm hide_cr_dr','required'=>'required','value'=>'Dr']); ?>
+			</td>
+			<td width="20%">
+				<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm debit_hide_show calculation rightAligntextClass','placeholder'=>'Debit']); ?>
+			</td>
+			<td width="20%">
+				<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm credit_hide_show calculation rightAligntextClass','placeholder'=>'Credit','style'=>'display:none;']); ?>	
 			</td>
 			
 			<td align="center">
@@ -215,7 +231,9 @@ $this->set('title', 'Payment Voucher');
 						<tr>
 							<td>Ref. Type</td>
 							<td>Ref. No.</td>
-							<td>Amount</td>
+							<td>Dr/Cr</td>
+							<td>Debit</td>
+							<td>Credit</td>
 							<td></td>
 						</tr>
 					</thead>
@@ -223,7 +241,7 @@ $this->set('title', 'Payment Voucher');
 					<tbody id="main_tbody1">
 						<tr class="main_tr1">
 							
-							<td>
+							<td width="20%">
 								<?php 
 								$option_ref[]= ['value'=>'New Ref','text'=>'New Ref'];
 								$option_ref[]= ['value'=>'Against','text'=>'Against'];
@@ -232,12 +250,18 @@ $this->set('title', 'Payment Voucher');
 								echo $this->Form->input('type', ['options'=>$option_ref,'label' => false,'class' => 'form-control input-sm','required'=>'required']); ?>
 							</td>
 							<td width="15%">
-								<?php echo $this->Form->input('name', ['type'=>'text','label' => false,'class' => 'form-control input-medium','required'=>'required']); ?>
+								<?php echo $this->Form->input('ref_name', ['type'=>'text','label' => false,'class' => 'form-control input-medium','required'=>'required']); ?>
 							</td>
-							<td width="25%" >
-								<?php echo $this->Form->input('amount', ['label' => false,'class' => 'form-control input-sm rightAligntextClass']); ?>
+							<td width="10%">
+								<?php 
+								echo $this->Form->input('type_cr_dr', ['options'=>$option,'label' => false,'class' => 'form-control input-sm hide_cr_dr','required'=>'required','value'=>'Dr']); ?>
 							</td>
-							
+							<td width="20%">
+								<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm debit_hide_show calculation rightAligntextClass','placeholder'=>'Debit']); ?>
+							</td>
+							<td width="20%">
+								<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm credit_hide_show calculation rightAligntextClass','placeholder'=>'Credit','style'=>'display:none;']); ?>	
+							</td>
 						</tr>
 					</tbody>
 					<tfoot>
