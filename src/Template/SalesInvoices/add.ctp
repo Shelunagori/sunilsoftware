@@ -419,7 +419,8 @@ $this->set('title', 'Create Sales Invoice');
 			if(!outdata){outdata=0;}
 			outOfStockValue=parseFloat(outOfStockValue)+parseFloat(outdata);
 
-			var quantity  = Math.round($(this).find('.quantity').val());
+			var fetchQuantity  = $(this).find('.quantity').val();
+			var quantity=round(fetchQuantity,2);
 			if(!quantity){quantity=0;}
 			var rate  = parseFloat($(this).find('.rate').val());
 			if(!rate){rate=0;}

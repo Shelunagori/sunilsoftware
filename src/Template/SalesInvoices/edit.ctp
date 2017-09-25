@@ -521,7 +521,8 @@ foreach($partyOptions as $partyOption)
 			    var gstpaid=$('option:selected', this).attr('gst_amount');
 			    $(this).closest('tr').find('.gst_amount').val(gstpaid);
 			
-				var quantity  = Math.round($(this).find('.quantity').val());
+				var fetchQuantity  = $(this).find('.quantity').val();
+			    var quantity=round(fetchQuantity,2);
 				if(!quantity){quantity=0;}
 				var rate  = parseFloat($(this).find('.rate').val());
 				if(!rate){rate=0;}

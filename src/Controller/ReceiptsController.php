@@ -98,11 +98,23 @@ class ReceiptsController extends AppController
 		foreach($Partyledgers as $Partyledger){
 		$prty = $this->Receipts->ReceiptRows->Ledgers->AccountingGroups->find()
 						->where(['AccountingGroups.id'=>$Partyledger->accounting_group_id])->first();
-            
-			
-			$partyOptions[]=['text' =>str_pad(@$Partyledger->customer->customer_id, 4, '0', STR_PAD_LEFT).' - '.$Partyledger->name, 'value' => $Partyledger->id ,'party_state_id'=>@$Partyledger->customer->state_id, 'bill_to_bill_accounting'=>@$Partyledger->bill_to_bill_accounting, 'account_type'=>@$prty->bank];
-		}
 		
+		if($prty->bank== '1'){
+				$partyOptions[]=['text' =>str_pad(@$Partyledger->customer->customer_id, 4, '0', STR_PAD_LEFT).' - '.$Partyledger->name, 'value' => $Partyledger->id ,'party_state_id'=>@$Partyledger->customer->state_id, 'open_window'=>'bank'];
+			}
+			 else if($Partyledger->bill_to_bill_accounting == 'yes'){
+				$partyOptions[]=['text' =>str_pad(@$Partyledger->customer->customer_id, 4, '0', STR_PAD_LEFT).' - '.$Partyledger->name, 'value' => $Partyledger->id ,'party_state_id'=>@$Partyledger->customer->state_id, 'open_window'=>'reference'];
+			}
+			else if($prty->bank== '0' && $Partyledger->bill_to_bill_accounting== 'no' && $prty->name== 'Sundry Creditors'){
+				$partyOptions[]=['text' =>str_pad(@$Partyledger->customer->customer_id, 4, '0', STR_PAD_LEFT).' - '.$Partyledger->name, 'value' => $Partyledger->id ,'party_state_id'=>@$Partyledger->customer->state_id, 'open_window'=>'on_account'];
+			}
+			else if($prty->bank== '0' && $Partyledger->bill_to_bill_accounting== 'no' && $prty->name== 'Sundry Debtors'){
+				$partyOptions[]=['text' =>str_pad(@$Partyledger->customer->customer_id, 4, '0', STR_PAD_LEFT).' - '.$Partyledger->name, 'value' => $Partyledger->id ,'party_state_id'=>@$Partyledger->customer->state_id, 'open_window'=>'on_account'];
+			}
+			else{
+			$partyOptions[]=['text' =>str_pad(@$Partyledger->customer->customer_id, 4, '0', STR_PAD_LEFT).' - '.$Partyledger->name, 'value' => $Partyledger->id ,'party_state_id'=>@$Partyledger->customer->state_id, 'open_window'=>'no'];
+			}
+		}
         $companies = $this->Receipts->Companies->find('list', ['limit' => 200]);
         $this->set(compact('receipt', 'companies','voucher_no','partyOptions'));
         $this->set('_serialize', ['receipt']);

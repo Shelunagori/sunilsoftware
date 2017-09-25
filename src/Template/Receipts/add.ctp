@@ -351,22 +351,26 @@ $this->set('title', 'Receipt');
 	   $('.ledger_id').die().live('change',function() 
 		{
 			var ledger_id = $(this).val(); 
-			var bill_to_bill_accounting=$('option:selected', this).attr('bill_to_bill_accounting');
-			//alert(bill_to_bill_accounting);
-			var account_type=$('option:selected', this).attr('account_type');
+			var open_window=$('option:selected', this).attr('open_window');
+			//alert(open_window);
+			//var account_type=$('option:selected', this).attr('account_type');
 			//alert(account_type);
-			if(bill_to_bill_accounting=='yes')
+			if(open_window=='reference')
 			{
 			    $(this).closest('tr').next('tr').next('tr.partytr').show();
 				$(this).closest('tr').next('tr.banktr').hide();
 				
 			}
-			else if(account_type=='1')
+			else if(open_window=='bank')
 			{
 				$(this).closest('tr').next('tr.banktr').show();
 				$(this).closest('tr').next('tr').next('tr.partytr').hide();
 			}
-			else{
+			else if(open_window=='on_account'){
+			    $(this).closest('tr').next('tr').next('tr.partytr').show();
+				$(this).closest('tr').next('tr.banktr').hide();
+			}
+			else if(open_window=='no'){
 			$(this).closest('tr').next('tr.banktr').hide();
 			$(this).closest('tr').next('tr').next('tr.partytr').hide();
 			}
