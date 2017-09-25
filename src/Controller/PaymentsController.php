@@ -71,8 +71,10 @@ class PaymentsController extends AppController
 				$payment->voucher_no = 1;
 			} 
 			$payment = $this->Payments->patchEntity($payment, $this->request->getData());
-			
+			pr($payment);
+			exit;
 			if ($this->Payments->save($payment)) {
+				
 				$this->Flash->success(__('The payment has been saved.'));
 
 				return $this->redirect(['action' => 'index']);
@@ -108,7 +110,7 @@ class PaymentsController extends AppController
 			if(in_array($ledger->accounting_group_id,$bankGroups)){
 				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id ,'open_window' => 'bank'];
 			}
-			 if($ledger->bill_to_bill_accounting == 'yes'){
+			else if($ledger->bill_to_bill_accounting == 'yes'){
 				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id,'open_window' => 'party' ];
 			}
 			else{
