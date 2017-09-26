@@ -68,7 +68,7 @@ class ReceiptRowsTable extends Table
             ->integer('id')
             ->allowEmpty('id', 'create');
 
-        $validator
+     /*    $validator
             ->requirePresence('type', 'create')
             ->notEmpty('type');
 
@@ -93,7 +93,7 @@ class ReceiptRowsTable extends Table
         $validator
             ->date('cheque_date')
             ->requirePresence('cheque_date', 'create')
-            ->notEmpty('cheque_date');
+            ->notEmpty('cheque_date'); */
 
         return $validator;
     }

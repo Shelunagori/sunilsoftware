@@ -58,6 +58,10 @@ class ReceiptsController extends AppController
 		$company_id=$this->Auth->User('session_company_id');
         if ($this->request->is('post')) {
 		 $receipt = $this->Receipts->patchEntity($receipt, $this->request->getData());
+		 
+		// pr($receipt->toArray());
+		 // exit;
+		 
             if ($this->Receipts->save($receipt)) {
                 $this->Flash->success(__('The receipt has been saved.'));
 
@@ -116,7 +120,7 @@ class ReceiptsController extends AppController
 			}
 		}
         $companies = $this->Receipts->Companies->find('list', ['limit' => 200]);
-        $this->set(compact('receipt', 'companies','voucher_no','partyOptions'));
+        $this->set(compact('receipt', 'companies','voucher_no','partyOptions','company_id'));
         $this->set('_serialize', ['receipt']);
     }
 

@@ -30,6 +30,22 @@ class Receipt extends Entity
      */
     protected $_accessible = [
         '*' => true,
-        'id' => false
+        'id' => false,
+		];
+		
+		protected $_virtual = [
+        'transaction_date'
     ];
+                
+                protected function _getTransactionDate()
+    {
+                                if(!empty($this->_properties['transaction_date']))
+                                {
+                                return date('Y-m-d', strtotime($this->_properties['transaction_date']));
+                                }
+                                else
+                                { return "000:00:00";}
+    }
+
+		
 }

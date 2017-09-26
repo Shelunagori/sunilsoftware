@@ -38,4 +38,20 @@ class ReceiptRow extends Entity
         '*' => true,
         'id' => false
     ];
+	
+	protected $_virtual = [
+        'cheque_date'
+    ];
+                
+                protected function _getChequeDate()
+    {
+                                if(!empty($this->_properties['cheque_no']))
+                                {
+                                return date('Y-m-d', strtotime($this->_properties['cheque_date']));
+                                }
+                                else
+                                { return "000:00:00";}
+    }
+
+	
 }

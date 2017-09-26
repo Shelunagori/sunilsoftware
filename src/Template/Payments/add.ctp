@@ -432,7 +432,6 @@ $this->set('title', 'Payment Voucher');
 		function rename_rows()
 		{
 			var i=0; 
-			
 			$('#main_table tbody#main_tbody tr.tr1').each(function(){1 
 			var obj=$(this).closest('tr.tr1');
 				$(this).find('td:nth-child(2) select').select2().attr({name:'payment_rows['+i+'][ledger_id]',id:'payment_rows-'+i+'-ledger_id'});	

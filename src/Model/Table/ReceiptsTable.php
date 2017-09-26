@@ -66,11 +66,11 @@ class ReceiptsTable extends Table
             ->integer('voucher_no')
             ->requirePresence('voucher_no', 'create')
             ->notEmpty('voucher_no');
-
+/* 
         $validator
             ->date('transaction_date')
             ->requirePresence('transaction_date', 'create')
-            ->notEmpty('transaction_date');
+            ->notEmpty('transaction_date'); */
 
         $validator
             ->requirePresence('narration', 'create')
@@ -89,7 +89,6 @@ class ReceiptsTable extends Table
     public function buildRules(RulesChecker $rules)
     {
         $rules->add($rules->existsIn(['company_id'], 'Companies'));
-
         return $rules;
     }
 }

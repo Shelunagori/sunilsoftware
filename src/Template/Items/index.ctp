@@ -15,7 +15,9 @@ $this->set('title', 'Items');
 			</div>
 			<div class="portlet-body">
 				<div class="table-responsive">
-					<?php $page_no=$this->Paginator->current('Items'); $page_no=($page_no-1)*20; ?>
+					<?php $page_no=$this->Paginator->current('Items'); 
+					$page_no=($page_no-1)*20; 
+					?>
 					<table class="table table-bordered table-hover table-condensed">
 						<thead>
 							<tr>
