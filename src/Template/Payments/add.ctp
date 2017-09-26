@@ -5,7 +5,7 @@
 $this->set('title', 'Payment Voucher');
 ?>
 <div class="row">
-	<div class="col-md-9">
+	<div class="col-md-12">
 		<div class="portlet light ">
 			<div class="portlet-title">
 				<div class="caption">

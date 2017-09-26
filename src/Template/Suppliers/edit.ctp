@@ -39,7 +39,7 @@ $this->set('title', 'Edit Supplier');
 									<label>Mobile </label>
 									<?php echo $this->Form->control('mobile',['class'=>'form-control input-sm','placeholder'=>'Mobile no','label'=>false,'autofocus','maxlength'=>10]); ?>
 								</div>
-								<div class="form-group" style="display:none;">
+								<div class="form-group">
 									<label>Bill to Bill Accounting </label>
 									<?php 
 									$option =[['value'=>'yes','text'=>'yes'],['value'=>'no','text'=>'no']];
