@@ -13,7 +13,7 @@ margin-bottom: 0;
 }
 .table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
     padding: 5px !important;
-	font-family:Lato !important;
+	font-family: monospace !important;
 }
 </style>
 
@@ -24,34 +24,41 @@ margin-bottom: 0;
 }
 </style>
 
-<div style="width:300px;" class="maindiv">
+<div style="width:300px;font-family: monospace !important;" class="maindiv">
 <?php echo $this->Html->link('Print',array(),['escape'=>false,'class'=>'hidden-print','style'=>' background-color:blue;  font-size:18px; padding:5px; color:white; cursor:hand;  float: left','onclick'=>'javascript:window.print()();']);
  echo $this->Html->link('Close',['controller'=>'SalesInvoices','action'=>'add'],['escape'=>false,'class'=>'hidden-print','style'=>' background-color:blue;  font-size:18px; padding:5px; color:white; cursor:hand;  float: right']);
 ?>
-<table  width="100%" border="0" style="margin-top:15px;" >
+<table  width="100%" border="0"  >
 <tbody>
 <?php foreach($invoiceBills->toArray() as $data){
 		foreach($data->sales_invoice_rows as $sales_invoice_row){?>
 			<?php }}?>
 			<tr>
 	<td colspan="4" align="center">
-	<?php echo $this->Html->image('/img/dangilogo.png', ['height' => '50px', 'width' => '50px']); ?>
+	<?php if(!empty(@$data->company->logo)){ ?>
+	<?php echo $this->Html->image('/img/'.$data->company->logo, ['height' => '50px', 'width' => '50px']); ?>
+	<?php } ?>
  	</tr>
 	<tr>
 		<td colspan="4"
-		style="text-align:center;font-size:18px;"><b><span><?=@$data->company->name?></span></b></td>
+		style="text-align:center;font-size:20px;"><b><span><?=@$data->company->name?></span></b></td>
     </tr>
 	<tr>
 	<td colspan="4"
  		style="text-align:center;font-size:12px !important;"><span><?=@$data->company->address?>, <?=@$data->company->state->name?></span></td>
 	</tr>
 	<tr><td colspan="4"
- 		style="text-align:center;font-size:12px !important;"><span>Ph - <?=@$data->company->phone_no ?> Mobile - <?=@$data->company->mobile ?><br> GSTIN NO:
+ 		style="text-align:center;font-size:12px !important;"><span>Ph : <?=@$data->company->phone_no ?> |  Mobile : <?=@$data->company->mobile ?><br> GSTIN NO:
 		<?=@$data->company->gstin ?></span></td>
 	</tr>
 	<tr>
 		<td colspan="4"
 		style="text-align:center;font-size:16px; padding-bottom:10px;  padding-top:10px;"><b><span><u>GST INVOICE</u></span></b></td>
+	</tr>
+	<tr>
+		<td colspan="4" style="font-size:14px;">
+		<b>Invoice Date:</b> <?= h(@$data->transaction_date)?>
+		</td>
 	</tr>
 	<tr>
 		<td colspan="4" style="font-size:14px;"><b>Customer Name: 
@@ -92,23 +99,23 @@ margin-bottom: 0;
 		<td align="center"><b>Rate</b></td>
 	</tr>
 	<tr>
-		<td style="font-style:italic;font-size:14px;"><b>HSN Code</b></td>
-		<td align="center" style="font-style:italic;font-size:14px;"><b>Dis %</b></td>
+		<td style="font-style:italic;font-size:12px;"><b>HSN Code</b></td>
+		<td align="center" style="font-style:italic;font-size:12px;"><b>Dis %</b></td>
 		<td><b></b></td>
-		<td align="center" style="font-style:italic;font-size:14px;"><b>Net Amount</b></td>
+		<td align="center" style="font-style:italic;font-size:12px;"><b>Net Amount</b></td>
 	</tr>
 	<?php if($taxable_type!= 'IGST') { ?>
 	<tr>
 		<td></td>
-		<td align="center" style="font-style:italic;font-size:14px;">Taxable Value</td>
-		<td align="center" style="font-style:italic;font-size:14px;"> %SGST </br> %CGST</td>
+		<td align="center" style="font-style:italic;font-size:12px;">Taxable Value</td>
+		<td align="center" style="font-style:italic;font-size:12px;"> %SGST </br> %CGST</td>
 		<td></td>
 	</tr>
 	<?php } else { ?> 
 	<tr>
 		<td></td>
-		<td style="font-style:italic;font-size:14px;">Taxable Value</td>
-		<td style="font-style:italic;font-size:14px;">%IGST</td> <?php } ?>
+		<td style="font-style:italic;font-size:12px;">Taxable Value</td>
+		<td style="font-style:italic;font-size:12px;">%IGST</td> <?php } ?>
 	</tr>
 	<?php
 		
@@ -141,8 +148,8 @@ margin-bottom: 0;
 			}
 		?>
 		<tr>
-			<td><?=$sales_invoice_row->item->item_code.' ' ?><?=  $sales_invoice_row->item->name ?></td>
-			<td><?php
+			<td style="font-size:12px;"><?=$sales_invoice_row->item->item_code.' ' ?><?=  $sales_invoice_row->item->name ?></td>
+			<td style="font-size:14px;"><?php
 			if(!empty($sales_invoice_row->item->size->name))
 			{
 			echo @$sales_invoice_row->item->size->name;
@@ -155,25 +162,25 @@ margin-bottom: 0;
 			<td style="text-align:right;"><?=$sales_invoice_row->rate ?></td>
 		</tr>
 		<tr>
-			<td style="font-style:italic;font-size:14px;"><?=$sales_invoice_row->item->hsn_code ?></td>
-			<td style="font-style:italic;font-size:14px;text-align:right"><?=$sales_invoice_row->discount_percentage ?></td>
+			<td style="font-style:italic;font-size:12px;"><?=$sales_invoice_row->item->hsn_code ?></td>
+			<td style="font-style:italic;font-size:12px;text-align:right"><?=$sales_invoice_row->discount_percentage ?></td>
 			<td></td>
-			<td style="font-style:italic;font-size:14px;text-align:right"><?=$sales_invoice_row->net_amount ?></td>
+			<td style="font-style:italic;font-size:12px;text-align:right"><?=$sales_invoice_row->net_amount ?></td>
 		</tr>
 		
 		<?php if($data->company->state_id==$data->partyDetails->state_id){?>
 		<tr>
 			<td></td>
-			<td style="font-style:italic;font-size:14px;text-align:right"><?=$sales_invoice_row->taxable_value ?></td>
-			<td style="font-style:italic;font-size:14px;text-align:right"><?=$gst_perc.' %' ?><br/><?=$gst_perc.' %'?></td>
+			<td style="font-style:italic;font-size:12px;text-align:right"><?=$sales_invoice_row->taxable_value ?></td>
+			<td style="font-style:italic;font-size:12px;text-align:right"><?=$gst_perc.' %' ?><br/><?=$gst_perc.' %'?></td>
 			<td></td>
 		</tr>
 		
 		<?php }else {?>
 		<tr>
 			<td></td>
-			<td style="font-style:italic;font-size:14px;text-align:right"><?=$sales_invoice_row->taxable_value ?></td>
-			<td style="font-style:italic;font-size:14px;text-align:right"><?=$gst_type ?></td>
+			<td style="font-style:italic;font-size:12px;text-align:right"><?=$sales_invoice_row->taxable_value ?></td>
+			<td style="font-style:italic;font-size:12px;text-align:right"><?=$gst_type ?></td>
 			<td></td>
 		</tr>
 		<?php }?>
