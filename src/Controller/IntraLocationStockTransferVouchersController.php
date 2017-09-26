@@ -36,7 +36,7 @@ class IntraLocationStockTransferVouchersController extends AppController
         $this->paginate = [
             'contain' => ['TransferFromLocations','TransferToLocations']
         ];
-		$intraLocationStockTransferVouchers = $this->paginate($this->IntraLocationStockTransferVouchers->find()->where(['IntraLocationStockTransferVouchers.company_id'=>$company_id,'IntraLocationStockTransferVouchers.transfer_to_location_id'=>$location_id,'IntraLocationStockTransferVouchers.status'=>@$where]));
+		$intraLocationStockTransferVouchers = $this->paginate($this->IntraLocationStockTransferVouchers->find()->where(['IntraLocationStockTransferVouchers.company_id'=>$company_id,'IntraLocationStockTransferVouchers.status'=>@$where]));
 		$this->set(compact('intraLocationStockTransferVouchers','status','location_id'));
         $this->set('_serialize', ['intraLocationStockTransferVouchers']);
     }

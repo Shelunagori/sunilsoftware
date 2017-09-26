@@ -33,7 +33,7 @@ table.fixed td { overflow: hidden; }
 					<td><?php echo $intraLocationStockTransferVoucher->TransferFromLocations->name; ?></td>
 					<td ><b>Stock Transfer To</b></td>
 					<td width="1%">:</td>
-					<td><?php echo $intraLocationStockTransferVoucher->TransferFromLocations->name;?></td>
+					<td><?php echo $intraLocationStockTransferVoucher->TransferToLocations->name;?></td>
 				  </tr>
                   
                 </table><br>

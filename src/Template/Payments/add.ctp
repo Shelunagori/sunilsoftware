@@ -78,15 +78,16 @@ $this->set('title', 'Payment Voucher');
 										<td></td>
 									</tr>
 									<tr class="tr3 main_tr" class="tab" style="display:none;">
-										<td colspan="5">
+									<td></td>
+										<td colspan="3">
 											<table class="table table-bordered" id="party_table" style="text-align:center;">
 												<thead>
 													<tr>
 														<td>Ref. Type</td>
 														<td>Ref. No.</td>
 														<td>Dr/Cr</td>
-														<td>Debit</td>
-														<td>Credit</td>
+														<td>Amount</td>
+														
 														<td></td>
 													</tr>
 												</thead>
@@ -105,14 +106,13 @@ $this->set('title', 'Payment Voucher');
 														<td width="15%">
 															<?php echo $this->Form->input('ref_name', ['type'=>'text','label' => false,'class' => 'form-control input-medium','required'=>'required']); ?>
 														</td>
-														<td width="10%">
+														<td width="15%">
 															<?php 
 															echo $this->Form->input('type_cr_dr', ['options'=>$option,'label' => false,'class' => 'form-control input-sm hide_cr_dr','required'=>'required','value'=>'Dr']); ?>
 														</td>
 														<td width="20%">
 															<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm debit_hide_show calculation rightAligntextClass','placeholder'=>'Debit']); ?>
-														</td>
-														<td width="20%">
+														
 															<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm credit_hide_show calculation rightAligntextClass','placeholder'=>'Credit','style'=>'display:none;']); ?>	
 														</td>
 														
@@ -127,6 +127,7 @@ $this->set('title', 'Payment Voucher');
 												</tfoot>
 												</table>
 											</td>
+											<td></td>
 									</tr>
 								</tbody>
 								<tfoot>
@@ -164,14 +165,13 @@ $this->set('title', 'Payment Voucher');
 			<td width="15%">
 				<?php echo $this->Form->input('ref_name', ['type'=>'text','label' => false,'class' => 'form-control input-sm','required'=>'required']); ?>
 			</td>
-			<td width="10%">
+			<td width="15%">
 				<?php 
 				echo $this->Form->input('type_cr_dr', ['options'=>$option,'label' => false,'class' => 'form-control input-sm hide_cr_dr','required'=>'required','value'=>'Dr']); ?>
 			</td>
 			<td width="20%">
 				<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm debit_hide_show calculation rightAligntextClass','placeholder'=>'Debit']); ?>
-			</td>
-			<td width="20%">
+			
 				<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm credit_hide_show calculation rightAligntextClass','placeholder'=>'Credit','style'=>'display:none;']); ?>	
 			</td>
 			
@@ -244,14 +244,13 @@ $this->set('title', 'Payment Voucher');
 							<td width="15%">
 								<?php echo $this->Form->input('ref_name', ['type'=>'text','label' => false,'class' => 'form-control input-medium','required'=>'required']); ?>
 							</td>
-							<td width="10%">
+							<td width="15%">
 								<?php 
 								echo $this->Form->input('type_cr_dr', ['options'=>$option,'label' => false,'class' => 'form-control input-sm hide_cr_dr','required'=>'required','value'=>'Dr']); ?>
 							</td>
 							<td width="20%">
 								<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm debit_hide_show calculation rightAligntextClass','placeholder'=>'Debit']); ?>
-							</td>
-							<td width="20%">
+							
 								<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm credit_hide_show calculation rightAligntextClass','placeholder'=>'Credit','style'=>'display:none;']); ?>	
 							</td>
 						</tr>
