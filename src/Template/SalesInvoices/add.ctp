@@ -346,6 +346,7 @@ $this->set('title', 'Create Sales Invoice');
 		{
 			$(this).closest('tr').remove();
 			rename_rows();
+			forward_total_amount();
 		});
 		ComponentsPickers.init();
 

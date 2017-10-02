@@ -377,6 +377,7 @@ foreach($partyOptions as $partyOption)
 		{
 			$(this).closest('tr').remove();
 			rename_rows();
+			forward_total_amount();
 		});
 		ComponentsPickers.init();
 	});
