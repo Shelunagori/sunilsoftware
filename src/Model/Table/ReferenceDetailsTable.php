@@ -38,7 +38,7 @@ class ReferenceDetailsTable extends Table
         parent::initialize($config);
 
         $this->setTable('reference_details');
-        $this->setDisplayField('name');
+        $this->setDisplayField('ref_name');
         $this->setPrimaryKey('id');
 
         $this->belongsTo('Companies', [

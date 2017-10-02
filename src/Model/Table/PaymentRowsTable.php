@@ -42,16 +42,13 @@ class PaymentRowsTable extends Table
             'foreignKey' => 'payment_id',
             'joinType' => 'INNER'
         ]);
-        $this->belongsTo('Companies', [
-            'foreignKey' => 'company_id',
-            'joinType' => 'INNER'
-        ]);
         $this->belongsTo('Ledgers', [
             'foreignKey' => 'ledger_id',
             'joinType' => 'INNER'
         ]);
-		$this->hasMany('PaymentRows', [
-            'foreignKey' => 'payment_row_id'
+		$this->hasMany('ReferenceDetails', [
+            'foreignKey' => 'payment_row_id',
+			'saveStrategy'=>'replace'
         ]);
     }
 

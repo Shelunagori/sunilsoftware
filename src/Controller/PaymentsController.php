@@ -61,6 +61,7 @@ class PaymentsController extends AppController
 		
 		if ($this->request->is('post')) {
 			$payment->transaction_date = date("Y-m-d",strtotime($this->request->getData()['transaction_date']));
+			
 			$Voucher = $this->Payments->find()->select(['voucher_no'])->where(['company_id'=>$company_id])->order(['voucher_no' => 'DESC'])->first();
 			if($Voucher)
 			{
@@ -118,8 +119,9 @@ class PaymentsController extends AppController
 			
 		}
 		
-		$companies = $this->Payments->Companies->find('list', ['limit' => 200]);
-		$this->set(compact('payment', 'companies','voucher_no','ledgerOptions'));
+		$referenceDetails=$this->Payments->PaymentRows->ReferenceDetails->find('list');
+		
+		$this->set(compact('payment', 'companies','voucher_no','ledgerOptions', 'referenceDetails'));
 		$this->set('_serialize', ['payment']);
     }
 

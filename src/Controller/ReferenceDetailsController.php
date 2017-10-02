@@ -29,6 +29,14 @@ class ReferenceDetailsController extends AppController
         $this->set('_serialize', ['referenceDetails']);
     }
 
+	public function listRef()
+    {
+       $this->viewBuilder()->layout('');
+        $referenceDetails = $this->ReferenceDetails->find('list');
+
+        $this->set(compact('referenceDetails'));
+        $this->set('_serialize', ['referenceDetails']);
+    }
     /**
      * View method
      *
