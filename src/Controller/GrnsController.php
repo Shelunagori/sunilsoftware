@@ -169,7 +169,7 @@ class GrnsController extends AppController
 		
 		$partyOptions=[];
 		foreach($Partyledgers as $Partyledger){
-			$partyOptions[]=['text' =>str_pad(@$Partyledger->supplier->id, 4, '0', STR_PAD_LEFT).' - '.$Partyledger->name, 'value' => $Partyledger->id ,'party_state_id'=>@$Partyledger->supplier->state_id];
+			$partyOptions[]=['text' =>$Partyledger->name, 'value' => $Partyledger->id];
 		}
 		
         $companies = $this->Grns->Companies->find('list');
@@ -264,14 +264,14 @@ class GrnsController extends AppController
 		}
 		if($partyGroups)
 		{  
-			$Partyledgers = $this->Grns->GrnRows->Ledgers->find()
-							->where(['Ledgers.accounting_group_id IN' =>$partyGroups,'Ledgers.company_id'=>$company_id])
+			$Partyledgers = $this->Grns->SupplierLedgers->find()
+							->where(['SupplierLedgers.accounting_group_id IN' =>$partyGroups,'SupplierLedgers.company_id'=>$company_id])
 							->contain(['Suppliers']);
         }
 		
 		$partyOptions=[];
 		foreach($Partyledgers as $Partyledger){
-			$partyOptions[]=['text' =>str_pad(@$Partyledger->supplier->id, 4, '0', STR_PAD_LEFT).' - '.$Partyledger->name, 'value' => $Partyledger->id ,'party_state_id'=>@$Partyledger->supplier->state_id];
+			$partyOptions[]=['text' =>$Partyledger->name, 'value' => $Partyledger->id];
 		}
         //$locations = $this->Grns->Locations->find('list', ['limit' => 200]);
         $companies = $this->Grns->Companies->find('list');
@@ -306,8 +306,8 @@ class GrnsController extends AppController
 		$company_id=$this->Auth->User('session_company_id');
 		$import_csv = $this->Grns->newEntity();
 		$units = $this->Grns->GrnRows->Items->Units->find()->where(['company_id'=>$company_id]);
-		$shades = $this->Grns->Shades->find()->where(['company_id'=>$company_id]);
-		$sizes = $this->Grns->Sizes->find()->where(['company_id'=>$company_id]);
+		$shades = $this->Grns->GrnRows->Items->Shades->find()->where(['company_id'=>$company_id]);
+		$sizes = $this->Grns->GrnRows->Items->Sizes->find()->where(['company_id'=>$company_id]);
 		$this->set(compact('import_csv','units','shades','sizes'));
         $this->set('_serialize', ['import_csv']);
 	}

@@ -62,8 +62,7 @@ class GrnsTable extends Table
 			'saveStrategy' => 'replace'
         ]);
 		 $this->belongsTo('SecondTampGrnRecords');
-		 $this->belongsTo('Shades');
-		 $this->belongsTo('Sizes');
+		
     }
 
     /**
