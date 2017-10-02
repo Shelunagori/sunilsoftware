@@ -302,8 +302,6 @@ $this->set('title', 'Create Sales Invoice');
 			}
 		});
 		
-		
-		
 		$('.party_ledger_id').die().live('change',function(){
 			var customer_state_id=$('option:selected', this).attr('party_state_id');
 			var state_id=$('.state_id').val();
@@ -568,8 +566,6 @@ $this->set('title', 'Create Sales Invoice');
 			return false;
 		}
 	}
-	
 	";
-
 echo $this->Html->scriptBlock($js, array('block' => 'scriptBottom')); 
 ?>

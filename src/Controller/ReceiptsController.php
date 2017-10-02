@@ -59,8 +59,8 @@ class ReceiptsController extends AppController
         if ($this->request->is('post')) {
 		 $receipt = $this->Receipts->patchEntity($receipt, $this->request->getData());
 		 
-		// pr($receipt->toArray());
-		 // exit;
+		 pr($receipt->toArray());
+		 exit;
 		 
             if ($this->Receipts->save($receipt)) {
                 $this->Flash->success(__('The receipt has been saved.'));
@@ -176,6 +176,7 @@ class ReceiptsController extends AppController
 		->group('ref_name')
 		->autoFields(true);
         $refdetails = ($query);
+		
 		$partyOptions=[];
 		foreach($refdetails as $data)
 		{
@@ -185,13 +186,18 @@ class ReceiptsController extends AppController
 				   $tot=$refeDebitBill-$refeCreditBill;
 		$refOptions[]=['text' =>$ref_name.' - '.$tot, 'value' => $ref_name];
 		}
-		if($itemValue=='Agst Ref')
+		if(!empty($refdetails->toArray()) && $itemValue=='Agst Ref')
 		{
-		echo $html->input('ref_name', ['options'=>$refOptions,'label' => false,'class' => 'form-control input-medium ref_name','required'=>'required']); 
+			echo $html->input('ref_name', ['options'=>$refOptions,'label' => false,'class' => 'form-control input-medium ref_name','required'=>'required']); 
 		}
-		else{
-		echo $html->input('ref_name', ['label' => false,'class' => 'form-control input-medium ref_name','required'=>'required']); 
+		else if($itemValue!='Agst Ref')
+		{
+			echo $html->input('ref_name', ['label' => false,'class' => 'form-control input-medium ref_name','required'=>'required']); 
 		}
+		else
+		{
+			echo 'No, record found. Select different type.'; 
+		}		
 		exit;
 }	
 

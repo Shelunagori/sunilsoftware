@@ -58,7 +58,7 @@ $this->set('title', 'Receipt');
 											<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm rightAligntextClass calculation mainDebit','placeholder'=>'Debit','style'=>'display:none;']); ?>
 										</td>
 										<td width="25%">
-											<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm calculation rightAligntextClass mainCredit','placeholder'=>'Credit']); ?>	
+											<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm calculation rightAligntextClass mainCredit','placeholder'=>'Credit','required'=>'required']); ?>	
 										</td>
 										<td align="center"></td>
 									</tr>
@@ -138,10 +138,10 @@ $this->set('title', 'Receipt');
 											<button type="button" class="add_row btn btn-default input-sm"><i class="fa fa-plus"></i> Add row</button>
 										</td>
 										<td width="25%" >
-											<?php echo $this->Form->input('voucher_amount', ['label' => false,'class' => 'form-control input-sm total_debit rightAligntextClass','id'=>'total_inward','placeholder'=>'Total Debit','type'=>'text']); ?>
+											<?php echo $this->Form->input('voucher_amount', ['label' => false,'class' => 'form-control input-sm total_debit rightAligntextClass','id'=>'total_inward','placeholder'=>'Total Debit','type'=>'text', 'readonly'=>'readonly']); ?>
 										</td>
 										<td width="25%" >
-											<?php echo $this->Form->input('amount', ['label' => false,'class' => 'form-control input-sm total_credit rightAligntextClass','id'=>'total_inward','placeholder'=>'Total Credit']); ?>
+											<?php echo $this->Form->input('amount', ['label' => false,'class' => 'form-control input-sm total_credit rightAligntextClass','id'=>'total_inward','placeholder'=>'Total Credit', 'readonly'=>'readonly']); ?>
 											
 										</td>
 										<td></td>
@@ -227,7 +227,7 @@ $this->set('title', 'Receipt');
 				<?php echo $this->Form->input('ledger_id', ['options'=>@$partyOptions,'label' => false,'class' => 'form-control input-medium ledger_id']); ?>
 			</td>
 			<td width="25%">
-				<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm debit_hide_show calculation rightAligntextClass mainDebit','placeholder'=>'Debit']); ?>
+				<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm debit_hide_show calculation rightAligntextClass mainDebit','placeholder'=>'Debit', 'required'=>'required']); ?>
 			</td>
 			<td width="25%">
 				<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm credit_hide_show calculation rightAligntextClass mainCredit','placeholder'=>'Credit','style'=>'display:none;']); ?>	
@@ -366,12 +366,12 @@ $this->set('title', 'Receipt');
 				$(this).closest('tr').next('tr').next('tr.partytr').hide();
 			}
 			else if(open_window=='on_account'){
-			    $(this).closest('tr').next('tr').next('tr.partytr').show();
 				$(this).closest('tr').next('tr.banktr').hide();
+				$(this).closest('tr').next('tr').next('tr.partytr').hide();
 			}
 			else if(open_window=='no'){
-			$(this).closest('tr').next('tr.banktr').hide();
-			$(this).closest('tr').next('tr').next('tr.partytr').hide();
+				$(this).closest('tr').next('tr.banktr').hide();
+				$(this).closest('tr').next('tr').next('tr.partytr').hide();
 			}
 		});
 		
@@ -447,7 +447,6 @@ $this->set('title', 'Receipt');
 			obj.find('.party_total_debit').val(party_total_debit_amount);
 			obj.find('.party_total_credit').val(party_total_credit_amount);
 		}
-		
 		$('.delete-tr').die().live('click',function() 
 		{
 		$(this).closest('tr').next().next('tr.partytr').remove();
@@ -456,7 +455,6 @@ $this->set('title', 'Receipt');
 			rename_rows();
 			total_debit_credit();
 		});
-		
 		$('.delete-tr1').die().live('click',function() 
 		{
 			$(this).closest('tr').remove();
@@ -469,14 +467,19 @@ $this->set('title', 'Receipt');
 			if(check_debit_or_credit=='Dr')
 			{
 				$(this).closest('tr').find('.debit_hide_show').show();
+		$(this).closest('tr').find('.debit_hide_show').attr('required','required');
+		$(this).closest('tr').find('.credit_hide_show').removeAttr('required','required');
 				$(this).closest('tr').find('.credit_hide_show').val('');
 				$(this).closest('tr').find('.credit_hide_show').hide();
+				
 			}
 			else if(check_debit_or_credit=='Cr')
 			{
 				$(this).closest('tr').find('.debit_hide_show').hide();
 				$(this).closest('tr').find('.debit_hide_show').val('');
 				$(this).closest('tr').find('.credit_hide_show').show();
+		$(this).closest('tr').find('.credit_hide_show').attr('required','required');
+		$(this).closest('tr').find('.debit_hide_show').removeAttr('required','required');
 			}
 		});
 
@@ -520,14 +523,14 @@ $this->set('title', 'Receipt');
 				obj.find('td:nth-child(3) input').attr({name:'receipt_rows['+i+'][cheque_no]', id:'receipt_rows-'+i+'-cheque_no'});
 				obj.find('td:nth-child(4) input').attr({name:'receipt_rows['+i+'][cheque_date]', id:'receipt_rows-'+i+'-cheque_date'});
 				
-				/* var j=0;
+				 var j=0;
 				$('#main_table1 tbody#main_tbody1 tr.main_tr1').each(function(){ 
 				partyObj.find('td:nth-child(1) select').select2().attr({name:'receipt_rows['+i+'][reference_details]['+j+'][ref_type]',id:'receipt_rows-'+i+'-reference_details-'+j+'-ref_type'});	
 					partyObj.find('td:nth-child(2) input').attr({name:'receipt_rows['+i+'][reference_details]['+j+'][ref_name]', id:'receipt_rows-'+i+'-reference_details-'+j+'-ref_name'});
 					partyObj.find('td:nth-child(4) input').attr({name:'receipt_rows['+i+'][reference_details]['+j+'][debit]', id:'receipt_rows-'+i+'-reference_details-'+j+'-debit'});
 					partyObj.find('td:nth-child(5) input').attr({name:'receipt_rows['+i+'][reference_details]['+j+'][credit]', id:'receipt_rows-'+i+'-reference_details-'+j+'-credit'});
 				j++;
-				}); */
+				}); 
 				
 				i++;
 				});
@@ -541,6 +544,8 @@ $this->set('title', 'Receipt');
 			var total_debit  = $('.total_debit').val();
 			var total_credit = $('.total_credit').val();
 
+			alert(total_debit);
+			alert(total_credit);
 			if(total_debit!=total_credit)
 			{
 				alert('Credit and debit value not matched');
