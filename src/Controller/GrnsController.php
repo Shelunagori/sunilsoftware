@@ -305,7 +305,7 @@ class GrnsController extends AppController
 		$this->viewBuilder()->layout('index_layout');
 		$company_id=$this->Auth->User('session_company_id');
 		$import_csv = $this->Grns->newEntity();
-		$units = $this->Grns->Units->find()->where(['company_id'=>$company_id]);
+		$units = $this->Grns->GrnRows->Items->Units->find()->where(['company_id'=>$company_id]);
 		$shades = $this->Grns->Shades->find()->where(['company_id'=>$company_id]);
 		$sizes = $this->Grns->Sizes->find()->where(['company_id'=>$company_id]);
 		$this->set(compact('import_csv','units','shades','sizes'));
