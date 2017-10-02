@@ -61,7 +61,7 @@ class SuppliersController extends AppController
 		$this->request->data['company_id'] =$company_id;
         if ($this->request->is('post')) {
             $supplier = $this->Suppliers->patchEntity($supplier, $this->request->getData());
-			
+			$bill_to_bill_accounting=$supplier->bill_to_bill_accounting;
             if ($this->Suppliers->save($supplier)) {
 				//Create Ledger//
 			$accounting_group = $this->Suppliers->Ledgers->AccountingGroups->find()->where(['company_id'=>$company_id,'supplier'=>1])->first();
@@ -71,7 +71,7 @@ class SuppliersController extends AppController
 				$ledger->accounting_group_id = $accounting_group->id;
 				$ledger->company_id=$company_id;
 				$ledger->supplier_id=$supplier->id;
-				$ledger->bill_to_bill_accounting='no';
+				$ledger->bill_to_bill_accounting=$bill_to_bill_accounting;
 				if($this->Suppliers->Ledgers->save($ledger))
 				{
 					//Create Accounting Entry//
@@ -142,10 +142,12 @@ class SuppliersController extends AppController
 		$company_id=$this->Auth->User('session_company_id');
         if ($this->request->is(['patch', 'post', 'put'])) {
             $supplier = $this->Suppliers->patchEntity($supplier, $this->request->getData());
+			$bill_to_bill_accounting=$supplier->bill_to_bill_accounting;
             if ($this->Suppliers->save($supplier)) {
 				$ledger = $this->Suppliers->Ledgers->get($supplier->ledger->id);
 				$ledger->name=$supplier->name;
 				$ledger->accounting_group_id=$supplier->accounting_group_id;
+				$ledger->bill_to_bill_accounting=$bill_to_bill_accounting;
 				$this->Suppliers->Ledgers->save($ledger);
 					
 				//Accounting Entry

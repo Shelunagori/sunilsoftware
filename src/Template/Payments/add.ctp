@@ -16,7 +16,7 @@ $this->set('title', 'Payment Voucher');
 				</div>
 			</div>
 			<div class="portlet-body">
-				<?= $this->Form->create($payment) ?>
+				<?= $this->Form->create($payment ) ?>
 				<div class="row">
 					<div class="col-md-3">
 						<div class="form-group">
@@ -40,7 +40,7 @@ $this->set('title', 'Payment Voucher');
 										<td><label>Particulars<label></td>
 										<td><label>Debit<label></td>
 										<td><label>Credit<label></td>
-										<td></td>
+										<td width="10%"></td>
 									</tr>
 								</thead>
 								<tbody id='main_tbody' class="tab">
@@ -52,45 +52,35 @@ $this->set('title', 'Payment Voucher');
 											$option[]= ['value'=>'Dr','text'=>'Dr',];
 											echo $this->Form->input('type', ['options'=>$option,'label' => false,'class' => 'form-control input-sm','required'=>'required','value'=>'Cr','disabled'=>'disabled']); ?>
 										</td>
-										<td width="15%">
-											<?php echo $this->Form->input('ledger_id', ['options'=>@$ledgerOptions,'label' => false,'class' => 'form-control input-medium ledger','required'=>'required']); ?>
-										</td>
-										<td width="25%" >
-											<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm rightAligntextClass','placeholder'=>'Debit','style'=>'display:none;']); ?>
-										</td>
-										<td width="25%">
-											<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm calculation rightAligntextClass','required'=>'required','placeholder'=>'Credit']); ?>	
-										</td>
-										<td align="center"></td>
-									</tr>
-									<tr class="tr2 main_tr " class="tab" style="display:none;">
-										<td colspan="2"><label class="control-label">Mode of Payment<span class="required" aria-required="true"></span></label>
+										<td width="65%">
+											<?php echo $this->Form->input('ledger_id', ['options'=>@$ledgerOptions,'label' => false,'class' => 'form-control input-sm ledger','required'=>'required']); ?></br>
+											<div align="center" class="bank_window main_tr" style="display:none;width: 100%;background-color:#EEF0F1;">
+												<div class="row">
+													<div class="col-md-4">
+														<div class="form-group">
+														<label class="control-label">Mode of Payment<span class="required" aria-required="true"></span></label>
+														<?php 
+															$option_mode[]= ['value' => 'Cheque', 'text' => 'Cheque'];
+															$option_mode[]= ['value' => 'NEFT/RTGS', 'text' => 'NEFT/RTGS'];
+															
+															echo $this->Form->input('payment_mode', ['options'=>$option_mode,'label' => false,'class' => 'form-control input-sm pay_mode']); ?>
+														</div>
+													</div>
+													<div class="col-md-4">
+														<div class="form-group">
+														<label class="control-label">Cheque No<span class="required" aria-required="true"></span></label><?php echo $this->Form->input('cheque_no', ['type'=>'text','label' => false,'class' => 'form-control input-sm chq_no','placeholder'=>'Cheque No']); ?>
+														</div>
+													</div>
+													<div class="col-md-4">
+														<div class="form-group">
+														<label class="control-label">Cheque Date<span class="required" aria-required="true"></span></label><?php echo $this->Form->input('cheque_date', ['class'=>'form-control input-sm date-picker chq_date','data-date-format'=>'dd-mm-yyyy', 'label'=>false,'placeholder'=>'DD-MM-YYYY','type'=>'text','value'=>date('d-m-Y')]); ?> 
+														</div>
+													</div>
+												</div>
+											</div>
+											<div class="party_window main_tr" style="display:none;width: 100%;">
+											<table class="table" align="center" id="party_table" style="text-align:center;background-color:#EEF0F1; ">
 												
-											<?php echo $this->Form->radio(
-												'payment_mode',
-												[
-													['value' => 'Cheque', 'text' => 'Cheque'],
-													['value' => 'NEFT/RTGS', 'text' => 'NEFT/RTGS']
-												]); ?>
-										</td>
-										<td><label class="control-label">Cheque No<span class="required" aria-required="true"></span></label><?php echo $this->Form->input('cheque_no', ['type'=>'text','label' => false,'class' => 'form-control input-sm','placeholder'=>'Cheque No']); ?></td>
-										<td><label class="control-label">Cheque Date<span class="required" aria-required="true"></span></label><?php echo $this->Form->input('cheque_date', ['class'=>'form-control input-sm date-picker','data-date-format'=>'dd-mm-yyyy', 'label'=>false,'placeholder'=>'DD-MM-YYYY','type'=>'text','value'=>date('d-m-Y'),'required'=>'required']); ?> </td>
-										<td></td>
-									</tr>
-									<tr class="tr3 main_tr" class="tab" style="display:none;">
-									<td></td>
-										<td colspan="3">
-											<table class="table table-bordered" id="party_table" style="text-align:center;">
-												<thead>
-													<tr>
-														<td>Ref. Type</td>
-														<td>Ref. No.</td>
-														<td>Dr/Cr</td>
-														<td>Amount</td>
-														
-														<td></td>
-													</tr>
-												</thead>
 												
 												<tbody id="main_tbody1">
 													<tr class="main_tr1">
@@ -101,34 +91,50 @@ $this->set('title', 'Payment Voucher');
 															$option_ref[]= ['value'=>'Against','text'=>'Against'];
 															$option_ref[]= ['value'=>'Advance','text'=>'Advance'];
 															$option_ref[]= ['value'=>'On Account','text'=>'On Account'];
-															echo $this->Form->input('type', ['options'=>$option_ref,'label' => false,'class' => 'form-control input-sm','required'=>'required']); ?>
+															echo $this->Form->input('type', ['options'=>$option_ref,'label' => false,'class' => 'form-control input-sm']); ?>
 														</td>
-														<td width="15%">
-															<?php echo $this->Form->input('ref_name', ['type'=>'text','label' => false,'class' => 'form-control input-medium','required'=>'required']); ?>
+														<td width="25%">
+															<?php echo $this->Form->input('ref_name', ['type'=>'text','label' => false,'class' => 'form-control input-sm']); ?>
 														</td>
-														<td width="15%">
-															<?php 
-															echo $this->Form->input('type_cr_dr', ['options'=>$option,'label' => false,'class' => 'form-control input-sm hide_cr_dr','required'=>'required','value'=>'Dr']); ?>
-														</td>
-														<td width="20%">
-															<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm debit_hide_show calculation rightAligntextClass','placeholder'=>'Debit']); ?>
 														
-															<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm credit_hide_show calculation rightAligntextClass','placeholder'=>'Credit','style'=>'display:none;']); ?>	
+														<td width="35%" style="padding-right:0px;">
+															<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm debit_hide_show calculation rightAligntextClass','placeholder'=>'Amount']); ?>
+														
+															<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm credit_hide_show calculation rightAligntextClass','placeholder'=>'Amount','style'=>'display:none;']); ?>
+															
+														</td>
+														<td width="10%" style="padding-left:0px;">
+															<?php 
+															echo $this->Form->input('type_cr_dr', ['options'=>$option,'label' => false,'class' => 'form-control input-sm hide_cr_dr','value'=>'Dr']); ?>
+														</td>
+														<td align="center"  width="5%">
+															<a class="btn btn-danger delete-tr1 btn-xs" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
 														</td>
 														
 													</tr>
 												</tbody>
 												<tfoot>
 													<tr>
-														<td >	
+														<td colspan="5" align="left">	
 															<button type="button" class="add_row1 btn btn-primary input-sm"><i class="fa fa-plus"></i> </button>
 														</td>
 													</tr>
 												</tfoot>
-												</table>
-											</td>
-											<td></td>
+											</table>
+											</div>
+										</td>
+										<td width="10%" >
+											<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm rightAligntextClass','placeholder'=>'Debit','style'=>'display:none;']); ?>
+										</td>
+										<td width="10%">
+											<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm calculation rightAligntextClass','required'=>'required','placeholder'=>'Credit']); ?>	
+										</td>
+										<td align="center"  width="5%">
+											<a class="btn btn-danger delete-tr btn-xs" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
+										</td>
+										
 									</tr>
+									
 								</tbody>
 								<tfoot>
 									<tr>
@@ -158,21 +164,23 @@ $this->set('title', 'Payment Voucher');
 <table id="sample_table1" style="display:none;" width="100%">
 	<tbody>
 		<tr class="main_tr1">
+		
 			<td width="20%">
 				<?php 
 				echo $this->Form->input('type', ['options'=>$option_ref,'label' => false,'class' => 'form-control input-sm','required'=>'required']); ?>
 			</td>
-			<td width="15%">
-				<?php echo $this->Form->input('ref_name', ['type'=>'text','label' => false,'class' => 'form-control input-sm','required'=>'required']); ?>
+			<td width="25%">
+				<?php echo $this->Form->input('ref_name', ['type'=>'text','label' => false,'class' => 'form-control input-sm']); ?>
 			</td>
-			<td width="15%">
-				<?php 
-				echo $this->Form->input('type_cr_dr', ['options'=>$option,'label' => false,'class' => 'form-control input-sm hide_cr_dr','required'=>'required','value'=>'Dr']); ?>
-			</td>
-			<td width="20%">
-				<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm debit_hide_show calculation rightAligntextClass','placeholder'=>'Debit']); ?>
 			
-				<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm credit_hide_show calculation rightAligntextClass','placeholder'=>'Credit','style'=>'display:none;']); ?>	
+			<td width="35%" style="padding-right:0px;">
+				<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm debit_hide_show calculation rightAligntextClass','placeholder'=>'Amount']); ?>
+			
+				<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm credit_hide_show calculation rightAligntextClass','placeholder'=>'Amount','style'=>'display:none;']); ?>	
+			</td>
+			<td width="10%" style="padding-left:0px;">
+				<?php 
+				echo $this->Form->input('type_cr_dr', ['options'=>$option,'label' => false,'class' => 'form-control input-sm hide_cr_dr','value'=>'Dr']); ?>
 			</td>
 			
 			<td align="center">
@@ -190,81 +198,86 @@ $this->set('title', 'Payment Voucher');
 				<?php 
 				echo $this->Form->input('type', ['options'=>$option,'label' => false,'class' => 'form-control input-sm hide_cr_dr','required'=>'required','value'=>'Dr']); ?>
 			</td>
-			<td width="15%">
-				<?php echo $this->Form->input('ledger_id', ['options'=>@$ledgerOptions,'label' => false,'class' => 'form-control input-medium ledger','required'=>'required']); ?>
+			<td width="65%">
+				<?php echo $this->Form->input('ledger_id', ['options'=>@$ledgerOptions,'label' => false,'class' => 'form-control input-sm ledger','required'=>'required']); ?></br>
+					<div align="center" class="bank_window main_tr" style="display:none;width: 100%;background-color:#EEF0F1;">
+						<div class="row">
+							<div class="col-md-4">
+								<div class="form-group">
+								<label class="control-label">Mode of Payment<span class="required" aria-required="true"></span></label>
+								<?php 
+									$option_mode[]= ['value' => 'Cheque', 'text' => 'Cheque'];
+									$option_mode[]= ['value' => 'NEFT/RTGS', 'text' => 'NEFT/RTGS'];
+									
+									echo $this->Form->input('payment_mode', ['options'=>$option_mode,'label' => false,'class' => 'form-control input-sm']); ?>
+								</div>
+							</div>
+							<div class="col-md-4">
+								<div class="form-group">
+								<label class="control-label">Cheque No<span class="required" aria-required="true"></span></label><?php echo $this->Form->input('cheque_no', ['type'=>'text','label' => false,'class' => 'form-control input-sm','placeholder'=>'Cheque No']); ?>
+								</div>
+							</div>
+							<div class="col-md-4">
+								<div class="form-group">
+								<label class="control-label">Cheque Date<span class="required" aria-required="true"></span></label><?php echo $this->Form->input('cheque_date', ['class'=>'form-control input-sm date-picker','data-date-format'=>'dd-mm-yyyy', 'label'=>false,'placeholder'=>'DD-MM-YYYY','type'=>'text','value'=>date('d-m-Y')]); ?> 
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="party_window main_tr" style="display:none;">
+					<table class="table" align="center" id="party_table" style="text-align:center;width: 100%;background-color:#EEF0F1; ">
+						<tbody id="main_tbody1">
+							<tr class="main_tr1">
+								
+								<td width="20%">
+									<?php 
+									$option_ref[]= ['value'=>'New Ref','text'=>'New Ref'];
+									$option_ref[]= ['value'=>'Against','text'=>'Against'];
+									$option_ref[]= ['value'=>'Advance','text'=>'Advance'];
+									$option_ref[]= ['value'=>'On Account','text'=>'On Account'];
+									echo $this->Form->input('type', ['options'=>$option_ref,'label' => false,'class' => 'form-control input-sm']); ?>
+								</td>
+								<td width="25%">
+									<?php echo $this->Form->input('ref_name', ['type'=>'text','label' => false,'class' => 'form-control input-sm']); ?>
+								</td>
+								
+								<td width="35%" style="padding-right:0px;">
+									<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm debit_hide_show calculation rightAligntextClass','placeholder'=>'Amount']); ?>
+								
+									<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm credit_hide_show calculation rightAligntextClass','placeholder'=>'Amount','style'=>'display:none;']); ?>	
+								</td>
+								<td width="10%" style="padding-left:0px;">
+									<?php 
+									echo $this->Form->input('type_cr_dr', ['options'=>$option,'label' => false,'class' => 'form-control input-sm hide_cr_dr','value'=>'Dr']); ?>
+								</td>
+													
+								<td align="center"  width="5%">
+									<a class="btn btn-danger delete-tr1 btn-xs" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
+								</td>
+								
+							</tr>
+						</tbody>
+						<tfoot>
+							<tr>
+								<td colspan="5" align="left">	
+									<button type="button" class="add_row1 btn btn-primary input-sm"><i class="fa fa-plus"></i> </button>
+								</td>
+							</tr>
+						</tfoot>
+					</table>
+					</div>
 			</td>
-			<td width="25%">
+			<td width="10%">
 				<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm debit_hide_show calculation rightAligntextClass','placeholder'=>'Debit']); ?>
 			</td>
-			<td width="25%">
+			<td width="10%">
 				<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm credit_hide_show calculation rightAligntextClass','placeholder'=>'Credit','style'=>'display:none;']); ?>	
 			</td>
-			<td align="center">
+			<td align="center"  width="10%">
 				<a class="btn btn-danger delete-tr btn-xs" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
 			</td>
 		</tr>
-		<tr class="tr2 main_tr"  style="display:none;">
-			<td colspan="2"><label class="control-label">Mode of Payment<span class="required" aria-required="true"></span></label>
-					
-				<?php echo $this->Form->radio(
-					'payment_mode',
-					[
-						['value' => 'Cheque', 'text' => 'Cheque'],
-						['value' => 'NEFT/RTGS', 'text' => 'NEFT/RTGS']
-					]); ?>
-			</td>
-			
-			<td><label class="control-label">Cheque No<span class="required" aria-required="true"></span></label><?php echo $this->Form->input('cheque_no', ['type'=>'text','label' => false,'class' => 'form-control input-sm','placeholder'=>'Cheque No']); ?></td>
-			
-			<td><label class="control-label">Cheque Date<span class="required" aria-required="true"></span></label><?php echo $this->Form->input('cheque_date', ['class'=>'form-control input-sm date-picker','data-date-format'=>'dd-mm-yyyy', 'label'=>false,'placeholder'=>'DD-MM-YYYY','type'=>'text','value'=>date('d-m-Y'),'required'=>'required']); ?> </td>
-			<td></td>
-		</tr>
 		
-		<tr class="tr3 main_tr" class="tab" style="display:none;">
-			<td colspan="5">
-				<table class="table table-bordered" id="party_table" style="text-align:center;">
-					<thead>
-						<tr>
-							<td>Ref. Type</td>
-							<td>Ref. No.</td>
-							<td>Dr/Cr</td>
-							<td>Debit</td>
-							<td>Credit</td>
-							<td></td>
-						</tr>
-					</thead>
-					
-					<tbody id="main_tbody1">
-						<tr class="main_tr1">
-							
-							<td width="20%">
-								<?php 
-								echo $this->Form->input('type', ['options'=>$option_ref,'label' => false,'class' => 'form-control input-sm','required'=>'required']); ?>
-							</td>
-							<td width="15%">
-								<?php echo $this->Form->input('ref_name', ['type'=>'text','label' => false,'class' => 'form-control input-medium','required'=>'required']); ?>
-							</td>
-							<td width="15%">
-								<?php 
-								echo $this->Form->input('type_cr_dr', ['options'=>$option,'label' => false,'class' => 'form-control input-sm hide_cr_dr','required'=>'required','value'=>'Dr']); ?>
-							</td>
-							<td width="20%">
-								<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm debit_hide_show calculation rightAligntextClass','placeholder'=>'Debit']); ?>
-							
-								<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm credit_hide_show calculation rightAligntextClass','placeholder'=>'Credit','style'=>'display:none;']); ?>	
-							</td>
-						</tr>
-					</tbody>
-					<tfoot>
-						<tr>
-							<td >	
-								<button type="button" class="add_row1 btn btn-primary input-sm"><i class="fa fa-plus"></i> </button>
-							</td>
-						</tr>
-					</tfoot>
-					</table>
-				</td>
-		</tr>
 	</tbody>
 	<tfoot>
 		<tr>
@@ -358,7 +371,10 @@ $this->set('title', 'Payment Voucher');
 
 		$('.delete-tr').die().live('click',function() 
 		{
+			$(this).closest('tr').next('tr.tr2').hide();
+			$(this).closest('tr').next('tr').next('tr.tr3').hide();
 			$(this).closest('tr').remove();
+			
 			rename_rows();
 			total_debit_credit();
 		});
@@ -376,12 +392,12 @@ $this->set('title', 'Payment Voucher');
 			var open_window=($('option:selected',this).attr('open_window'));
 			//alert(open_window);
 			if(open_window=='bank'){
-				$(this).closest('tr').next('tr.tr2').show();
-				$(this).closest('tr').next('tr').next('tr.tr3').hide();
+				$(this).closest('tr').find('.bank_window').show();
+				$(this).closest('tr').find('.party_window').hide();
 			}
 			if(open_window=='party'){
-			$(this).closest('tr').next('tr').next('tr.tr3').show();
-			$(this).closest('tr').next('tr.tr2').hide();
+			$(this).closest('tr').find('.party_window').show();
+			$(this).closest('tr').find('.bank_window').hide();
 			}
 		});
 		
@@ -431,8 +447,7 @@ $this->set('title', 'Payment Voucher');
 		function rename_rows()
 		{
 			var i=0; 
-			$('#main_table tbody#main_tbody tr.tr1').each(function(){1 
-			var obj=$(this).closest('tr.tr1');
+			$('#main_table tbody#main_tbody tr.tr1').each(function(){
 				$(this).find('td:nth-child(2) select').select2().attr({name:'payment_rows['+i+'][ledger_id]',id:'payment_rows-'+i+'-ledger_id'});	
 				$(this).find('td:nth-child(3) input').attr({name:'payment_rows['+i+'][debit]', id:'payment_rows-'+i+'-debit'});
 				$(this).find('td:nth-child(4) input').attr({name:'payment_rows['+i+'][credit]', id:'payment_rows-'+i+'-credit'});
@@ -440,25 +455,27 @@ $this->set('title', 'Payment Voucher');
 				});
 			
 			var i=0;
-			$('#main_table tbody#main_tbody tr.tr2').each(function(){ 
+			$('#main_table tbody#main_tbody tr.tr2 table#bank_table tr.bnk_tr').each(function(){ 
+				
 				$(this).find('td:nth-child(1) input').attr({name:'payment_rows['+i+'][mode_of_payment]',id:'payment_rows-'+i+'-mode_of_payment'});	
 				$(this).find('td:nth-child(2) input').attr({name:'payment_rows['+i+'][cheque_no]', id:'payment_rows-'+i+'-cheque_no'});
-				$(this).find('td:nth-child(4) input').attr({name:'payment_rows['+i+'][cheque_date]', id:'payment_rows-'+i+'-cheque_date'});
-
+				$(this).find('td:nth-child(3) input').attr({name:'payment_rows['+i+'][cheque_date]', id:'payment_rows-'+i+'-cheque_date'});
+			
 				i++;
 			});
 			
-				var j=0; var i=0;
+			var k=0;
 				$('#main_table tbody#main_tbody tr.tr3').each(function(){ 
-					
-					$(this).find('td:nth-child(1) select').select2().attr({name:'payment_rows['+i+'][reference_details]['+j+'][type]',id:'payment_rows-'+i+'-reference_details-'+j+'-type'});	
-					$(this).find('td:nth-child(2) input').attr({name:'payment_rows['+i+'][reference_details]['+j+'][ref_name]', id:'payment_rows-'+i+'-reference_details-'+j+'-ref_name'});
-					$(this).find('td:nth-child(4) input').attr({name:'payment_rows['+i+'][reference_details]['+j+'][debit]', id:'payment_rows-'+i+'-reference_details-'+j+'-debit'});
-					$(this).find('td:nth-child(5) input').attr({name:'payment_rows['+i+'][reference_details]['+j+'][credit]', id:'payment_rows-'+i+'-reference_details-'+j+'-credit'});
+					var j=0; 
+					$(this).find('table#party_table tbody#main_tbody1 tr.maintr1').each(function(){
+					$(this).find('td:nth-child(1) select').select2().attr({name:'payment_rows['+k+'][reference_details]['+j+'][type]',id:'payment_rows-'+k+'-reference_details-'+j+'-type'});	
+					$(this).find('td:nth-child(2) input').attr({name:'payment_rows['+k+'][reference_details]['+j+'][ref_name]', id:'payment_rows-'+k+'-reference_details-'+j+'-ref_name'});
+					$(this).find('td:nth-child(4) input').attr({name:'payment_rows['+k+'][reference_details]['+j+'][debit]', id:'payment_rows-'+k+'-reference_details-'+j+'-debit'});
+					$(this).find('td:nth-child(5) input').attr({name:'payment_rows['+k+'][reference_details]['+j+'][credit]', id:'payment_rows-'+k+'-reference_details-'+j+'-credit'});
 					j++;
 				});
-				
-			
+				k++;
+				});
 		}
 
 		ComponentsPickers.init();

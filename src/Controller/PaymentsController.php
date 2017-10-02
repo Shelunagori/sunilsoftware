@@ -71,8 +71,7 @@ class PaymentsController extends AppController
 				$payment->voucher_no = 1;
 			} 
 			$payment = $this->Payments->patchEntity($payment, $this->request->getData());
-			pr($payment);
-			exit;
+			
 			if ($this->Payments->save($payment)) {
 				
 				$this->Flash->success(__('The payment has been saved.'));

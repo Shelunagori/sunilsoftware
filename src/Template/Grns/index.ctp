@@ -22,6 +22,8 @@ $this->set('title', 'GRNS');
 							<tr>
 								<th scope="col" class="actions">Sr. No.</th>
 								<th scope="col">Voucher No</th>
+								<th scope="col">Reference No</th>
+								<th scope="col">Supplier</th>
 								<th scope="col">Transaction Date</th>
 								<th scope="col" class="actions"><?= __('Actions') ?></th>
 							</tr>
@@ -34,6 +36,8 @@ $this->set('title', 'GRNS');
 							<tr>
 								<td><?= h(++$page_no) ?></td>
 								<td><?= h('#'.str_pad($grn->voucher_no, 4, '0', STR_PAD_LEFT)) ?></td>
+								<td><?= h($grn->reference_no) ?></td>
+								<td><?= h(@$grn->supplier_ledger->name) ?></td>
 								<td><?= h($grn->transaction_date) ?></td>
 								<td class="actions">
 									<?= $this->Html->link(__('View'), ['action' => 'view', $grn->id]) ?>

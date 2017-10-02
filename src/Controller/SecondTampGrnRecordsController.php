@@ -231,14 +231,14 @@ class SecondTampGrnRecordsController extends AppController
 		}
 		if($partyGroups)
 		{  
-			$Partyledgers = $this->SecondTampGrnRecords->Grns->GrnRows->Ledgers->find()
-							->where(['Ledgers.accounting_group_id IN' =>$partyGroups,'Ledgers.company_id'=>$company_id])
+			$Partyledgers = $this->SecondTampGrnRecords->Grns->SupplierLedgers->find()
+							->where(['SupplierLedgers.accounting_group_id IN' =>$partyGroups,'SupplierLedgers.company_id'=>$company_id])
 							->contain(['Suppliers']);
         }
 		
 		$partyOptions=[];
 		foreach($Partyledgers as $Partyledger){
-			$partyOptions[]=['text' =>str_pad(@$Partyledger->supplier->id, 4, '0', STR_PAD_LEFT).' - '.$Partyledger->name, 'value' => $Partyledger->id ,'party_state_id'=>@$Partyledger->supplier->state_id];
+			$partyOptions[]=['text' =>$Partyledger->name, 'value' => $Partyledger->id];
 		}
 		$this->set(compact('SecondTampGrnRecords','grn','voucher_no','partyOptions'));
         $this->set('_serialize', ['SecondTampGrnRecords']);
