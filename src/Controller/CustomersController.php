@@ -62,7 +62,7 @@ class CustomersController extends AppController
         if ($this->request->is('post')) {
 			
 			$customer = $this->Customers->patchEntity($customer, $this->request->data);
-			
+			$bill_to_bill_accounting=$customer->bill_to_bill_accounting;
 			if ($this->Customers->save($customer)) {
 				
 				$query=$this->Customers->query();
@@ -76,7 +76,7 @@ class CustomersController extends AppController
 				$ledger->accounting_group_id = $customer->accounting_group_id;
 				$ledger->company_id =$company_id;
 				$ledger->customer_id=$customer->id;
-				$ledger->bill_to_bill_accounting='no';//$customer->bill_to_bill_accounting;
+				$ledger->bill_to_bill_accounting=$$bill_to_bill_accounting;
 				
 				if($this->Customers->Ledgers->save($ledger))
 				{
@@ -167,11 +167,12 @@ class CustomersController extends AppController
 		$company_id=$this->Auth->User('session_company_id');
         if ($this->request->is(['patch', 'post', 'put'])) {
             $customer = $this->Customers->patchEntity($customer, $this->request->getData());
+			$bill_to_bill_accounting=$customer->bill_to_bill_accounting;
             if ($this->Customers->save($customer)) {
 				$query = $this->Customers->Ledgers->query();
 					$query->update()
-						->set(['name' => $customer->name,'accounting_group_id'=>$customer->accounting_group_id])
-						->where(['customer_id' => $id,'company_id'=>$company_id,'bill_to_bill_accounting'=>'yes'])
+						->set(['name' => $customer->name,'accounting_group_id'=>$customer->accounting_group_id,'bill_to_bill_accounting'=>$bill_to_bill_accounting])
+						->where(['customer_id' => $id,'company_id'=>$company_id])
 						->execute();
 						
 					//Accounting Entry

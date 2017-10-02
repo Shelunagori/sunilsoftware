@@ -37,7 +37,10 @@
             </tr>
         </thead>
         <tbody>
-            <?php $i=0; foreach ($intraLocationStockTransferVouchers as $intraLocationStockTransferVoucher): ?>
+            <?php $i=0; foreach ($intraLocationStockTransferVouchers as $intraLocationStockTransferVoucher):
+			
+			?>
+		
             <tr>
                 <td><?= $this->Number->format($i+1) ?></td>
 				<td><?= h(str_pad($intraLocationStockTransferVoucher->voucher_no, 4, '0', STR_PAD_LEFT)) ?></td>
@@ -46,23 +49,27 @@
                 <td><?= h($intraLocationStockTransferVoucher->TransferToLocations->name) ?></td>
                <td class="actions">
 			        <?php
-						if($status=='approved' && $intraLocationStockTransferVoucher->transfer_to_location_id==$location_id)
+						if($status=='approved')
 						{
 							$view ="viewApproved";
-							$edit = "editApproved";
 						}
-						elseif($status=='pending' || $status=="" || $status!='approved'){
+						if($status=='pending' || $status=="" || $status!='approved'){
 							$view ="view";
-							$edit = "edit";
 						}
+						
 						
 					?>
                     <?= $this->Html->link(__('View'), ['action' => @$view, $intraLocationStockTransferVoucher->id]) ?>
-                    <?= $this->Html->link(__('Edit'), ['action' => @$edit, $intraLocationStockTransferVoucher->id]) ?>
-						<?php  
-					if($status!='approved' && $intraLocationStockTransferVoucher->transfer_to_location_id==$location_id)
-					{
-					echo  $this->Html->link(__('Approve'), ['action' => 'Approved', $intraLocationStockTransferVoucher->id]); }?>
+					<?php if(($status=='approved') && ($intraLocationStockTransferVoucher->transfer_to_location_id == $location_id)){ ?>
+						
+					<?=	 $this->Html->link(__('Edit'), ['action' => 'editApproved', $intraLocationStockTransferVoucher->id]); ?>
+					 <?php }
+					 
+					if(($status=='pending' || $status=="" || $status!='approved')&&($intraLocationStockTransferVoucher->transfer_from_location_id==$location_id)){ ?>
+					<?= $this->Html->link(__('Edit'), ['action' => 'edit', $intraLocationStockTransferVoucher->id]); ?>
+					<?php } ?>
+					<?php if(($status=='pending' || $status=="" || $status!='approved') && ($intraLocationStockTransferVoucher->transfer_to_location_id==$location_id)){ ?>
+					<?= $this->Html->link(__('Approve'), ['action' => 'Approved', $intraLocationStockTransferVoucher->id]); } ?>
                 </td>
             </tr>
             <?php $i++; endforeach; ?>
