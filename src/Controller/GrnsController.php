@@ -23,7 +23,7 @@ class GrnsController extends AppController
 		$this->viewBuilder()->layout('index_layout');
 		$company_id=$this->Auth->User('session_company_id');
         $this->paginate = [
-            'contain' => ['Companies']
+            'contain' => ['Companies','SupplierLedgers']
         ];
         $grns = $this->paginate($this->Grns->find()->where(['Grns.company_id'=>$company_id]));
 		

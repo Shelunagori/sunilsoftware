@@ -49,7 +49,7 @@ class GrnsTable extends Table
 		$this->belongsTo('SupplierLedgers', [
 			'className' => 'Ledgers',
             'foreignKey' => 'supplier_ledger_id',
-            'joinType' => 'INNER'
+            'joinType' => 'LEFT'
         ]);
         $this->hasMany('GrnRows', [
             'foreignKey' => 'grn_id',
