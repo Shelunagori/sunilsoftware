@@ -46,6 +46,11 @@ class GrnsTable extends Table
             'foreignKey' => 'company_id',
             'joinType' => 'INNER'
         ]);
+		$this->belongsTo('SupplierLedgers', [
+			'className' => 'Ledgers',
+            'foreignKey' => 'supplier_ledger_id',
+            'joinType' => 'INNER'
+        ]);
         $this->hasMany('GrnRows', [
             'foreignKey' => 'grn_id',
 			'saveStrategy' => 'replace'
@@ -97,6 +102,7 @@ class GrnsTable extends Table
     {
         //$rules->add($rules->existsIn(['location_id'], 'Locations'));
         $rules->add($rules->existsIn(['company_id'], 'Companies'));
+        $rules->add($rules->existsIn(['supplier_ledger_id'], 'SupplierLedgers'));
 
         return $rules;
     }

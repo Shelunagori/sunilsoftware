@@ -162,8 +162,8 @@ class GrnsController extends AppController
 		}
 		if($partyGroups)
 		{  
-			$Partyledgers = $this->Grns->GrnRows->Ledgers->find()
-							->where(['Ledgers.accounting_group_id IN' =>$partyGroups,'Ledgers.company_id'=>$company_id])
+			$Partyledgers = $this->Grns->SupplierLedgers->find()
+							->where(['SupplierLedgers.accounting_group_id IN' =>$partyGroups,'SupplierLedgers.company_id'=>$company_id])
 							->contain(['Suppliers']);
         }
 		
