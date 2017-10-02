@@ -85,7 +85,7 @@ $this->set('title', 'Edit Customer');
 								</div>
 							</div>
 							<div class="col-md-2" style="padding-left: 0px;padding-right:0;">
-							    <label style="visibility:hidden;">s</label>
+							    <label style="visibility:hidden;"></label>
 								<?php $option =[['value'=>'Dr','text'=>'Dr'],['value'=>'Cr','text'=>'Cr']];
 								    $check="";
 								    if(!empty($account_entry->debit))

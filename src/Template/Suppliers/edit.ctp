@@ -43,7 +43,7 @@ $this->set('title', 'Edit Supplier');
 									<label>Bill to Bill Accounting </label>
 									<?php 
 									$option =[['value'=>'yes','text'=>'yes'],['value'=>'no','text'=>'no']];
-									echo $this->Form->control('bill_to_bill_accounting',['class'=>'form-control input-sm','label'=>false, 'options' => $option,'required'=>'required','value'=>$supplier->ledgers[0]->bill_to_bill_accounting]); ?>
+									echo $this->Form->control('bill_to_bill_accounting',['class'=>'form-control input-sm','label'=>false, 'options' => $option,'required'=>'required','value'=>$supplier->ledger->bill_to_bill_accounting]); ?>
 								</div>
 							</div>
 							<div class="col-md-6">
