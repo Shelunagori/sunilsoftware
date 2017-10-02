@@ -52,16 +52,20 @@ $this->set('title', 'Payment Voucher');
 											$option[]= ['value'=>'Dr','text'=>'Dr',];
 											echo $this->Form->input('type', ['options'=>$option,'label' => false,'class' => 'form-control input-sm','required'=>'required','value'=>'Cr','disabled'=>'disabled']); ?>
 										</td>
-										<td width="40%">
+										<td width="65%">
 											<?php echo $this->Form->input('ledger_id', ['options'=>@$ledgerOptions,'label' => false,'class' => 'form-control input-sm ledger','required'=>'required']); ?>
+											<div ="tr2 main_tr">
+											<?php echo 'hello'; ?>
+											</div>
+											
 										</td>
-										<td width="25%" >
+										<td width="10%" >
 											<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm rightAligntextClass','placeholder'=>'Debit','style'=>'display:none;']); ?>
 										</td>
-										<td width="25%">
+										<td width="10%">
 											<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm calculation rightAligntextClass','required'=>'required','placeholder'=>'Credit']); ?>	
 										</td>
-										<td align="center"  width="10%">
+										<td align="center"  width="5%">
 											<a class="btn btn-danger delete-tr btn-xs" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
 										</td>
 										
