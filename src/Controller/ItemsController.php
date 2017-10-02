@@ -44,7 +44,6 @@ class ItemsController extends AppController
             'contain' => ['Units', 'StockGroups']
         ];
         $items = $this->paginate($this->Items->find()->where(['Items.company_id'=>$company_id]));
-
         $this->set(compact('items'));
         $this->set('_serialize', ['items']);
     }

@@ -15,7 +15,8 @@ $this->set('title', 'GRNS');
 			</div>
 			<div class="portlet-body">
 				<div class="table-responsive">
-					<?php $page_no=$this->Paginator->current('grns'); $page_no=($page_no-1)*20; ?>
+					<?php $page_no=$this->Paginator->current('Grns'); 
+					$page_no=($page_no-1)*20; ?>
 					<table class="table table-bordered table-hover table-condensed">
 						<thead>
 							<tr>
@@ -26,12 +27,12 @@ $this->set('title', 'GRNS');
 							</tr>
 						</thead>
 						<tbody>
-							<?php 	$i=0;
+							<?php 
 									foreach ($grns as $grn): 
-									$i++;
+									
 							?>
 							<tr>
-								<td><?= h($i) ?></td>
+								<td><?= h(++$page_no) ?></td>
 								<td><?= h('#'.str_pad($grn->voucher_no, 4, '0', STR_PAD_LEFT)) ?></td>
 								<td><?= h($grn->transaction_date) ?></td>
 								<td class="actions">

@@ -380,10 +380,10 @@ $this->set('title', 'Create Sales Invoice');
 			$(this).find('.discountAmount').attr({name:'sales_invoice_rows['+i+'][net_amount]',id:'sales_invoice_rows['+i+'][net_amount]'});
 			$(this).find('.gstValue').attr({name:'sales_invoice_rows['+i+'][gst_value]',id:'sales_invoice_rows['+i+'][gst_value]'});
 			
-			if(i==0)
-			{
-			 $(this).closest('tr').find('.dlt').remove();
-			}
+			// if(i==0)
+			// {
+			 // $(this).closest('tr').find('.dlt').remove();
+			// }
 			i++;
 		});
 	}
