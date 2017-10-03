@@ -237,6 +237,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				var SelectedTr=$(this).closest('tr.MainTr');
 				renameRefRows(SelectedTr);
 			});
+			
 			$('.refType').die().live('change',function(){
 				var type=$(this).val();
 				var currentRefRow=$(this).closest('tr');
