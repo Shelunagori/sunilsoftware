@@ -83,19 +83,8 @@ class ReferenceDetailsTable extends Table
             ->requirePresence('type', 'create')
             ->notEmpty('type');
 
-        $validator
-            ->requirePresence('name', 'create')
-            ->notEmpty('name');
-
-        $validator
-            ->decimal('debit')
-            ->requirePresence('debit', 'create')
-            ->notEmpty('debit');
-
-        $validator
-            ->decimal('credit')
-            ->requirePresence('credit', 'create')
-            ->notEmpty('credit');
+      
+       
 
         return $validator;
     }
@@ -111,10 +100,6 @@ class ReferenceDetailsTable extends Table
     {
         $rules->add($rules->existsIn(['company_id'], 'Companies'));
         $rules->add($rules->existsIn(['ledger_id'], 'Ledgers'));
-        $rules->add($rules->existsIn(['receipt_id'], 'Receipts'));
-        $rules->add($rules->existsIn(['receipt_row_id'], 'ReceiptRows'));
-        $rules->add($rules->existsIn(['payment_id'], 'Payments'));
-        $rules->add($rules->existsIn(['payment_row_id'], 'PaymentRows'));
 
         return $rules;
     }
