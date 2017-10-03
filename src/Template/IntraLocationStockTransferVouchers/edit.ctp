@@ -61,13 +61,16 @@ $this->set('title', 'Create Inter Location stock Transfer Voucher');
 								<tr class="main_tr" class="tab">
 									<td width="7%"><?php echo $i+1;?></td>
 									<td width="50%">
-										<?php echo $this->Form->control('item_id', ['options' => $itemOptions,'label' => false,'class' => 'form-control input-sm','required'=>'required','value'=>$intra_location_stock_transfer_voucher_row->item_id]); 
+									<input type="hidden" name="" class="outStock" value="0">
+				                    <input type="hidden" name="" class="totStock " value="0">
+										<?php echo $this->Form->control('item_id', ['options' => $itemOptions,'label' => false,'class' => 'form-control input-sm itemStock','required'=>'required','value'=>$intra_location_stock_transfer_voucher_row->item_id]); 
 										echo $this->Form->control('intra_location_stock_transfer_voucher_rows.'.$i.'.id', ['value'=>$intra_location_stock_transfer_voucher_row->id,'type'=>'hidden']);
 										?>
+										<span class="itemQty" style="color:red ;font-size:10px;"></span>
 										</td>
 									
 									<td width="25%" >
-										<?php echo $this->Form->input('quantity', ['label' => false,'class' => 'form-control input-sm rightAligntextClass','placeholder'=>'Quantity','value'=>$intra_location_stock_transfer_voucher_row->quantity,'required']); ?>
+										<?php echo $this->Form->input('quantity', ['label' => false,'class' => 'form-control input-sm rightAligntextClass quantity','placeholder'=>'Quantity','value'=>$intra_location_stock_transfer_voucher_row->quantity,'required']); ?>
 									</td>
 									<td align="center">
 										<a class="btn btn-danger delete-tr btn-xs" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
@@ -154,11 +157,14 @@ $this->set('title', 'Create Inter Location stock Transfer Voucher');
 		<tr class="main_tr" class="tab">
 			<td width="7%"></td>
 			<td width="50%">
-				<?php echo $this->Form->control('item_id', ['options' => $itemOptions,'label' => false,'class' => 'form-control input-sm','required'=>'required']); ?>
+			    <input type="hidden" name="" class="outStock" value="0">
+				<input type="hidden" name="" class="totStock " value="0">
+				<?php echo $this->Form->control('item_id', ['options' => $itemOptions,'label' => false,'class' => 'form-control input-sm itemStock','required'=>'required']); ?>
+				<span class="itemQty" style="color:red ;font-size:10px;"></span>
 				</td>
 			
 			<td width="25%" >
-				<?php echo $this->Form->input('quantity', ['label' => false,'class' => 'form-control input-sm rightAligntextClass','placeholder'=>'Quantity','required']); ?>
+				<?php echo $this->Form->input('quantity', ['label' => false,'class' => 'form-control input-sm rightAligntextClass quantity','placeholder'=>'Quantity','required']); ?>
 			</td>
 			<td align="center">
 				<a class="btn btn-danger delete-tr btn-xs" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
@@ -169,8 +175,32 @@ $this->set('title', 'Create Inter Location stock Transfer Voucher');
 
 <?php
 	$js="
-	$(document).ready(function() {
-
+	$(document).ready(function() { 
+	$('.itemStock').die().live('change',function(){
+		var itemQ=$(this).closest('tr');
+		var itemId=$(this).val();
+		var url='".$this->Url->build(["controller" => "IntraLocationStockTransferVouchers", "action" => "ajaxItemQuantity"])."';
+		url=url+'/'+itemId
+		$.ajax({
+			url: url,
+			type: 'GET'
+			//dataType: 'text'
+		}).done(function(response) {
+			var fetch=$.parseJSON(response);
+			var text=fetch.text;
+			var type=fetch.type;
+			var mainStock=fetch.mainStock;
+			itemQ.find('.itemQty').html(text);
+			itemQ.find('.totStock').val(mainStock);
+			if(type=='true')
+			{
+				itemQ.find('.outStock').val(1);
+			}
+			else{
+				itemQ.find('.outStock').val(0);
+			}
+		});	
+		});
 		
 		$('.delete-tr').die().live('click',function() 
 		{
@@ -183,7 +213,6 @@ $this->set('title', 'Create Inter Location stock Transfer Voucher');
 			
 		}) ;
 
-
 		function add_row()
 		{
 			var tr=$('#sample_table tbody tr.main_tr').clone();
@@ -191,10 +220,7 @@ $this->set('title', 'Create Inter Location stock Transfer Voucher');
 
 			rename_rows();
 		}
-
-		
 		rename_rows();
-
 		function rename_rows()
 		{
 			var i=0;
@@ -208,33 +234,84 @@ $this->set('title', 'Create Inter Location stock Transfer Voucher');
 				i++;
 			});
 		}
-
-		
 	
 		ComponentsPickers.init();
 	});
+	
+	$( document ).ready( stockLoad );
+	function stockLoad()
+	{
+	$('#main_table tbody#main_tbody tr.main_tr').each(function(){ 
+		var itemQ=$(this).closest('tr');
+		var itemId=$('option:selected', this).attr('value');
+		var url='".$this->Url->build(["controller" => "IntraLocationStockTransferVouchers", "action" => "ajaxItemQuantity"])."';
+		url=url+'/'+itemId
+		$.ajax({
+			url: url,
+			type: 'GET'
+			//dataType: 'text'
+		}).done(function(response) {
+			var fetch=$.parseJSON(response);
+			var text=fetch.text;
+			var type=fetch.type;
+			var mainStock=fetch.mainStock;
+			itemQ.find('.itemQty').html(text);
+			itemQ.find('.totStock').val(mainStock);
+			if(type=='true')
+			{
+				itemQ.find('.outStock').val(1);
+			}
+			else{
+				itemQ.find('.outStock').val(0);
+			}
+		});	
+		});	
+	}
 
 	function checkValidation() 
-	{
-		
+	{  
 		var transfer_from  = $('.transfer_from').val();
-		var transfer_to = $('.transfer_to').val();
-		
-		if(transfer_from == transfer_to)
+			var transfer_to = $('.transfer_to').val();
+			if(transfer_from == transfer_to)
+			{
+				alert('Both the transfer location are same. Change the Location and try again...');
+				return false;
+			} 
+		var StockDB=[]; var StockInput = {};
+		$('#main_table tbody#main_tbody tr.main_tr').each(function()
 		{
-			alert('Both the transfer location are same. Change the Location and try again...');
+			var stock=$(this).find('td:nth-child(2) input.totStock').val();
+			var item_id=$(this).find('td:nth-child(2) select.itemStock option:selected').val();
+			var quantity=parseFloat($(this).find('td:nth-child(3) input.quantity').val());
+			var existingQty=parseFloat(StockInput[item_id]);
+			if(!existingQty){ existingQty=0; }
+			StockInput[item_id] = quantity+existingQty;
+			StockDB[item_id] = stock;
+		});
+		
+		var c=1;
+		$('#main_table tbody#main_tbody tr.main_tr').each(function()
+		{
+			var item_id=$(this).find('td:nth-child(2) select.itemStock option:selected').val();
+			if(StockInput[item_id]>StockDB[item_id]){
+				c=0;
+			}
+		});
+		if(c==0){
+			alert('Error: Stock is going in minus. Please Check');
 			return false;
 		}
-		else
+		if(confirm('Are you sure you want to submit!'))
 		{
 			$('.submit').attr('disabled','disabled');
 			$('.submit').text('Submiting...');
 			return true;
 		}
+		else
+		{
+			return false;
+		}
 	}
-	
-	
-	
 	";
 
 echo $this->Html->scriptBlock($js, array('block' => 'scriptBottom')); 

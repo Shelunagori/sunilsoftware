@@ -133,9 +133,52 @@ class IntraLocationStockTransferVouchersController extends AppController
 		$TransferToLocations = $this->IntraLocationStockTransferVouchers->TransferToLocations->find('list')->where(['company_id'=>$company_id]);
 		
 		$items = $this->IntraLocationStockTransferVouchers->IntraLocationStockTransferVoucherRows->Items->find()->where(['company_id'=>$company_id]);
+		// $itemOptions=[];
+					 // foreach($items as $item){
+					 // $itemOptions[]=['text'=>$item->item_code.' '.$item->name, 'value'=>$item->id];
+					 // }
+		// pr($itemOptions);exit;
+		$itemLedgers=[];
+		foreach($items->toArray() as $data)
+		{
+			$itemId=$data->id;
+			$query = $this->IntraLocationStockTransferVouchers->IntraLocationStockTransferVoucherRows->Items->ItemLedgers->find()
+			->where(['ItemLedgers.item_id' => $itemId, 'ItemLedgers.company_id' => $company_id]);
+			$totalInCase = $query->newExpr()
+			->addCase(
+				$query->newExpr()->add(['status' => 'In']),
+				$query->newExpr()->add(['quantity']),
+				'integer'
+			);
+		$totalOutCase = $query->newExpr()
+			->addCase(
+				$query->newExpr()->add(['status' => 'out']),
+				$query->newExpr()->add(['quantity']),
+				'integer'
+			);
+		$query->select([
+			'total_in' => $query->func()->sum($totalInCase),
+			'total_out' => $query->func()->sum($totalOutCase),'id','item_id'
+		])
+		->where(['ItemLedgers.item_id' => $itemId, 'ItemLedgers.company_id' => $company_id, 'ItemLedgers.location_id' => $location_id])
+		->group('item_id')
+		->autoFields(true)
+		->contain(['Items']);
+        $itemLedgers[] = ($query);
+		}
 		$itemOptions=[];
-		foreach($items as $item){
-			$itemOptions[]=['text'=>$item->item_code.' '.$item->name, 'value'=>$item->id];
+		foreach($itemLedgers as $d)
+		{
+			foreach($d as $dd)
+			{
+				$available_stock=$dd->total_in;
+				$stock_issue=$dd->total_out;
+				@$remaining=number_format($available_stock-$stock_issue, 2);
+				if($remaining>0)
+				{
+				$itemOptions[]=['text'=>$dd->item->item_code.' '.$dd->item->name, 'value'=>$dd->item_id];
+				}
+			}
 		}
         $this->set(compact('intraLocationStockTransferVoucher', 'companies', 'TransferFromLocations','TransferToLocations','items','voucher_no','itemOptions','location_id'));
         $this->set('_serialize', ['intraLocationStockTransferVoucher']);
@@ -195,10 +238,55 @@ class IntraLocationStockTransferVouchersController extends AppController
 		$TransferToLocations = $this->IntraLocationStockTransferVouchers->TransferToLocations->find('list')->where(['company_id'=>$company_id]);
 		
 		$items = $this->IntraLocationStockTransferVouchers->IntraLocationStockTransferVoucherRows->Items->find()->where(['company_id'=>$company_id]);
-		$itemOptions=[];
-		foreach($items as $item){
-			$itemOptions[]=['text'=>$item->item_code.' '.$item->name, 'value'=>$item->id];
+		// $itemOptions=[];
+					 // foreach($items as $item){
+					 // $itemOptions[]=['text'=>$item->item_code.' '.$item->name, 'value'=>$item->id];
+					 // }
+		// pr($itemOptions);exit;
+		$itemLedgers=[];
+		foreach($items->toArray() as $data)
+		{
+			$itemId=$data->id;
+			$query = $this->IntraLocationStockTransferVouchers->IntraLocationStockTransferVoucherRows->Items->ItemLedgers->find()
+			->where(['ItemLedgers.item_id' => $itemId, 'ItemLedgers.company_id' => $company_id]);
+			$totalInCase = $query->newExpr()
+			->addCase(
+				$query->newExpr()->add(['status' => 'In']),
+				$query->newExpr()->add(['quantity']),
+				'integer'
+			);
+		$totalOutCase = $query->newExpr()
+			->addCase(
+				$query->newExpr()->add(['status' => 'out']),
+				$query->newExpr()->add(['quantity']),
+				'integer'
+			);
+		$query->select([
+			'total_in' => $query->func()->sum($totalInCase),
+			'total_out' => $query->func()->sum($totalOutCase),'id','item_id'
+		])
+		->where(['ItemLedgers.item_id' => $itemId, 'ItemLedgers.company_id' => $company_id, 'ItemLedgers.location_id' => $location_id])
+		->group('item_id')
+		->autoFields(true)
+		->contain(['Items']);
+        $itemLedgers[] = ($query);
 		}
+		$itemOptions=[];
+		foreach($itemLedgers as $d)
+		{
+			foreach($d as $dd)
+			{
+				$available_stock=$dd->total_in;
+				$stock_issue=$dd->total_out;
+				@$remaining=number_format($available_stock-$stock_issue, 2);
+				if($remaining>0)
+				{
+				$itemOptions[]=['text'=>$dd->item->item_code.' '.$dd->item->name, 'value'=>$dd->item_id];
+				}
+			}
+		}
+		
+		
         $this->set(compact('intraLocationStockTransferVoucher', 'companies', 'TransferFromLocations','TransferToLocations','items','voucher_no','itemOptions','location_id'));
         $this->set('_serialize', ['intraLocationStockTransferVoucher']);
     }
@@ -312,6 +400,81 @@ class IntraLocationStockTransferVouchersController extends AppController
         $this->set(compact('intraLocationStockTransferVoucher', 'companies', 'TransferFromLocations','TransferToLocations','items','voucher_no','itemOptions','location_id'));
         $this->set('_serialize', ['intraLocationStockTransferVoucher']);
     }
+	
+	public function ajaxItemQuantity($itemId=null)
+    {
+	    $this->viewBuilder()->layout('');
+		$company_id=$this->Auth->User('session_company_id');
+		$stateDetails=$this->Auth->User('session_company');
+		$location_id=$this->Auth->User('session_location_id');
+		$state_id=$stateDetails->state_id;
+		$items = $this->IntraLocationStockTransferVouchers->IntraLocationStockTransferVoucherRows->Items->find()
+					->where(['Items.company_id'=>$company_id, 'Items.id'=>$itemId])
+					->contain(['Units'])->first();
+					$itemUnit=$items->unit->name;
+					
+		
+		$query = $this->IntraLocationStockTransferVouchers->IntraLocationStockTransferVoucherRows->Items->ItemLedgers->find()->where(['ItemLedgers.company_id'=>$company_id]);
+		$totalInCase = $query->newExpr()
+			->addCase(
+				$query->newExpr()->add(['status' => 'In']),
+				$query->newExpr()->add(['quantity']),
+				'integer'
+			);
+		$totalOutCase = $query->newExpr()
+			->addCase(
+				$query->newExpr()->add(['status' => 'out']),
+				$query->newExpr()->add(['quantity']),
+				'integer'
+			);
+		$query->select([
+			'total_in' => $query->func()->sum($totalInCase),
+			'total_out' => $query->func()->sum($totalOutCase),'id','item_id'
+		])
+		->where(['ItemLedgers.item_id' => $itemId, 'ItemLedgers.company_id' => $company_id, 'ItemLedgers.location_id' => $location_id])
+		->group('item_id')
+		->autoFields(true)
+		->contain(['Items']);
+        $itemLedgers = ($query);
+		
+		
+		
+		
+		if($itemLedgers->toArray())
+		{
+			  foreach($itemLedgers as $itemLedger){
+				   $available_stock=$itemLedger->total_in;
+				   $stock_issue=$itemLedger->total_out;
+				 @$remaining=number_format($available_stock-$stock_issue, 2);
+				 $mainstock=str_replace(',','',$remaining);
+				 $stock='current stock is '. $remaining. ' ' .$itemUnit;
+				 if($remaining>0)
+				 {
+				 $stockType='false';
+				 }
+				 else{
+				 $stockType='true';
+				 }
+				 $h=array('text'=>$stock, 'type'=>$stockType, 'mainStock'=>$mainstock);
+				 echo  $f=json_encode($h);
+			  }
+		  }
+		  else{
+		 
+				 @$remaining=0;
+				 $stock='current stock is '. $remaining. ' ' .$itemUnit;
+				 if($remaining>0)
+				 {
+				 $stockType='false';
+				 }
+				 else{
+				 $stockType='true';
+				 }
+				 $h=array('text'=>$stock, 'type'=>$stockType);
+				 echo  $f=json_encode($h);
+		  }
+		  exit;
+}	
     /**
      * Delete method
      *
