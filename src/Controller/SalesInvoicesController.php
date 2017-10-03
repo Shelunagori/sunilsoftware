@@ -30,6 +30,25 @@ class SalesInvoicesController extends AppController
         $this->set(compact('salesInvoices'));
         $this->set('_serialize', ['salesInvoices']);
     }
+	
+	public function reportFilter()
+    {
+		$this->viewBuilder()->layout('index_layout');
+		
+    }
+	
+	public function report()
+    {
+		$this->viewBuilder()->layout('index_layout');
+		$company_id=$this->Auth->User('session_company_id');
+		$this->paginate = [
+            'contain' => ['Companies', 'PartyLedgers', 'SalesLedgers']
+        ];
+		$salesInvoices = $this->paginate($this->SalesInvoices->find()->where(['SalesInvoices.company_id'=>$company_id]));
+		
+        $this->set(compact('salesInvoices'));
+        $this->set('_serialize', ['salesInvoices']);
+    }
     /**
      * View method
      *
