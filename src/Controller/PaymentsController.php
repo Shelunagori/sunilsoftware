@@ -71,7 +71,9 @@ class PaymentsController extends AppController
 			{
 				$payment->voucher_no = 1;
 			} 
-			$payment = $this->Payments->patchEntity($payment, $this->request->getData());
+			$payment = $this->Payments->patchEntity($payment, $this->request->getData(), [
+							'associated' => ['PaymentRows','PaymentRows.ReferenceDetails']
+						]);
 			
 			if ($this->Payments->save($payment)) {
 				
@@ -121,7 +123,7 @@ class PaymentsController extends AppController
 		
 		$referenceDetails=$this->Payments->PaymentRows->ReferenceDetails->find('list');
 		
-		$this->set(compact('payment', 'companies','voucher_no','ledgerOptions', 'referenceDetails'));
+		$this->set(compact('payment', 'company_id','voucher_no','ledgerOptions', 'referenceDetails'));
 		$this->set('_serialize', ['payment']);
     }
 

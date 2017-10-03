@@ -1,1 +1,2 @@
-<?php echo $this->Form->input('refType', ['options'=>$referenceDetails,'label' => false,'class' => 'form-control input-sm refType']); ?>
+<?php 
+echo $this->Form->input('refType', ['options'=>$option,'label' => false,'class' => 'form-control input-sm refList']); ?>

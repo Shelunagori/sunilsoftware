@@ -4,6 +4,7 @@
  */
 $this->set('title', 'Payment Voucher');
 ?>
+
 <div class="row">
 	<div class="col-md-12">
 		<div class="portlet light ">
@@ -33,7 +34,7 @@ $this->set('title', 'Payment Voucher');
 				</div>
 				<div class="row">
 						<div class="table-responsive">
-							<table id="MainTable" class="table table-condensed " width="100%">
+							<table id="MainTable" class="table table-condensed table-striped" width="100%">
 								<thead>
 									<tr>
 										<td></td>
@@ -76,26 +77,27 @@ $option_ref[]= ['value'=>'Against','text'=>'Against'];
 $option_ref[]= ['value'=>'Advance','text'=>'Advance'];
 $option_ref[]= ['value'=>'On Account','text'=>'On Account'];
 ?>
-<table id="sampleForRef" style="display:;" width="100%">
+
+
+<table id="sampleForRef" style="display:none;" width="100%">
 	<tbody>
 		<tr>
 			<td width="20%">
 				<input type="hidden" class="ledgerIdContainer" />
+				<input type="hidden" class="companyIdContainer" />
 				<?php 
 				echo $this->Form->input('type', ['options'=>$option_ref,'label' => false,'class' => 'form-control input-sm refType','required'=>'required']); ?>
 			</td>
 			<td width="">
-				<?php echo $this->Form->input('ref_name', ['type'=>'text','label' => false,'class' => 'input-sm']); ?>
+				<?php echo $this->Form->input('ref_name', ['type'=>'text','label' => false,'class' => 'form-control input-sm ref_name']); ?>
 			</td>
 			
 			<td width="20%" style="padding-right:0px;">
-				<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm debit_hide_show calculation rightAligntextClass','placeholder'=>'Amount']); ?>
-			
-				<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm credit_hide_show calculation rightAligntextClass','placeholder'=>'Amount','style'=>'display:none;']); ?>	
+				<?php echo $this->Form->input('amount', ['label' => false,'class' => 'form-control input-sm calculation rightAligntextClass','placeholder'=>'Amount']); ?>
 			</td>
 			<td width="10%" style="padding-left:0px;">
 				<?php 
-				echo $this->Form->input('type_cr_dr', ['options'=>['Dr'=>'Dr','Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm hide_cr_dr','value'=>'Dr']); ?>
+				echo $this->Form->input('type_cr_dr', ['options'=>['Dr'=>'Dr','Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm refDrCr','value'=>'Dr']); ?>
 			</td>
 			
 			<td align="center">
@@ -105,7 +107,38 @@ $option_ref[]= ['value'=>'On Account','text'=>'On Account'];
 	</tbody>
 </table>
 
-<table id="sampleMainTable" style="display:;" width="100%">
+
+<?php
+$option_mode[]= ['value'=>'Cheque',,'text'=>'Cheque']
+$option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
+?>
+<table id="sampleForBank" style="display:none;" width="100%">
+	<tbody>
+		<tr>
+			<td width="20%">
+				<?php 
+				echo $this->Form->input('mode_of_payment', ['empty'=>'--select--','options'=>$option_mode,'label' => false,'class' => 'form-control input-sm paymentType']); ?>
+			</td>
+			<td width="">
+				<?php echo $this->Form->input('cheque_no', ['label' =>false,'class' => 'form-control input-sm cheque_no','placeholder'=>'Cheque No']); ?> 
+			</td>
+			
+			<td width="20%" style="padding-right:0px;">
+				<?php echo $this->Form->input('amount', ['label' => false,'class' => 'form-control input-sm calculation rightAligntextClass','placeholder'=>'Amount']); ?>
+			</td>
+			<td width="10%" style="padding-left:0px;">
+				<?php 
+				echo $this->Form->input('type_cr_dr', ['options'=>['Dr'=>'Dr','Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm refDrCr','value'=>'Dr']); ?>
+			</td>
+			
+			<td align="center">
+				<a class="" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
+			</td>
+		</tr>
+	</tbody>
+</table>
+
+<table id="sampleMainTable" style="display:none;" width="100%">
 	<tbody class="sampleMainTbody">
 		<tr class="MainTr">
 			<td width="10%">
@@ -114,7 +147,7 @@ $option_ref[]= ['value'=>'On Account','text'=>'On Account'];
 			</td>
 			<td width="65%">
 				<?php echo $this->Form->input('ledger_id', ['empty'=>'--Select--','options'=>@$ledgerOptions,'label' => false,'class' => 'form-control input-sm ledger','required'=>'required']); ?>
-				<div class="window"></div>
+				<div class="window" style="margin:auto;"></div>
 			</td>
 			<td width="10%">
 				<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm  debitBox calculation rightAligntextClass','placeholder'=>'Debit']); ?>
@@ -188,16 +221,22 @@ $option_ref[]= ['value'=>'On Account','text'=>'On Account'];
 	<!-- END COMPONENTS DROPDOWNS -->
 <!-- END PAGE LEVEL SCRIPTS -->
 <?php
+	$kk='<input type="text" class="form-control input-sm ref_name">';
 	$js="
 		$(document).ready(function() {
+			$('.refDrCr').die().live('change',function(){
+				var SelectedTr=$(this).closest('tr.MainTr');
+				renameRefRows(SelectedTr);
+			});
 			$('.refType').die().live('change',function(){
 				var type=$(this).val();
 				var currentRefRow=$(this).closest('tr');
-				var ledger_id=$(this).closest('tr.MainTr').find('.ledger').val();
+				var ledger_id=$(this).closest('tr.MainTr').find('select.ledger option:selected').val();
+				
 				if(type=='Against'){
 					$(this).closest('tr').find('td:nth-child(2)').html('Loading Ref List...');
 					var url='".$this->Url->build(['controller'=>'ReferenceDetails','action'=>'listRef'])."';
-					
+					url=url+'/'+ledger_id;
 					$.ajax({
 						url: url,
 					}).done(function(response) { 
@@ -206,8 +245,11 @@ $option_ref[]= ['value'=>'On Account','text'=>'On Account'];
 				}else if(type=='On Account'){
 					currentRefRow.find('td:nth-child(2)').html('');
 				}else{
-					currentRefRow.find('td:nth-child(2)').html('<input type=text class=input-sm>');
+					currentRefRow.find('td:nth-child(2)').html('".$kk."');
+					
 				}
+				var SelectedTr=$(this).closest('tr.MainTr');
+				renameRefRows(SelectedTr);
 			});
 			
 			$('.cr_dr').die().live('change',function(){
@@ -227,7 +269,7 @@ $option_ref[]= ['value'=>'On Account','text'=>'On Account'];
 					var SelectedTr=$(this).closest('tr.MainTr');
 					var windowContainer=$(this).closest('td').find('div.window');
 					windowContainer.html('');
-					windowContainer.html('<table width=100%><thead><tr><th>Type</th><th>Name</th><th>Amount</th><th></th></tr></thead><tbody></tbody><tfoot><td colspan=4></td></tfoot></table><a role=button class=addRefRow>Add Row</a>');
+					windowContainer.html('<table width=90%><tbody></tbody><tfoot><td colspan=4></td></tfoot></table><a role=button class=addRefRow>Add Row</a>');
 					AddRefRow(SelectedTr);
 				}
 			});
@@ -237,7 +279,7 @@ $option_ref[]= ['value'=>'On Account','text'=>'On Account'];
 			});
 			
 			addMainRow();
-			function addMainRow(){ console.log('hello');
+			function addMainRow(){
 				var tr=$('#sampleMainTable tbody.sampleMainTbody tr.MainTr').clone();
 				$('#MainTable tbody#MainTbody').append(tr);
 				renameMainRows();
@@ -272,13 +314,30 @@ $option_ref[]= ['value'=>'On Account','text'=>'On Account'];
 			function renameRefRows(SelectedTr){
 				var i=0;
 				var ledger_id=SelectedTr.find('td:nth-child(2) select.ledger').val();
+				
 				SelectedTr.find('input.ledgerIdContainer').val(ledger_id);
+				SelectedTr.find('input.companyIdContainer').val(".$company_id.");
 				var row_no=SelectedTr.attr('row_no');
 				SelectedTr.find('td:nth-child(2) div.window table tbody tr').each(function(){
-					$(this).find('td:nth-child(1) input.ledgerIdContainer').attr({name:'payment_rows['+row_no+']['reference_details'][i]['ledger_id']',id:'payment_rows['+row_no+']['reference_details'][i]['ledger_id']'});
-					$(this).find('td:nth-child(1) select.cr_dr').attr({name:'payment_rows['+row_no+']['reference_details'][i]['type']',id:'payment_rows['+row_no+']['reference_details'][i]['ledger_id']'});
+					$(this).find('td:nth-child(1) input.companyIdContainer').attr({name:'payment_rows['+row_no+'][reference_details]['+i+'][company_id]',id:'payment_rows-'+row_no+'-reference_details-'+i+'-company_id'});
+					$(this).find('td:nth-child(1) input.ledgerIdContainer').attr({name:'payment_rows['+row_no+'][reference_details]['+i+'][ledger_id]',id:'payment_rows-'+row_no+'-reference_details-'+i+'-ledger_id'});
+					$(this).find('td:nth-child(1) select.refType').attr({name:'payment_rows['+row_no+'][reference_details]['+i+'][type]',id:'payment_rows-'+row_no+'-reference_details-'+i+'-type'});
+					var is_select=$(this).find('td:nth-child(2) select.refList').length;
+					var is_input=$(this).find('td:nth-child(2) input.ref_name').length;
+					if(is_select){
+						$(this).find('td:nth-child(2) select.refList').attr({name:'payment_rows['+row_no+'][reference_details]['+i+'][ref_name]',id:'payment_rows-'+row_no+'-reference_details-'+i+'-ref_name'});
+					}else if(is_input){
+						$(this).find('td:nth-child(2) input.ref_name').attr({name:'payment_rows['+row_no+'][reference_details]['+i+'][ref_name]',id:'payment_rows-'+row_no+'-reference_details-'+i+'-ref_name'});
+					}
+					var Dr_Cr=$(this).find('td:nth-child(4) select option:selected').val();
+					if(Dr_Cr=='Dr'){
+						$(this).find('td:nth-child(3) input').attr({name:'payment_rows['+row_no+'][reference_details]['+i+'][debit]',id:'payment_rows-'+row_no+'-reference_details-'+i+'-debit'});
+					}else{
+						$(this).find('td:nth-child(3) input').attr({name:'payment_rows['+row_no+'][reference_details]['+i+'][credit]',id:'payment_rows-'+row_no+'-reference_details-'+i+'-credit'});
+					}
 					i++;
 				});
+				
 			}
 		});
 	";
