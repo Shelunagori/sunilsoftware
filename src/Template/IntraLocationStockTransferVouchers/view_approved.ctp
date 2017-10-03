@@ -47,8 +47,15 @@ table.fixed td { overflow: hidden; }
 					</thead>
 					<tbody id='main_tbody' class="tab">
 					 <?php 
-						$i=0;									
+						$i=0;
+						$sendQty=0;
+						$recQty=0;
 						foreach($intraLocationStockTransferVoucher->intra_location_stock_transfer_voucher_rows as $intra_location_stock_transfer_voucher_row):
+						
+						$sendQty+=$intra_location_stock_transfer_voucher_row->quantity;
+						$recQty+=$intra_location_stock_transfer_voucher_row->receive_quantity;
+						
+						
 					?>
 						<tr class="main_tr" class="tab">
 							<td width="10%">
@@ -66,6 +73,9 @@ table.fixed td { overflow: hidden; }
 							</td>
 						</tr>
 					<?php $i++; endforeach; ?>
+					<tr><td colspan="2" align="right"><b>Total</b></td>
+					<td align="right"><b><?php echo $sendQty;?></b></td>
+					<td align="right"><b><?php echo $recQty;?></b></td></tr>
 					</tbody>
 					
 				</table>
