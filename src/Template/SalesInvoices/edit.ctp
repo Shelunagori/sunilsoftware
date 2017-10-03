@@ -36,7 +36,36 @@ foreach($partyOptions as $partyOption)
 						<div class="col-md-3">
 							<div class="form-group">
 								<label>Voucher No :</label>&nbsp;&nbsp;
-								<?= h('#'.str_pad($salesInvoice->voucher_no, 4, '0', STR_PAD_LEFT)) ?>
+								<?php
+								    $date = date('Y-m-d', strtotime($salesInvoice->transaction_date));
+									$d = date_parse_from_format('Y-m-d',$date);
+									$yr=$d["year"];$year= substr($yr, -2);
+									if($d["month"]=='01' || $d["month"]=='02' || $d["month"]=='03')
+									{
+									  $startYear=$year-1;
+									  $endYear=$year;
+									  $financialyear=$startYear.'-'.$endYear;
+									}
+									else
+									{
+									  $startYear=$year;
+									  $endYear=$year+1;
+									  $financialyear=$startYear.'-'.$endYear;
+									}
+								if($coreVariable['company_name']=='DANGI SAREES')
+								{
+								$field='DS';
+								}
+								else if($coreVariable['company_name']=='SUNIL TEXTILES')
+								{
+								$field='ST';
+								}
+								else if($coreVariable['company_name']=='SUNIL GARMENTS')
+								{
+								$field='SG';
+								}
+								?>
+								<?= $field.'/'.$financialyear.'/'. h(str_pad($salesInvoice->voucher_no, 3, '0', STR_PAD_LEFT))?>
 							</div>
 						</div>
 						<div class="col-md-3">
@@ -157,6 +186,14 @@ foreach($partyOptions as $partyOption)
 						</td>
 						<td colspan="2">
 						<?php echo $this->Form->input('amount_before_tax', ['label' => false,'class' => 'form-control input-sm amount_before_tax rightAligntextClass','required'=>'required', 'readonly'=>'readonly','placeholder'=>'', 'tabindex'=>'-1']); ?>	
+						</td>
+						</tr>
+						
+						<tr>
+						<td colspan="6" align="right"><b>Discount Amount</b>
+						</td>
+						<td colspan="2">
+						<?php echo $this->Form->input('discount_amount', ['label' => false,'class' => 'form-control input-sm toalDiscount rightAligntextClass','required'=>'required', 'readonly'=>'readonly','placeholder'=>'', 'tabindex'=>'-1', 'style'=>'padding-right:25px']); ?>	
 						</td>
 						</tr>
 						
@@ -511,7 +548,8 @@ foreach($partyOptions as $partyOption)
 			var s_igst=0;
 			var newsgst=0;
 			var newigst=0;
-			var exactgstvalue=0;		
+			var exactgstvalue=0;
+            var totDiscounts=0;			
 			$('#main_table tbody#main_tbody tr.main_tr').each(function()
 			{
 			
@@ -533,6 +571,7 @@ foreach($partyOptions as $partyOption)
 				var discount  = parseFloat($(this).find('.discount').val());
 				if(!discount){discount=0;}
 				var discountValue=(discount*totamount)/100;
+				totDiscounts=round(parseFloat(totDiscounts)+parseFloat(discountValue), 2);
 				var discountAmount=totamount-discountValue;
 				$(this).find('.discountAmount').val(discountAmount.toFixed(2));
 
@@ -625,6 +664,7 @@ foreach($partyOptions as $partyOption)
 			$('.roundValue').val(round_of.toFixed(2));
 			$('.isRoundofType').val(isRoundofType);
 			$('.outOfStock').val(outOfStockValue);
+			$('.toalDiscount').val(totDiscounts);
 			rename_rows();
 		}
 		
