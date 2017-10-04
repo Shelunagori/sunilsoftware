@@ -64,7 +64,6 @@ class PaymentRowsTable extends Table
             ->integer('id')
             ->allowEmpty('id', 'create');
 		
-		
 		return $validator;
     }
 

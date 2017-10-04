@@ -20,11 +20,7 @@
 			$ar[]=$grn_row;
 		}
 	} 
-	foreach($grn->grn_rows as $grn_row){
-		for($i=0; $i<$grn_row->quantity; $i++){
-			$ar[]=$grn_row;
-		}
-	}
+	
 	?>
 	
 		<?php 
