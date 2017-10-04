@@ -21,11 +21,12 @@ class ReceiptsController extends AppController
      */
     public function index()
     {
+	$this->viewBuilder()->layout('index_layout');
+	$company_id=$this->Auth->User('session_company_id');
         $this->paginate = [
             'contain' => ['Companies']
         ];
-        $receipts = $this->paginate($this->Receipts);
-
+        $receipts = $this->paginate($this->Receipts->find()->where(['Receipts.company_id'=>$company_id]));
         $this->set(compact('receipts'));
         $this->set('_serialize', ['receipts']);
     }
@@ -57,10 +58,10 @@ class ReceiptsController extends AppController
         $receipt = $this->Receipts->newEntity();
 		$company_id=$this->Auth->User('session_company_id');
         if ($this->request->is('post')) {
-		 $receipt = $this->Receipts->patchEntity($receipt, $this->request->getData());
+		 $receipt = $this->Receipts->patchEntity($receipt, $this->request->getData(),['associated' => ['ReceiptRows','ReceiptRows.ReferenceDetails']]);
+		  $tdate=$this->request->data('transaction_date');
+		 $receipt->transaction_date=date('Y-m-d',strtotime($tdate));
 		 
-		 pr($receipt->toArray());
-		 exit;
 		 
             if ($this->Receipts->save($receipt)) {
                 $this->Flash->success(__('The receipt has been saved.'));
@@ -78,49 +79,35 @@ class ReceiptsController extends AppController
 		{
 			$voucher_no=1;
 		}
-        $partyParentGroups = $this->Receipts->ReceiptRows->Ledgers->AccountingGroups->find()
-						->where(['AccountingGroups.company_id'=>$company_id]);
-		$partyGroups=[];
-		foreach($partyParentGroups as $partyParentGroup)
+		
+		$bankParentGroups = $this->Receipts->ReceiptRows->Ledgers->AccountingGroups->find()
+						->where(['AccountingGroups.company_id'=>$company_id, 'AccountingGroups.bank'=>'1']);
+		$bankGroups=[];
+		foreach($bankParentGroups as $bankParentGroup)
 		{
 			$accountingGroups = $this->Receipts->ReceiptRows->Ledgers->AccountingGroups
-			->find('children', ['for' => $partyParentGroup->id])->toArray();
-			$partyGroups[]=$partyParentGroup->id;
+			->find('children', ['for' => $bankParentGroup->id])->toArray();
+			$bankGroups[]=$bankParentGroup->id;
 			foreach($accountingGroups as $accountingGroup){
-				$partyGroups[]=$accountingGroup->id;
+				$bankGroups[]=$accountingGroup->id;
 			}
 		}
 		
-		if($partyGroups)
-		{  
-			$Partyledgers = $this->Receipts->ReceiptRows->Ledgers->find()
-							->where(['Ledgers.accounting_group_id IN' =>$partyGroups,'Ledgers.company_id'=>$company_id])
-							->contain(['Customers']);
-        }
-		$partyOptions=[];
-		
-		foreach($Partyledgers as $Partyledger){
-		$prty = $this->Receipts->ReceiptRows->Ledgers->AccountingGroups->find()
-						->where(['AccountingGroups.id'=>$Partyledger->accounting_group_id])->first();
-		
-		if($prty->bank== '1'){
-				$partyOptions[]=['text' =>str_pad(@$Partyledger->customer->customer_id, 4, '0', STR_PAD_LEFT).' - '.$Partyledger->name, 'value' => $Partyledger->id ,'party_state_id'=>@$Partyledger->customer->state_id, 'open_window'=>'bank'];
+		$ledgers = $this->Receipts->ReceiptRows->Ledgers->find()->where(['company_id'=>$company_id]);
+		foreach($ledgers as $ledger){
+			if(in_array($ledger->accounting_group_id,$bankGroups)){
+				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id ,'open_window' => 'bank'];
 			}
-			 else if($Partyledger->bill_to_bill_accounting == 'yes'){
-				$partyOptions[]=['text' =>str_pad(@$Partyledger->customer->customer_id, 4, '0', STR_PAD_LEFT).' - '.$Partyledger->name, 'value' => $Partyledger->id ,'party_state_id'=>@$Partyledger->customer->state_id, 'open_window'=>'reference'];
-			}
-			else if($prty->bank== '0' && $Partyledger->bill_to_bill_accounting== 'no' && $prty->name== 'Sundry Creditors'){
-				$partyOptions[]=['text' =>str_pad(@$Partyledger->customer->customer_id, 4, '0', STR_PAD_LEFT).' - '.$Partyledger->name, 'value' => $Partyledger->id ,'party_state_id'=>@$Partyledger->customer->state_id, 'open_window'=>'on_account'];
-			}
-			else if($prty->bank== '0' && $Partyledger->bill_to_bill_accounting== 'no' && $prty->name== 'Sundry Debtors'){
-				$partyOptions[]=['text' =>str_pad(@$Partyledger->customer->customer_id, 4, '0', STR_PAD_LEFT).' - '.$Partyledger->name, 'value' => $Partyledger->id ,'party_state_id'=>@$Partyledger->customer->state_id, 'open_window'=>'on_account'];
+			else if($ledger->bill_to_bill_accounting == 'yes'){
+				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id,'open_window' => 'party' ];
 			}
 			else{
-			$partyOptions[]=['text' =>str_pad(@$Partyledger->customer->customer_id, 4, '0', STR_PAD_LEFT).' - '.$Partyledger->name, 'value' => $Partyledger->id ,'party_state_id'=>@$Partyledger->customer->state_id, 'open_window'=>'no'];
+				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id,'open_window' => 'no' ];
 			}
 		}
+		$referenceDetails=$this->Receipts->ReceiptRows->ReferenceDetails->find('list');
         $companies = $this->Receipts->Companies->find('list', ['limit' => 200]);
-        $this->set(compact('receipt', 'companies','voucher_no','partyOptions','company_id'));
+        $this->set(compact('receipt', 'companies','voucher_no','ledgerOptions','company_id','referenceDetails'));
         $this->set('_serialize', ['receipt']);
     }
 

@@ -8,23 +8,21 @@
         <li class="heading"><?= __('Actions') ?></li>
         <li><?= $this->Form->postLink(
                 __('Delete'),
-                ['action' => 'delete', $receipt->id],
-                ['confirm' => __('Are you sure you want to delete # {0}?', $receipt->id)]
+                ['action' => 'delete', $payment->id],
+                ['confirm' => __('Are you sure you want to delete # {0}?', $payment->id)]
             )
         ?></li>
-        <li><?= $this->Html->link(__('List Receipts'), ['action' => 'index']) ?></li>
+        <li><?= $this->Html->link(__('List Payments'), ['action' => 'index']) ?></li>
         <li><?= $this->Html->link(__('List Companies'), ['controller' => 'Companies', 'action' => 'index']) ?></li>
         <li><?= $this->Html->link(__('New Company'), ['controller' => 'Companies', 'action' => 'add']) ?></li>
-        <li><?= $this->Html->link(__('List Receipt Rows'), ['controller' => 'ReceiptRows', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New Receipt Row'), ['controller' => 'ReceiptRows', 'action' => 'add']) ?></li>
-        <li><?= $this->Html->link(__('List Reference Details'), ['controller' => 'ReferenceDetails', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New Reference Detail'), ['controller' => 'ReferenceDetails', 'action' => 'add']) ?></li>
+        <li><?= $this->Html->link(__('List Payment Rows'), ['controller' => 'PaymentRows', 'action' => 'index']) ?></li>
+        <li><?= $this->Html->link(__('New Payment Row'), ['controller' => 'PaymentRows', 'action' => 'add']) ?></li>
     </ul>
 </nav>
-<div class="receipts form large-9 medium-8 columns content">
-    <?= $this->Form->create($receipt) ?>
+<div class="payments form large-9 medium-8 columns content">
+    <?= $this->Form->create($payment) ?>
     <fieldset>
-        <legend><?= __('Edit Receipt') ?></legend>
+        <legend><?= __('Edit Payment') ?></legend>
         <?php
             echo $this->Form->control('voucher_no');
             echo $this->Form->control('company_id', ['options' => $companies]);

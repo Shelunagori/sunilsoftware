@@ -51,8 +51,9 @@ class ReceiptRowsTable extends Table
             'foreignKey' => 'ledger_id',
             'joinType' => 'INNER'
         ]);
-        $this->hasMany('ReferenceDetails', [
-            'foreignKey' => 'receipt_row_id'
+       $this->hasMany('ReferenceDetails', [
+            'foreignKey' => 'receipt_row_id',
+			'saveStrategy'=>'replace'
         ]);
     }
 

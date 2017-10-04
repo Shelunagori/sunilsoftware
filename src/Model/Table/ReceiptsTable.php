@@ -62,19 +62,19 @@ class ReceiptsTable extends Table
             ->integer('id')
             ->allowEmpty('id', 'create');
 
-        $validator
+     /*    $validator
             ->integer('voucher_no')
             ->requirePresence('voucher_no', 'create')
             ->notEmpty('voucher_no');
-/* 
+
         $validator
             ->date('transaction_date')
             ->requirePresence('transaction_date', 'create')
-            ->notEmpty('transaction_date'); */
+            ->notEmpty('transaction_date'); 
 
         $validator
             ->requirePresence('narration', 'create')
-            ->notEmpty('narration');
+            ->notEmpty('narration'); */
 
         return $validator;
     }

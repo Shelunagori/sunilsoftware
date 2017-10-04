@@ -2,171 +2,173 @@
 /**
  * @Author: PHP Poets IT Solutions Pvt. Ltd.
  */
-$this->set('title', 'Receipt');
+$this->set('title', 'Receipt Voucher');
 ?>
+
 <div class="row">
-	<div class="col-md-9">
+	<div class="col-md-12">
 		<div class="portlet light ">
 			<div class="portlet-title">
 				<div class="caption">
 					<i class="icon-bar-chart font-green-sharp hide"></i>
-					<span class="caption-subject font-green-sharp bold ">Receipt</span>
+					<span class="caption-subject font-green-sharp bold ">Receipt Voucher</span>
+				</div>
+				<div class="actions">
 				</div>
 			</div>
 			<div class="portlet-body">
-				<?= $this->Form->create($receipt,['onsubmit'=>'return checkValidation()']) ?>
-					<div class="row">
-						<div class="col-md-3">
-							<div class="form-group">
-								<label>Voucher No :</label>&nbsp;&nbsp;
-								<?= h('#'.str_pad($voucher_no, 4, '0', STR_PAD_LEFT)) ?>
-								<input type="hidden" value="<?php echo $voucher_no;?>" name="voucher_no">
-								<input type="hidden" value="<?php echo $company_id;?>" name="company_id">
-							</div>
-						</div>
-						<div class="col-md-3">
-							<div class="form-group">
-								<label>Transaction Date <span class="required">*</span></label>
-								<?php echo $this->Form->control('transaction_date',['class'=>'form-control input-sm date-picker','data-date-format'=>'dd-mm-yyyy','label'=>false,'placeholder'=>'DD-MM-YYYY','type'=>'text','data-date-start-date'=>@$coreVariable[fyValidFrom],'data-date-end-date'=>@$coreVariable[fyValidTo],'value'=>date('d-m-Y')]); ?>
-							</div>
+				<?= $this->Form->create($receipt) ?>
+				<div class="row">
+					<div class="col-md-3">
+						<div class="form-group">
+							<label>Voucher No :</label>&nbsp;&nbsp;
+							<?= h('#'.str_pad($voucher_no, 4, '0', STR_PAD_LEFT)) ?>
+						
+						<input type="hidden" name="voucher_no" value="<?php echo $voucher_no;?>" >
+						<input type="hidden" name="company_id" value="<?php echo $company_id;?>" >
 						</div>
 					</div>
-					<br>
-					<div class="row">
+					<div class="col-md-3">
+						<div class="form-group">
+							<label>Transaction Date <span class="required">*</span></label>
+							<?php echo $this->Form->control('transaction_date',['class'=>'form-control input-sm date-picker','data-date-format'=>'dd-mm-yyyy', 'label'=>false,'placeholder'=>'DD-MM-YYYY','type'=>'text','data-date-start-date'=>@$coreVariable[fyValidFrom],'data-date-end-date'=>@$coreVariable[fyValidTo],'value'=>date('d-m-Y'),'required'=>'required']); ?>
+						</div>
+					</div>
+				</div>
+				<div class="row">
 						<div class="table-responsive">
-							<table id="main_table" class="table table-condensed table-bordered main_table" style="margin-bottom: 4px;" width="100%">
+							<table id="MainTable" class="table table-condensed table-striped" width="100%">
 								<thead>
-									<tr align="center">
-										<td><label></td>
-										<td><label>Particulars<label></td>
-										<td><label>Debit<label></td>
-										<td><label>Credit<label></td>
+									<tr>
 										<td></td>
+										<td>Particulars</td>
+										<td>Debit</td>
+										<td>Credit</td>
+										<td width="10%"></td>
 									</tr>
 								</thead>
-								<tbody id='main_tbody' class="tab">
-									<tr class="main_tr" class="tab">
-										<td width="10%">
-											<?php
-											$option[]= ['value'=>'Cr','text'=>'Cr'];
-											echo $this->Form->input('type', ['options'=>$option,'label' => false,'class' => 'form-control input-sm','value'=>'Cr']); ?>
-										</td>
-										<td width="15%">
-											<?php echo $this->Form->input('ledger_id', ['options'=>@$partyOptions,'label' => false,'class' => 'form-control input-medium ledger_id','required'=>'required']); ?>
-										</td>
-										<td width="25%" >
-											<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm rightAligntextClass calculation mainDebit','placeholder'=>'Debit','style'=>'display:none;']); ?>
-										</td>
-										<td width="25%">
-											<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm calculation rightAligntextClass mainCredit','placeholder'=>'Credit','required'=>'required']); ?>	
-										</td>
-										<td align="center"></td>
-									</tr>
-									<!---->
-									<tr class="banktr tab" style="display:none;  background-color:#eeeeee">
-									<td width="10%">
-											</td>
-										<td width="10%">
-											<?php 
-											unset($option1);
-											$option1[]= ['value'=>'Cheque','text'=>'Cheque'];
-				                            $option1[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
-											echo $this->Form->input('mode_of_payment', ['empty'=>'--select--','options'=>$option1,'label' =>false,'class' => 'form-control input-sm']); ?>
-										</td>
-										<td width="25%" >
-											<?php echo $this->Form->input('cheque_no', ['label' =>false,'class' => 'form-control input-sm cheque_no','placeholder'=>'Cheque No']); ?>
-										</td>
-										<td width="25%" >
-											<?php echo $this->Form->input('cheque_date', ['label' =>false,'class' => 'form-control input-sm cheque_date date-picker','data-date-format'=>'dd-mm-yyyy','placeholder'=>'Cheque Date', 'value'=>date('d-m-Y')]); ?>
-										</td>
-										<td align="center"></td>
-									</tr>
-									<!---->
-									<!---->
-									<tr class="partytr tab" style="display:none; background-color:#eeeeee">
-									<td colspan="5">
-									<table id="main_table1" class="table table-condensed table-bordered main_table1" style="margin-bottom: 4px;" width="100%">
-									<tbody id='main_tbody1' class="tab">
-									<tr class="main_tr1 tab">
-										<td width="20%">
-											<?php
-											unset($option2);											
-											$option2[]= ['value'=>'New Ref','text'=>'New Ref'];
-											$option2[]= ['value'=>'Agst Ref','text'=>'Agst Ref'];
-											$option2[]= ['value'=>'Advance','text'=>'Advance'];
-											$option2[]= ['value'=>'On Account','text'=>'On Account'];
-											echo $this->Form->input('ref_type', ['empty'=>'--select--','options'=>$option2,'label' =>false,'class' => 'form-control input-sm refClass']); ?>
-										</td>
-										<td width="20%" class="refClass1">
-											<!--<?php echo $this->Form->input('name', ['label' =>false,'class' => 'form-control input-sm cheque_no','placeholder'=>'Name']); ?>-->
-										</td>
-										<td width="10%">
-											<?php 
-											unset($option);
-											$option[]= ['value'=>'Cr','text'=>'Cr',];
-											$option[]= ['value'=>'Dr','text'=>'Dr',];
-											echo $this->Form->input('type', ['options'=>$option,'label' => false,'class' => 'form-control input-sm hide_cr_dr','value'=>'Cr']); ?>
-										</td>
-										<td width="25%" >
-											<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm rightAligntextClass debit_hide_show calculation1','placeholder'=>'Debit','style'=>'display:none;']); ?>
-										</td>
-										<td width="25%">
-											<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm calculation1 rightAligntextClass credit_hide_show','placeholder'=>'Credit']); ?>	
-										</td>
-										</tr>
-										</tbody>
-										<tfoot>
-									    <tr>
-										<td>	
-											<button type="button" class="add_row1 btn btn-primary input-sm"><i class="fa fa-plus"></i> </button>
-										</td>
-										<td colspan="2">&nbsp;</td>
-										<td width="25%" >
-											<?php echo $this->Form->input('party_debit', ['label' => false,'class' => 'form-control input-sm party_total_debit rightAligntextClass','id'=>'','placeholder'=>'Party Total Debit','type'=>'text']); ?>
-										</td>
-										<td width="25%" >
-											<?php echo $this->Form->input('party_credit', ['label' => false,'class' => 'form-control input-sm party_total_credit rightAligntextClass','id'=>'','placeholder'=>'Party Total Credit']); ?>
-										</td>
-										</tr>
-										</tfoot>
-										</table></td></tr>
-									<!---->
+								<tbody id='MainTbody' class="tab">
+									
 								</tbody>
 								<tfoot>
 									<tr>
-										<td colspan="2" >	
-											<button type="button" class="add_row btn btn-default input-sm"><i class="fa fa-plus"></i> Add row</button>
+										<td colspan="5" >	
+											<button type="button" class="AddMainRow btn btn-default input-sm"><i class="fa fa-plus"></i> Add row</button>
 										</td>
-										<td width="25%" >
-											<?php echo $this->Form->input('voucher_amount', ['label' => false,'class' => 'form-control input-sm total_debit rightAligntextClass','id'=>'total_inward','placeholder'=>'Total Debit','type'=>'text', 'readonly'=>'readonly']); ?>
-										</td>
-										<td width="25%" >
-											<?php echo $this->Form->input('amount', ['label' => false,'class' => 'form-control input-sm total_credit rightAligntextClass','id'=>'total_inward','placeholder'=>'Total Credit', 'readonly'=>'readonly']); ?>
-											
-										</td>
-										<td></td>
 									</tr>
 								</tfoot>
 							</table>
 						</div>
 					</div>
-				  
-				<div class="row">
-					<div class="col-md-4">
-						<div class="form-group">
-							<label>Narration </label>
-							<?php echo $this->Form->control('narration',['class'=>'form-control input-sm ','label'=>false,'placeholder'=>'Narration','rows'=>'2']); ?>
+					<div class="row">
+						<div class="col-md-5">
+							<div class="form-group">
+								<label>Narration </label>
+								<?php echo $this->Form->control('narration',['class'=>'form-control input-sm ','label'=>false,'placeholder'=>'Narration','rows'=>'4']); ?>
+							</div>
 						</div>
 					</div>
-				</div>
-				<?= $this->Form->button(__('Submit'),['class'=>'btn btn-success']) ?>
+				<?= $this->Form->button(__('Submit'),['class'=>'btn btn-success submit'])  ?>
 				<?= $this->Form->end() ?>
 			</div>
 		</div>
 	</div>
 </div>
+<?php
+$option_ref[]= ['value'=>'New Ref','text'=>'New Ref'];
+$option_ref[]= ['value'=>'Against','text'=>'Against'];
+$option_ref[]= ['value'=>'Advance','text'=>'Advance'];
+$option_ref[]= ['value'=>'On Account','text'=>'On Account'];
+?>
 
 
+<table id="sampleForRef" style="display:none;" width="100%">
+	<tbody>
+		<tr>
+			<td width="20%">
+				<input type="hidden" class="ledgerIdContainer" />
+				<input type="hidden" class="companyIdContainer" />
+				<?php 
+				echo $this->Form->input('type', ['options'=>$option_ref,'label' => false,'class' => 'form-control input-sm refType','required'=>'required']); ?>
+			</td>
+			<td width="">
+				<?php echo $this->Form->input('ref_name', ['type'=>'text','label' => false,'class' => 'form-control input-sm ref_name','placeholder'=>'Reference Name','required'=>'required']); ?>
+			</td>
+			
+			<td width="20%" style="padding-right:0px;">
+				<?php echo $this->Form->input('amount', ['label' => false,'class' => 'form-control input-sm calculation rightAligntextClass','placeholder'=>'Amount','required'=>'required']); ?>
+			</td>
+			<td width="10%" style="padding-left:0px;">
+				<?php 
+				echo $this->Form->input('type_cr_dr', ['options'=>['Dr'=>'Dr','Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm  calculation refDrCr','value'=>'Dr']); ?>
+			</td>
+			
+			<td align="center">
+				<a class="" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
+			</td>
+		</tr>
+	</tbody>
+</table>
+
+
+<?php
+$option_mode[]= ['value'=>'Cheque','text'=>'Cheque'];
+$option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
+?>
+<table id="sampleForBank" style="display:none;" width="100%">
+	<tbody>
+		<tr>
+			<td width="30%">
+				<?php 
+				echo $this->Form->input('mode_of_payment', ['options'=>$option_mode,'label' => false,'class' => 'form-control input-sm paymentType','required'=>'required']); ?>
+			</td>
+			<td width="30%">
+				<?php echo $this->Form->input('cheque_no', ['label' =>false,'class' => 'form-control input-sm cheque_no','placeholder'=>'Cheque No']); ?> 
+			</td>
+			
+			<td width="30%">
+				<?php echo $this->Form->input('cheque_date', ['label' =>false,'class' => 'form-control input-sm date-picker cheque_date ','data-date-format'=>'dd-mm-yyyy','placeholder'=>'Cheque Date']); ?>
+			</td>
+			
+			
+		</tr>
+	</tbody>
+</table>
+
+<table id="sampleMainTable" style="display:none;" width="100%">
+	<tbody class="sampleMainTbody">
+		<tr class="MainTr">
+			<td width="10%">
+				<?php 
+				echo $this->Form->input('cr_dr', ['options'=>['Dr'=>'Dr','Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm cr_dr','required'=>'required','value'=>'Dr']); ?>
+			</td>
+			<td width="65%">
+				<?php echo $this->Form->input('ledger_id', ['empty'=>'--Select--','options'=>@$ledgerOptions,'label' => false,'class' => 'form-control input-sm ledger','required'=>'required']); ?>
+				<div class="window" style="margin:auto;"></div>
+			</td>
+			<td width="10%">
+				<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm  debitBox rightAligntextClass','placeholder'=>'Debit']); ?>
+			</td>
+			<td width="10%">
+				<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm creditBox rightAligntextClass','placeholder'=>'Credit','style'=>'display:none;']); ?>	
+			</td>
+			<td align="center"  width="10%">
+				<a class="btn btn-danger delete-tr btn-xs" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
+			</td>
+		</tr>
+		
+	</tbody>
+	<tfoot >
+		<tr>
+			<td colspan="2" >	
+				<button type="button" class="add_row btn btn-default input-sm"><i class="fa fa-plus"></i> Add row</button>
+			</td>
+		</tr>
+	</tfoot>
+</table>
+
+
+		
 <!-- BEGIN PAGE LEVEL STYLES -->
 	<!-- BEGIN COMPONENTS PICKERS -->
 	<?php echo $this->Html->css('/assets/global/plugins/clockface/css/clockface.css', ['block' => 'PAGE_LEVEL_CSS']); ?>
@@ -215,357 +217,207 @@ $this->set('title', 'Receipt');
 	<?php echo $this->Html->script('/assets/admin/pages/scripts/components-dropdowns.js', ['block' => 'PAGE_LEVEL_SCRIPTS_JS']); ?>
 	<!-- END COMPONENTS DROPDOWNS -->
 <!-- END PAGE LEVEL SCRIPTS -->
-
-<table id="sample_table" class="main_table" style="display:none;" width="100%">
-	<tbody>
-		<tr class="main_tr" class="tab">
-			<td width="10%">
-				<?php 
-				echo $this->Form->input('type', ['options'=>$option,'label' => false,'class' => 'form-control input-sm hide_cr_dr','value'=>'Dr']); ?>
-			</td>
-			<td width="15%">
-				<?php echo $this->Form->input('ledger_id', ['options'=>@$partyOptions,'label' => false,'class' => 'form-control input-medium ledger_id']); ?>
-			</td>
-			<td width="25%">
-				<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm debit_hide_show calculation rightAligntextClass mainDebit','placeholder'=>'Debit', 'required'=>'required']); ?>
-			</td>
-			<td width="25%">
-				<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm credit_hide_show calculation rightAligntextClass mainCredit','placeholder'=>'Credit','style'=>'display:none;']); ?>	
-			</td>
-			<td align="center">
-				<a class="btn btn-danger delete-tr btn-xs" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-trash-o"></i></a>
-			</td>
-		</tr>
-		<!---->
-		<tr class="banktr tab" style="display:none; background-color:#eeeeee">
-			<td width="10%">
-			</td>
-			<td width="10%">
-				<?php 
-				unset($option1);
-				$option1[]= ['value'=>'Cheque','text'=>'Cheque'];
-				$option1[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
-				echo $this->Form->input('mode_of_payment', ['empty'=>'--select--','options'=>$option1,'label' =>false,'class' => 'form-control input-sm']); ?>
-			</td>
-			<td width="25%" >
-				<?php echo $this->Form->input('cheque_no', ['label' =>false,'class' => 'form-control input-sm cheque_no','placeholder'=>'Cheque No']); ?>
-			</td>
-			<td width="25%" >
-				<?php echo $this->Form->input('cheque_date', ['label' =>false,'class' => 'form-control input-sm cheque_date date-picker','data-date-format'=>'dd-mm-yyyy','placeholder'=>'Cheque Date']); ?>
-			</td>
-			<td align="center"></td>
-		</tr>
-		<!---->
-			<!---->
-				<tr class="partytr tab" style="display:none; background-color:#eeeeee">
-									<td colspan="4">
-									<table id="main_table1" class="table table-condensed table-bordered main_table1" style="margin-bottom: 4px;" width="100%">
-									<tbody id='main_tbody1' class="tab">
-									<tr class="main_tr1 tab">
-										<td width="20%">
-											<?php 
-											unset($option2);
-											$option2[]= ['value'=>'New Ref','text'=>'New Ref'];
-											$option2[]= ['value'=>'Agst Ref','text'=>'Agst Ref'];
-											$option2[]= ['value'=>'Advance','text'=>'Advance'];
-											$option2[]= ['value'=>'On Account','text'=>'On Account'];
-											echo $this->Form->input('ref_type', ['options'=>$option2,'label' =>false,'class' => 'form-control input-sm refClass','required'=>'required']); ?>
-										</td>
-										<td width="20%" class="refClass1">
-											<!--<?php echo $this->Form->input('name', ['label' =>false,'class' => 'form-control input-sm cheque_no','placeholder'=>'Name']); ?>-->
-										</td>
-										<td width="10%">
-											<?php 
-											unset($option);
-											$option[]= ['value'=>'Cr','text'=>'Cr'];
-											$option[]= ['value'=>'Dr','text'=>'Dr'];
-											echo $this->Form->input('type', ['options'=>$option,'label' => false,'class' => 'form-control input-sm hide_cr_dr','value'=>'Cr']); ?>
-										</td>
-										<td width="25%" >
-											<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm rightAligntextClass debit_hide_show calculation1','placeholder'=>'Debit','style'=>'display:none;']); ?>
-										</td>
-										<td width="25%">
-											<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm calculation1 rightAligntextClass credit_hide_show','placeholder'=>'Credit']); ?>	
-										</td>
-										</tr>
-										</tbody>
-										<tfoot>
-						<tr>
-							<td >	
-								<button type="button" class="add_row1 btn btn-primary input-sm"><i class="fa fa-plus"></i> </button>
-							</td>
-							<td colspan="2">&nbsp;</td>
-							<td width="25%" >
-											<?php echo $this->Form->input('party_debit', ['label' => false,'class' => 'form-control input-sm party_total_debit rightAligntextClass','id'=>'','placeholder'=>'Party Total Debit','type'=>'text']); ?>
-										</td>
-										<td width="25%" >
-											<?php echo $this->Form->input('party_credit', ['label' => false,'class' => 'form-control input-sm party_total_credit rightAligntextClass','id'=>'','placeholder'=>'Party Total Credit']); ?>
-											
-										</td>
-						</tr>
-					</tfoot>
-										</table></td></tr>
-									<!---->
-	</tbody>
-</table>
-
-<table id="sample_table1" style="display:none;" width="100%">
-	<tbody>
-			<tr class="main_tr1 tab">
-										<td width="20%">
-											<?php 
-											unset($option2);
-											$option2[]= ['value'=>'New Ref','text'=>'New Ref'];
-											$option2[]= ['value'=>'Agst Ref','text'=>'Agst Ref'];
-											$option2[]= ['value'=>'Advance','text'=>'Advance'];
-											$option2[]= ['value'=>'On Account','text'=>'On Account'];
-											echo $this->Form->input('ref_type', ['options'=>$option2,'label' =>false,'class' => 'form-control input-sm refClass']); ?>
-										</td>
-										<td width="20%" class="refClass1">
-											<!--<?php echo $this->Form->input('name', ['label' =>false,'class' => 'form-control input-sm cheque_no','placeholder'=>'Name']); ?>-->
-										</td>
-										<td width="10%">
-											<?php 
-											unset($option);
-											$option[]= ['value'=>'Cr','text'=>'Cr',];
-											$option[]= ['value'=>'Dr','text'=>'Dr',];
-											echo $this->Form->input('type', ['options'=>$option,'label' => false,'class' => 'form-control input-sm hide_cr_dr','value'=>'Cr']); ?>
-										</td>
-										<td width="25%" >
-											<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm rightAligntextClass debit_hide_show calculation1','placeholder'=>'Debit','style'=>'display:none;']); ?>
-										</td>
-										<td width="25%">
-											<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm calculation1 rightAligntextClass credit_hide_show','placeholder'=>'Credit']); ?>	
-										</td>
-										<td align="center">
-				<a class="btn btn-danger delete-tr1 btn-xs" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-remove"></i></a>
-			</td>
-										</tr>
-									<!---->
-	</tbody>
-</table>
 <?php
+	$kk='<input type="text" class="form-control input-sm ref_name">';
+	$total_input='<input type="text" class="form-control input-sm rightAligntextClass total" readonly>';
+	$total_type='<input type="text" class="form-control input-sm total_type" readonly>';
 	$js="
-	$(document).ready(function() { 
-       
-	   $('.ledger_id').die().live('change',function() 
-		{
-			var ledger_id = $(this).val(); 
-			var open_window=$('option:selected', this).attr('open_window');
-			//alert(open_window);
-			//var account_type=$('option:selected', this).attr('account_type');
-			//alert(account_type);
-			if(open_window=='reference')
-			{
-			    $(this).closest('tr').next('tr').next('tr.partytr').show();
-				$(this).closest('tr').next('tr.banktr').hide();
-			}
-			else if(open_window=='bank')
-			{
-				$(this).closest('tr').next('tr.banktr').show();
-				$(this).closest('tr').next('tr').next('tr.partytr').hide();
-			}
-			else if(open_window=='on_account'){
-				$(this).closest('tr').next('tr.banktr').hide();
-				$(this).closest('tr').next('tr').next('tr.partytr').hide();
-			}
-			else if(open_window=='no'){
-				$(this).closest('tr').next('tr.banktr').hide();
-				$(this).closest('tr').next('tr').next('tr.partytr').hide();
-			}
-		});
-		
-		$('.refClass').die().live('change',function(){
-		var itemQ=$(this).closest('tr');
-		var itemvalue=$(this).val();
-		var ledgerId=$(this).closest('table').parent().parent().parent().find('select.ledger_id option:selected').val();
-		var url='".$this->Url->build(["controller" => "Receipts", "action" => "ajaxReferenceDetails"])."';
-		url=url+'/'+itemvalue
-		$.ajax({
-			url: url,
-			type: 'GET'
-			//dataType: 'text'
-		}).done(function(response) {
-		//alert(response);
-				itemQ.find('.refClass1').html(response);
-		});	
-		});
-		
-		$('.calculation').die().live('keyup',function()
-		{ 
-			total_debit_credit();
-		});
-		
-		function total_debit_credit()
-		{
-			var total_debit_amount  = 0;
-			var total_credit_amount = 0;
-			$('.mainDebit').each(function()
-			{
-				var debit_amount  = parseFloat($(this).val());
-				if(debit_amount)
-				{
-					total_debit_amount  = parseFloat(total_debit_amount)+parseFloat(debit_amount);
+		$(document).ready(function() {
+			$('.paymentType').die().live('change',function(){
+				var type=$(this).val();	
+				var currentRefRow=$(this).closest('tr');
+				if(type=='NEFT/RTGS'){
+					currentRefRow.find('td:nth-child(2)').hide();
+					currentRefRow.find('td:nth-child(3)').hide();
 				}
-			});
-			$('.mainCredit').each(function()
-			{
-				var credit_amount  = parseFloat($(this).val());
-				if(credit_amount)
-				{
-					total_credit_amount = parseFloat(total_credit_amount)+parseFloat(credit_amount);
+				else{
+					currentRefRow.find('td:nth-child(2)').show();
+					currentRefRow.find('td:nth-child(3)').show();
 				}
 			});
 			
-			$('.total_debit').val(total_debit_amount);
-			$('.total_credit').val(total_credit_amount);
-		}
-
-		$('.calculation1').die().live('keyup',function()
-		{ 
-		    var obj=$(this).closest('table');
-			party_total_debit_credit(obj);
-		});
-
-		function party_total_debit_credit(obj)
-		{
-			var party_total_debit_amount  = 0;
-			var party_total_credit_amount = 0;
-			obj.find('tr.main_tr1').each(function()
-			{
-				var debit_amount  = parseFloat($(this).find('td:nth-child(4) input').val());
-				var credit_amount = parseFloat($(this).find('td:nth-child(5) input').val());
-				if(debit_amount)
-				{
-					party_total_debit_amount  = parseFloat(party_total_debit_amount)+parseFloat(debit_amount);
+			$('.refDrCr').die().live('change',function(){
+				var SelectedTr=$(this).closest('tr.MainTr');
+				renameRefRows(SelectedTr);
+			});
+			
+			$('.refType').die().live('change',function(){
+				var type=$(this).val();
+				var currentRefRow=$(this).closest('tr');
+				var ledger_id=$(this).closest('tr.MainTr').find('select.ledger option:selected').val();
+				
+				if(type=='Against'){
+					$(this).closest('tr').find('td:nth-child(2)').html('Loading Ref List...');
+					var url='".$this->Url->build(['controller'=>'ReferenceDetails','action'=>'listRef'])."';
+					url=url+'/'+ledger_id;
+					$.ajax({
+						url: url,
+					}).done(function(response) { 
+						currentRefRow.find('td:nth-child(2)').html(response);
+					});
+				}else if(type=='On Account'){
+					currentRefRow.find('td:nth-child(2)').html('');
+				}else{
+					currentRefRow.find('td:nth-child(2)').html('".$kk."');
+					
 				}
-				if(credit_amount)
-				{
-					party_total_credit_amount = parseFloat(party_total_credit_amount)+parseFloat(credit_amount);
+				var SelectedTr=$(this).closest('tr.MainTr');
+				renameRefRows(SelectedTr);
+			});
+			
+			$('.cr_dr').die().live('change',function(){
+				var cr_dr=$(this).val();
+				if(cr_dr=='Cr'){
+					$(this).closest('tr').find('.debitBox').hide();
+					$(this).closest('tr').find('.creditBox').show();
+				}else{
+					$(this).closest('tr').find('.debitBox').show();
+					$(this).closest('tr').find('.creditBox').hide();
 				}
 			});
-			obj.find('.party_total_debit').val(party_total_debit_amount);
-			obj.find('.party_total_credit').val(party_total_credit_amount);
-		}
-		$('.delete-tr').die().live('click',function() 
-		{
-		$(this).closest('tr').next().next('tr.partytr').remove();
-		$(this).closest('tr').next('tr.banktr').remove();
-		$(this).closest('tr').remove();
-			rename_rows();
-			total_debit_credit();
-		});
-		$('.delete-tr1').die().live('click',function() 
-		{
-			$(this).closest('tr').remove();
-			rename_rows();
-		});
-		
-		$('.hide_cr_dr').die().live('change',function() 
-		{
-			var check_debit_or_credit = $(this).val(); 
-			if(check_debit_or_credit=='Dr')
-			{
-				$(this).closest('tr').find('.debit_hide_show').show();
-		$(this).closest('tr').find('.debit_hide_show').attr('required','required');
-		$(this).closest('tr').find('.credit_hide_show').removeAttr('required','required');
-				$(this).closest('tr').find('.credit_hide_show').val('');
-				$(this).closest('tr').find('.credit_hide_show').hide();
-				
-			}
-			else if(check_debit_or_credit=='Cr')
-			{
-				$(this).closest('tr').find('.debit_hide_show').hide();
-				$(this).closest('tr').find('.debit_hide_show').val('');
-				$(this).closest('tr').find('.credit_hide_show').show();
-		$(this).closest('tr').find('.credit_hide_show').attr('required','required');
-		$(this).closest('tr').find('.debit_hide_show').removeAttr('required','required');
-			}
-		});
-
-		$('.add_row').click(function(){
-			add_row();
-		}) ;
-
-		function add_row()
-		{
-			var main_tr=$('#sample_table tbody tr.main_tr').clone();
-			$('#main_table tbody#main_tbody').append(main_tr);
-			var banktr=$('#sample_table tbody tr.banktr').clone();
-			$('#main_table tbody#main_tbody').append(banktr);
-			var partytr=$('#sample_table tbody tr.partytr').clone();
-			$('#main_table tbody#main_tbody').append(partytr);
-			rename_rows();
-			$('.banktr').hidden();
 			
-		}
-		
-		$('.add_row1').live('click',function(){
- 			var main_tr1=$('#sample_table1 tbody tr.main_tr1').clone();
-			$(this).closest('#main_table1').append(main_tr1);
-			rename_rows();
+			$('.ledger').die().live('change',function(){
+				var openWindow=$(this).find('option:selected').attr('open_window');
+				if(openWindow=='party'){
+					var SelectedTr=$(this).closest('tr.MainTr');
+					var windowContainer=$(this).closest('td').find('div.window');
+					windowContainer.html('');
+					windowContainer.html('<table width=90%><tbody></tbody><tfoot><td colspan=2></td><td>$total_input</td><td>$total_type</td></tfoot></table><a role=button class=addRefRow>Add Row</a>');
+					AddRefRow(SelectedTr);
+				}
+				else if(openWindow=='bank'){
+					var SelectedTr=$(this).closest('tr.MainTr')
+					var windowContainer=$(this).closest('td').find('div.window');
+					windowContainer.html('');
+					windowContainer.html('<table width=90%><tbody></tbody><tfoot><td colspan=4></td></tfoot></table>');
+					AddBankRow(SelectedTr);
+				}
+			});
 			
-		}) ;
-		rename_rows();
-		
-        function rename_rows()
-		{
-			var i=0; 
-			$('#main_table tbody#main_tbody tr.main_tr').each(function(){ 
-			var obj=$(this).closest('tr').next();
-			var partyObj=$(this).closest('tr').next().next();
-			$(this).find('td:nth-child(1) select').select2().attr({name:'receipt_rows['+i+'][type]',id:'receipt_rows-'+i+'-type'});	
-				$(this).find('td:nth-child(2) select').select2().attr({name:'receipt_rows['+i+'][ledger_id]',id:'receipt_rows-'+i+'-ledger_id'});	
-				$(this).find('td:nth-child(3) input').attr({name:'receipt_rows['+i+'][debit]', id:'receipt_rows-'+i+'-debit'});
-				$(this).find('td:nth-child(4) input').attr({name:'receipt_rows['+i+'][credit]', id:'receipt_rows-'+i+'-credit'});
-				
-				obj.find('td:nth-child(2) select').select2().attr({name:'receipt_rows['+i+'][mode_of_payment]',id:'receipt_rows-'+i+'-mode_of_payment'});	
-				obj.find('td:nth-child(3) input').attr({name:'receipt_rows['+i+'][cheque_no]', id:'receipt_rows-'+i+'-cheque_no'});
-				obj.find('td:nth-child(4) input').attr({name:'receipt_rows['+i+'][cheque_date]', id:'receipt_rows-'+i+'-cheque_date'});
-				
-				 var j=0;
-				$('#main_table1 tbody#main_tbody1 tr.main_tr1').each(function(){ 
-				partyObj.find('td:nth-child(1) select').select2().attr({name:'receipt_rows['+i+'][reference_details]['+j+'][ref_type]',id:'receipt_rows-'+i+'-reference_details-'+j+'-ref_type'});	
-					partyObj.find('td:nth-child(2) input').attr({name:'receipt_rows['+i+'][reference_details]['+j+'][ref_name]', id:'receipt_rows-'+i+'-reference_details-'+j+'-ref_name'});
-					partyObj.find('td:nth-child(4) input').attr({name:'receipt_rows['+i+'][reference_details]['+j+'][debit]', id:'receipt_rows-'+i+'-reference_details-'+j+'-debit'});
-					partyObj.find('td:nth-child(5) input').attr({name:'receipt_rows['+i+'][reference_details]['+j+'][credit]', id:'receipt_rows-'+i+'-reference_details-'+j+'-credit'});
-				j++;
-				}); 
-				
-				i++;
+			$('.AddMainRow').die().live('click',function(){ 
+				addMainRow();
+			});
+			
+			addMainRow();
+			function addMainRow(){
+				var tr=$('#sampleMainTable tbody.sampleMainTbody tr.MainTr').clone();
+				$('#MainTable tbody#MainTbody').append(tr);
+				renameMainRows();
+			}
+			
+			
+			
+			function renameMainRows(){
+				var i=0;
+				$('#MainTable tbody#MainTbody tr.MainTr').each(function(){
+					$(this).attr('row_no',i);
+					$(this).find('td:nth-child(1) select.cr_dr').attr({name:'receipt_rows['+i+'][cr_dr]',id:'receipt_rows-'+i+'-cr_dr'});
+					$(this).find('td:nth-child(2) select.ledger').attr({name:'receipt_rows['+i+'][ledger_id]',id:'receipt_rows-'+i+'-ledger_id'}).select2();
+					$(this).find('td:nth-child(3) input.debitBox').attr({name:'receipt_rows['+i+'][debit]',id:'receipt_rows-'+i+'-debit'});
+					$(this).find('td:nth-child(4) input.creditBox').attr({name:'receipt_rows['+i+'][credit]',id:'receipt_rows-'+i+'-credit'});
+					i++;
 				});
 			}
-
-		ComponentsPickers.init();
-	});
-
-	 function checkValidation() 
-	{ 
-			var total_debit  = $('.total_debit').val();
-			var total_credit = $('.total_credit').val();
-
-			alert(total_debit);
-			alert(total_credit);
-			if(total_debit!=total_credit)
-			{
-				alert('Credit and debit value not matched');
-				return false;
+			
+			$('.addBankRow').die().live('click',function(){
+				var SelectedTr=$(this).closest('tr.MainTr');
+				AddBankRow(SelectedTr);
+			});
+			
+			function AddBankRow(SelectedTr){
+				var bankTr=$('#sampleForBank tbody tr').clone();
+				console.log(bankTr);
+				SelectedTr.find('td:nth-child(2) div.window table tbody').append(bankTr);
+				renameBankRows(SelectedTr);
 			}
-			else
+			
+			function renameBankRows(SelectedTr){
+				var row_no=SelectedTr.attr('row_no');
+				SelectedTr.find('td:nth-child(2) div.window table tbody tr').each(function(){
+					$(this).find('td:nth-child(1) select.paymentType').attr({name:'receipt_rows['+row_no+'][mode_of_payment]',id:'receipt_rows-'+row_no+'-mode_of_payment'});
+					$(this).find('td:nth-child(2) input.cheque_no').attr({name:'receipt_rows['+row_no+'][cheque_no]',id:'receipt_rows-'+row_no+'-cheque_no'});
+					$(this).find('td:nth-child(3) input.cheque_date').attr({name:'receipt_rows['+row_no+'][cheque_date]',id:'receipt_rows-'+row_no+'-cheque_date'}).datepicker();
+				});
+				
+			}
+			
+			$('.addRefRow').die().live('click',function(){
+				var SelectedTr=$(this).closest('tr.MainTr');
+				AddRefRow(SelectedTr);
+			});
+			
+			function AddRefRow(SelectedTr){
+				var refTr=$('#sampleForRef tbody tr').clone();
+				//console.log(refTr);
+				SelectedTr.find('td:nth-child(2) div.window table tbody').append(refTr);
+				renameRefRows(SelectedTr);
+			}
+			
+			function renameRefRows(SelectedTr){
+				var i=0;
+				var ledger_id=SelectedTr.find('td:nth-child(2) select.ledger').val();
+				
+				SelectedTr.find('input.ledgerIdContainer').val(ledger_id);
+				SelectedTr.find('input.companyIdContainer').val(".$company_id.");
+				var row_no=SelectedTr.attr('row_no');
+				SelectedTr.find('td:nth-child(2) div.window table tbody tr').each(function(){
+					$(this).find('td:nth-child(1) input.companyIdContainer').attr({name:'receipt_rows['+row_no+'][reference_details]['+i+'][company_id]',id:'receipt_rows-'+row_no+'-reference_details-'+i+'-company_id'});
+					$(this).find('td:nth-child(1) input.ledgerIdContainer').attr({name:'receipt_rows['+row_no+'][reference_details]['+i+'][ledger_id]',id:'receipt_rows-'+row_no+'-reference_details-'+i+'-ledger_id'});
+					$(this).find('td:nth-child(1) select.refType').attr({name:'receipt_rows['+row_no+'][reference_details]['+i+'][type]',id:'receipt_rows-'+row_no+'-reference_details-'+i+'-type'});
+					var is_select=$(this).find('td:nth-child(2) select.refList').length;
+					var is_input=$(this).find('td:nth-child(2) input.ref_name').length;
+					if(is_select){
+						$(this).find('td:nth-child(2) select.refList').attr({name:'receipt_rows['+row_no+'][reference_details]['+i+'][ref_name]',id:'receipt_rows-'+row_no+'-reference_details-'+i+'-ref_name'});
+					}else if(is_input){
+						$(this).find('td:nth-child(2) input.ref_name').attr({name:'receipt_rows['+row_no+'][reference_details]['+i+'][ref_name]',id:'receipt_rows-'+row_no+'-reference_details-'+i+'-ref_name'});
+					}
+					var Dr_Cr=$(this).find('td:nth-child(4) select option:selected').val();
+					if(Dr_Cr=='Dr'){
+						$(this).find('td:nth-child(3) input').attr({name:'receipt_rows['+row_no+'][reference_details]['+i+'][debit]',id:'receipt_rows-'+row_no+'-reference_details-'+i+'-debit'});
+					}else{
+						$(this).find('td:nth-child(3) input').attr({name:'receipt_rows['+row_no+'][reference_details]['+i+'][credit]',id:'receipt_rows-'+row_no+'-reference_details-'+i+'-credit'});
+					}
+					i++;
+				});
+				
+			}
+			
+			$('.calculation').die().live('blur',function()
 			{ 
-				if(confirm('Are you sure you want to submit!'))
-				{
-					$('.submit').attr('disabled','disabled');
-					$('.submit').text('Submiting...');
-					return true;
-				}
-				else
-				{
-					return false;
-				}
-
-			}
-	} ";
-
-echo $this->Html->scriptBlock($js, array('block' => 'scriptBottom')); 
+				var SelectedTr=$(this).closest('tr.MainTr');
+				var total_debit=0;var total_credit=0; var remaining=0; var i=0;
+				SelectedTr.find('td:nth-child(2) div.window table tbody tr').each(function(){
+					var Dr_Cr=$(this).find('td:nth-child(4) select option:selected').val();
+					var amt= parseFloat($(this).find('td:nth-child(3) input').val());
+					if(Dr_Cr=='Dr'){
+						total_debit=total_debit+amt;
+						console.log(total_debit);
+					}
+					else if(Dr_Cr=='Cr'){
+						total_credit=total_credit+amt;
+						console.log(total_credit);
+					}
+					
+					remaining=total_debit-total_credit;
+					
+					if(remaining>0){
+						$(this).closest('table').find(' tfoot td:nth-child(2) input.total').val(remaining);
+						$(this).closest('table').find(' tfoot td:nth-child(3) input.total_type').val('Dr');
+					}
+					else if(remaining<0){
+						remaining=Math.abs(remaining)
+						$(this).closest('table').find(' tfoot td:nth-child(2) input.total').val(remaining);
+						$(this).closest('table').find(' tfoot td:nth-child(3) input.total_type').val('Cr');
+					}
+					else{
+						$(this).closest('table').find(' tfoot td:nth-child(2) input.total').val('0');
+						$(this).closest('table').find(' tfoot td:nth-child(3) input.total_type').val('');	
+					}
+				});
+				i++;
+			});
+		});
+	";
 ?>
+<?php echo $this->Html->scriptBlock($js, array('block' => 'scriptBottom'));  ?>
+
