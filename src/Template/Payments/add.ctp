@@ -247,6 +247,11 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 						equalTo: '#totalMainDr'
 					},
 				},
+				messages: {
+					totalMainCr: {
+						equalTo: 'Total debit and credit not matched !'
+					},
+				},
 
 				invalidHandler: function (event, validator) { //display error alert on form submit              
                     success1.hide();
