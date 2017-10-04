@@ -34,19 +34,25 @@ class SalesInvoicesController extends AppController
 	public function reportFilter()
     {
 		$this->viewBuilder()->layout('index_layout');
-		
     }
 	
-	public function report()
+	public function report($id=null)
     {
+	    $from=$this->request->query('from_date');
+		$from_date=date('Y-m-d', strtotime($from));
+
+		$to=$this->request->query('to_date');
+		$to_date=date('Y-m-d', strtotime($to));
+
 		$this->viewBuilder()->layout('index_layout');
 		$company_id=$this->Auth->User('session_company_id');
-		$this->paginate = [
-            'contain' => ['Companies', 'PartyLedgers', 'SalesLedgers']
-        ];
-		$salesInvoices = $this->paginate($this->SalesInvoices->find()->where(['SalesInvoices.company_id'=>$company_id]));
+		$salesInvoices = $this->SalesInvoices->find()->where(['SalesInvoices.company_id'=>$company_id,'transaction_date >='=>$from_date,'transaction_date <='=>$to_date])
+		->contain(['Companies', 'PartyLedgers'=>['Customers'], 'SalesLedgers', 'SalesInvoiceRows'=>['Items', 'GstFigures']]);
+        
+		//pr($salesInvoices->toArray());
+		//exit;
 		
-        $this->set(compact('salesInvoices'));
+		$this->set(compact('salesInvoices', 'from', 'to'));
         $this->set('_serialize', ['salesInvoices']);
     }
     /**

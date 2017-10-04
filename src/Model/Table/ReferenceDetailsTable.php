@@ -65,9 +65,15 @@ class ReferenceDetailsTable extends Table
             'foreignKey' => 'payment_row_id',
             'joinType' => 'INNER'
         ]);
+
 		$this->belongsTo('CreditNoteRows', [
             'foreignKey' => 'credit_note_row_id',
-            'joinType' => 'INNER'
+			   'joinType' => 'INNER'
+        ]);
+
+		$this->belongsTo('SalesVoucherRows', [
+            'foreignKey' => 'sales_voucher_row_id',
+			'joinType' => 'INNER'
         ]);
     }
 
