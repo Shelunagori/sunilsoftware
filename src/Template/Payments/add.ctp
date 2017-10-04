@@ -226,6 +226,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 <!-- END PAGE LEVEL SCRIPTS -->
 <?php
 	$kk='<input type="text" class="form-control input-sm ref_name " placeholder="Reference Name">';
+	
 	$total_input='<input type="text" class="form-control input-sm rightAligntextClass total calculation noBorder" >';
 	$total_type='<input type="text" class="form-control input-sm total_type calculation noBorder" >';
 	$js="
@@ -325,6 +326,9 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 					$(this).closest('tr').find('.creditBox').hide();
 				}
 				renameMainRows();
+				
+				var SelectedTr=$(this).closest('tr.MainTr');
+					renameRefRows(SelectedTr);
 			});
 			
 			$('.ledger').die().live('change',function(){
@@ -333,14 +337,14 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 					var SelectedTr=$(this).closest('tr.MainTr');
 					var windowContainer=$(this).closest('td').find('div.window');
 					windowContainer.html('');
-					windowContainer.html('<table width=90%><tbody></tbody><tfoot><tr style=border-top:double#a5a1a1><td colspan=2><a role=button class=addRefRow>Add Row</a></td><td>$total_input</td><td>$total_type</td></tr></tfoot></table>');
+					windowContainer.html('<table width=90% class=refTbl><tbody></tbody><tfoot><tr style=border-top:double#a5a1a1><td colspan=2><a role=button class=addRefRow>Add Row</a></td><td>$total_input</td><td>$total_type</td></tr></tfoot></table>');
 					AddRefRow(SelectedTr);
 				}
 				else if(openWindow=='bank'){
 					var SelectedTr=$(this).closest('tr.MainTr')
 					var windowContainer=$(this).closest('td').find('div.window');
 					windowContainer.html('');
-					windowContainer.html('<table width=90%><tbody></tbody><tfoot><td colspan=4></td></tfoot></table>');
+					windowContainer.html('<table width=90% ><tbody></tbody><tfoot><td colspan=4></td></tfoot></table>');
 					AddBankRow(SelectedTr);
 				}
 			});
@@ -375,6 +379,8 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 						$(this).find('td:nth-child(3) span.help-block-error').remove();
 						$(this).find('td:nth-child(4) input.creditBox').rules('add', 'required');
 					}
+					
+					
 					
 					i++;
 				});
@@ -416,6 +422,14 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			function renameRefRows(SelectedTr){
 				var i=0;
 				var ledger_id=SelectedTr.find('td:nth-child(2) select.ledger').val();
+				var cr_dr=SelectedTr.find('td:nth-child(1) select.cr_dr option:selected').val();
+				if(cr_dr=='Dr'){
+					var eqlClass=SelectedTr.find('td:nth-child(3) input.debitBox').attr('id');
+					var mainAmt=SelectedTr.find('td:nth-child(3) input.debitBox').val();
+				}else{
+					var eqlClass=SelectedTr.find('td:nth-child(4) input.creditBox').attr('id');
+					var mainAmt=SelectedTr.find('td:nth-child(4) input.creditBox').val();
+				}
 				
 				SelectedTr.find('input.ledgerIdContainer').val(ledger_id);
 				SelectedTr.find('input.companyIdContainer').val(".$company_id.");
@@ -439,6 +453,14 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 					}
 					i++;
 				});
+				SelectedTr.find('td:nth-child(2) div.window table.refTbl tfoot tr td:nth-child(2) input.total')
+						.attr({name:'payment_rows['+row_no+'][total]',id:'payment_rows-'+row_no+'-total'})
+						.rules('add', {
+							equalTo: '#'+eqlClass,
+							messages: {
+								equalTo: 'Enter bill wise details upto '+mainAmt+' '+cr_dr
+							}
+						});
 				
 			}
 			
@@ -473,6 +495,8 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 						$(this).closest('table').find(' tfoot td:nth-child(3) input.total_type').val('');	
 					}
 				});
+				var SelectedTr=$(this).closest('tr.MainTr');
+				renameRefRows(SelectedTr);
 			});
 			
 
