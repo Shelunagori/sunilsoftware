@@ -4,7 +4,11 @@
  */
 $this->set('title', 'Payment Voucher');
 ?>
-
+<style>
+.noBorder{
+	border:none;
+}
+</style>
 <div class="row">
 	<div class="col-md-12">
 		<div class="portlet light ">
@@ -17,7 +21,7 @@ $this->set('title', 'Payment Voucher');
 				</div>
 			</div>
 			<div class="portlet-body">
-				<?= $this->Form->create($payment ) ?>
+				<?= $this->Form->create($payment,['id'=>'form_sample_2']) ?>
 				<div class="row">
 					<div class="col-md-3">
 						<div class="form-group">
@@ -48,10 +52,12 @@ $this->set('title', 'Payment Voucher');
 									
 								</tbody>
 								<tfoot>
-									<tr>
-										<td colspan="5" >	
+									<tr style="border-top:double;">
+										<td colspan="3" >	
 											<button type="button" class="AddMainRow btn btn-default input-sm"><i class="fa fa-plus"></i> Add row</button>
 										</td>
+										<td><input type="text" class="form-control input-sm rightAligntextClass noBorder" ></td>
+										<td><input type="text" class="form-control input-sm rightAligntextClass noBorder" ></td>
 									</tr>
 								</tfoot>
 							</table>
@@ -82,25 +88,25 @@ $option_ref[]= ['value'=>'On Account','text'=>'On Account'];
 <table id="sampleForRef" style="display:none;" width="100%">
 	<tbody>
 		<tr>
-			<td width="20%">
+			<td width="20%" valign="top"> 
 				<input type="hidden" class="ledgerIdContainer" />
 				<input type="hidden" class="companyIdContainer" />
 				<?php 
 				echo $this->Form->input('type', ['options'=>$option_ref,'label' => false,'class' => 'form-control input-sm refType','required'=>'required']); ?>
 			</td>
-			<td width="">
+			<td width="" valign="top">
 				<?php echo $this->Form->input('ref_name', ['type'=>'text','label' => false,'class' => 'form-control input-sm ref_name','placeholder'=>'Reference Name','required'=>'required']); ?>
 			</td>
 			
-			<td width="20%" style="padding-right:0px;">
+			<td width="20%" style="padding-right:0px;" valign="top">
 				<?php echo $this->Form->input('amount', ['label' => false,'class' => 'form-control input-sm calculation rightAligntextClass','placeholder'=>'Amount','required'=>'required']); ?>
 			</td>
-			<td width="10%" style="padding-left:0px;">
+			<td width="10%" style="padding-left:0px;" valign="top">
 				<?php 
 				echo $this->Form->input('type_cr_dr', ['options'=>['Dr'=>'Dr','Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm  calculation refDrCr','value'=>'Dr']); ?>
 			</td>
 			
-			<td align="center">
+			<td align="center" valign="top">
 				<a class="" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
 			</td>
 		</tr>
@@ -184,6 +190,10 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 <!-- END PAGE LEVEL STYLES -->
 
 <!-- BEGIN PAGE LEVEL PLUGINS -->
+	<!-- BEGIN VALIDATEION -->
+	<?php echo $this->Html->script('/assets/global/plugins/jquery-validation/js/jquery.validate.min.js', ['block' => 'PAGE_LEVEL_PLUGINS_JS']); ?>
+	<!-- END VALIDATEION -->
+	
 	<!-- BEGIN COMPONENTS PICKERS -->
 	<?php echo $this->Html->script('/assets/global/plugins/bootstrap-datepicker/js/bootstrap-datepicker.js', ['block' => 'PAGE_LEVEL_PLUGINS_JS']); ?>
 	<?php echo $this->Html->script('/assets/global/plugins/bootstrap-timepicker/js/bootstrap-timepicker.min.js', ['block' => 'PAGE_LEVEL_PLUGINS_JS']); ?>
@@ -215,11 +225,54 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 	<!-- END COMPONENTS DROPDOWNS -->
 <!-- END PAGE LEVEL SCRIPTS -->
 <?php
-	$kk='<input type="text" class="form-control input-sm ref_name">';
-	$total_input='<input type="text" class="form-control input-sm rightAligntextClass total" readonly>';
-	$total_type='<input type="text" class="form-control input-sm total_type" readonly>';
+	$kk='<input type="text" class="form-control input-sm ref_name " placeholder="Reference Name">';
+	$total_input='<input type="text" class="form-control input-sm rightAligntextClass total calculation noBorder" >';
+	$total_type='<input type="text" class="form-control input-sm total_type calculation noBorder" >';
 	$js="
 		$(document).ready(function() {
+		
+			var form1 = $('#form_sample_2');
+            var error1 = $('.alert-danger', form1);
+            var success1 = $('.alert-success', form1);
+
+			form1.validate({
+                errorElement: 'span',
+                errorClass: 'help-block help-block-error',
+                focusInvalid: false,
+                ignore: '', 
+				rules: {
+					
+				},
+
+				invalidHandler: function (event, validator) { //display error alert on form submit              
+                    success1.hide();
+                    error1.show();
+                    Metronic.scrollTo(error1, -200);
+                },
+
+                highlight: function (element) { // hightlight error inputs
+                    $(element)
+                        .closest('.form-group').addClass('has-error'); // set error class to the control group
+                },
+
+                unhighlight: function (element) { // revert the change done by hightlight
+                    $(element)
+                        .closest('.form-group').removeClass('has-error'); // set error class to the control group
+                },
+
+                success: function (label) {
+                    label
+                        .closest('.form-group').removeClass('has-error'); // set success class to the control group
+                },
+
+                submitHandler: function (form) {
+                    success1.show();
+                    error1.hide();
+                    form1[0].submit();
+                }
+			});
+			
+			
 			$('.paymentType').die().live('change',function(){
 				var type=$(this).val();	
 				var currentRefRow=$(this).closest('tr');
@@ -271,6 +324,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 					$(this).closest('tr').find('.debitBox').show();
 					$(this).closest('tr').find('.creditBox').hide();
 				}
+				renameMainRows();
 			});
 			
 			$('.ledger').die().live('change',function(){
@@ -279,7 +333,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 					var SelectedTr=$(this).closest('tr.MainTr');
 					var windowContainer=$(this).closest('td').find('div.window');
 					windowContainer.html('');
-					windowContainer.html('<table width=90%><tbody></tbody><tfoot><td colspan=2></td><td>$total_input</td><td>$total_type</td></tfoot></table><a role=button class=addRefRow>Add Row</a>');
+					windowContainer.html('<table width=90%><tbody></tbody><tfoot><tr style=border-top:double#a5a1a1><td colspan=2><a role=button class=addRefRow>Add Row</a></td><td>$total_input</td><td>$total_type</td></tr></tfoot></table>');
 					AddRefRow(SelectedTr);
 				}
 				else if(openWindow=='bank'){
@@ -302,16 +356,26 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				renameMainRows();
 			}
 			
-			
-			
 			function renameMainRows(){
 				var i=0;
 				$('#MainTable tbody#MainTbody tr.MainTr').each(function(){
 					$(this).attr('row_no',i);
+					var cr_dr=$(this).find('td:nth-child(1) select.cr_dr option:selected').val()
 					$(this).find('td:nth-child(1) select.cr_dr').attr({name:'payment_rows['+i+'][cr_dr]',id:'payment_rows-'+i+'-cr_dr'});
 					$(this).find('td:nth-child(2) select.ledger').attr({name:'payment_rows['+i+'][ledger_id]',id:'payment_rows-'+i+'-ledger_id'}).select2();
 					$(this).find('td:nth-child(3) input.debitBox').attr({name:'payment_rows['+i+'][debit]',id:'payment_rows-'+i+'-debit'});
 					$(this).find('td:nth-child(4) input.creditBox').attr({name:'payment_rows['+i+'][credit]',id:'payment_rows-'+i+'-credit'});
+					
+					if(cr_dr=='Dr'){
+						$(this).find('td:nth-child(3) input.debitBox').rules('add', 'required');
+						$(this).find('td:nth-child(4) input.creditBox').rules('remove', 'required');
+						$(this).find('td:nth-child(4) span.help-block-error').remove();
+					}else{
+						$(this).find('td:nth-child(3) input.debitBox').rules('remove', 'required');
+						$(this).find('td:nth-child(3) span.help-block-error').remove();
+						$(this).find('td:nth-child(4) input.creditBox').rules('add', 'required');
+					}
+					
 					i++;
 				});
 			}
@@ -335,7 +399,6 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 					$(this).find('td:nth-child(2) input.cheque_no').attr({name:'payment_rows['+row_no+'][cheque_no]',id:'payment_rows-'+row_no+'-cheque_no'});
 					$(this).find('td:nth-child(3) input.cheque_date').attr({name:'payment_rows['+row_no+'][cheque_date]',id:'payment_rows-'+row_no+'-cheque_date'}).datepicker();
 				});
-				
 			}
 			
 			$('.addRefRow').die().live('click',function(){
@@ -364,15 +427,15 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 					var is_select=$(this).find('td:nth-child(2) select.refList').length;
 					var is_input=$(this).find('td:nth-child(2) input.ref_name').length;
 					if(is_select){
-						$(this).find('td:nth-child(2) select.refList').attr({name:'payment_rows['+row_no+'][reference_details]['+i+'][ref_name]',id:'payment_rows-'+row_no+'-reference_details-'+i+'-ref_name'});
+						$(this).find('td:nth-child(2) select.refList').attr({name:'payment_rows['+row_no+'][reference_details]['+i+'][ref_name]',id:'payment_rows-'+row_no+'-reference_details-'+i+'-ref_name'}).rules('add', 'required');;
 					}else if(is_input){
-						$(this).find('td:nth-child(2) input.ref_name').attr({name:'payment_rows['+row_no+'][reference_details]['+i+'][ref_name]',id:'payment_rows-'+row_no+'-reference_details-'+i+'-ref_name'});
+						$(this).find('td:nth-child(2) input.ref_name').attr({name:'payment_rows['+row_no+'][reference_details]['+i+'][ref_name]',id:'payment_rows-'+row_no+'-reference_details-'+i+'-ref_name'}).rules('add', 'required');;
 					}
 					var Dr_Cr=$(this).find('td:nth-child(4) select option:selected').val();
 					if(Dr_Cr=='Dr'){
-						$(this).find('td:nth-child(3) input').attr({name:'payment_rows['+row_no+'][reference_details]['+i+'][debit]',id:'payment_rows-'+row_no+'-reference_details-'+i+'-debit'});
+						$(this).find('td:nth-child(3) input').attr({name:'payment_rows['+row_no+'][reference_details]['+i+'][debit]',id:'payment_rows-'+row_no+'-reference_details-'+i+'-debit'}).rules('add', 'required');;
 					}else{
-						$(this).find('td:nth-child(3) input').attr({name:'payment_rows['+row_no+'][reference_details]['+i+'][credit]',id:'payment_rows-'+row_no+'-reference_details-'+i+'-credit'});
+						$(this).find('td:nth-child(3) input').attr({name:'payment_rows['+row_no+'][reference_details]['+i+'][credit]',id:'payment_rows-'+row_no+'-reference_details-'+i+'-credit'}).rules('add', 'required');;
 					}
 					i++;
 				});
@@ -382,17 +445,16 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			$('.calculation').die().live('blur',function()
 			{ 
 				var SelectedTr=$(this).closest('tr.MainTr');
-				var total_debit=0;var total_credit=0; var remaining=0; var i=0;
+				var total_debit=0;var total_credit=0; var remaining=0;
 				SelectedTr.find('td:nth-child(2) div.window table tbody tr').each(function(){
 					var Dr_Cr=$(this).find('td:nth-child(4) select option:selected').val();
 					var amt= parseFloat($(this).find('td:nth-child(3) input').val());
+					if(!amt){ amt=0; }
 					if(Dr_Cr=='Dr'){
 						total_debit=total_debit+amt;
-						console.log(total_debit);
 					}
 					else if(Dr_Cr=='Cr'){
 						total_credit=total_credit+amt;
-						console.log(total_credit);
 					}
 					
 					remaining=total_debit-total_credit;
@@ -411,8 +473,11 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 						$(this).closest('table').find(' tfoot td:nth-child(3) input.total_type').val('');	
 					}
 				});
-				i++;
 			});
+			
+
+			
+			
 		});
 	";
 ?>

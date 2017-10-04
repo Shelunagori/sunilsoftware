@@ -45,6 +45,11 @@ License: You must have a valid license purchased only from themeforest(the above
 		.rightAligntextClass{
 			text-align:right !important;
 		}
+		.help-block-error{
+			color: red;
+			font-size: 11px;
+			margin: 0;
+		}
 		</style>
 	</head>
 	<!-- END HEAD -->
