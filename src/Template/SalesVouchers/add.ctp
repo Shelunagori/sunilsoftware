@@ -310,6 +310,11 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 					windowContainer.html('<table width=90%><tbody></tbody><tfoot><td colspan=4></td></tfoot></table>');
 					AddBankRow(SelectedTr);
 				}
+				else{
+					var SelectedTr=$(this).closest('tr.MainTr')
+					var windowContainer=$(this).closest('td').find('div.window');
+					windowContainer.html('');
+				}
 			});
 			
 			$('.AddMainRow').die().live('click',function(){ 

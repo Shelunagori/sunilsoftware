@@ -141,8 +141,14 @@ class SalesVouchersController extends AppController
         ]);
 		//pr($salesVoucher);exit;
         if ($this->request->is(['patch', 'post', 'put'])) {
+			$this->request->data['transaction_date'] = date("Y-m-d",strtotime($this->request->getData()['transaction_date']));
             $salesVoucher = $this->SalesVouchers->patchEntity($salesVoucher, $this->request->getData());
-            if ($this->SalesVouchers->save($salesVoucher)) {
+	 
+			$salesVoucher = $this->SalesVouchers->patchEntity($salesVoucher, $this->request->getData(), [
+							'associated' => ['SalesVoucherRows','SalesVoucherRows.ReferenceDetails']
+						]);
+			//pr($salesVoucher);exit;
+			if ($this->SalesVouchers->save($salesVoucher)) {
                 $this->Flash->success(__('The sales voucher has been saved.'));
 
                 return $this->redirect(['action' => 'index']);
