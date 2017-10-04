@@ -118,13 +118,25 @@ class ReceiptsController extends AppController
      * @return \Cake\Http\Response|null Redirects on successful edit, renders view otherwise.
      * @throws \Cake\Network\Exception\NotFoundException When record not found.
      */
-    public function edit($id = null)
+    
+    /**
+     * Edit method
+     *
+     * @param string|null $id Receipt id.
+     * @return \Cake\Http\Response|null Redirects on successful edit, renders view otherwise.
+     * @throws \Cake\Network\Exception\NotFoundException When record not found.
+     */
+     public function edit($id = null)
     {
+        $this->viewBuilder()->layout('index_layout');
         $receipt = $this->Receipts->get($id, [
-            'contain' => []
+            'contain' => ['ReceiptRows'=>['ReferenceDetails']]
         ]);
-        if ($this->request->is(['patch', 'post', 'put'])) {
-            $receipt = $this->Receipts->patchEntity($receipt, $this->request->getData());
+		$company_id=$this->Auth->User('session_company_id');
+        if ($this->request->is('post')) {
+		 $receipt = $this->Receipts->patchEntity($receipt, $this->request->getData(),['associated' => ['ReceiptRows','ReceiptRows.ReferenceDetails']]);
+		  $tdate=$this->request->data('transaction_date');
+		 $receipt->transaction_date=date('Y-m-d',strtotime($tdate));
             if ($this->Receipts->save($receipt)) {
                 $this->Flash->success(__('The receipt has been saved.'));
 
@@ -132,10 +144,57 @@ class ReceiptsController extends AppController
             }
             $this->Flash->error(__('The receipt could not be saved. Please, try again.'));
         }
+		$Voucher_no = $this->Receipts->find()->select(['voucher_no'])->where(['company_id'=>$company_id])->order(['voucher_no' => 'DESC'])->first();
+		if($Voucher_no)
+		{
+			$voucher_no=$Voucher_no->voucher_no+1;
+		}
+		else
+		{
+			$voucher_no=1;
+		}
+		
+		$bankParentGroups = $this->Receipts->ReceiptRows->Ledgers->AccountingGroups->find()
+						->where(['AccountingGroups.company_id'=>$company_id, 'AccountingGroups.bank'=>'1']);
+		$bankGroups=[];
+		foreach($bankParentGroups as $bankParentGroup)
+		{
+			$accountingGroups = $this->Receipts->ReceiptRows->Ledgers->AccountingGroups
+			->find('children', ['for' => $bankParentGroup->id])->toArray();
+			$bankGroups[]=$bankParentGroup->id;
+			foreach($accountingGroups as $accountingGroup){
+				$bankGroups[]=$accountingGroup->id;
+			}
+		}
+		
+		$ledgers = $this->Receipts->ReceiptRows->Ledgers->find()->where(['company_id'=>$company_id]);
+		foreach($ledgers as $ledger){
+			if(in_array($ledger->accounting_group_id,$bankGroups)){
+				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id ,'open_window' => 'bank'];
+			}
+			else if($ledger->bill_to_bill_accounting == 'yes'){
+				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id,'open_window' => 'party' ];
+			}
+			else{
+				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id,'open_window' => 'no' ];
+			}
+		}
+		//pr($receipt);
+		//exit;
+		$referenceDetails=$this->Receipts->ReceiptRows->ReferenceDetails->find('list');
         $companies = $this->Receipts->Companies->find('list', ['limit' => 200]);
-        $this->set(compact('receipt', 'companies'));
+        $this->set(compact('receipt', 'companies','voucher_no','ledgerOptions','company_id','referenceDetails'));
         $this->set('_serialize', ['receipt']);
     }
+
+    /**
+     * Edit method
+     *
+     * @param string|null $id Receipt id.
+     * @return \Cake\Http\Response|null Redirects on successful edit, renders view otherwise.
+     * @throws \Cake\Network\Exception\NotFoundException When record not found.
+     */
+  
 	public function ajaxReferenceDetails($itemValue=null)
     {
 		//$html = new HtmlHelper(new \Cake\View\View());

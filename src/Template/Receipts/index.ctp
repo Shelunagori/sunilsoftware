@@ -25,7 +25,7 @@ $this->set('title', 'Receipt List');
 								<th scope="col"><?= $this->Paginator->sort('Company') ?></th>
 								<th scope="col"><?= $this->Paginator->sort('transaction_date') ?></th>
 								<th scope="col"><?= $this->Paginator->sort('Narration') ?></th>
-								<!--<th scope="col" class="actions"><?= __('Actions') ?></th>-->
+								<th scope="col" class="actions"><?= __('Actions') ?></th>
 							</tr>
 						</thead>
 						<tbody>
@@ -40,9 +40,9 @@ $this->set('title', 'Receipt List');
 								<td><?= h($receipt->company->name) ?></td>
 								<td><?= h($transaction_date) ?></td>
 								<td class=""><?= h($receipt->narration) ?></td>
-								<!--<td class="actions">
+								<td class="actions">
 									<?= $this->Html->link(__('Edit'), ['action' => 'edit', $receipt->id]) ?>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-								</td>-->
+								</td>
 							</tr>
 							<?php endforeach; ?>
 						</tbody>
