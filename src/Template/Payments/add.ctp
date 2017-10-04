@@ -53,11 +53,12 @@ $this->set('title', 'Payment Voucher');
 								</tbody>
 								<tfoot>
 									<tr style="border-top:double;">
-										<td colspan="3" >	
+										<td colspan="2" >	
 											<button type="button" class="AddMainRow btn btn-default input-sm"><i class="fa fa-plus"></i> Add row</button>
 										</td>
-										<td><input type="text" class="form-control input-sm rightAligntextClass noBorder" ></td>
-										<td><input type="text" class="form-control input-sm rightAligntextClass noBorder" ></td>
+										<td><input type="text" class="form-control input-sm rightAligntextClass noBorder" name="totalMainDr" id="totalMainDr"></td>
+										<td><input type="text" class="form-control input-sm rightAligntextClass noBorder" name="totalMainCr" id="totalMainCr"></td>
+										<td></td>
 									</tr>
 								</tfoot>
 							</table>
@@ -242,7 +243,9 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
                 focusInvalid: false,
                 ignore: '', 
 				rules: {
-					
+					totalMainCr: {
+						equalTo: '#totalMainDr'
+					},
 				},
 
 				invalidHandler: function (event, validator) { //display error alert on form submit              
