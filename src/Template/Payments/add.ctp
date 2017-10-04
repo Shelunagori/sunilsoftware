@@ -384,10 +384,8 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				var SelectedTr=$(this).closest('tr.MainTr');
 				var total_debit=0;var total_credit=0; var remaining=0; var i=0;
 				SelectedTr.find('td:nth-child(2) div.window table tbody tr').each(function(){
-				var Dr_Cr=$(this).find('td:nth-child(4) select option:selected').val();
-				//console.log(Dr_Cr);
-				var amt= parseFloat($(this).find('td:nth-child(3) input').val());
-				
+					var Dr_Cr=$(this).find('td:nth-child(4) select option:selected').val();
+					var amt= parseFloat($(this).find('td:nth-child(3) input').val());
 					if(Dr_Cr=='Dr'){
 						total_debit=total_debit+amt;
 						console.log(total_debit);
@@ -400,7 +398,6 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 					remaining=total_debit-total_credit;
 					
 					if(remaining>0){
-						//console.log(remaining);
 						$(this).closest('table').find(' tfoot td:nth-child(2) input.total').val(remaining);
 						$(this).closest('table').find(' tfoot td:nth-child(3) input.total_type').val('Dr');
 					}
@@ -410,13 +407,10 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 						$(this).closest('table').find(' tfoot td:nth-child(3) input.total_type').val('Cr');
 					}
 					else{
-					$(this).closest('table').find(' tfoot td:nth-child(2) input.total').val('0');
-					$(this).closest('table').find(' tfoot td:nth-child(3) input.total_type').val('');	
+						$(this).closest('table').find(' tfoot td:nth-child(2) input.total').val('0');
+						$(this).closest('table').find(' tfoot td:nth-child(3) input.total_type').val('');	
 					}
-					
 				});
-				
-					
 				i++;
 			});
 		});
