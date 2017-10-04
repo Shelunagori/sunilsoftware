@@ -10,9 +10,9 @@ use Cake\Validation\Validator;
  * CreditNotes Model
  *
  * @property \App\Model\Table\CompaniesTable|\Cake\ORM\Association\BelongsTo $Companies
- * @property \App\Model\Table\LedgersTable|\Cake\ORM\Association\BelongsTo $PartyLedgers
- * @property \App\Model\Table\LedgersTable|\Cake\ORM\Association\BelongsTo $SalesLedgers
+ * @property \App\Model\Table\AccountingEntriesTable|\Cake\ORM\Association\HasMany $AccountingEntries
  * @property \App\Model\Table\CreditNoteRowsTable|\Cake\ORM\Association\HasMany $CreditNoteRows
+ * @property \App\Model\Table\ItemLedgersTable|\Cake\ORM\Association\HasMany $ItemLedgers
  *
  * @method \App\Model\Entity\CreditNote get($primaryKey, $options = [])
  * @method \App\Model\Entity\CreditNote newEntity($data = null, array $options = [])
@@ -43,41 +43,11 @@ class CreditNotesTable extends Table
             'foreignKey' => 'company_id',
             'joinType' => 'INNER'
         ]);
-        $this->belongsTo('PartyLedgers', [
-			'className' => 'Ledgers',
-            'foreignKey' => 'party_ledger_id',
-            'joinType' => 'INNER'
-        ]);
-		
-		$this->belongsTo('Customers', [
-            'foreignKey' => 'customer_id',
-            'joinType' => 'INNER'
-        ]);
-		$this->belongsTo('Ledgers', [
-            'foreignKey' => 'ledger_id',
-            'joinType' => 'INNER'
-        ]);
-		
-		$this->hasMany('ItemLedgers', [
-			'foreignKey' => 'sales_invoice_id',
-			'saveStrategy'=>'replace'
-        ]);
-		
-		$this->hasMany('AccountingEntries', [
-            'foreignKey' => 'credit_note_id',
-            'joinType' => 'INNER',
-			'saveStrategy'=>'replace'
-        ]);
-		
-		$this->belongsTo('SalesLedgers', [
-			'className' => 'Ledgers',
-            'foreignKey' => 'sales_ledger_id',
-            'joinType' => 'INNER'
-        ]);
+   
         $this->hasMany('CreditNoteRows', [
-            'foreignKey' => 'credit_note_id',
-			'saveStrategy'=>'replace'
+            'foreignKey' => 'credit_note_id'
         ]);
+        
     }
 
     /**
@@ -92,42 +62,6 @@ class CreditNotesTable extends Table
             ->integer('id')
             ->allowEmpty('id', 'create');
 
-        $validator
-            ->integer('voucher_no')
-            ->requirePresence('voucher_no', 'create')
-            ->notEmpty('voucher_no');
-
-       /*  $validator
-            ->requirePresence('sales_invoice_no', 'create')
-            ->notEmpty('sales_invoice_no'); */
-
-        $validator
-            ->date('transaction_date')
-            ->requirePresence('transaction_date', 'create')
-            ->notEmpty('transaction_date');
-
-        $validator
-            ->decimal('amount_before_tax')
-            ->requirePresence('amount_before_tax', 'create')
-            ->notEmpty('amount_before_tax');
-
-        $validator
-            ->decimal('total_cgst')
-            ->allowEmpty('total_cgst');
-
-        $validator
-            ->decimal('total_sgst')
-            ->allowEmpty('total_sgst');
-
-        $validator
-            ->decimal('total_igst')
-            ->allowEmpty('total_igst');
-
-        $validator
-            ->decimal('amount_after_tax')
-            ->requirePresence('amount_after_tax', 'create')
-            ->notEmpty('amount_after_tax');
-
         return $validator;
     }
 
@@ -141,8 +75,6 @@ class CreditNotesTable extends Table
     public function buildRules(RulesChecker $rules)
     {
         $rules->add($rules->existsIn(['company_id'], 'Companies'));
-        $rules->add($rules->existsIn(['party_ledger_id'], 'PartyLedgers'));
-        $rules->add($rules->existsIn(['sales_ledger_id'], 'SalesLedgers'));
 
         return $rules;
     }

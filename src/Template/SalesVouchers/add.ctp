@@ -33,7 +33,7 @@ $this->set('title', 'Sales Voucher');
 					</div>
 					<div class="col-md-3">
 						<div class="form-group">
-							<label>Reference No <span class="required">*</span></label>
+							<label>Reference No </label>
 							<?php echo $this->Form->control('reference_no',['class'=>'form-control input-sm','label'=>false,'placeholder'=>'refrence no','type'=>'text']); ?>
 						</div>
 					</div>
@@ -224,6 +224,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 	$kk='<input type="text" class="form-control input-sm ref_name">';
 	$total_input='<input type="text" class="form-control input-sm rightAligntextClass total" readonly>';
 	$total_type='<input type="text" class="form-control input-sm total_type" readonly>';
+	$tr='<tr class="remove_ref_foot">';
 	$js="
 		$(document).ready(function() {
 			$('.paymentType').die().live('change',function(){
@@ -237,6 +238,20 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 					currentRefRow.find('td:nth-child(2)').show();
 					currentRefRow.find('td:nth-child(3)').show();
 				}
+			});
+			
+			$('.delete-tr').die().live('click',function() 
+			{
+				$(this).closest('tr').remove();
+				renameMainRows();
+				renameBankRows();
+				renameRefRows();
+			});
+			
+			$('.ref_delete').die().live('click',function() 
+			{
+				$(this).closest('tr').remove();
+				renameRefRows();
 			});
 			
 			$('.refDrCr').die().live('change',function(){
@@ -285,7 +300,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 					var SelectedTr=$(this).closest('tr.MainTr');
 					var windowContainer=$(this).closest('td').find('div.window');
 					windowContainer.html('');
-					windowContainer.html('<table width=90%><tbody></tbody><tfoot><td colspan=2></td><td>$total_input</td><td>$total_type</td></tfoot></table><a role=button class=addRefRow>Add Row</a>');
+					windowContainer.html('<table width=90%><tbody></tbody><tfoot>$tr<td colspan=2></td><td>$total_input</td><td>$total_type</td></tr></tfoot></table><a role=button class=addRefRow>Add Row</a>');
 					AddRefRow(SelectedTr);
 				}
 				else if(openWindow=='bank'){

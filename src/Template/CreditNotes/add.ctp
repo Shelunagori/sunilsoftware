@@ -1,142 +1,171 @@
-
 <?php
 /**
  * @Author: PHP Poets IT Solutions Pvt. Ltd.
  */
-$this->set('title', 'Credit Note');
+$this->set('title', 'Credit Note Voucher');
 ?>
+
 <div class="row">
 	<div class="col-md-12">
 		<div class="portlet light ">
 			<div class="portlet-title">
 				<div class="caption">
 					<i class="icon-bar-chart font-green-sharp hide"></i>
-					<span class="caption-subject font-green-sharp bold ">Credit Note </span>
+					<span class="caption-subject font-green-sharp bold ">Create Credit Note Voucher</span>
+				</div>
+				<div class="actions">
 				</div>
 			</div>
 			<div class="portlet-body">
-				<?= $this->Form->create($creditNote,['onsubmit'=>'return checkValidation()']) ?>
-					<div class="row">
-						<div class="col-md-2">
-							<div class="form-group">
-								<label>Voucher No :</label>&nbsp;&nbsp;
-								<?= h('#'.str_pad($voucher_no, 4, '0', STR_PAD_LEFT)) ?>
-							</div>
+				<?= $this->Form->create($creditNote) ?>
+				<div class="row">
+					<div class="col-md-3">
+						<div class="form-group">
+							<label>Voucher No :</label>&nbsp;&nbsp;
+							<?= h('#'.str_pad($voucher_no, 4, '0', STR_PAD_LEFT)) ?>
 						</div>
-						<div class="col-md-2">
-							<div class="form-group">
-								<label width="10%">Sale Invoice No. for Reference</label>
-								<?php echo $this->Form->control('sales_invoice_no',['class'=>'form-control input-sm ','label'=>false,'placeholder'=>'Sale Invoice No.','type'=>'text', 'autofocus'=>'autofocus']); ?>
-							</div>
-						</div>
-						<div class="col-md-2">
-							<div class="form-group">
-								<label>Transaction Date <span class="required">*</span></label>
-								<?php echo $this->Form->control('transaction_date',['class'=>'form-control input-sm date-picker','data-date-format'=>'dd-mm-yyyy','label'=>false,'placeholder'=>'DD-MM-YYYY','type'=>'text','data-date-start-date'=>@$coreVariable[fyValidFrom],'data-date-end-date'=>@$coreVariable[fyValidTo],'value'=>date('d-m-Y')]); ?>
-							</div>
-						</div>
-							<input type="hidden" name="company_id" class="customer_id" value="<?php echo $company_id;?>">
-							<input type="hidden" name="state_id" class="state_id" value="<?php echo $state_id;?>">
-							<input type="hidden" name="is_interstate" id="is_interstate" value="0">
-							<input type="hidden" name="isRoundofType" id="isRoundofType" class="isRoundofType" value="0">
-							<input type="hidden" name="voucher_no" id="" value="<?= h($voucher_no, 4, '0') ?>">
-						<div class="col-md-2">
-							<label>Type</label><span class="required">*</span></label>
-							<select name="cash_or_credit" id="UserGender" class="cashcredit  form-control input-sm">
-								<option value="cash" class="cash">Cash</option>
-								<option value="credit" class="credit">Credit</option>
-							</select>
-						</div>
-						<div class="col-md-2  cusomerIds" style="display:none">
-							<label>Party</label>
-							<?php echo $this->Form->control('party_ledger_id',['empty'=>'-Select Party-', 'class'=>'form-control input-sm party_ledger_id select2me customer_id ','label'=>false, 'options' => $partyOptions]);
-							?>
-						</div>
-						<div class="col-md-2  cashcusomerIds" style="display:none">
-							<label>Party</label>
-							<?php echo $this->Form->control('cash_party_ledger_id',[ 'class'=>'form-control input-sm party_ledger_id select2me customer_id ','label'=>false, 'options' => $CashPartyLedgers]);
-							?>
-						</div>
-						<div class="col-md-2">
-							<div class="form-group">
-								<label>Sales Account</label>
-								<?php echo $this->Form->control('sales_ledger_id',['class'=>'form-control input-sm sales_ledger_id select2me','label'=>false, 'options' => $Accountledgers,'required'=>'required']);
-								?>
-							</div>
-						</div> 
 					</div>
-					<br>
-					<div class="row">
+					<div class="col-md-3">
+						<div class="form-group">
+							<label>Transaction Date <span class="required">*</span></label>
+							<?php echo $this->Form->control('transaction_date',['class'=>'form-control input-sm date-picker','data-date-format'=>'dd-mm-yyyy', 'label'=>false,'placeholder'=>'DD-MM-YYYY','type'=>'text','data-date-start-date'=>@$coreVariable[fyValidFrom],'data-date-end-date'=>@$coreVariable[fyValidTo],'value'=>date('d-m-Y'),'required'=>'required']); ?>
+						</div>
+					</div>
+				</div>
+				<div class="row">
 						<div class="table-responsive">
-							<table id="main_table" class="table table-condensed table-bordered" style="margin-bottom: 4px;" width="100%">
+							<table id="MainTable" class="table table-condensed table-striped" width="100%">
 								<thead>
-									<tr align="center">
-										<td width="20%"><label>Item<label></td>
-										<td><label>Qty<label></td>
-										<td><label>Rate<label></td>
-										<td><label>Taxable Value<label></td>
-										<td><label id="gstDisplay">GST<label></td>
-										<td><label>Net Amount<label></td>
+									<tr>
 										<td></td>
+										<td>Particulars</td>
+										<td>Debit</td>
+										<td>Credit</td>
+										<td width="10%"></td>
 									</tr>
 								</thead>
-								<tbody id='main_tbody' class="tab">
+								<tbody id='MainTbody' class="tab">
 									
 								</tbody>
 								<tfoot>
 									<tr>
-										<td colspan="7">	
-											<button type="button" class="add_row btn btn-default input-sm"><i class="fa fa-plus"></i> Add row</button>
-										</td>
-									</tr>
-									<tr>
-										<td colspan="5" align="right"><b>Amt Before Tax</b></td>
-										<td colspan="2">
-											<?php echo $this->Form->input('amount_before_tax', ['label' => false,'class' => 'form-control input-sm amount_before_tax rightAligntextClass','required'=>'required', 'readonly'=>'readonly','placeholder'=>'']); ?>	
-										</td>
-									</tr>
-									<tr id="add_cgst">
-										<td colspan="5" align="right"><b>Total CGST</b></td>
-										<td colspan="2">
-											<?php echo $this->Form->input('total_cgst', ['label' => false,'class' => 'form-control input-sm add_cgst rightAligntextClass','required'=>'required', 'readonly'=>'readonly','placeholder'=>'']); ?>	
-										</td>
-									</tr>
-									<tr id="add_sgst">
-										<td colspan="5" align="right"><b>Total SGST</b></td>
-										<td colspan="2">
-											<?php echo $this->Form->input('total_sgst', ['label' => false,'class' => 'form-control input-sm add_sgst rightAligntextClass','required'=>'required', 'readonly'=>'readonly','placeholder'=>'']); ?>	
-										</td>
-									</tr>
-									<tr id="add_igst" style="display:none">
-										<td colspan="5" align="right"><b>Total IGST</b></td>
-										<td colspan="2">
-											<?php echo $this->Form->input('total_igst', ['label' => false,'class' => 'form-control input-sm add_igst rightAligntextClass','required'=>'required', 'readonly'=>'readonly','placeholder'=>'']); ?>	
-										</td>
-									</tr>
-									<tr>
-										<td colspan="5" align="right"><b>Round OFF</b></td>
-										<td colspan="2">
-											<?php echo $this->Form->input('round_off', ['label' => false,'class' => 'form-control input-sm roundValue rightAligntextClass','required'=>'required', 'readonly'=>'readonly','placeholder'=>'']); ?>	
-										</td>
-									</tr>
-									<tr>
-										<td colspan="5" align="right"><b>Amt After Tax</b></td>
-										<td colspan="2">
-											<?php echo $this->Form->input('amount_after_tax', ['label' => false,'class' => 'form-control input-sm amount_after_tax rightAligntextClass','required'=>'required', 'readonly'=>'readonly','placeholder'=>'']); ?>	
+										<td colspan="5" >	
+											<button type="button" class="AddMainRow btn btn-default input-sm"><i class="fa fa-plus"></i> Add row</button>
 										</td>
 									</tr>
 								</tfoot>
 							</table>
 						</div>
 					</div>
+					<div class="row">
+						<div class="col-md-5">
+							<div class="form-group">
+								<label>Narration </label>
+								<?php echo $this->Form->control('narration',['class'=>'form-control input-sm ','label'=>false,'placeholder'=>'Narration','rows'=>'4']); ?>
+							</div>
+						</div>
+					</div>
+				<?= $this->Form->button(__('Submit'),['class'=>'btn btn-success submit'])  ?>
+				<?= $this->Form->end() ?>
 			</div>
-			<?= $this->Form->button(__('Submit'),['class'=>'btn btn-success submit']) ?>
-			<?= $this->Form->end() ?>
 		</div>
 	</div>
 </div>
+<?php
+$option_ref[]= ['value'=>'New Ref','text'=>'New Ref'];
+$option_ref[]= ['value'=>'Against','text'=>'Against'];
+$option_ref[]= ['value'=>'Advance','text'=>'Advance'];
+$option_ref[]= ['value'=>'On Account','text'=>'On Account'];
+?>
 
 
+<table id="sampleForRef" style="display:none;" width="100%">
+	<tbody>
+		<tr>
+			<td width="20%">
+				<input type="hidden" class="ledgerIdContainer" />
+				<input type="hidden" class="companyIdContainer" />
+				<?php 
+				echo $this->Form->input('type', ['options'=>$option_ref,'label' => false,'class' => 'form-control input-sm refType','required'=>'required']); ?>
+			</td>
+			<td width="">
+				<?php echo $this->Form->input('ref_name', ['type'=>'text','label' => false,'class' => 'form-control input-sm ref_name','placeholder'=>'Reference Name','required'=>'required']); ?>
+			</td>
+			
+			<td width="20%" style="padding-right:0px;">
+				<?php echo $this->Form->input('amount', ['label' => false,'class' => 'form-control input-sm calculation rightAligntextClass','placeholder'=>'Amount','required'=>'required']); ?>
+			</td>
+			<td width="10%" style="padding-left:0px;">
+				<?php 
+				echo $this->Form->input('type_cr_dr', ['options'=>['Dr'=>'Dr','Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm  calculation refDrCr','value'=>'Dr']); ?>
+			</td>
+			
+			<td align="center">
+				<a class="btn delete-tr-ref btn-xs" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
+			</td>
+		</tr>
+	</tbody>
+</table>
+
+
+<?php
+$option_mode[]= ['value'=>'Cheque','text'=>'Cheque'];
+$option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
+?>
+<table id="sampleForBank" style="display:none;" width="100%">
+	<tbody>
+		<tr>
+			<td width="30%">
+				<?php 
+				echo $this->Form->input('mode_of_payment', ['options'=>$option_mode,'label' => false,'class' => 'form-control input-sm paymentType','required'=>'required']); ?>
+			</td>
+			<td width="30%">
+				<?php echo $this->Form->input('cheque_no', ['label' =>false,'class' => 'form-control input-sm cheque_no','placeholder'=>'Cheque No']); ?> 
+			</td>
+			
+			<td width="30%">
+				<?php echo $this->Form->input('cheque_date', ['label' =>false,'class' => 'form-control input-sm date-picker cheque_date ','data-date-format'=>'dd-mm-yyyy','placeholder'=>'Cheque Date']); ?>
+			</td>
+			
+			
+		</tr>
+	</tbody>
+</table>
+
+<table id="sampleMainTable" style="display:none;" width="100%">
+	<tbody class="sampleMainTbody">
+		<tr class="MainTr">
+			<td width="10%">
+				<?php 
+				echo $this->Form->input('cr_dr', ['options'=>['Dr'=>'Dr','Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm cr_dr','required'=>'required','value'=>'Dr']); ?>
+			</td>
+			<td width="65%">
+				<?php echo $this->Form->input('ledger_id', ['empty'=>'--Select--','options'=>@$ledgerOptions,'label' => false,'class' => 'form-control input-sm ledger','required'=>'required']); ?>
+				<div class="window" style="margin:auto;"></div>
+			</td>
+			<td width="10%">
+				<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm  debitBox rightAligntextClass','placeholder'=>'Debit']); ?>
+			</td>
+			<td width="10%">
+				<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm creditBox rightAligntextClass','placeholder'=>'Credit','style'=>'display:none;']); ?>	
+			</td>
+			<td align="center"  width="10%">
+				<a class="btn btn-danger delete-tr btn-xs" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
+			</td>
+		</tr>
+		
+	</tbody>
+	<tfoot >
+		<tr>
+			<td colspan="2" >	
+				<button type="button" class="add_row btn btn-default input-sm"><i class="fa fa-plus"></i> Add row</button>
+			</td>
+		</tr>
+	</tfoot>
+</table>
+
+
+		
 <!-- BEGIN PAGE LEVEL STYLES -->
 	<!-- BEGIN COMPONENTS PICKERS -->
 	<?php echo $this->Html->css('/assets/global/plugins/clockface/css/clockface.css', ['block' => 'PAGE_LEVEL_CSS']); ?>
@@ -185,315 +214,220 @@ $this->set('title', 'Credit Note');
 	<?php echo $this->Html->script('/assets/admin/pages/scripts/components-dropdowns.js', ['block' => 'PAGE_LEVEL_SCRIPTS_JS']); ?>
 	<!-- END COMPONENTS DROPDOWNS -->
 <!-- END PAGE LEVEL SCRIPTS -->
-
-<table id="sample_table" style="display:none;" width="100%">
-	<tbody>
-		<tr class="main_tr" class="tab">
-			<td>
-				<input type="hidden" name="gst_figure_id" class="gst_figure_id" value="">
-				<input type="hidden" name="gst_amount" class="gst_amount" value="">
-				<input type="hidden" name="gst_figure_tax_percentage" class="gst_figure_tax_percentage calculation" value="">
-				<input type="hidden" name="tot" class="totamount calculation" value="">
-				<input type="hidden" name="gst_value" class="gstValue calculation" value="">
-				<input type="hidden" name="exactgst_value" class="exactgst_value calculation" value="">
-				<input type="hidden" name="discountvalue" class="discountvalue calculation" value="">
-				<?php echo $this->Form->input('item_id', ['empty'=>'-Item Name-', 'options'=>$itemOptions,'label' => false,'class' =>'form-control input-medium attrGet calculation','required'=>'required']); ?>
-				<span class="itemQty" style="color:red"></span>
-			</td>
-			<td>
-				<?php echo $this->Form->input('quantity', ['label' => false,'class' => 'form-control input-sm calculation quantity rightAligntextClass','id'=>'check','required'=>'required','placeholder'=>'Quantity', 'value'=>1]); ?>
-			</td>
-			<td>
-				<?php echo $this->Form->input('rate', ['label' => false,'class' => 'form-control input-sm calculation rate rightAligntextClass','required'=>'required','placeholder'=>'Rate']); ?>
-			</td>
-			<td>
-				<?php echo $this->Form->input('taxable_value', ['label' => false,'class' => 'form-control input-sm gstAmount reverse_total_amount rightAligntextClass','required'=>'required','placeholder'=>'Amount', 'readonly'=>'readonly']); ?>
-			</td>
-			<td>
-				<?php echo $this->Form->input('gst_figure_tax_name', ['label' => false,'class' => 'form-control input-sm gst_figure_tax_name rightAligntextClass', 'readonly'=>'readonly','required'=>'required','placeholder'=>'GST']); ?>	
-			</td>
-			<td>
-				<?php echo $this->Form->input('net_amount', ['label' => false,'class' => 'form-control input-sm discountAmount calculation rightAligntextClass','required'=>'required', 'readonly'=>'readonly','placeholder'=>'Taxable Value']); ?>					
-			</td>
-			<td align="center">
-				<a class="btn btn-danger delete-tr dlt btn-xs" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
-			</td>
-		</tr>
-	</tbody>
-</table>
-
-
 <?php
+	$kk='<input type="text" class="form-control input-sm ref_name">';
+	$total_input='<input type="text" class="form-control input-sm rightAligntextClass total" readonly>';
+	$total_type='<input type="text" class="form-control input-sm total_type" readonly>';
 	$js="
-	$(document).ready(function() {
-		//select item gst rate start
-		$('.attrGet').die().live('change',function(){
-			var gst_amount=$('option:selected', this).attr('gst_amount');
-			$(this).closest('tr').find('.gst_amount').val(gst_amount);
-			forward_total_amount();
-		});
-		//change party state wise start
-		$('.party_ledger_id').die().live('change',function(){
-			var customer_state_id=$('option:selected', this).attr('party_state_id');
-			var state_id=$('.state_id').val();
-			if(customer_state_id!=state_id)
-			{
-				if(customer_state_id>0)
-				{
-					$('#gstDisplay').html('IGST');
-					$('#add_igst').show();
-					$('#add_cgst').hide();
-					$('#add_sgst').hide();
-					$('#is_interstate').val('1');
-				}
-				else if(!customer_state_id)
-				{
-					$('#gstDisplay').html('GST');
-					$('#add_cgst').show();
-					$('#add_sgst').show();
-					$('#add_igst').hide();
-					$('#is_interstate').val('0');
-				}
-				else if(customer_state_id==0)
-				{
-					$('#gstDisplay').html('GST');
-					$('#add_cgst').show();
-					$('#add_sgst').show();
-					$('#add_igst').hide();
-					$('#is_interstate').val('0');
-				}
-			}
-			else if(customer_state_id==state_id){
-				$('#gstDisplay').html('GST');
-				$('#add_cgst').show();
-				$('#add_sgst').show();
-				$('#add_igst').hide();
-				$('#is_interstate').val('0');
-			}
-			//$(this).closest('tr').find('.output_igst_ledger_id').val(output_igst_ledger_id);
-		});
-		//change party state wise end
-		
-		//cash or credit start
-		$('.cashcredit').die().live('change',function(){
+		$(document).ready(function() {
 			
-			var cashcredit=$(this).val();
-			if(cashcredit=='cash')
-			{
-				$('.cusomerIds').hide();
-				$('#gstDisplay').html('GST');
-				$('#add_cgst').show();
-				$('#add_sgst').show();
-				$('#add_igst').hide();
-				$('#add_igst').val('');
-				$('#is_interstate').val('0');
-				//$('.cashcusomerIds').show();
-			}
-			else{
-				$('.cusomerIds').show();
-				//$('.cashcusomerIds').hide();
-			}
-		});
-		//cash or credit end
-		// delete row start
-		$('.delete-tr').die().live('click',function() 
-		{
-			$(this).closest('tr').remove();
-			rename_rows();
-		});
-		//delete row end
-		ComponentsPickers.init();
-		//add row start 
-		$('.add_row').click(function(){
-			add_row();
-		}) ;
-		$( document ).ready(add_row);
-		function add_row()
-		{
-			var tr=$('#sample_table tbody tr.main_tr').clone();
-			$('#main_table tbody#main_tbody').append(tr);
-			rename_rows();
-			forward_total_amount();
-		}
-		//add row end
-		//rename row start
-		function rename_rows()
-		{
-			var i=0;
-			$('#main_table tbody#main_tbody tr.main_tr').each(function(){ 
-			    
-				$(this).find('td:nth-child(1) select.attrGet').select2().attr({name:'credit_note_rows['+i+'][item_id]',id:'credit_note_rows['+i+'][item_id]'});
-				$(this).find('.quantity').attr({name:'credit_note_rows['+i+'][quantity]',id:'credit_note_rows['+i+'][quantity]'});
-				$(this).find('.rate').attr({name:'credit_note_rows['+i+'][rate]',id:'credit_note_rows['+i+'][rate]'});
-				$(this).find('.gstAmount').attr({name:'credit_note_rows['+i+'][taxable_value]',id:'credit_note_rows['+i+'][taxable_value]'});
-			  
-				$(this).find('.gst_figure_id').attr({name:'credit_note_rows['+i+'][gst_figure_id]',id:'credit_note_rows['+i+'][gst_figure_id]'});
-			  
-				$(this).find('.discountAmount').attr({name:'credit_note_rows['+i+'][net_amount]',id:'credit_note_rows['+i+'][net_amount]'});
-				$(this).find('.gstValue').attr({name:'credit_note_rows['+i+'][gst_value]',id:'credit_note_rows['+i+'][gst_value]'});	
-				if(i==0)
-				{
-				$(this).closest('tr').find('.dlt').remove();
+			$('.delete-tr').die().live('click',function() 
+			{	
+				$(this).closest('tr.MainTr').remove();
+				rename_rows();
+			});
+			
+			$('.delete-tr-ref').die().live('click',function() 
+			{	
+				$(this).closest('tr').remove();
+				rename_rows();
+			});
+			
+			$('.paymentType').die().live('change',function(){
+				var type=$(this).val();	
+				var currentRefRow=$(this).closest('tr');
+				if(type=='NEFT/RTGS'){
+					currentRefRow.find('td:nth-child(2)').hide();
+					currentRefRow.find('td:nth-child(3)').hide();
 				}
+				else{
+					currentRefRow.find('td:nth-child(2)').show();
+					currentRefRow.find('td:nth-child(3)').show();
+				}
+			});
+			
+			$('.refDrCr').die().live('change',function(){
+				var SelectedTr=$(this).closest('tr.MainTr');
+				renameRefRows(SelectedTr);
+			});
+			
+			$('.refType').die().live('change',function(){
+				var type=$(this).val();
+				var currentRefRow=$(this).closest('tr');
+				var ledger_id=$(this).closest('tr.MainTr').find('select.ledger option:selected').val();
 				
+				if(type=='Against'){
+					$(this).closest('tr').find('td:nth-child(2)').html('Loading Ref List...');
+					var url='".$this->Url->build(['controller'=>'ReferenceDetails','action'=>'listRef'])."';
+					url=url+'/'+ledger_id;
+					$.ajax({
+						url: url,
+					}).done(function(response) { 
+						currentRefRow.find('td:nth-child(2)').html(response);
+					});
+				}else if(type=='On Account'){
+					currentRefRow.find('td:nth-child(2)').html('');
+				}else{
+					currentRefRow.find('td:nth-child(2)').html('".$kk."');
+					
+				}
+				var SelectedTr=$(this).closest('tr.MainTr');
+				renameRefRows(SelectedTr);
+			});
+			
+			$('.cr_dr').die().live('change',function(){
+				var cr_dr=$(this).val();
+				if(cr_dr=='Cr'){
+					$(this).closest('tr').find('.debitBox').hide();
+					$(this).closest('tr').find('.creditBox').show();
+				}else{
+					$(this).closest('tr').find('.debitBox').show();
+					$(this).closest('tr').find('.creditBox').hide();
+				}
+			});
+			
+			$('.ledger').die().live('change',function(){
+				var openWindow=$(this).find('option:selected').attr('open_window');
+				if(openWindow=='party'){
+					var SelectedTr=$(this).closest('tr.MainTr');
+					var windowContainer=$(this).closest('td').find('div.window');
+					windowContainer.html('');
+					windowContainer.html('<table width=90%><tbody></tbody><tfoot><td colspan=2></td><td>$total_input</td><td>$total_type</td></tfoot></table><a role=button class=addRefRow>Add Row</a>');
+					AddRefRow(SelectedTr);
+				}
+				else if(openWindow=='bank'){
+					var SelectedTr=$(this).closest('tr.MainTr')
+					var windowContainer=$(this).closest('td').find('div.window');
+					windowContainer.html('');
+					windowContainer.html('<table width=90%><tbody></tbody><tfoot><td colspan=4></td></tfoot></table>');
+					AddBankRow(SelectedTr);
+				}
+			});
+			
+			$('.AddMainRow').die().live('click',function(){ 
+				addMainRow();
+			});
+			
+			addMainRow();
+			function addMainRow(){
+				var tr=$('#sampleMainTable tbody.sampleMainTbody tr.MainTr').clone();
+				$('#MainTable tbody#MainTbody').append(tr);
+				renameMainRows();
+			}
+			
+			
+			
+			function renameMainRows(){
+				var i=0;
+				$('#MainTable tbody#MainTbody tr.MainTr').each(function(){
+					$(this).attr('row_no',i);
+					$(this).find('td:nth-child(1) select.cr_dr').attr({name:'credit_note_rows['+i+'][cr_dr]',id:'credit_note_rows-'+i+'-cr_dr'});
+					$(this).find('td:nth-child(2) select.ledger').attr({name:'credit_note_rows['+i+'][ledger_id]',id:'credit_note_rows-'+i+'-ledger_id'}).select2();
+					$(this).find('td:nth-child(3) input.debitBox').attr({name:'credit_note_rows['+i+'][debit]',id:'credit_note_rows-'+i+'-debit'});
+					$(this).find('td:nth-child(4) input.creditBox').attr({name:'credit_note_rows['+i+'][credit]',id:'credit_note_rows-'+i+'-credit'});
+					i++;
+				});
+			}
+			
+			$('.addBankRow').die().live('click',function(){
+				var SelectedTr=$(this).closest('tr.MainTr');
+				AddBankRow(SelectedTr);
+			});
+			
+			function AddBankRow(SelectedTr){
+				var bankTr=$('#sampleForBank tbody tr').clone();
+				console.log(bankTr);
+				SelectedTr.find('td:nth-child(2) div.window table tbody').append(bankTr);
+				renameBankRows(SelectedTr);
+			}
+			
+			function renameBankRows(SelectedTr){
+				var row_no=SelectedTr.attr('row_no');
+				SelectedTr.find('td:nth-child(2) div.window table tbody tr').each(function(){
+					$(this).find('td:nth-child(1) select.paymentType').attr({name:'credit_note_rows['+row_no+'][mode_of_payment]',id:'credit_note_rows-'+row_no+'-mode_of_payment'});
+					$(this).find('td:nth-child(2) input.cheque_no').attr({name:'credit_note_rows['+row_no+'][cheque_no]',id:'credit_note_rows-'+row_no+'-cheque_no'});
+					$(this).find('td:nth-child(3) input.cheque_date').attr({name:'credit_note_rows['+row_no+'][cheque_date]',id:'credit_note_rows-'+row_no+'-cheque_date'}).datepicker();
+				});
+				
+			}
+			
+			$('.addRefRow').die().live('click',function(){
+				var SelectedTr=$(this).closest('tr.MainTr');
+				AddRefRow(SelectedTr);
+			});
+			
+			function AddRefRow(SelectedTr){
+				var refTr=$('#sampleForRef tbody tr').clone();
+				//console.log(refTr);
+				SelectedTr.find('td:nth-child(2) div.window table tbody').append(refTr);
+				renameRefRows(SelectedTr);
+			}
+			
+			function renameRefRows(SelectedTr){
+				var i=0;
+				var ledger_id=SelectedTr.find('td:nth-child(2) select.ledger').val();
+				
+				SelectedTr.find('input.ledgerIdContainer').val(ledger_id);
+				SelectedTr.find('input.companyIdContainer').val(".$company_id.");
+				var row_no=SelectedTr.attr('row_no');
+				SelectedTr.find('td:nth-child(2) div.window table tbody tr').each(function(){
+					$(this).find('td:nth-child(1) input.companyIdContainer').attr({name:'credit_note_rows['+row_no+'][reference_details]['+i+'][company_id]',id:'credit_note_rows-'+row_no+'-reference_details-'+i+'-company_id'});
+					$(this).find('td:nth-child(1) input.ledgerIdContainer').attr({name:'credit_note_rows['+row_no+'][reference_details]['+i+'][ledger_id]',id:'credit_note_rows-'+row_no+'-reference_details-'+i+'-ledger_id'});
+					$(this).find('td:nth-child(1) select.refType').attr({name:'credit_note_rows['+row_no+'][reference_details]['+i+'][type]',id:'credit_note_rows-'+row_no+'-reference_details-'+i+'-type'});
+					var is_select=$(this).find('td:nth-child(2) select.refList').length;
+					var is_input=$(this).find('td:nth-child(2) input.ref_name').length;
+					if(is_select){
+						$(this).find('td:nth-child(2) select.refList').attr({name:'credit_note_rows['+row_no+'][reference_details]['+i+'][ref_name]',id:'credit_note_rows-'+row_no+'-reference_details-'+i+'-ref_name'});
+					}else if(is_input){
+						$(this).find('td:nth-child(2) input.ref_name').attr({name:'credit_note_rows['+row_no+'][reference_details]['+i+'][ref_name]',id:'credit_note_rows-'+row_no+'-reference_details-'+i+'-ref_name'});
+					}
+					var Dr_Cr=$(this).find('td:nth-child(4) select option:selected').val();
+					if(Dr_Cr=='Dr'){
+						$(this).find('td:nth-child(3) input').attr({name:'credit_note_rows['+row_no+'][reference_details]['+i+'][debit]',id:'credit_note_rows-'+row_no+'-reference_details-'+i+'-debit'});
+					}else{
+						$(this).find('td:nth-child(3) input').attr({name:'credit_note_rows['+row_no+'][reference_details]['+i+'][credit]',id:'credit_note_rows-'+row_no+'-reference_details-'+i+'-credit'});
+					}
+					i++;
+				});
+				
+			}
+			
+			$('.calculation').die().live('blur',function()
+			{ 
+				var SelectedTr=$(this).closest('tr.MainTr');
+				var total_debit=0;var total_credit=0; var remaining=0; var i=0;
+				SelectedTr.find('td:nth-child(2) div.window table tbody tr').each(function(){
+					var Dr_Cr=$(this).find('td:nth-child(4) select option:selected').val();
+					var amt= parseFloat($(this).find('td:nth-child(3) input').val());
+					if(Dr_Cr=='Dr'){
+						total_debit=total_debit+amt;
+						console.log(total_debit);
+					}
+					else if(Dr_Cr=='Cr'){
+						total_credit=total_credit+amt;
+						console.log(total_credit);
+					}
+					
+					remaining=total_debit-total_credit;
+					
+					if(remaining>0){
+						$(this).closest('table').find(' tfoot td:nth-child(2) input.total').val(remaining);
+						$(this).closest('table').find(' tfoot td:nth-child(3) input.total_type').val('Dr');
+					}
+					else if(remaining<0){
+						remaining=Math.abs(remaining)
+						$(this).closest('table').find(' tfoot td:nth-child(2) input.total').val(remaining);
+						$(this).closest('table').find(' tfoot td:nth-child(3) input.total_type').val('Cr');
+					}
+					else{
+						$(this).closest('table').find(' tfoot td:nth-child(2) input.total').val('0');
+						$(this).closest('table').find(' tfoot td:nth-child(3) input.total_type').val('');	
+					}
+				});
 				i++;
 			});
-		}
-
-		//calculation start 
-		$('.calculation').die().live('keyup',function()
-		{
-			forward_total_amount();
 		});
-		function forward_total_amount()
-		{
-			var total  = 0;
-			var gst_amount  = 0;
-			var gst_value  = 0;
-			var s_cgst_value=0;
-			var roundOff1=0;
-			var round_of=0;
-			var isRoundofType=0;
-			var igst_value=0;
-			var outOfStockValue=0;
-			var s_igst=0;
-			var newsgst=0;
-			var newigst=0;
-			var exactgstvalue=0;
-			$('#main_table tbody#main_tbody tr.main_tr').each(function()
-			{
-			    var outdata=$(this).closest('tr').find('.outStock').val();
-				if(!outdata){outdata=0;}
-				outOfStockValue=parseFloat(outOfStockValue)+parseFloat(outdata);
-				
-				var quantity  = Math.round($(this).find('.quantity').val());
-				if(!quantity){quantity=0;}
-				var rate  = parseFloat($(this).find('.rate').val());
-				if(!rate){rate=0;}
-				var totamount = quantity*rate;
-				$(this).find('.totamount').val(totamount);
-				   
-				var discount  = parseFloat($(this).find('.discount').val());
-				if(!discount){discount=0;}
-				var discountValue=(discount*totamount)/100;
-				var discountAmount=totamount-discountValue;
-				
-				if(!discountAmount){discountAmount=0;}
-				$(this).find('.discountAmount').val(discountAmount.toFixed(2));
-				var gst_ietmamount  = $(this).find('.gst_amount').val();
-				var discountAmount  = $(this).find('.discountAmount').val();
-				var item_gst_amount=discountAmount/quantity;
-				
-				if(item_gst_amount<=gst_ietmamount)
-				{
-					var first_gst_figure_tax_percentage=$('option:selected', this).attr('FirstGstFigure');
-					var first_gst_figure_tax_name=$('option:selected', this).attr('FirstGstFigure');
-					var first_gst_figure_id=$('option:selected', this).attr('first_gst_figure_id');
-						
-					$(this).closest('tr').find('.gst_figure_id').val(first_gst_figure_id);
-					$(this).closest('tr').find('.gst_figure_tax_percentage').val(first_gst_figure_tax_percentage);
-					$(this).closest('tr').find('.gst_figure_tax_name').val(first_gst_figure_tax_name);
-                }
-				else if(item_gst_amount>gst_ietmamount)
-				{
-					var second_gst_figure_tax_percentage=$('option:selected', this).attr('SecondGstFigure');
-					var second_gst_figure_tax_name=$('option:selected', this).attr('SecondGstFigure');
-					var second_gst_figure_id=$('option:selected', this).attr('second_gst_figure_id');
-
-					$(this).closest('tr').find('.gst_figure_id').val(second_gst_figure_id);
-					$(this).closest('tr').find('.gst_figure_tax_percentage').val(second_gst_figure_tax_percentage);
-					$(this).closest('tr').find('.gst_figure_tax_name').val(second_gst_figure_tax_name);
-				}
-				
-				$(this).find('.discountvalue').val(discountValue.toFixed(2));
-				
-				var gst_figure_tax_percentage  = parseFloat($(this).find('.gst_figure_tax_percentage').val());
-				if(!gst_figure_tax_percentage){gst_figure_tax_percentage=0;}
-				var discountAmount  = parseFloat($(this).find('.discountAmount').val());
-				if(!discountAmount){discountAmount=0;}
-				var divideValue=100;
-				var divideval=divideValue+gst_figure_tax_percentage;
-				var gstAmount=(discountAmount*100)/divideval;
-	            var gstValue=(gstAmount*gst_figure_tax_percentage)/100;
-				$(this).find('.gstAmount').val(gstAmount.toFixed(2));
-				$(this).find('.gstValue').val(gstValue.toFixed(2));
-
-				var gstValue  = parseFloat($(this).find('.gstValue').val());
-				var gstAmount  = parseFloat($(this).find('.gstAmount').val());
-				var is_interstate  = parseFloat($('#is_interstate').val());
-				if(is_interstate=='0')
-				{
-					 exactgstvalue=round(gstValue/2,2);
-					 $(this).find('.exactgst_value').val(exactgstvalue);
-					var add_cgst  = $(this).find('.exactgst_value').val();
-					if(!add_cgst){add_cgst=0;}
-					//alert(add_cgst);
-					newsgst=round(parseFloat(newsgst)+parseFloat(add_cgst), 2);
-					gst_amount=parseFloat(gst_amount.toFixed(2))+parseFloat(gstAmount.toFixed(2));
-					total=gst_amount+newsgst+newsgst;
-					roundOff1=Math.round(total);
-				}else{
-					 exactgstvalue=round(gstValue,2);
-					 $(this).find('.exactgst_value').val(exactgstvalue);
-					var add_igst  = parseFloat($(this).find('.exactgst_value').val());
-					if(!add_igst){add_igst=0;}
-					newigst=round(parseFloat(newigst)+parseFloat(add_igst), 2);
-					gst_amount=parseFloat(gst_amount.toFixed(2))+parseFloat(gstAmount.toFixed(2));
-					total=gst_amount+newigst;
-					roundOff1=Math.round(total);
-				}
-				if(total<roundOff1)
-				{
-					round_of=parseFloat(roundOff1)-parseFloat(total);
-					isRoundofType='0';
-				}
-				if(total>roundOff1)
-				{
-					round_of=parseFloat(roundOff1)-parseFloat(total);
-					isRoundofType='1';
-				}
-				if(total==roundOff1)
-				{
-					round_of=parseFloat(total)-parseFloat(roundOff1);
-					isRoundofType='0';
-				}
-		});
-		$('.amount_after_tax').val(roundOff1.toFixed(2));
-		$('.amount_before_tax').val(gst_amount.toFixed(2));
-		$('.add_cgst').val(newsgst);
-		$('.add_sgst').val(newsgst);
-		$('.add_igst').val(newigst);					
-		$('.roundValue').val(round_of.toFixed(2));
-		$('.isRoundofType').val(isRoundofType);
-		$('.outOfStock').val(outOfStockValue);
-		rename_rows();
-		}
-		//calculation end
-		//form validation start
-		});
-		function checkValidation() 
-		{  
-			var amount_before_tax  = $('.amount_before_tax').val();
-			var amount_after_tax = $('.amount_after_tax').val();
-			if(amount_before_tax && amount_after_tax)
-			{
-				if(confirm('Are you sure you want to submit!'))
-				{
-					$('.submit').attr('disabled','disabled');
-					$('.submit').text('Submiting...');
-					return true;
-				}
-				else
-				{
-					return false;
-				}
-			}
-			else{
-				   alert('Please enter your data!');
-			}
-		}
-		//form validation end
-";
-
-echo $this->Html->scriptBlock($js, array('block' => 'scriptBottom')); 
+	";
 ?>
+<?php echo $this->Html->scriptBlock($js, array('block' => 'scriptBottom'));  ?>
+

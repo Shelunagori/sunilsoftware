@@ -61,8 +61,8 @@ class SalesVouchersController extends AppController
         $salesVoucher = $this->SalesVouchers->newEntity();
 		
         if ($this->request->is('post')) {
+			$this->request->data['transaction_date'] = date("Y-m-d",strtotime($this->request->getData()['transaction_date']));
             $salesVoucher = $this->SalesVouchers->patchEntity($salesVoucher, $this->request->getData());
-			$salesVoucher->transaction_date = date("Y-m-d",strtotime($this->request->getData()['transaction_date']));
 			$Voucher = $this->SalesVouchers->find()->select(['voucher_no'])->where(['company_id'=>$company_id])->order(['voucher_no' => 'DESC'])->first();
 			if($Voucher)
 			{
@@ -137,7 +137,7 @@ class SalesVouchersController extends AppController
 		$company_id=$this->Auth->User('session_company_id');
         $this->request->data['company_id'] =$company_id;
         $salesVoucher = $this->SalesVouchers->get($id, [
-            'contain' => ['SalesVoucherRows']
+            'contain' => ['SalesVoucherRows'=>['ReferenceDetails']]
         ]);
 		//pr($salesVoucher);exit;
         if ($this->request->is(['patch', 'post', 'put'])) {

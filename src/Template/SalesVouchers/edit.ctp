@@ -4,7 +4,12 @@
  */
 $this->set('title', 'Sales Voucher');
 ?>
-
+<?php
+$option_ref[]= ['value'=>'New Ref','text'=>'New Ref'];
+$option_ref[]= ['value'=>'Against','text'=>'Against'];
+$option_ref[]= ['value'=>'Advance','text'=>'Advance'];
+$option_ref[]= ['value'=>'On Account','text'=>'On Account'];
+?>
 <div class="row">
 	<div class="col-md-12">
 		<div class="portlet light ">
@@ -33,7 +38,7 @@ $this->set('title', 'Sales Voucher');
 					</div>
 					<div class="col-md-3">
 						<div class="form-group">
-							<label>Reference No <span class="required">*</span></label>
+							<label>Reference No </label>
 							<?php echo $this->Form->control('reference_no',['class'=>'form-control input-sm','label'=>false,'placeholder'=>'refrence no','type'=>'text']); ?>
 						</div>
 					</div>
@@ -51,7 +56,77 @@ $this->set('title', 'Sales Voucher');
 									</tr>
 								</thead>
 								<tbody id='MainTbody' class="tab">
-									
+								<?php
+								if(!empty($salesVoucher->sales_voucher_rows))
+								{
+									$i=0;
+									foreach($salesVoucher->sales_voucher_rows as $sales_voucher_row){	
+								?>
+									<tr class="MainTr" row_no="<?php echo $i;?>">
+										<td width="10%">
+											<?php 
+											echo $this->Form->input('cr_dr', ['options'=>['Dr'=>'Dr','Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm cr_dr','required'=>'required','value'=>$sales_voucher_row->cr_dr]); ?>
+										</td>
+										<td width="65%">
+											<?php echo $this->Form->input('ledger_id', ['empty'=>'--Select--','options'=>@$ledgerOptions,'label' => false,'class' => 'form-control input-sm ledger','required'=>'required','value'=>$sales_voucher_row->ledger_id]); ?>
+											<div class="window" style="margin:auto;">
+											<?php
+											if(!empty($sales_voucher_row->reference_details)){
+											?>
+												<table width=90%><tbody>
+												<?php
+												    $j=0;
+												    foreach($sales_voucher_row->reference_details as $reference_detail)
+													{
+												?>
+													<tr>
+														<td width="20%">
+															<input type="hidden" class="ledgerIdContainer" />
+															<input type="hidden" class="companyIdContainer" />
+															<?php 
+															echo $this->Form->input('sales_voucher_rows.'.$i.'.reference_details.'.$j.'.type', ['options'=>$option_ref,'label' => false,'class' => 'form-control input-sm refType','required'=>'required','value'=>$reference_detail->type]); ?>
+														</td>
+														<td width="">
+															<?php echo $this->Form->input('sales_voucher_rows.'.$i.'.reference_details.'.$j.'.ref_name', ['type'=>'text','label' => false,'class' => 'form-control input-sm ref_name','placeholder'=>'Reference Name','required'=>'required']); ?>
+														</td>
+														
+														<td width="20%" style="padding-right:0px;">
+															<?php echo $this->Form->input('sales_voucher_rows.'.$i.'.reference_details.'.$j.'.amount', ['label' => false,'class' => 'form-control input-sm calculation rightAligntextClass','placeholder'=>'Amount','required'=>'required']); ?>
+														</td>
+														<td width="10%" style="padding-left:0px;">
+															<?php 
+															echo $this->Form->input('sales_voucher_rows.'.$i.'.reference_details.'.$j.'.type_cr_dr', ['options'=>['Dr'=>'Dr','Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm  calculation refDrCr','value'=>'Dr']); ?>
+														</td>
+														
+														<td align="center">
+															<a class="ref_delete" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
+														</td>
+													</tr>
+													<?php $j++;} ?>
+												</tbody>
+												<tfoot>
+												    <tr class="remove_ref_foot">
+													<td colspan=2></td>
+													<td><input type="text" class="form-control input-sm rightAligntextClass total" readonly></td>
+													<td><input type="text" class="form-control input-sm total_type" readonly></td>
+													</tr>
+												</tfoot>
+												</table>
+												<a role=button class=addRefRow>Add Row</a>
+											<?php } ?>
+											</div>
+										</td>
+										<td width="10%">
+											<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm  debitBox rightAligntextClass','placeholder'=>'Debit','value'=>$sales_voucher_row->debit]); ?>
+										</td>
+										<td width="10%">
+											<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm creditBox rightAligntextClass','placeholder'=>'Credit','style'=>'display:none;','value'=>$sales_voucher_row->credit]); ?>	
+										</td>
+										<td align="center"  width="10%">
+											<a class="btn btn-danger delete-tr btn-xs" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
+										</td>
+									</tr>
+								<?php $i++; } } ?>
 								</tbody>
 								<tfoot>
 									<tr>
@@ -77,12 +152,7 @@ $this->set('title', 'Sales Voucher');
 		</div>
 	</div>
 </div>
-<?php
-$option_ref[]= ['value'=>'New Ref','text'=>'New Ref'];
-$option_ref[]= ['value'=>'Against','text'=>'Against'];
-$option_ref[]= ['value'=>'Advance','text'=>'Advance'];
-$option_ref[]= ['value'=>'On Account','text'=>'On Account'];
-?>
+
 
 
 <table id="sampleForRef" style="display:none;" width="100%">
@@ -244,6 +314,21 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				renameRefRows(SelectedTr);
 			});
 			
+			$('.delete-tr').die().live('click',function() 
+			{
+				$(this).closest('tr').remove();
+				renameMainRows();
+				renameBankRows();
+				renameRefRows();
+			});
+			
+			$('.ref_delete').die().live('click',function() 
+			{
+				$(this).closest('tr').remove();
+				remove_ref_foot
+				renameRefRows();
+			});
+			
 			$('.refType').die().live('change',function(){
 				var type=$(this).val();
 				var currentRefRow=$(this).closest('tr');
@@ -301,7 +386,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				addMainRow();
 			});
 			
-			addMainRow();
+			//addMainRow();
 			function addMainRow(){
 				var tr=$('#sampleMainTable tbody.sampleMainTbody tr.MainTr').clone();
 				$('#MainTable tbody#MainTbody').append(tr);
