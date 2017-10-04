@@ -138,7 +138,7 @@ class CreditNotesController extends AppController
 		$company_id=$this->Auth->User('session_company_id');
         $this->request->data['company_id'] =$company_id;
         $creditNote = $this->CreditNotes->get($id, [
-            'contain' => []
+            'contain' => ['CreditNoteRows'=>['Ledgers','ReferenceDetails']]
         ]);
         if ($this->request->is(['patch', 'post', 'put'])) {
             $creditNote = $this->CreditNotes->patchEntity($creditNote, $this->request->getData());

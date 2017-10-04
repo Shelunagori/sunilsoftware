@@ -42,7 +42,8 @@ class SalesVouchersTable extends Table
             'joinType' => 'INNER'
         ]);
         $this->hasMany('SalesVoucherRows', [
-            'foreignKey' => 'sales_voucher_id'
+            'foreignKey' => 'sales_voucher_id',
+			'saveStrategy'=>'replace'
         ]);
     }
 

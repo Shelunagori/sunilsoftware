@@ -45,7 +45,95 @@ $this->set('title', 'Credit Note Voucher');
 									</tr>
 								</thead>
 								<tbody id='MainTbody' class="tab">
-									
+							
+								<?php 	$i=0;	
+										foreach($creditNote->credit_note_rows as $credit_note_row)
+									     {	?>
+										 
+											 <tr class="MainTr">
+												<td width="10%">
+													<?php 
+													echo $this->Form->input('cr_dr', ['options'=>['Dr'=>'Dr','Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm cr_dr','required'=>'required','value'=>' $credit_note_row->cr_dr']); ?>
+												</td>
+												<td width="65%">
+													<?php echo $this->Form->input('ledger_id', ['empty'=>'--Select--','options'=>@$ledgerOptions,'label' => false,'class' => 'form-control input-sm ledger','required'=>'required','value'=> $credit_note_row->ledger_id]); ?>
+													<div class="window" style="margin:auto;"></div>
+													<?php
+											if(!empty($credit_note_row->reference_details)){
+											?>
+												<table width="90%"><tbody>
+												<?php
+												    $j=0;
+												    foreach($credit_note_row->reference_details as $reference_detail)
+													{
+													
+														$option_ref[]= ['value'=>'New Ref','text'=>'New Ref'];
+														$option_ref[]= ['value'=>'Against','text'=>'Against'];
+														$option_ref[]= ['value'=>'Advance','text'=>'Advance'];
+														$option_ref[]= ['value'=>'On Account','text'=>'On Account'];
+													?>
+															
+														<tr>
+															<td width="20%">
+																<input type="hidden" class="ledgerIdContainer" />
+																<input type="hidden" class="companyIdContainer" />
+																<?php 
+																echo $this->Form->input('credit_note_row.'.$i.'.reference_details.'.$j.'.type', ['options'=>$option_ref,'label' => false,'class' => 'form-control input-sm refType','required'=>'required','value'=>$reference_detail->type]); ?>
+															</td>
+															<td width="">
+																<?php echo $this->Form->input('credit_note_row.'.$i.'.reference_details.'.$j.'.ref_name', ['type'=>'text','label' => false,'class' => 'form-control input-sm ref_name','placeholder'=>'Reference Name','value'=>$reference_detail->ref_name]); ?>
+															</td>
+															
+															<td width="20%" style="padding-right:0px;">
+															<?php 
+															if(!empty($reference_detail->debit)){ ?>
+																<?php echo $this->Form->input('credit_note_row.'.$i.'.reference_details.'.$j.'.amount', ['label' => false,'class' => 'form-control input-sm calculation rightAligntextClass','placeholder'=>'Amount','required'=>'required', 'value'=>$reference_detail->debit]); 
+															} else { ?>
+																<?php echo $this->Form->input('credit_note_row.'.$i.'.reference_details.'.$j.'.amount', ['label' => false,'class' => 'form-control input-sm calculation rightAligntextClass','placeholder'=>'Amount','required'=>'required','value' => $reference_detail->credit]); ?>
+															
+															<?php } ?>
+															</td>
+															
+															<td width="10%" style="padding-left:0px;">
+																<?php
+															if(!empty($reference_detail->debit)){ ?>
+																<?php 
+																echo $this->Form->input('credit_note_row.'.$i.'.reference_details.'.$j.'.type_cr_dr', ['options'=>['Dr'=>'Dr','Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm  calculation refDrCr','value'=>'Dr']); ?>
+																<?php } else { 
+																echo $this->Form->input('credit_note_row.'.$i.'.reference_details.'.$j.'.type_cr_dr', ['options'=>['Dr'=>'Dr','Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm  calculation refDrCr','value'=>'Cr']); ?>
+																<?php } ?>
+															</td>
+															
+															<td align="center">
+																<a class="ref_delete" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
+															</td>
+														</tr>
+														<?php $j++;} ?>
+												</tbody>
+												<tfoot>
+												    <tr class="">
+													<td colspan="2"><a role="button" class="addRefRow">Add Row</a></td>
+													<td><input type="text" class="form-control input-sm rightAligntextClass total" readonly></td>
+													<td><input type="text" class="form-control input-sm total_type" readonly></td>
+													</tr>
+												</tfoot>
+												</table>
+												
+											<?php } ?>
+												</td>
+												<td width="10%">
+													<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm  debitBox rightAligntextClass','placeholder'=>'Debit','value'=> $credit_note_row->debit]); ?>
+												</td>
+												<td width="10%">
+													<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm creditBox rightAligntextClass','placeholder'=>'Credit','value'=>$credit_note_row->credit,'style'=>'display:none;']); ?>	
+												</td>
+												<td align="center"  width="10%">
+													<a class="btn btn-danger delete-tr btn-xs" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
+												</td>
+											</tr>
+										<?php
+										 } 
+										?>
 								</tbody>
 								<tfoot>
 									<tr>
@@ -273,13 +361,24 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				}
 			});
 			
+			
+			var cr_dr=$('.cr_dr option:selected').val();
+			if(cr_dr=='Cr'){
+				$(this).closest('tr').find('.debitBox').hide();
+				$(this).closest('tr').find('.creditBox').show();
+			}else{
+				$(this).closest('tr').find('.debitBox').show();
+				$(this).closest('tr').find('.creditBox').hide();
+			}
+		
+			
 			$('.ledger').die().live('change',function(){
 				var openWindow=$(this).find('option:selected').attr('open_window');
 				if(openWindow=='party'){
 					var SelectedTr=$(this).closest('tr.MainTr');
 					var windowContainer=$(this).closest('td').find('div.window');
 					windowContainer.html('');
-					windowContainer.html('<table width=90%><tbody></tbody><tfoot><td colspan=2></td><td>$total_input</td><td>$total_type</td></tfoot></table><a role=button class=addRefRow>Add Row</a>');
+					windowContainer.html('<table width=90%><tbody></tbody><tfoot><td colspan=2><a role=button class=addRefRow>Add Row</a></td><td>$total_input</td><td>$total_type</td></tfoot></table>');
 					AddRefRow(SelectedTr);
 				}
 				else if(openWindow=='bank'){
@@ -295,7 +394,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				addMainRow();
 			});
 			
-			addMainRow();
+			
 			function addMainRow(){
 				var tr=$('#sampleMainTable tbody.sampleMainTbody tr.MainTr').clone();
 				$('#MainTable tbody#MainTbody').append(tr);
@@ -303,7 +402,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			}
 			
 			
-			
+			renameMainRows();
 			function renameMainRows(){
 				var i=0;
 				$('#MainTable tbody#MainTbody tr.MainTr').each(function(){
@@ -339,13 +438,14 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			}
 			
 			$('.addRefRow').die().live('click',function(){
+				
 				var SelectedTr=$(this).closest('tr.MainTr');
 				AddRefRow(SelectedTr);
 			});
 			
 			function AddRefRow(SelectedTr){
+				alert();
 				var refTr=$('#sampleForRef tbody tr').clone();
-				//console.log(refTr);
 				SelectedTr.find('td:nth-child(2) div.window table tbody').append(refTr);
 				renameRefRows(SelectedTr);
 			}
