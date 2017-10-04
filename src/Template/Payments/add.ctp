@@ -108,7 +108,7 @@ $option_ref[]= ['value'=>'On Account','text'=>'On Account'];
 			</td>
 			
 			<td align="center" valign="top">
-				<a class="" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
+				<a class="delete-tr-ref" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
 			</td>
 		</tr>
 	</tbody>
@@ -281,6 +281,17 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
                 }
 			});
 			
+			$('.delete-tr').die().live('click',function() 
+			{	
+				$(this).closest('tr.MainTr').remove();
+				rename_rows();
+			});
+			
+			$('.delete-tr-ref').die().live('click',function() 
+			{	
+				$(this).closest('tr').remove();
+				rename_rows();
+			});
 			
 			$('.paymentType').die().live('change',function(){
 				var type=$(this).val();	
@@ -369,7 +380,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			}
 			
 			function renameMainRows(){
-				var i=0;
+				var i=0; var main_debit=0; main_credit=0;
 				$('#MainTable tbody#MainTbody tr.MainTr').each(function(){
 					$(this).attr('row_no',i);
 					var cr_dr=$(this).find('td:nth-child(1) select.cr_dr option:selected').val()
@@ -382,16 +393,25 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 						$(this).find('td:nth-child(3) input.debitBox').rules('add', 'required');
 						$(this).find('td:nth-child(4) input.creditBox').rules('remove', 'required');
 						$(this).find('td:nth-child(4) span.help-block-error').remove();
+						var debit_amt=parseFloat($(this).find('td:nth-child(3) input.debitBox').val());
+						if(!debit_amt){
+							debit_amt=0;
+						}
+						main_debit=main_debit+debit_amt;
 					}else{
 						$(this).find('td:nth-child(3) input.debitBox').rules('remove', 'required');
 						$(this).find('td:nth-child(3) span.help-block-error').remove();
 						$(this).find('td:nth-child(4) input.creditBox').rules('add', 'required');
+						var credit_amt=parseFloat($(this).find('td:nth-child(4) input.creditBox').val());
+						if(!credit_amt){
+							credit_amt=0;
+						}
+						main_credit=main_credit+credit_amt;
 					}
-					
-					
-					
 					i++;
 				});
+				$('#MainTable tfoot tr td:nth-child(2) input#totalMainDr').val(main_debit);
+				$('#MainTable tfoot tr td:nth-child(3) input#totalMainCr').val(main_credit);
 			}
 			
 			$('.addBankRow').die().live('click',function(){
@@ -401,7 +421,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			
 			function AddBankRow(SelectedTr){
 				var bankTr=$('#sampleForBank tbody tr').clone();
-				console.log(bankTr);
+				//console.log(bankTr);
 				SelectedTr.find('td:nth-child(2) div.window table tbody').append(bankTr);
 				renameBankRows(SelectedTr);
 			}
