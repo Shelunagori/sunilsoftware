@@ -45,7 +45,32 @@ $this->set('title', 'Credit Note Voucher');
 									</tr>
 								</thead>
 								<tbody id='MainTbody' class="tab">
-									
+							
+								<?php 	$i=0;	
+										foreach($creditNote->credit_note_rows as $credit_note_row)
+									     {	?>
+											 <tr class="MainTr">
+												<td width="10%">
+													<?php 
+													echo $this->Form->input('cr_dr', ['options'=>['Dr'=>'Dr','Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm cr_dr','required'=>'required','value'=>' $credit_note_row->cr_dr']); ?>
+												</td>
+												<td width="65%">
+													<?php echo $this->Form->input('ledger_id', ['empty'=>'--Select--','options'=>@$ledgerOptions,'label' => false,'class' => 'form-control input-sm ledger','required'=>'required','value'=> $credit_note_row->ledger->name]); ?>
+													<div class="window" style="margin:auto;"></div>
+												</td>
+												<td width="10%">
+													<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm  debitBox rightAligntextClass','placeholder'=>'Debit','value'=> $credit_note_row->debit]); ?>
+												</td>
+												<td width="10%">
+													<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm creditBox rightAligntextClass','placeholder'=>'Credit','value'=>$credit_note_row->credit,'style'=>'display:none;']); ?>	
+												</td>
+												<td align="center"  width="10%">
+													<a class="btn btn-danger delete-tr btn-xs" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
+												</td>
+											</tr>
+										<?php
+										 } 
+										?>
 								</tbody>
 								<tfoot>
 									<tr>
@@ -273,6 +298,18 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				}
 			});
 			
+			
+			var cr_dr=$('.cr_dr option:selected').val();
+			alert(cr_dr);
+			if(cr_dr=='Cr'){
+				$(this).closest('tr').find('.debitBox').hide();
+				$(this).closest('tr').find('.creditBox').show();
+			}else{
+				$(this).closest('tr').find('.debitBox').show();
+				$(this).closest('tr').find('.creditBox').hide();
+			}
+		
+			
 			$('.ledger').die().live('change',function(){
 				var openWindow=$(this).find('option:selected').attr('open_window');
 				if(openWindow=='party'){
@@ -295,7 +332,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				addMainRow();
 			});
 			
-			addMainRow();
+			
 			function addMainRow(){
 				var tr=$('#sampleMainTable tbody.sampleMainTbody tr.MainTr').clone();
 				$('#MainTable tbody#MainTbody').append(tr);
