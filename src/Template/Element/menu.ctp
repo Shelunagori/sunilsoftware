@@ -57,6 +57,17 @@ echo '<li>'.$this->Html->link($this->Html->tag('i', '', ['class' => 'icon-home']
 </li>
 <li class="start ">
 	<a href="javascript:;">
+	<i class="fa fa-shopping-cart"></i>
+	<span class="title">Sales Voucher</span>
+	<span class="arrow "></span>
+	</a>
+	<ul class="sub-menu">
+		<li><?php echo $this->Html->link($this->Html->tag('i', '', ['class' => 'fa fa-plus-square']).' Create', '/salesVouchers/Add',['escape' => false]); ?></li>
+		<li><?php echo $this->Html->link($this->Html->tag('i', '', ['class' => 'fa fa-list-ul']).' List', '/salesVouchers',['escape' => false]); ?></li>
+	</ul>
+</li>
+<li class="start ">
+	<a href="javascript:;">
 	<i class="fa fa-pencil-square"></i>
 	<span class="title">Credit Note</span>
 	<span class="arrow "></span>

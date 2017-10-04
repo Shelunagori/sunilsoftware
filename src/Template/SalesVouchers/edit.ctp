@@ -2,7 +2,7 @@
 /**
  * @Author: PHP Poets IT Solutions Pvt. Ltd.
  */
-$this->set('title', 'Payment Voucher');
+$this->set('title', 'Sales Voucher');
 ?>
 
 <div class="row">
@@ -11,24 +11,30 @@ $this->set('title', 'Payment Voucher');
 			<div class="portlet-title">
 				<div class="caption">
 					<i class="icon-bar-chart font-green-sharp hide"></i>
-					<span class="caption-subject font-green-sharp bold ">Create Payment Voucher</span>
+					<span class="caption-subject font-green-sharp bold ">Create Sales Voucher</span>
 				</div>
 				<div class="actions">
 				</div>
 			</div>
 			<div class="portlet-body">
-				<?= $this->Form->create($payment ) ?>
+				<?= $this->Form->create($salesVoucher) ?>
 				<div class="row">
 					<div class="col-md-3">
 						<div class="form-group">
 							<label>Voucher No :</label>&nbsp;&nbsp;
-							<?= h('#'.str_pad($voucher_no, 4, '0', STR_PAD_LEFT)) ?>
+							<?= h('#'.str_pad($salesVoucher->voucher_no, 4, '0', STR_PAD_LEFT)) ?>
 						</div>
 					</div>
 					<div class="col-md-3">
 						<div class="form-group">
 							<label>Transaction Date <span class="required">*</span></label>
 							<?php echo $this->Form->control('transaction_date',['class'=>'form-control input-sm date-picker','data-date-format'=>'dd-mm-yyyy', 'label'=>false,'placeholder'=>'DD-MM-YYYY','type'=>'text','data-date-start-date'=>@$coreVariable[fyValidFrom],'data-date-end-date'=>@$coreVariable[fyValidTo],'value'=>date('d-m-Y'),'required'=>'required']); ?>
+						</div>
+					</div>
+					<div class="col-md-3">
+						<div class="form-group">
+							<label>Reference No <span class="required">*</span></label>
+							<?php echo $this->Form->control('reference_no',['class'=>'form-control input-sm','label'=>false,'placeholder'=>'refrence no','type'=>'text']); ?>
 						</div>
 					</div>
 				</div>
@@ -308,10 +314,10 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				var i=0;
 				$('#MainTable tbody#MainTbody tr.MainTr').each(function(){
 					$(this).attr('row_no',i);
-					$(this).find('td:nth-child(1) select.cr_dr').attr({name:'payment_rows['+i+'][cr_dr]',id:'payment_rows-'+i+'-cr_dr'});
-					$(this).find('td:nth-child(2) select.ledger').attr({name:'payment_rows['+i+'][ledger_id]',id:'payment_rows-'+i+'-ledger_id'}).select2();
-					$(this).find('td:nth-child(3) input.debitBox').attr({name:'payment_rows['+i+'][debit]',id:'payment_rows-'+i+'-debit'});
-					$(this).find('td:nth-child(4) input.creditBox').attr({name:'payment_rows['+i+'][credit]',id:'payment_rows-'+i+'-credit'});
+					$(this).find('td:nth-child(1) select.cr_dr').attr({name:'sales_voucher_rows['+i+'][cr_dr]',id:'sales_voucher_rows-'+i+'-cr_dr'});
+					$(this).find('td:nth-child(2) select.ledger').attr({name:'sales_voucher_rows['+i+'][ledger_id]',id:'sales_voucher_rows-'+i+'-ledger_id'}).select2();
+					$(this).find('td:nth-child(3) input.debitBox').attr({name:'sales_voucher_rows['+i+'][debit]',id:'sales_voucher_rows-'+i+'-debit'});
+					$(this).find('td:nth-child(4) input.creditBox').attr({name:'sales_voucher_rows['+i+'][credit]',id:'sales_voucher_rows-'+i+'-credit'});
 					i++;
 				});
 			}
@@ -358,21 +364,21 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				SelectedTr.find('input.companyIdContainer').val(".$company_id.");
 				var row_no=SelectedTr.attr('row_no');
 				SelectedTr.find('td:nth-child(2) div.window table tbody tr').each(function(){
-					$(this).find('td:nth-child(1) input.companyIdContainer').attr({name:'payment_rows['+row_no+'][reference_details]['+i+'][company_id]',id:'payment_rows-'+row_no+'-reference_details-'+i+'-company_id'});
-					$(this).find('td:nth-child(1) input.ledgerIdContainer').attr({name:'payment_rows['+row_no+'][reference_details]['+i+'][ledger_id]',id:'payment_rows-'+row_no+'-reference_details-'+i+'-ledger_id'});
-					$(this).find('td:nth-child(1) select.refType').attr({name:'payment_rows['+row_no+'][reference_details]['+i+'][type]',id:'payment_rows-'+row_no+'-reference_details-'+i+'-type'});
+					$(this).find('td:nth-child(1) input.companyIdContainer').attr({name:'sales_voucher_rows['+row_no+'][reference_details]['+i+'][company_id]',id:'sales_voucher_rows-'+row_no+'-reference_details-'+i+'-company_id'});
+					$(this).find('td:nth-child(1) input.ledgerIdContainer').attr({name:'sales_voucher_rows['+row_no+'][reference_details]['+i+'][ledger_id]',id:'sales_voucher_rows-'+row_no+'-reference_details-'+i+'-ledger_id'});
+					$(this).find('td:nth-child(1) select.refType').attr({name:'sales_voucher_rows['+row_no+'][reference_details]['+i+'][type]',id:'sales_voucher_rows-'+row_no+'-reference_details-'+i+'-type'});
 					var is_select=$(this).find('td:nth-child(2) select.refList').length;
 					var is_input=$(this).find('td:nth-child(2) input.ref_name').length;
 					if(is_select){
-						$(this).find('td:nth-child(2) select.refList').attr({name:'payment_rows['+row_no+'][reference_details]['+i+'][ref_name]',id:'payment_rows-'+row_no+'-reference_details-'+i+'-ref_name'});
+						$(this).find('td:nth-child(2) select.refList').attr({name:'sales_voucher_rows['+row_no+'][reference_details]['+i+'][ref_name]',id:'sales_voucher_rows-'+row_no+'-reference_details-'+i+'-ref_name'});
 					}else if(is_input){
-						$(this).find('td:nth-child(2) input.ref_name').attr({name:'payment_rows['+row_no+'][reference_details]['+i+'][ref_name]',id:'payment_rows-'+row_no+'-reference_details-'+i+'-ref_name'});
+						$(this).find('td:nth-child(2) input.ref_name').attr({name:'sales_voucher_rows['+row_no+'][reference_details]['+i+'][ref_name]',id:'sales_voucher_rows-'+row_no+'-reference_details-'+i+'-ref_name'});
 					}
 					var Dr_Cr=$(this).find('td:nth-child(4) select option:selected').val();
 					if(Dr_Cr=='Dr'){
-						$(this).find('td:nth-child(3) input').attr({name:'payment_rows['+row_no+'][reference_details]['+i+'][debit]',id:'payment_rows-'+row_no+'-reference_details-'+i+'-debit'});
+						$(this).find('td:nth-child(3) input').attr({name:'sales_voucher_rows['+row_no+'][reference_details]['+i+'][debit]',id:'sales_voucher_rows-'+row_no+'-reference_details-'+i+'-debit'});
 					}else{
-						$(this).find('td:nth-child(3) input').attr({name:'payment_rows['+row_no+'][reference_details]['+i+'][credit]',id:'payment_rows-'+row_no+'-reference_details-'+i+'-credit'});
+						$(this).find('td:nth-child(3) input').attr({name:'sales_voucher_rows['+row_no+'][reference_details]['+i+'][credit]',id:'sales_voucher_rows-'+row_no+'-reference_details-'+i+'-credit'});
 					}
 					i++;
 				});
@@ -384,8 +390,10 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				var SelectedTr=$(this).closest('tr.MainTr');
 				var total_debit=0;var total_credit=0; var remaining=0; var i=0;
 				SelectedTr.find('td:nth-child(2) div.window table tbody tr').each(function(){
-					var Dr_Cr=$(this).find('td:nth-child(4) select option:selected').val();
-					var amt= parseFloat($(this).find('td:nth-child(3) input').val());
+				var Dr_Cr=$(this).find('td:nth-child(4) select option:selected').val();
+				//console.log(Dr_Cr);
+				var amt= parseFloat($(this).find('td:nth-child(3) input').val());
+				
 					if(Dr_Cr=='Dr'){
 						total_debit=total_debit+amt;
 						console.log(total_debit);
@@ -398,6 +406,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 					remaining=total_debit-total_credit;
 					
 					if(remaining>0){
+						//console.log(remaining);
 						$(this).closest('table').find(' tfoot td:nth-child(2) input.total').val(remaining);
 						$(this).closest('table').find(' tfoot td:nth-child(3) input.total_type').val('Dr');
 					}
@@ -407,10 +416,13 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 						$(this).closest('table').find(' tfoot td:nth-child(3) input.total_type').val('Cr');
 					}
 					else{
-						$(this).closest('table').find(' tfoot td:nth-child(2) input.total').val('0');
-						$(this).closest('table').find(' tfoot td:nth-child(3) input.total_type').val('');	
+					$(this).closest('table').find(' tfoot td:nth-child(2) input.total').val('0');
+					$(this).closest('table').find(' tfoot td:nth-child(3) input.total_type').val('');	
 					}
+					
 				});
+				
+					
 				i++;
 			});
 		});

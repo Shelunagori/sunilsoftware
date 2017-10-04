@@ -14,6 +14,7 @@ $this->set('title', 'Sales Report');
 				</div>
 			</div>
 			<div class="portlet-body">
+<<<<<<< HEAD
 				<div class="row">
 					<form method="get" action="report">
 					<div class="col-md-3">
@@ -54,6 +55,22 @@ $this->set('title', 'Sales Report');
 					</form>
 				</div>
 				
+=======
+			<div class="row">
+				<div class="col-md-12">
+						<div class="col-md-3">
+							<?php echo $this->Form->control('from',['placeholder'=>'Date From','class'=>'form-control input-sm date-picker from','data-date-format'=>'dd-mm-yyyy','label'=>false,'type'=>'text','value'=>@$from]); ?>
+						</div>
+						<div class="col-md-3">
+							<?php echo $this->Form->control('to',['placeholder'=>'Date To','class'=>'form-control input-sm date-picker go','data-date-format'=>'dd-mm-yyyy','label'=>false,'type'=>'text','value'=>@$to]); ?>
+						</div>
+						
+						<div class="col-md-2">
+							<?= $this->Form->button($this->Html->tag('i', '', ['class'=>'fa fa-search']) . __(' Go'),['class'=>'btn btn-success']); ?>
+						</div>
+				</div>
+				</div>
+>>>>>>> a87a4710db87ec9499d570f85e8e2469d23ad94c
 			</div>
 		</div>
 	</div>
