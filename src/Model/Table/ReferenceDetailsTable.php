@@ -93,10 +93,7 @@ class ReferenceDetailsTable extends Table
             ->requirePresence('type', 'create')
             ->notEmpty('type');
 
-      
-       
-
-        return $validator;
+		return $validator;
     }
 
     /**

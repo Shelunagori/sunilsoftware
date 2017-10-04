@@ -101,7 +101,7 @@ $option_ref[]= ['value'=>'On Account','text'=>'On Account'];
 			</td>
 			
 			<td align="center">
-				<a class="" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
+				<a class="btn delete-tr-ref btn-xs" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
 			</td>
 		</tr>
 	</tbody>
@@ -220,6 +220,19 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 	$total_type='<input type="text" class="form-control input-sm total_type" readonly>';
 	$js="
 		$(document).ready(function() {
+			
+			$('.delete-tr').die().live('click',function() 
+			{	
+				$(this).closest('tr.MainTr').remove();
+				rename_rows();
+			});
+			
+			$('.delete-tr-ref').die().live('click',function() 
+			{	
+				$(this).closest('tr').remove();
+				rename_rows();
+			});
+			
 			$('.paymentType').die().live('change',function(){
 				var type=$(this).val();	
 				var currentRefRow=$(this).closest('tr');

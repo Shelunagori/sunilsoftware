@@ -134,6 +134,9 @@ class CreditNotesController extends AppController
      */
     public function edit($id = null)
     {
+		$this->viewBuilder()->layout('index_layout');
+		$company_id=$this->Auth->User('session_company_id');
+        $this->request->data['company_id'] =$company_id;
         $creditNote = $this->CreditNotes->get($id, [
             'contain' => []
         ]);
@@ -146,12 +149,47 @@ class CreditNotesController extends AppController
             }
             $this->Flash->error(__('The credit note could not be saved. Please, try again.'));
         }
-        $companies = $this->CreditNotes->Companies->find('list', ['limit' => 200]);
-        //$partyLedgers = $this->CreditNotes->PartyLedgers->find('list', ['limit' => 200]);
-        $customers = $this->CreditNotes->Customers->find('list', ['limit' => 200]);
-        $ledgers = $this->CreditNotes->Ledgers->find('list', ['limit' => 200]);
-        $salesLedgers = $this->CreditNotes->SalesLedgers->find('list', ['limit' => 200]);
-        $this->set(compact('creditNote', 'companies', 'partyLedgers', 'customers', 'ledgers', 'salesLedgers'));
+		$Voucher = $this->CreditNotes->find()->select(['voucher_no'])->where(['company_id'=>$company_id])->order(['voucher_no' => 'DESC'])->first();
+		if($Voucher)
+		{
+			$voucher_no=$Voucher->voucher_no+1;
+		}
+		else
+		{ 
+			$voucher_no=1;
+		} 
+		$bankParentGroups = $this->CreditNotes->CreditNoteRows->Ledgers->AccountingGroups->find()
+						->where(['AccountingGroups.company_id'=>$company_id, 'AccountingGroups.bank'=>'1']);
+						
+		$bankGroups=[];
+		
+		foreach($bankParentGroups as $bankParentGroup)
+		{
+			$accountingGroups = $this->CreditNotes->CreditNoteRows->Ledgers->AccountingGroups
+			->find('children', ['for' => $bankParentGroup->id])->toArray();
+			$bankGroups[]=$bankParentGroup->id;
+			foreach($accountingGroups as $accountingGroup){
+				$bankGroups[]=$accountingGroup->id;
+			}
+		}
+		
+		$ledgers = $this->CreditNotes->CreditNoteRows->Ledgers->find()->where(['company_id'=>$company_id]);
+		foreach($ledgers as $ledger){
+			if(in_array($ledger->accounting_group_id,$bankGroups)){
+				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id ,'open_window' => 'bank'];
+			}
+			else if($ledger->bill_to_bill_accounting == 'yes'){
+				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id,'open_window' => 'party' ];
+			}
+			else{
+				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id,'open_window' => 'no' ];
+			}
+			
+		}
+		
+		//$referenceDetails=$this->CreditNotes->CreditNoteRows->ReferenceDetails->find('list');
+		
+		$this->set(compact('creditNote', 'company_id','voucher_no','ledgerOptions', 'referenceDetails'));
         $this->set('_serialize', ['creditNote']);
     }
 
