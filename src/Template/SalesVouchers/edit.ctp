@@ -88,8 +88,8 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 												?>
 													<tr>
 														<td width="20%">
-															<input type="hidden" class="ledgerIdContainer" />
-															<input type="hidden" class="companyIdContainer" />
+															<input type="hidden" class="ledgerIdContainer" value="<?php echo $reference_detail->ledger_id;?>"/>
+															<input type="hidden" class="companyIdContainer" value="<?php echo $reference_detail->company_id;?>"/>
 															<?php 
 															echo $this->Form->input('sales_voucher_rows.'.$i.'.reference_details.'.$j.'.type', ['options'=>$option_ref,'label' => false,'class' => 'form-control input-sm refType','required'=>'required','value'=>$reference_detail->type]); ?>
 														</td>
