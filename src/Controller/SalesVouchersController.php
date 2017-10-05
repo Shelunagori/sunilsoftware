@@ -61,6 +61,7 @@ class SalesVouchersController extends AppController
         $salesVoucher = $this->SalesVouchers->newEntity();
 		
         if ($this->request->is('post')) {
+			//pr($this->request->getData()); exit;
 			$this->request->data['transaction_date'] = date("Y-m-d",strtotime($this->request->getData()['transaction_date']));
             $salesVoucher = $this->SalesVouchers->patchEntity($salesVoucher, $this->request->getData());
 			$Voucher = $this->SalesVouchers->find()->select(['voucher_no'])->where(['company_id'=>$company_id])->order(['voucher_no' => 'DESC'])->first();
@@ -75,7 +76,7 @@ class SalesVouchersController extends AppController
 			$salesVoucher = $this->SalesVouchers->patchEntity($salesVoucher, $this->request->getData(), [
 							'associated' => ['SalesVoucherRows','SalesVoucherRows.ReferenceDetails']
 						]);
-			//pr($salesVoucher);exit;
+			//pr($salesVoucher->sales_voucher_rows); exit;
             if ($this->SalesVouchers->save($salesVoucher)) {
                 $this->Flash->success(__('The sales voucher has been saved.'));
 

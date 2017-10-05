@@ -106,6 +106,7 @@ class ItemsController extends AppController
 				$barcode->setType('C128');
 				$barcode->setCode($data_to_encode);
 				$barcode->setSize(40,100);
+				$barcode->hideCodeType('N');
 					
 				// Generate filename     
 				$file = 'img/barcode/'.$item->id.'.png';
