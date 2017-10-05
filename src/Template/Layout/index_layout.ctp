@@ -50,6 +50,8 @@ License: You must have a valid license purchased only from themeforest(the above
 			font-size: 11px;
 			margin: 0;
 		}
+		.numberOnly{
+		}
 		</style>
 	</head>
 	<!-- END HEAD -->
@@ -168,6 +170,15 @@ License: You must have a valid license purchased only from themeforest(the above
 		$(document).ready(function() {
 			$('a[role=button]').live('click',function(e) {
 				e.preventDefault();
+			});
+			
+			$('.numberOnly').die().keyup(function(e)
+			{
+			    var evt=$(this).val();
+				if(evt<0)
+				{
+				 $(this).val('');
+				}
 			});
 		});
 		function round(value, exp) {

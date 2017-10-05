@@ -260,7 +260,7 @@ class ReceiptsController extends AppController
 			}
 		}
 		//pr($receipt);
-		//exit;
+	//exit;
 		$referenceDetails=$this->Receipts->ReceiptRows->ReferenceDetails->find('list');
         $companies = $this->Receipts->Companies->find('list', ['limit' => 200]);
         $this->set(compact('receipt', 'companies','voucher_no','ledgerOptions','company_id','referenceDetails'));
