@@ -441,7 +441,7 @@ foreach($partyOptions as $partyOption)
 		var itemId=$('option:selected', this).attr('value');
 		var sales_rate=$('option:selected', this).attr('sales_rate');
 		$(this).closest('tr').find('.gst_amount').val(gst_amount);
-		$(this).closest('tr').find('.rate').val(sales_rate);
+		//$(this).closest('tr').find('.rate').val(sales_rate);
 		//var itemId=$(this).val();
 		var url='".$this->Url->build(["controller" => "SalesInvoices", "action" => "ajaxItemQuantity"])."';
 		url=url+'/'+itemId
