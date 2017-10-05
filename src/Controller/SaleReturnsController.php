@@ -38,8 +38,9 @@ class SaleReturnsController extends AppController
      */
     public function view($id = null)
     {
+		$this->viewBuilder()->layout('index_layout');
         $saleReturn = $this->SaleReturns->get($id, [
-            'contain' => ['Companies', 'Customers', 'SalesLedgers', 'PartyLedgers', 'Locations', 'SalesInvoices', 'SaleReturnRows']
+            'contain' => ['Companies', 'SalesLedgers', 'PartyLedgers', 'Locations', 'SalesInvoices', 'SaleReturnRows'=>['Items']]
         ]);
 
         $this->set('saleReturn', $saleReturn);
@@ -81,8 +82,9 @@ class SaleReturnsController extends AppController
         $saleReturn = $this->SaleReturns->newEntity();
         if ($this->request->is(['patch', 'post', 'put'])) {
 			$transaction_date=date('Y-m-d', strtotime($this->request->data['transaction_date']));
+			//pr($this->request->getData()); exit;
             $saleReturn = $this->SaleReturns->patchEntity($saleReturn, $this->request->getData());
-			//pr($this->request->data); exit;
+			
 			 $saleReturn->transaction_date=$transaction_date;
 			 $saleReturn->sales_invoice_id=$id;
 			
@@ -98,11 +100,12 @@ class SaleReturnsController extends AppController
 				$saleReturn->voucher_no=$voucher_no;
 				$saleReturn->sales_ledger_id=$salesInvoice->sales_ledger_id;
 				$saleReturn->party_ledger_id=$salesInvoice->party_ledger_id;
+				//pr($saleReturn);exit;
             if ($this->SaleReturns->save($saleReturn)) {
 				$gstVal=0;
 				$gVal=0;
 			foreach($saleReturn->sale_return_rows as $sale_return_row)
-			   { 
+			   { //pr($sale_return_row);
 					$exactRate=$sale_return_row['taxable_value']/$sale_return_row['return_quantity'];
 					 $stockData = $this->SaleReturns->SalesInvoices->ItemLedgers->query();
 						$stockData->insert(['item_id', 'transaction_date','quantity', 'rate', 'amount', 'status', 'company_id', 'sale_return_id', 'sale_return_row_id', 'location_id'])
@@ -133,7 +136,7 @@ class SaleReturnsController extends AppController
 			  $partyData = $this->SaleReturns->SalesInvoices->AccountingEntries->query();
 						$partyData->insert(['ledger_id', 'debit','credit', 'transaction_date', 'company_id', 'sale_return_id'])
 								->values([
-								'ledger_id' => $salesInvoice->party_ledger_id,
+								'ledger_id' => $saleReturn->party_ledger_id,
 								'debit' => '',
 								'credit' => $saleReturn->amount_after_tax,
 								'transaction_date' => $saleReturn->transaction_date,
@@ -144,7 +147,7 @@ class SaleReturnsController extends AppController
 						$accountData = $this->SaleReturns->SalesInvoices->AccountingEntries->query();
 						$accountData->insert(['ledger_id', 'debit','credit', 'transaction_date', 'company_id', 'sale_return_id'])
 								->values([
-								'ledger_id' => $salesInvoice->sales_ledger_id,
+								'ledger_id' => $saleReturn->sales_ledger_id,
 								'debit' => $saleReturn->amount_before_tax,
 								'credit' =>  '',
 								'transaction_date' => $saleReturn->transaction_date,
@@ -185,6 +188,7 @@ class SaleReturnsController extends AppController
 			       $gstLedgers = $this->SaleReturns->SalesInvoices->SalesInvoiceRows->Ledgers->find()
 							->where(['Ledgers.gst_figure_id' =>$sale_return_row['gst_figure_id'],'Ledgers.company_id'=>$company_id, 'Ledgers.input_output'=>'output', 'Ledgers.gst_type'=>'CGST'])->first();
 			       $ledgerId=$gstLedgers->id;
+				   
 			    }
 			    if($i==1){ 
 			       $gstLedgers = $this->SaleReturns->SalesInvoices->SalesInvoiceRows->Ledgers->find()
@@ -227,7 +231,9 @@ class SaleReturnsController extends AppController
 		   }
                 $this->Flash->success(__('The sale return has been saved.'));
                 return $this->redirect(['action' => 'index']);
-            } 
+            } else{
+				//pr($saleReturn); exit;
+			}
             $this->Flash->error(__('The sale return could not be saved. Please, try again.'));
         }
        
