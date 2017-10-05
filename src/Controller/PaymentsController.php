@@ -137,6 +137,9 @@ class PaymentsController extends AppController
      */
     public function edit($id = null)
     {
+		$this->viewBuilder()->layout('index_layout');
+		$company_id=$this->Auth->User('session_company_id');
+        $this->request->data['company_id'] =$company_id;
         $payment = $this->Payments->get($id, [
             'contain' => []
         ]);
@@ -149,8 +152,47 @@ class PaymentsController extends AppController
             }
             $this->Flash->error(__('The payment could not be saved. Please, try again.'));
         }
-        $companies = $this->Payments->Companies->find('list', ['limit' => 200]);
-        $this->set(compact('payment', 'companies'));
+       $Voucher = $this->Payments->find()->select(['voucher_no'])->where(['company_id'=>$company_id])->order(['voucher_no' => 'DESC'])->first();
+		if($Voucher)
+		{
+			$voucher_no=$Voucher->voucher_no+1;
+		}
+		else
+		{ 
+			$voucher_no=1;
+		} 
+		$bankParentGroups = $this->Payments->PaymentRows->Ledgers->AccountingGroups->find()
+						->where(['AccountingGroups.company_id'=>$company_id, 'AccountingGroups.bank'=>'1']);
+						
+		$bankGroups=[];
+		
+		foreach($bankParentGroups as $bankParentGroup)
+		{
+			$accountingGroups = $this->Payments->PaymentRows->Ledgers->AccountingGroups
+			->find('children', ['for' => $bankParentGroup->id])->toArray();
+			$bankGroups[]=$bankParentGroup->id;
+			foreach($accountingGroups as $accountingGroup){
+				$bankGroups[]=$accountingGroup->id;
+			}
+		}
+		
+		$ledgers = $this->Payments->PaymentRows->Ledgers->find()->where(['company_id'=>$company_id]);
+		foreach($ledgers as $ledger){
+			if(in_array($ledger->accounting_group_id,$bankGroups)){
+				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id ,'open_window' => 'bank'];
+			}
+			else if($ledger->bill_to_bill_accounting == 'yes'){
+				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id,'open_window' => 'party' ];
+			}
+			else{
+				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id,'open_window' => 'no' ];
+			}
+			
+		}
+		
+		//$referenceDetails=$this->Payments->PaymentRows->ReferenceDetails->find('list');
+		
+		$this->set(compact('payment', 'company_id','voucher_no','ledgerOptions', 'referenceDetails'));
         $this->set('_serialize', ['payment']);
     }
 
