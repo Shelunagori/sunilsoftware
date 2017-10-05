@@ -74,7 +74,7 @@ $this->set('title', 'Receipt Voucher');
 							</div>
 						</div>
 					</div>
-				<?= $this->Form->button(__('Submit'),['class'=>'btn btn-success submit'])  ?>
+				<?= $this->Form->button(__('Submit'),['class'=>'btn btn-success submit'])?>
 				<?= $this->Form->end() ?>
 			</div>
 		</div>
@@ -153,10 +153,10 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				<div class="window" style="margin:auto;"></div>
 			</td>
 			<td width="10%">
-				<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm calculation debitBox rightAligntextClass','placeholder'=>'Debit']); ?>
+				<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm calculate_total debitBox rightAligntextClass','placeholder'=>'Debit']); ?>
 			</td>
 			<td width="10%">
-				<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm calculation creditBox rightAligntextClass','placeholder'=>'Credit','style'=>'display:none;']); ?>	
+				<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm calculate_total creditBox rightAligntextClass','placeholder'=>'Credit','style'=>'display:none;']); ?>	
 			</td>
 			<td align="center"  width="10%">
 				<a class="btn btn-danger delete-tr btn-xs" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
@@ -278,13 +278,19 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
                 submitHandler: function (form) {
 					var totalMainDr  = parseFloat($('#totalMainDr').val());
 					if(!totalMainDr || totalMainDr==0){
-					alert('Error: zero amount receipt can not be generated.');
-					return false;
+						alert('Error: zero amount receipt can not be generated.');
+						return false;
 					}
 					else{
-					success1.show();
-					error1.hide();
-					form1[0].submit();
+							if(confirm('Are you sure you want to submit!'))
+							{
+								success1.show();
+								error1.hide();
+								form1[0].submit();
+								$('.submit').attr('disabled','disabled');
+								$('.submit').text('Submiting...');
+								return true;
+							}
 					}
                 }
 			});
@@ -505,8 +511,10 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				
 			}
 			
-			
-			var main_credit=0;
+			$('.calculate_total').die().live('keyup',function()
+			{ 
+				 renameMainRows();
+			});
 			$('.calculation').die().live('blur',function()
 			{ 
 				var SelectedTr=$(this).closest('tr.MainTr');
