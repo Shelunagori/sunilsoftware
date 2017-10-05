@@ -150,28 +150,75 @@ table td {
 					<td><?=$salesInvoicedata->item->name?></td>
 					<td class="rightAligntextClass"><?=$salesInvoicedata->quantity?></td>
 					<td class="rightAligntextClass"><?=$salesInvoicedata->rate?></td>
-					<td class="rightAligntextClass"><?=$salesInvoicedata->discount_percentage?></td>
-					<td class="rightAligntextClass"><?=$dis?></td>
+					<td class="rightAligntextClass">
+					<?php if($salesInvoicedata->discount_percentage==0){?>
+					<?php echo '';?> <?php }else{ ?>
+					<?php echo $salesInvoicedata->discount_percentage.'%';?><?php }?>
+					</td>
+					<td class="rightAligntextClass">
+					<?php if($dis==0){?>
+					<?php echo '';?> <?php }else{ ?>
+					<?php echo $dis;?><?php }?>
+					</td>
 					<td class="rightAligntextClass"><?=$salesInvoicedata->taxable_value?></td>
-					<td class="rightAligntextClass"><?=$cgtax.'%'?></td>
-					<td class="rightAligntextClass"><?=$cgst?></td>
-					<td class="rightAligntextClass"><?=$cgtax.'%'?></td>
-					<td class="rightAligntextClass"><?=$sgst?></td>
-					<td class="rightAligntextClass"><?=$itax.'%'?></td>
-					<td class="rightAligntextClass"><?=$igst?></td>
+					<td class="rightAligntextClass">
+					<?php if($cgtax==0){?>
+					<?php echo '';?> <?php }else{ ?>
+					<?php echo $cgtax.'%';?><?php }?></td>
+					<td class="rightAligntextClass">
+					<?php if($cgst==0){?>
+					<?php echo '';?> <?php }else{ ?>
+					<?php echo $cgst;?><?php }?>
+					</td>
+					<td class="rightAligntextClass">
+					<?php if($cgtax==0){?>
+					<?php echo '';?> <?php }else{ ?>
+					<?php echo $cgtax.'%';?><?php }?>
+					</td>
+					<td class="rightAligntextClass">
+					<?php if($sgst==0){?>
+					<?php echo '';?> <?php }else{ ?>
+					<?php echo $sgst;?><?php }?>
+					</td>
+					<td class="rightAligntextClass">
+					<?php if($itax==0){?>
+					<?php echo '';?> <?php }else{ ?>
+					<?php echo $itax.'%';?><?php }?>
+					</td>
+					<td class="rightAligntextClass">
+					<?php if($igst==0){?>
+					<?php echo '';?> <?php }else{ ?>
+					<?php echo $igst;?><?php }?>
+					</td>
 					<td class="rightAligntextClass"><?=$salesInvoicedata->net_amount?></td>
 					</tr>
 					<?php }}?>
 					<tr>
-					<td colspan="10" align="right"><b>Total</b></td>
-					<td class="rightAligntextClass"><b><?=$totalDiscount?></b></td>
+					<td colspan="10" align="right"><b>&nbsp;</b></td>
+					<td class="rightAligntextClass"><b>
+					<?php if($totalDiscount==0){?>
+					<?php echo '';?> <?php }else{ ?>
+					<?php echo $totalDiscount;?><?php }?>
+					</b></td>
 					<td class="rightAligntextClass"><b><?=$totalTaxablevalue?></b></td>
 					<td></td>
-					<td class="rightAligntextClass"><b><?=$totalCgst?></b></td>
+					<td class="rightAligntextClass"><b>
+					<?php if($totalCgst==0){?>
+					<?php echo '';?> <?php }else{ ?>
+					<?php echo $totalCgst;?><?php }?>
+					</b></td>
 					<td></td>
-					<td class="rightAligntextClass"><b><?=$totalSgst?></b></td>
+					<td class="rightAligntextClass"><b>
+					<?php if($totalSgst==0){?>
+					<?php echo '';?> <?php }else{ ?>
+					<?php echo $totalSgst;?><?php }?>
+					</b></td>
 					<td></td>
-					<td class="rightAligntextClass"><b><?=$totalIgst?></b></td>
+					<td class="rightAligntextClass"><b>
+					<?php if($totalIgst==0){?>
+					<?php echo '';?> <?php }else{ ?>
+					<?php echo $totalIgst;?><?php }?>
+					</b></td>
 					<td class="rightAligntextClass"><b><?=$totalNet?></b></td>
 					</tr>
 					</tbody>

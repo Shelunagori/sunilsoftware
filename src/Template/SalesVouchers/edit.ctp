@@ -96,7 +96,9 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 															<input type="hidden" class="ledgerIdContainer" value="<?php echo $reference_detail->ledger_id;?>"/>
 															<input type="hidden" class="companyIdContainer" value="<?php echo $reference_detail->company_id;?>"/>
 															<?php 
-															echo $this->Form->input('sales_voucher_rows.'.$i.'.reference_details.'.$j.'.type', ['options'=>$option_ref,'label' => false,'class' => 'form-control input-sm refType','required'=>'required','value'=>$reference_detail->type]); ?>
+															echo $this->Form->input('sales_voucher_rows.'.$i.'.reference_details.'.$j.'.type', ['options'=>$option_ref,'label' => false,'class' => 'form-control input-sm refType','required'=>'required','value'=>$reference_detail->type]); 
+															
+															echo $this->Form->input('sales_voucher_rows.'.$i.'.reference_details.'.$j.'.id', ['type'=>'hidden','value'=>$reference_detail->id]); ?>
 														</td>
 														
 														<td width="">
@@ -157,9 +159,10 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 												</tbody>
 												<tfoot>
 												    <tr class="remove_ref_foot">
-													<td colspan="2"></td>
-													<td><input type="text" class="form-control input-sm rightAligntextClass total" readonly value="<?php echo @$total;?>"></td>
-													<td><input type="text" class="form-control input-sm total_type" readonly value="<?php echo @$type;?>"></td>
+														<td colspan="2"><input type="hidden" id="htotal" value="<?php echo @$total;?>">
+													</td>
+														<td><input type="text" class="form-control input-sm rightAligntextClass total calculation ttl noBorder" readonly value=""></td>
+														<td><input type="text" class="form-control input-sm total_type calculation noBorder" readonly value="<?php echo @$type;?>"></td>
 													</tr>
 												</tfoot>
 												</table>
@@ -377,6 +380,12 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 	$total_type='<input type="text" class="form-control input-sm total_type calculation noBorder" >';
 	$js="
 		$(document).ready(function() {
+			
+			var htotal = $('#htotal').val();
+			if(htotal!=0)
+			{
+				$('.ttl').val(htotal);
+			}
 			
 			var form1 = $('#form_sample_2');
             var error1 = $('.alert-danger', form1);
@@ -605,6 +614,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				var total_debit=0;var total_credit=0; var remaining=0; var i=0;
 				SelectedTr.find('td:nth-child(2) div.window table tbody tr').each(function(){
 				var Dr_Cr=$(this).find('td:nth-child(4) select option:selected').val();
+				
 				//console.log(Dr_Cr);
 				var amt= parseFloat($(this).find('td:nth-child(3) input').val());
 				
@@ -620,11 +630,13 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 					remaining=total_debit-total_credit;
 					
 					if(remaining>0){
-						//console.log(remaining);
+						
+						//console.log(remaining); 
 						$(this).closest('table').find(' tfoot td:nth-child(2) input.total').val(remaining);
 						$(this).closest('table').find(' tfoot td:nth-child(3) input.total_type').val('Dr');
 					}
-					else if(remaining<0){
+					else if(remaining<0){ 
+					
 						remaining=Math.abs(remaining)
 						$(this).closest('table').find(' tfoot td:nth-child(2) input.total').val(remaining);
 						$(this).closest('table').find(' tfoot td:nth-child(3) input.total_type').val('Cr');
