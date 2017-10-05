@@ -365,20 +365,12 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			renameMainRows();
 			});
 			
-			$('.delete-tr').die().live('click',function() 
-			{
-			$(this).closest('tr').remove();
-			renameMainRows();
+			$('.dltrows').die().live('click',function() 
+			{	
+				$(this).closest('tr').remove();
+				rename_rows();
 			});
-			
-			$('.dltrows').die().live('click',function(){
-				var SelectedTr=$(this).closest('tr.MainTr');
-				dltrows(SelectedTr);
-			});
-			function dltrows(SelectedTr){
-				SelectedTr.find('td:nth-child(2) div.window table tbody tr').remove();
-				renameRefRows(SelectedTr);
-			}
+		
 			$('.AddMainRow').die().live('click',function(){ 
 				addMainRow();
 			});
