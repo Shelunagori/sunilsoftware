@@ -374,7 +374,9 @@ class LedgersController extends AppController
 			
 		}
 		if(!empty($ledger_id) || !empty($from_date) || !empty($to_date))
-		$AccountingLedgers = $this->Ledgers->AccountingEntries->find()->where($where)->contain(['Ledgers','SalesInvoices'])->order(['AccountingEntries.transaction_date'=>'ASC']);
+		$AccountingLedgers = $this->Ledgers->AccountingEntries->find()->where($where)->contain(['Ledgers','SalesInvoices','SaleReturns'])->order(['AccountingEntries.transaction_date'=>'ASC']);
+	//pr($where); exit;
+	//pr($AccountingLedgers->toArray()); exit;
 		if(!empty($AccountingLedgers))
 		{ 
 	
@@ -390,6 +392,12 @@ class LedgersController extends AppController
 				if(!empty($AccountingLedgers1->sales_invoice_id)){
 					@$voucher_type[$AccountingLedgers1->id]='Sales Invoices';
 					@$url_link=$this->Ledgers->AccountingEntries->SalesInvoices->find()->where(['SalesInvoices.id'=>$AccountingLedgers1->sales_invoice_id])->first();
+					$voucher_no[$AccountingLedgers1->id]=$url_link->voucher_no;
+					
+				}
+				if(!empty($AccountingLedgers1->sale_return_id)){ 
+					@$voucher_type[$AccountingLedgers1->id]='Sales Returns';
+					@$url_link=$this->Ledgers->AccountingEntries->SaleReturns->find()->where(['SaleReturns.id'=>$AccountingLedgers1->sale_return_id])->first();
 					$voucher_no[$AccountingLedgers1->id]=$url_link->voucher_no;
 					
 				}

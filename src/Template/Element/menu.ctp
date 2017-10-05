@@ -58,6 +58,17 @@ echo '<li>'.$this->Html->link($this->Html->tag('i', '', ['class' => 'icon-home']
 <li class="start ">
 	<a href="javascript:;">
 	<i class="fa fa-square"></i>
+	<span class="title">Sales Return</span>
+	<span class="arrow "></span>
+	</a>
+	<ul class="sub-menu">
+		<li><?php echo $this->Html->link($this->Html->tag('i', '', ['class' => 'fa fa-plus-square']).' Create', '/SalesInvoices/saleReturnIndex',['escape' => false]); ?></li>
+		<li><?php echo $this->Html->link($this->Html->tag('i', '', ['class' => 'fa fa-list-ul']).' List', '/SaleReturns',['escape' => false]); ?></li>
+	</ul>
+</li>
+<li class="start ">
+	<a href="javascript:;">
+	<i class="fa fa-square"></i>
 	<span class="title">Credit Note</span>
 	<span class="arrow "></span>
 	</a>

@@ -52,7 +52,12 @@ class AccountingEntriesTable extends Table
 		
 		$this->belongsTo('SalesInvoices', [
             'foreignKey' => 'sales_invoice_id',
-            'joinType' => 'INNER'
+            'joinType' => 'LEFT'
+        ]);
+		
+		$this->belongsTo('SaleReturns', [
+            'foreignKey' => 'sale_return_id',
+            'joinType' => 'LEFT'
         ]);
     }
 

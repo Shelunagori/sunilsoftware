@@ -72,6 +72,8 @@ class SalesInvoiceRowsTable extends Table
             'foreignKey' => 'ledger_id',
             'joinType' => 'INNER'
         ]);
+		
+		
     }
 
     /**

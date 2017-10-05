@@ -268,9 +268,21 @@ public function edit($id = null)
     {
 	$this->viewBuilder()->layout('index_layout');
         $salesInvoice = $this->SalesInvoices->get($id, [
-            'contain' => (['SalesInvoiceRows'=>['Items', 'GstFigures']])
+            'contain' => (['SaleReturns'=>['SaleReturnRows' => function($q) {
+				return $q->select(['sale_return_id','item_id','total' => $q->func()->sum('SaleReturnRows.return_quantity')])->group('SaleReturnRows.item_id');
+			}],'SalesInvoiceRows'=>['Items', 'GstFigures']])
         ]);
 		
+
+		$sales_return_qty=[];
+			foreach($salesInvoice->sale_returns as $sale_returns){
+				foreach($sale_returns->sale_return_rows as $sale_return_row){
+					$sales_return_qty[@$sale_return_row->item_id]=@$sales_return_qty[$sale_return_row->item_id]+$sale_return_row->total;
+					
+				}
+			}
+//pr($sales_return_qty);
+		 //exit;
 		$company_id=$this->Auth->User('session_company_id');
 		$stateDetails=$this->Auth->User('session_company');
 		$location_id=$this->Auth->User('session_location_id');
@@ -286,6 +298,7 @@ public function edit($id = null)
 		{
 			$voucher_no=1;
 		} 
+		
         if ($this->request->is(['patch', 'post', 'put'])) {
 		    $transaction_date=date('Y-m-d', strtotime($this->request->data['transaction_date']));
             $salesInvoice = $this->SalesInvoices->patchEntity($salesInvoice, $this->request->getData());
@@ -483,7 +496,7 @@ public function edit($id = null)
         }
         $gstFigures = $this->SalesInvoices->GstFigures->find('list')
 						->where(['company_id'=>$company_id]);
-        $this->set(compact('salesInvoice', 'companies', 'customerOptions', 'gstFigures', 'voucher_no','company_id','itemOptions','state_id', 'Accountledgers', 'partyOptions', 'location_id'));
+        $this->set(compact('salesInvoice', 'companies', 'customerOptions', 'gstFigures', 'voucher_no','company_id','itemOptions','state_id', 'Accountledgers', 'partyOptions', 'location_id','sales_return_qty'));
         $this->set('_serialize', ['salesInvoice']);
     }	
 	
@@ -656,4 +669,24 @@ public function salesInvoiceBill($id=null)
 
         return $this->redirect(['action' => 'index']);
     }
+	public function saleReturnIndex($id = null)
+    {
+		$this->viewBuilder()->layout('index_layout');
+		$company_id=$this->Auth->User('session_company_id');
+		$stateDetails=$this->Auth->User('session_company');
+		@$invoice_no=$this->request->query('invoice_no');
+		$sales_return="No";
+		if(!empty(@$invoice_no)){ 
+		$SalesInvoice = $this->SalesInvoices->find()
+						->where(['SalesInvoices.voucher_no' =>$invoice_no])
+						->contain(['Companies', 'PartyLedgers', 'SalesLedgers'])
+						->first();
+		//pr($SalesInvoice->party_ledger->name); 
+		
+		$sales_return="Yes";
+		}	
+
+		$this->set(compact('sales_return','SalesInvoice'));
+		//exit;
+	}
 }
