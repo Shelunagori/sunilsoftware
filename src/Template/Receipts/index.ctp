@@ -42,6 +42,7 @@ $this->set('title', 'Receipt List');
 								<td class=""><?= h($receipt->narration) ?></td>
 								<td class="actions">
 									<?= $this->Html->link(__('Edit'), ['action' => 'edit', $receipt->id]) ?>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+									<?= $this->Html->link(__('View'), ['action' => 'view', $receipt->id]) ?>
 								</td>
 							</tr>
 							<?php endforeach; ?>

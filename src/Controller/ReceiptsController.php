@@ -40,12 +40,13 @@ class ReceiptsController extends AppController
      */
     public function view($id = null)
     {   
-        $receipt = $this->Receipts->get($id, [
-            'contain' => ['Companies', 'ReceiptRows', 'ReferenceDetails']
-        ]);
-
-        $this->set('receipt', $receipt);
-        $this->set('_serialize', ['receipt']);
+		$this->viewBuilder()->layout('index_layout');
+	    $company_id=$this->Auth->User('session_company_id');
+        $receipts = $this->Receipts->find()->where(['Receipts.company_id'=>$company_id, 'Receipts.id'=>$id])
+		->contain(['Companies', 'ReceiptRows'=>['ReferenceDetails', 'Ledgers']]);
+	
+        $this->set(compact('receipts'));
+        $this->set('_serialize', ['receipts']);
     }
 
     /**
@@ -54,7 +55,8 @@ class ReceiptsController extends AppController
      * @return \Cake\Http\Response|null Redirects on successful add, renders view otherwise.
      */
     public function add()
-    { $this->viewBuilder()->layout('index_layout');
+    {   
+		$this->viewBuilder()->layout('index_layout');
         $receipt = $this->Receipts->newEntity();
 		$company_id=$this->Auth->User('session_company_id');
         if ($this->request->is('post')) {
@@ -62,10 +64,8 @@ class ReceiptsController extends AppController
 		  $tdate=$this->request->data('transaction_date');
 		 $receipt->transaction_date=date('Y-m-d',strtotime($tdate));
 		 
-		 
             if ($this->Receipts->save($receipt)) {
                 $this->Flash->success(__('The receipt has been saved.'));
-
                 return $this->redirect(['action' => 'index']);
             }
             $this->Flash->error(__('The receipt could not be saved. Please, try again.'));
@@ -92,7 +92,7 @@ class ReceiptsController extends AppController
 				$bankGroups[]=$accountingGroup->id;
 			}
 		}
-		
+
 		$ledgers = $this->Receipts->ReceiptRows->Ledgers->find()->where(['company_id'=>$company_id]);
 		foreach($ledgers as $ledger){
 			if(in_array($ledger->accounting_group_id,$bankGroups)){
