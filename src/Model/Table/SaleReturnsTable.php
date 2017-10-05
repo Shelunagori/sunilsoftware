@@ -150,7 +150,7 @@ class SaleReturnsTable extends Table
     {
         $rules->add($rules->existsIn(['company_id'], 'Companies'));
         $rules->add($rules->existsIn(['customer_id'], 'Customers'));
-        $rules->add($rules->existsIn(['sales_ledger_id'], 'SalesLedgers'));
+       // $rules->add($rules->existsIn(['sales_ledger_id'], 'SalesLedgers'));
         $rules->add($rules->existsIn(['party_ledger_id'], 'PartyLedgers'));
         $rules->add($rules->existsIn(['location_id'], 'Locations'));
         $rules->add($rules->existsIn(['sales_invoice_id'], 'SalesInvoices'));

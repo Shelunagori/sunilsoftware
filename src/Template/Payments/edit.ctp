@@ -278,6 +278,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
                 },
 
                 submitHandler: function (form) {
+
 					var totalMainDr  = parseFloat($('#totalMainDr').val());
 					var totalBankCash = parseFloat($('#totalBankCash').val());
 					if(!totalMainDr || totalMainDr==0){
@@ -289,24 +290,30 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 						return false;
 					}
 					else{
-						alert('Are you sure you want to submit.');
-						success1.show();
-						error1.hide();
-						form1[0].submit();
+						if(confirm('Are you sure you want to submit!'))
+						{
+							success1.show();
+							error1.hide();
+							form1[0].submit();
+							$('.submit').attr('disabled','disabled');
+							$('.submit').text('Submiting...');
+							return true;
+						}
 					}
+
                 }
 			});
 			
 			$('.delete-tr').die().live('click',function() 
 			{	
 				$(this).closest('tr.MainTr').remove();
-				rename_rows();
+				renameMainRows();
 			});
 			
 			$('.delete-tr-ref').die().live('click',function() 
 			{	var SelectedTr=$(this).closest('tr.MainTr');
 				$(this).closest('tr').remove();
-				rename_rows();
+				renameMainRows();
 				renameRefRows(SelectedTr);
 			});
 			
@@ -439,8 +446,8 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 					}
 					i++;
 				});
-				$('#MainTable tfoot tr td:nth-child(2) input#totalMainDr').val(main_debit);
-				$('#MainTable tfoot tr td:nth-child(3) input#totalMainCr').val(main_credit);
+				$('#MainTable tfoot tr td:nth-child(2) input#totalMainDr').val(round(main_debit,2));
+				$('#MainTable tfoot tr td:nth-child(3) input#totalMainCr').val(round(main_credit,2));
 				$('#MainTable tfoot tr td:nth-child(1) input#totalBankCash').val(count_bank_cash);
 			}
 			
@@ -523,7 +530,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				}
 			}
 			
-			$('.calculate_total').die().live('blur',function()
+			$('.calculate_total').die().live('keyup',function()
 			{ 
 				 renameMainRows();
 			});

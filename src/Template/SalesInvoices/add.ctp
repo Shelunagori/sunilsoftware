@@ -33,6 +33,7 @@ $this->set('title', 'Create Sales Invoice');
 								<label>Voucher No :</label>&nbsp;&nbsp;
 								
 								<?php
+								//echo $coreVariable['company_name']; exit;
 								    $date = date('Y-m-d');
 									$d = date_parse_from_format('Y-m-d',$date);
 									$yr=$d["year"];$year= substr($yr, -2);

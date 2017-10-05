@@ -107,19 +107,6 @@ class SalesVouchersController extends AppController
 				$bankGroups[]=$accountingGroup->id;
 			}
 		}
-		/* $ledgers = $this->SalesVouchers->SalesVoucherRows->Ledgers->find()->where(['company_id'=>$company_id]);
-		foreach($ledgers as $ledger){
-			if(in_array($ledger->accounting_group_id,$bankGroups)){
-				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id ,'open_window' => 'bank'];
-			}
-			else if($ledger->bill_to_bill_accounting == 'yes'){
-				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id,'open_window' => 'party' ];
-			}
-			else{
-				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id,'open_window' => 'no' ];
-			}
-			
-		} */
 		
 		$ParentGroups = $this->SalesVouchers->SalesVoucherRows->Ledgers->AccountingGroups->find()->where(['sales_voucher_party'=>1,'company_id'=>$company_id]); 
 		$Groups=[];
@@ -195,6 +182,35 @@ class SalesVouchersController extends AppController
             'contain' => ['SalesVoucherRows'=>['ReferenceDetails']]
         ]);
 		//pr($salesVoucher);exit;
+		$refDropDown =[];
+		foreach($salesVoucher->sales_voucher_rows as $sales_voucher_row)
+		{
+			if(!empty($sales_voucher_row->reference_details))
+			{
+				$query = $this->SalesVouchers->SalesVoucherRows->ReferenceDetails->find();
+				$query->select(['total_debit' => $query->func()->sum('ReferenceDetails.debit'),'total_credit' => $query->func()->sum('ReferenceDetails.credit')])
+				->where(['ReferenceDetails.ledger_id'=>$sales_voucher_row->ledger_id,'ReferenceDetails.type !='=>'On Account'])
+				->group(['ReferenceDetails.ref_name'])
+				->autoFields(true);
+				$referenceDetails=$query;
+				$option=[];
+				foreach($referenceDetails as $referenceDetail){
+					$remider=$referenceDetail->total_debit-$referenceDetail->total_credit;
+					if($remider>0){
+						$bal=abs($remider).' Dr';
+					}else if($remider<0){
+						$bal=abs($remider).' Cr';
+					}
+					if($referenceDetail->total_debit!=$referenceDetail->total_credit){
+						$option[$referenceDetail->ref_name]=$referenceDetail->ref_name;
+						 
+					}
+				}
+				
+				$refDropDown[$sales_voucher_row->id] = $option;
+			}
+		}
+		//pr($refDropDown);exit;
         if ($this->request->is(['patch', 'post', 'put'])) {
 			$this->request->data['transaction_date'] = date("Y-m-d",strtotime($this->request->getData()['transaction_date']));
             $salesVoucher = $this->SalesVouchers->patchEntity($salesVoucher, $this->request->getData());
@@ -225,9 +241,50 @@ class SalesVouchersController extends AppController
 				$bankGroups[]=$accountingGroup->id;
 			}
 		}
-		$ledgers = $this->SalesVouchers->SalesVoucherRows->Ledgers->find()->where(['company_id'=>$company_id]);
+		$ParentGroups = $this->SalesVouchers->SalesVoucherRows->Ledgers->AccountingGroups->find()->where(['sales_voucher_party'=>1,'company_id'=>$company_id]); 
+		$Groups=[];
+		foreach($ParentGroups as $ParentGroup)
+		{
+			$ChildGroups = $this->SalesVouchers->SalesVoucherRows->Ledgers->AccountingGroups->find('children', ['for' =>$ParentGroup->id])->toArray();
+			$Groups[]=$ParentGroup->id;
+			foreach($ChildGroups as $ChildGroup)
+			{
+				$Groups[]=$ChildGroup->id;
+			}
+		}
+		$ParentLedgers = $this->SalesVouchers->SalesVoucherRows->Ledgers->find()->where(['Ledgers.accounting_group_id IN' =>$Groups]);
+		
+		$ledgerDroption =[];
+		foreach($ParentLedgers as $ParentLedger){
+		if(in_array($ParentLedger->accounting_group_id,$bankGroups)){
+				$ledgerDroption[]=['text' =>$ParentLedger->name, 'value' => $ParentLedger->id ,'open_window' => 'bank'];
+			}
+			else if($ParentLedger->bill_to_bill_accounting == 'yes'){
+				$ledgerDroption[]=['text' =>$ParentLedger->name, 'value' => $ParentLedger->id,'open_window' => 'party' ];
+			}
+			else{
+				$ledgerDroption[]=['text' =>$ParentLedger->name, 'value' => $ParentLedger->id,'open_window' => 'no' ];
+			}
+		}
+		
+		$ParentSalesAccountGroups = $this->SalesVouchers->SalesVoucherRows->Ledgers->AccountingGroups->find()->where(['sales_voucher_sales_account'=>1,'company_id'=>$company_id]); 
+		
+		$Groupcrs=[];
+		
+		foreach($ParentSalesAccountGroups as $ParentSalesAccountGroup)
+		{
+			$ChildSalesAccountGroups = $this->SalesVouchers->SalesVoucherRows->Ledgers->AccountingGroups->find('children', ['for' =>$ParentSalesAccountGroup->id])->toArray();
+			$Groupcrs[]=$ParentSalesAccountGroup->id;
+			foreach($ChildSalesAccountGroups as $ChildSalesAccountGroup)
+			{
+				$Groupcrs[]=$ChildSalesAccountGroup->id;
+			}
+		}
+		
+		$ledgers = $this->SalesVouchers->SalesVoucherRows->Ledgers->find()->where(['Ledgers.accounting_group_id IN' =>$Groupcrs]);
+		$ledgerOptions =[];
 		foreach($ledgers as $ledger){
-			if(in_array($ledger->accounting_group_id,$bankGroups)){
+		if(in_array($ledger->accounting_group_id,$bankGroups)){
 				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id ,'open_window' => 'bank'];
 			}
 			else if($ledger->bill_to_bill_accounting == 'yes'){
@@ -236,10 +293,10 @@ class SalesVouchersController extends AppController
 			else{
 				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id,'open_window' => 'no' ];
 			}
-			
 		}
 		$referenceDetails=$this->SalesVouchers->SalesVoucherRows->ReferenceDetails->find('list');
-        $this->set(compact('salesVoucher', 'company_id','ledgerOptions','referenceDetails'));
+		
+        $this->set(compact('salesVoucher', 'company_id','ledgerDroption','ledgerOptions','referenceDetails','refDropDown'));
         $this->set('_serialize', ['salesVoucher']);
     }
 

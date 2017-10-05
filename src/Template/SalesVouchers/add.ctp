@@ -65,7 +65,7 @@ $this->set('title', 'Sales Voucher');
 										<div class="window" style="margin:auto;"></div>
 									</td>
 									<td width="10%" style="vertical-align: top !important;">
-										<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm  debitBox rightAligntextClass totalCalculation','placeholder'=>'Debit']); ?>
+										<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm  debitBox rightAligntextClass totalCalculation','placeholder'=>'Debit','required'=>'required']); ?>
 									</td>
 									<td width="10%" style="vertical-align: top !important;">
 										<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm creditBox rightAligntextClass totalCalculation','placeholder'=>'Credit','style'=>'display:none;']); ?>	
@@ -87,7 +87,7 @@ $this->set('title', 'Sales Voucher');
 										<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm  debitBox rightAligntextClass totalCalculation','placeholder'=>'Debit','style'=>'display:none;']); ?>
 									</td>
 									<td width="10%" style="vertical-align: top !important;">
-										<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm creditBox rightAligntextClass totalCalculation','placeholder'=>'Credit']); ?>	
+										<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm creditBox rightAligntextClass totalCalculation','placeholder'=>'Credit','required'=>'required']); ?>	
 									</td>
 									<td align="center"  width="10%" style="vertical-align: top !important;">
 										
@@ -150,7 +150,7 @@ $option_ref[]= ['value'=>'On Account','text'=>'On Account'];
 			</td>
 			
 			<td align="center" style="vertical-align: top !important;">
-				<a class="" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
+				<a class="ref_delete" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
 			</td>
 		</tr>
 	</tbody>
@@ -328,8 +328,8 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				var totalCredit=0;
 				var totalDebit=0;
 				$('#MainTable tbody#MainTbody tr.MainTr').each(function(){ 
-					var debit  = parseFloat($(this).find('td:nth-child(3) input').val()); 
-					var credit = parseFloat($(this).find('td:nth-child(4) input').val()); 
+					var debit  = parseFloat($(this).find('td:nth-child(3) input.totalCalculation').val()); 
+					var credit = parseFloat($(this).find('td:nth-child(4) input.totalCalculation').val()); 
 					if(debit)
 					{
 						totalDebit  = totalDebit+debit;
@@ -409,10 +409,14 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			$('.cr_dr').die().live('change',function(){
 				var cr_dr=$(this).val();
 				if(cr_dr=='Cr'){
+					$(this).closest('tr').find('.debitBox').val('');
 					$(this).closest('tr').find('.debitBox').hide();
+					//$(this).closest('tr').find('.creditBox').attr('required', true);
 					$(this).closest('tr').find('.creditBox').show();
 				}else{
+					//$(this).closest('tr').find('.debitBox').attr('required', false);
 					$(this).closest('tr').find('.debitBox').show();
+					$(this).closest('tr').find('.debitBox').val('');
 					$(this).closest('tr').find('.creditBox').hide();
 				}
 			});
