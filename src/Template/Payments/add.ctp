@@ -53,11 +53,11 @@ $this->set('title', 'Payment Voucher');
 								</tbody>
 								<tfoot>
 									<tr style="border-top:double;">
-										<td colspan="2" >	
+										<td colspan="2" valign="top" >	
 											<button type="button" class="AddMainRow btn btn-default input-sm"><i class="fa fa-plus"></i> Add row</button>
 										</td>
-										<td><input type="text" class="form-control input-sm rightAligntextClass noBorder" name="totalMainDr" id="totalMainDr"></td>
-										<td><input type="text" class="form-control input-sm rightAligntextClass noBorder" name="totalMainCr" id="totalMainCr"></td>
+										<td valign="top"><input type="text" class="form-control input-sm rightAligntextClass noBorder" name="totalMainDr" id="totalMainDr"></td>
+										<td valign="top"><input type="text" class="form-control input-sm rightAligntextClass noBorder" name="totalMainCr" id="totalMainCr"></td>
 										<td></td>
 									</tr>
 								</tfoot>
@@ -122,15 +122,15 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 <table id="sampleForBank" style="display:none;" width="100%">
 	<tbody>
 		<tr>
-			<td width="30%">
+			<td width="30%" valign="top">
 				<?php 
 				echo $this->Form->input('mode_of_payment', ['options'=>$option_mode,'label' => false,'class' => 'form-control input-sm paymentType','required'=>'required']); ?>
 			</td>
-			<td width="30%">
+			<td width="30%" valign="top">
 				<?php echo $this->Form->input('cheque_no', ['label' =>false,'class' => 'form-control input-sm cheque_no','placeholder'=>'Cheque No']); ?> 
 			</td>
 			
-			<td width="30%">
+			<td width="30%" valign="top">
 				<?php echo $this->Form->input('cheque_date', ['label' =>false,'class' => 'form-control input-sm date-picker cheque_date ','data-date-format'=>'dd-mm-yyyy','placeholder'=>'Cheque Date']); ?>
 			</td>
 			
@@ -142,21 +142,21 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 <table id="sampleMainTable" style="display:none;" width="100%">
 	<tbody class="sampleMainTbody">
 		<tr class="MainTr">
-			<td width="10%">
+			<td width="10%" valign="top">
 				<?php 
 				echo $this->Form->input('cr_dr', ['options'=>['Dr'=>'Dr','Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm cr_dr','required'=>'required','value'=>'Dr']); ?>
 			</td>
-			<td width="65%">
+			<td width="65%" valign="top">
 				<?php echo $this->Form->input('ledger_id', ['empty'=>'--Select--','options'=>@$ledgerOptions,'label' => false,'class' => 'form-control input-sm ledger','required'=>'required']); ?>
 				<div class="window" style="margin:auto;"></div>
 			</td>
-			<td width="10%">
-				<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm  debitBox rightAligntextClass','placeholder'=>'Debit']); ?>
+			<td width="10%" valign="top">
+				<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm  debitBox rightAligntextClass calculate_total','placeholder'=>'Debit']); ?>
 			</td>
-			<td width="10%">
-				<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm creditBox rightAligntextClass','placeholder'=>'Credit','style'=>'display:none;']); ?>	
+			<td width="10%" valign="top">
+				<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm creditBox rightAligntextClass calculate_total','placeholder'=>'Credit','style'=>'display:none;']); ?>	
 			</td>
-			<td align="center"  width="10%">
+			<td align="center"  width="10%" valign="top">
 				<a class="btn btn-danger delete-tr btn-xs" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
 			</td>
 		</tr>
@@ -170,6 +170,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 		</tr>
 	</tfoot>
 </table>
+
 
 
 		
@@ -194,7 +195,8 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 	<!-- BEGIN VALIDATEION -->
 	<?php echo $this->Html->script('/assets/global/plugins/jquery-validation/js/jquery.validate.min.js', ['block' => 'PAGE_LEVEL_PLUGINS_JS']); ?>
 	<!-- END VALIDATEION -->
-	
+
+<!-- BEGIN PAGE LEVEL PLUGINS -->
 	<!-- BEGIN COMPONENTS PICKERS -->
 	<?php echo $this->Html->script('/assets/global/plugins/bootstrap-datepicker/js/bootstrap-datepicker.js', ['block' => 'PAGE_LEVEL_PLUGINS_JS']); ?>
 	<?php echo $this->Html->script('/assets/global/plugins/bootstrap-timepicker/js/bootstrap-timepicker.min.js', ['block' => 'PAGE_LEVEL_PLUGINS_JS']); ?>
@@ -275,10 +277,19 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
                 },
 
                 submitHandler: function (form) {
-					
-                    success1.show();
-                    error1.hide();
-                    form1[0].submit();
+
+					var totalMainDr  = parseFloat($('#totalMainDr').val());
+					if(!totalMainDr || totalMainDr==0){
+						alert('Error: zero amount payment can not be generated.');
+						return false;
+					}
+					else{
+						alert('Are you sure you want to submit.');
+						success1.show();
+						error1.hide();
+						form1[0].submit();
+					}
+
                 }
 			});
 			
@@ -289,9 +300,10 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			});
 			
 			$('.delete-tr-ref').die().live('click',function() 
-			{	
+			{	var SelectedTr=$(this).closest('tr.MainTr');
 				$(this).closest('tr').remove();
 				rename_rows();
+				renameRefRows(SelectedTr);
 			});
 			
 			$('.paymentType').die().live('change',function(){
@@ -338,10 +350,13 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			
 			$('.cr_dr').die().live('change',function(){
 				var cr_dr=$(this).val();
+				
 				if(cr_dr=='Cr'){
+					$(this).closest('tr').find('.debitBox').val('');
 					$(this).closest('tr').find('.debitBox').hide();
 					$(this).closest('tr').find('.creditBox').show();
 				}else{
+					$(this).closest('tr').find('.creditBox').val('');
 					$(this).closest('tr').find('.debitBox').show();
 					$(this).closest('tr').find('.creditBox').hide();
 				}
@@ -496,6 +511,11 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 						});
 				
 			}
+			
+			$('.calculate_total').die().live('blur',function()
+			{ 
+				 renameMainRows();
+			});
 			
 			$('.calculation').die().live('blur',function()
 			{ 

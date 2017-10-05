@@ -7,22 +7,25 @@ use Cake\ORM\Table;
 use Cake\Validation\Validator;
 
 /**
- * SalesInvoices Model
+ * SaleReturns Model
  *
  * @property \App\Model\Table\CompaniesTable|\Cake\ORM\Association\BelongsTo $Companies
  * @property \App\Model\Table\CustomersTable|\Cake\ORM\Association\BelongsTo $Customers
- * @property \App\Model\Table\GstFiguresTable|\Cake\ORM\Association\BelongsTo $GstFigures
- * @property \App\Model\Table\SalesInvoiceRowsTable|\Cake\ORM\Association\HasMany $SalesInvoiceRows
+ * @property \App\Model\Table\SalesLedgersTable|\Cake\ORM\Association\BelongsTo $SalesLedgers
+ * @property \App\Model\Table\PartyLedgersTable|\Cake\ORM\Association\BelongsTo $PartyLedgers
+ * @property \App\Model\Table\LocationsTable|\Cake\ORM\Association\BelongsTo $Locations
+ * @property \App\Model\Table\SalesInvoicesTable|\Cake\ORM\Association\BelongsTo $SalesInvoices
+ * @property \App\Model\Table\SaleReturnRowsTable|\Cake\ORM\Association\HasMany $SaleReturnRows
  *
- * @method \App\Model\Entity\SalesInvoice get($primaryKey, $options = [])
- * @method \App\Model\Entity\SalesInvoice newEntity($data = null, array $options = [])
- * @method \App\Model\Entity\SalesInvoice[] newEntities(array $data, array $options = [])
- * @method \App\Model\Entity\SalesInvoice|bool save(\Cake\Datasource\EntityInterface $entity, $options = [])
- * @method \App\Model\Entity\SalesInvoice patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
- * @method \App\Model\Entity\SalesInvoice[] patchEntities($entities, array $data, array $options = [])
- * @method \App\Model\Entity\SalesInvoice findOrCreate($search, callable $callback = null, $options = [])
+ * @method \App\Model\Entity\SaleReturn get($primaryKey, $options = [])
+ * @method \App\Model\Entity\SaleReturn newEntity($data = null, array $options = [])
+ * @method \App\Model\Entity\SaleReturn[] newEntities(array $data, array $options = [])
+ * @method \App\Model\Entity\SaleReturn|bool save(\Cake\Datasource\EntityInterface $entity, $options = [])
+ * @method \App\Model\Entity\SaleReturn patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
+ * @method \App\Model\Entity\SaleReturn[] patchEntities($entities, array $data, array $options = [])
+ * @method \App\Model\Entity\SaleReturn findOrCreate($search, callable $callback = null, $options = [])
  */
-class SalesInvoicesTable extends Table
+class SaleReturnsTable extends Table
 {
 
     /**
@@ -35,7 +38,7 @@ class SalesInvoicesTable extends Table
     {
         parent::initialize($config);
 
-        $this->setTable('sales_invoices');
+        $this->setTable('sale_returns');
         $this->setDisplayField('id');
         $this->setPrimaryKey('id');
 
@@ -47,22 +50,24 @@ class SalesInvoicesTable extends Table
             'foreignKey' => 'customer_id',
             'joinType' => 'INNER'
         ]);
-        $this->belongsTo('GstFigures', [
-            'foreignKey' => 'gst_figure_id',
+        $this->belongsTo('SalesLedgers', [
+            'foreignKey' => 'sales_ledger_id',
             'joinType' => 'INNER'
         ]);
-        $this->hasMany('SalesInvoiceRows', [
-            'foreignKey' => 'sales_invoice_id',
-			'saveStrategy'=>'replace'
+        $this->belongsTo('PartyLedgers', [
+            'foreignKey' => 'party_ledger_id',
+            'joinType' => 'INNER'
         ]);
-		$this->hasMany('ItemLedgers', [
-            'foreignKey' => 'sales_invoice_id',
-			'saveStrategy'=>'replace'
+        $this->belongsTo('Locations', [
+            'foreignKey' => 'location_id',
+            'joinType' => 'INNER'
         ]);
-		$this->hasMany('AccountingEntries', [
+		
+		 $this->belongsTo('SalesInvoices', [
             'foreignKey' => 'sales_invoice_id',
             'joinType' => 'INNER'
         ]);
+		
 		$this->belongsTo('PartyLedgers', [
 			'className' => 'Ledgers',
             'foreignKey' => 'party_ledger_id',
@@ -73,14 +78,9 @@ class SalesInvoicesTable extends Table
             'foreignKey' => 'sales_ledger_id',
             'joinType' => 'INNER'
         ]);
-
-		/* $this->belongsTo('SaleReturns', [
+		 $this->hasMany('SaleReturnRows', [
             'foreignKey' => 'sale_return_id',
-            'joinType' => 'INNER'
-        ]);	 */
-		$this->hasMany('SaleReturns', [
-            'foreignKey' => 'sales_invoice_id',
-            'joinType' => 'INNER'
+			'saveStrategy'=>'replace'
         ]);
     }
 
@@ -105,7 +105,7 @@ class SalesInvoicesTable extends Table
             ->date('transaction_date')
             ->requirePresence('transaction_date', 'create')
             ->notEmpty('transaction_date');
-			
+
         $validator
             ->decimal('amount_before_tax')
             ->requirePresence('amount_before_tax', 'create')
@@ -131,6 +131,11 @@ class SalesInvoicesTable extends Table
             ->requirePresence('amount_after_tax', 'create')
             ->notEmpty('amount_after_tax');
 
+        $validator
+            ->decimal('round_off')
+            ->requirePresence('round_off', 'create')
+            ->notEmpty('round_off');
+
         return $validator;
     }
 
@@ -144,10 +149,11 @@ class SalesInvoicesTable extends Table
     public function buildRules(RulesChecker $rules)
     {
         $rules->add($rules->existsIn(['company_id'], 'Companies'));
-        //$rules->add($rules->existsIn(['customer_id'], 'Customers'));
-        $rules->add($rules->existsIn(['gst_figure_id'], 'GstFigures'));
-		 $rules->add($rules->existsIn(['party_ledger_id'], 'PartyLedgers'));
+        $rules->add($rules->existsIn(['customer_id'], 'Customers'));
         $rules->add($rules->existsIn(['sales_ledger_id'], 'SalesLedgers'));
+        $rules->add($rules->existsIn(['party_ledger_id'], 'PartyLedgers'));
+        $rules->add($rules->existsIn(['location_id'], 'Locations'));
+        $rules->add($rules->existsIn(['sales_invoice_id'], 'SalesInvoices'));
 
         return $rules;
     }

@@ -55,15 +55,52 @@ $this->set('title', 'Sales Voucher');
 									</tr>
 								</thead>
 								<tbody id='MainTbody' class="tab">
-									
+								<tr class="MainTr">
+									<td width="10%" style="vertical-align: top !important;">
+										<?php 
+										echo $this->Form->input('cr_dr', ['input'=>'text','label' => false,'class' => 'form-control input-sm cr_dr','required'=>'required','value'=>'Dr','readonly'=>'readonly']); ?>
+									</td>
+									<td width="65%" style="vertical-align: top !important;">
+										<?php echo $this->Form->input('ledger_id', ['empty'=>'--Select--','options'=>@$ledgerDroption,'label' => false,'class' => 'form-control input-sm ledger','required'=>'required']); ?>
+										<div class="window" style="margin:auto;"></div>
+									</td>
+									<td width="10%" style="vertical-align: top !important;">
+										<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm  debitBox rightAligntextClass totalCalculation','placeholder'=>'Debit']); ?>
+									</td>
+									<td width="10%" style="vertical-align: top !important;">
+										<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm creditBox rightAligntextClass totalCalculation','placeholder'=>'Credit','style'=>'display:none;']); ?>	
+									</td>
+									<td align="center"  width="10%" style="vertical-align: top !important;">
+										
+									</td>
+								</tr>
+								<tr class="MainTr">
+									<td width="10%" style="vertical-align: top !important;">
+										<?php 
+										echo $this->Form->input('cr_dr', ['input'=>'text','label' => false,'class' => 'form-control input-sm cr_dr','required'=>'required','value'=>'Cr','readonly'=>'readonly']); ?>
+									</td>
+									<td width="65%" style="vertical-align: top !important;">
+										<?php echo $this->Form->input('ledger_id', ['empty'=>'--Select--','options'=>@$ledgerOptions,'label' => false,'class' => 'form-control input-sm ledger','required'=>'required']); ?>
+										<div class="window" style="margin:auto;"></div>
+									</td>
+									<td width="10%" style="vertical-align: top !important;">
+										<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm  debitBox rightAligntextClass totalCalculation','placeholder'=>'Debit','style'=>'display:none;']); ?>
+									</td>
+									<td width="10%" style="vertical-align: top !important;">
+										<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm creditBox rightAligntextClass totalCalculation','placeholder'=>'Credit']); ?>	
+									</td>
+									<td align="center"  width="10%" style="vertical-align: top !important;">
+										
+									</td>
+								</tr>	
 								</tbody>
 								<tfoot>
 									<tr style="border-top:double;">
-										<td colspan="3" >	
+										<td colspan="2">	
 											<button type="button" class="AddMainRow btn btn-default input-sm"><i class="fa fa-plus"></i> Add row</button>
 										</td>
-										<td><input type="text" class="form-control input-sm rightAligntextClass noBorder" ></td>
-										<td><input type="text" class="form-control input-sm rightAligntextClass noBorder" ></td>
+										<td><input type="text" class="form-control input-sm rightAligntextClass total_debit" placeholder="Total Debit"></td>
+										<td><input type="text" class="form-control input-sm rightAligntextClass total_credit" placeholder="Total Credit"></td>
 									</tr>
 								</tfoot>
 							</table>
@@ -94,25 +131,25 @@ $option_ref[]= ['value'=>'On Account','text'=>'On Account'];
 <table id="sampleForRef" style="display:none;" width="100%">
 	<tbody>
 		<tr>
-			<td width="20%">
+			<td width="20%" style="vertical-align: top !important;">
 				<input type="hidden" class="ledgerIdContainer" />
 				<input type="hidden" class="companyIdContainer" />
 				<?php 
 				echo $this->Form->input('type', ['options'=>$option_ref,'label' => false,'class' => 'form-control input-sm refType','required'=>'required']); ?>
 			</td>
-			<td width="">
+			<td width="" style="vertical-align: top !important;vertical-align: top !important;">
 				<?php echo $this->Form->input('ref_name', ['type'=>'text','label' => false,'class' => 'form-control input-sm ref_name','placeholder'=>'Reference Name','required'=>'required']); ?>
 			</td>
 			
-			<td width="20%" style="padding-right:0px;">
+			<td width="20%" style="padding-right:0px;vertical-align: top !important;">
 				<?php echo $this->Form->input('amount', ['label' => false,'class' => 'form-control input-sm calculation rightAligntextClass','placeholder'=>'Amount','required'=>'required']); ?>
 			</td>
-			<td width="10%" style="padding-left:0px;">
+			<td width="10%" style="padding-left:0px;" style="vertical-align: top !important;">
 				<?php 
 				echo $this->Form->input('type_cr_dr', ['options'=>['Dr'=>'Dr','Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm  calculation refDrCr','value'=>'Dr']); ?>
 			</td>
 			
-			<td align="center">
+			<td align="center" style="vertical-align: top !important;">
 				<a class="" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
 			</td>
 		</tr>
@@ -127,15 +164,15 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 <table id="sampleForBank" style="display:none;" width="100%">
 	<tbody>
 		<tr>
-			<td width="30%">
+			<td width="30%" style="vertical-align: top !important;">
 				<?php 
 				echo $this->Form->input('mode_of_payment', ['options'=>$option_mode,'label' => false,'class' => 'form-control input-sm paymentType','required'=>'required']); ?>
 			</td>
-			<td width="30%">
+			<td width="30%" style="vertical-align: top !important;">
 				<?php echo $this->Form->input('cheque_no', ['label' =>false,'class' => 'form-control input-sm cheque_no','placeholder'=>'Cheque No']); ?> 
 			</td>
 			
-			<td width="30%">
+			<td width="30%" style="vertical-align: top !important;">
 				<?php echo $this->Form->input('cheque_date', ['label' =>false,'class' => 'form-control input-sm date-picker cheque_date ','data-date-format'=>'dd-mm-yyyy','placeholder'=>'Cheque Date']); ?>
 			</td>
 			
@@ -147,21 +184,21 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 <table id="sampleMainTable" style="display:none;" width="100%">
 	<tbody class="sampleMainTbody">
 		<tr class="MainTr">
-			<td width="10%">
+			<td width="10%" style="vertical-align: top !important;">
 				<?php 
 				echo $this->Form->input('cr_dr', ['options'=>['Dr'=>'Dr','Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm cr_dr','required'=>'required','value'=>'Dr']); ?>
 			</td>
-			<td width="65%">
+			<td width="65%" style="vertical-align: top !important;">
 				<?php echo $this->Form->input('ledger_id', ['empty'=>'--Select--','options'=>@$ledgerOptions,'label' => false,'class' => 'form-control input-sm ledger','required'=>'required']); ?>
 				<div class="window" style="margin:auto;"></div>
 			</td>
-			<td width="10%">
-				<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm  debitBox rightAligntextClass','placeholder'=>'Debit']); ?>
+			<td width="10%" style="vertical-align: top !important;">
+				<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm  debitBox rightAligntextClass totalCalculation','placeholder'=>'Debit']); ?>
 			</td>
-			<td width="10%">
-				<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm creditBox rightAligntextClass','placeholder'=>'Credit','style'=>'display:none;']); ?>	
+			<td width="10%" style="vertical-align: top !important;">
+				<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm creditBox rightAligntextClass totalCalculation','placeholder'=>'Credit','style'=>'display:none;']); ?>	
 			</td>
-			<td align="center"  width="10%">
+			<td align="center"  width="10%" style="vertical-align: top !important;">
 				<a class="btn btn-danger delete-tr btn-xs" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
 			</td>
 		</tr>
@@ -279,6 +316,27 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
                 }
 			});
 			
+			$('.totalCalculation').die().live('keyup',function(){
+				var totalCredit=0;
+				var totalDebit=0;
+				$('#MainTable tbody#MainTbody tr.MainTr').each(function(){ 
+					var debit  = parseFloat($(this).find('td:nth-child(3) input').val()); 
+					var credit = parseFloat($(this).find('td:nth-child(4) input').val()); 
+					if(debit)
+					{
+						totalDebit  = totalDebit+debit;
+					}
+					if(credit)
+					{
+						totalCredit = totalCredit+credit;
+					}
+				});
+				if(!totalDebit){ totalDebit=0; }
+				$('.total_debit').val(totalDebit);
+				
+				if(!totalCredit){totalCredit=0; }
+				$('.total_credit').val(totalCredit);
+			});
 			$('.paymentType').die().live('change',function(){
 				var type=$(this).val();	
 				var currentRefRow=$(this).closest('tr');
@@ -373,7 +431,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				addMainRow();
 			});
 			
-			addMainRow();
+			//addMainRow();
 			function addMainRow(){
 				var tr=$('#sampleMainTable tbody.sampleMainTbody tr.MainTr').clone();
 				$('#MainTable tbody#MainTbody').append(tr);
