@@ -533,7 +533,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				}
 			}
 			
-			$('.calculate_total').die().live('blur',function()
+			$('.calculate_total').die().live('keyup',function()
 			{ 
 				 renameMainRows();
 			});
