@@ -55,6 +55,7 @@ $this->set('title', 'Payment Voucher');
 									<tr style="border-top:double;">
 										<td colspan="2" valign="top" >	
 											<button type="button" class="AddMainRow btn btn-default input-sm"><i class="fa fa-plus"></i> Add row</button>
+											<input type="hidden" id="totalBankCash">
 										</td>
 										<td valign="top"><input type="text" class="form-control input-sm rightAligntextClass noBorder" name="totalMainDr" id="totalMainDr"></td>
 										<td valign="top"><input type="text" class="form-control input-sm rightAligntextClass noBorder" name="totalMainCr" id="totalMainCr"></td>
@@ -278,8 +279,13 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 
                 submitHandler: function (form) {
 					var totalMainDr  = parseFloat($('#totalMainDr').val());
+					var totalBankCash = parseFloat($('#totalBankCash').val());
 					if(!totalMainDr || totalMainDr==0){
 						alert('Error: zero amount payment can not be generated.');
+						return false;
+					}
+					else if(totalBankCash<=0){
+						alert('Error: No Bank or Cash Credited.');
 						return false;
 					}
 					else{
@@ -361,11 +367,12 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				renameMainRows();
 				
 				var SelectedTr=$(this).closest('tr.MainTr');
-					renameRefRows(SelectedTr);
+				renameRefRows(SelectedTr);
 			});
 			
 			$('.ledger').die().live('change',function(){
 				var openWindow=$(this).find('option:selected').attr('open_window');
+				
 				if(openWindow=='party'){
 					var SelectedTr=$(this).closest('tr.MainTr');
 					var windowContainer=$(this).closest('td').find('div.window');
@@ -398,10 +405,11 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			}
 			
 			function renameMainRows(){
-				var i=0; var main_debit=0; main_credit=0;
+				var i=0; var main_debit=0; var main_credit=0; var count_bank_cash=0;
 				$('#MainTable tbody#MainTbody tr.MainTr').each(function(){
 					$(this).attr('row_no',i);
 					var cr_dr=$(this).find('td:nth-child(1) select.cr_dr option:selected').val()
+					var is_cash_bank=$(this).find('td:nth-child(2) option:selected').attr('bank_and_cash');
 					$(this).find('td:nth-child(1) select.cr_dr').attr({name:'payment_rows['+i+'][cr_dr]',id:'payment_rows-'+i+'-cr_dr'});
 					$(this).find('td:nth-child(2) select.ledger').attr({name:'payment_rows['+i+'][ledger_id]',id:'payment_rows-'+i+'-ledger_id'}).select2();
 					$(this).find('td:nth-child(3) input.debitBox').attr({name:'payment_rows['+i+'][debit]',id:'payment_rows-'+i+'-debit'});
@@ -425,11 +433,15 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 							credit_amt=0;
 						}
 						main_credit=main_credit+credit_amt;
+						if(is_cash_bank=='yes'){
+						 count_bank_cash++;
+						}
 					}
 					i++;
 				});
 				$('#MainTable tfoot tr td:nth-child(2) input#totalMainDr').val(main_debit);
 				$('#MainTable tfoot tr td:nth-child(3) input#totalMainCr').val(main_credit);
+				$('#MainTable tfoot tr td:nth-child(1) input#totalBankCash').val(count_bank_cash);
 			}
 			
 			$('.addBankRow').die().live('click',function(){
@@ -480,6 +492,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				SelectedTr.find('input.ledgerIdContainer').val(ledger_id);
 				SelectedTr.find('input.companyIdContainer').val(".$company_id.");
 				var row_no=SelectedTr.attr('row_no');
+				if(SelectedTr.find('td:nth-child(2) div.window table tbody tr').length>0){
 				SelectedTr.find('td:nth-child(2) div.window table tbody tr').each(function(){
 					$(this).find('td:nth-child(1) input.companyIdContainer').attr({name:'payment_rows['+row_no+'][reference_details]['+i+'][company_id]',id:'payment_rows-'+row_no+'-reference_details-'+i+'-company_id'});
 					$(this).find('td:nth-child(1) input.ledgerIdContainer').attr({name:'payment_rows['+row_no+'][reference_details]['+i+'][ledger_id]',id:'payment_rows-'+row_no+'-reference_details-'+i+'-ledger_id'});
@@ -507,7 +520,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 								equalTo: 'Enter bill wise details upto '+mainAmt+' '+cr_dr
 							}
 						});
-				
+				}
 			}
 			
 			$('.calculate_total').die().live('blur',function()
@@ -550,9 +563,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				renameRefRows(SelectedTr);
 			});
 			
-
-			
-			
+			ComponentsPickers.init();	
 		});
 	";
 ?>
