@@ -302,13 +302,13 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			$('.delete-tr').die().live('click',function() 
 			{	
 				$(this).closest('tr.MainTr').remove();
-				rename_rows();
+				renameMainRows();
 			});
 			
 			$('.delete-tr-ref').die().live('click',function() 
 			{	var SelectedTr=$(this).closest('tr.MainTr');
 				$(this).closest('tr').remove();
-				rename_rows();
+				renameMainRows();
 				renameRefRows(SelectedTr);
 			});
 			
