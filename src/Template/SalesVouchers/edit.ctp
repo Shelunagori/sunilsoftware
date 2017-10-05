@@ -73,8 +73,17 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 									<tr class="MainTr" row_no="<?php echo $i;?>">
 										<td width="10%">
 											<?php 
+											if($i==0)
+											{
+												echo $this->Form->input('sales_voucher_rows.'.$i.'.cr_dr', ['input'=>'text','label' => false,'class' => 'form-control input-sm cr_dr','required'=>'required','value'=>'Dr','readonly'=>'readonly']); 
+											}
+											else if($i==1)
+											{
+												echo $this->Form->input('sales_voucher_rows.'.$i.'.cr_dr', ['input'=>'text','label' => false,'class' => 'form-control input-sm cr_dr','required'=>'required','value'=>'Cr','readonly'=>'readonly']);
+											}
+											else{
 											echo $this->Form->input('sales_voucher_rows.'.$i.'.cr_dr', ['options'=>['Dr'=>'Dr','Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm cr_dr','required'=>'required','value'=>$sales_voucher_row->cr_dr]); 
-											
+											}
 											echo $this->Form->input('sales_voucher_rows.'.$i.'.id',['value'=>$sales_voucher_row->id]);
 											?>
 											
@@ -205,7 +214,12 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 										<?php } ?>
 										</td>
 										<td align="center"  width="10%">
+										<?php 
+											if($i>1)
+											{
+										?>
 											<a class="btn btn-danger delete-tr btn-xs" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
+										<?php } ?>
 										</td>
 									</tr>
 								<?php $i++; } } ?>
