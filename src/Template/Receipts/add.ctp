@@ -153,10 +153,10 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				<div class="window" style="margin:auto;"></div>
 			</td>
 			<td width="10%">
-				<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm  debitBox rightAligntextClass','placeholder'=>'Debit']); ?>
+				<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm calculation debitBox rightAligntextClass','placeholder'=>'Debit']); ?>
 			</td>
 			<td width="10%">
-				<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm creditBox rightAligntextClass','placeholder'=>'Credit','style'=>'display:none;']); ?>	
+				<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm calculation creditBox rightAligntextClass','placeholder'=>'Credit','style'=>'display:none;']); ?>	
 			</td>
 			<td align="center"  width="10%">
 				<a class="btn btn-danger delete-tr btn-xs" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
@@ -275,14 +275,19 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
                     label
                         .closest('.form-group').removeClass('has-error'); // set success class to the control group
                 },
-
                 submitHandler: function (form) {
-                    success1.show();
-                    error1.hide();
-                    form1[0].submit();
+					var totalMainDr  = parseFloat($('#totalMainDr').val());
+					if(!totalMainDr || totalMainDr==0){
+					alert('Error: zero amount receipt can not be generated.');
+					return false;
+					}
+					else{
+					success1.show();
+					error1.hide();
+					form1[0].submit();
+					}
                 }
 			});
-			
 			
 			$('.paymentType').die().live('change',function(){
 				var type=$(this).val();	
@@ -330,10 +335,12 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				var cr_dr=$(this).val();
 				if(cr_dr=='Cr'){
 					$(this).closest('tr').find('.debitBox').hide();
+					$(this).closest('tr').find('.debitBox').val('');
 					$(this).closest('tr').find('.creditBox').show();
 				}else{
 					$(this).closest('tr').find('.debitBox').show();
 					$(this).closest('tr').find('.creditBox').hide();
+					$(this).closest('tr').find('.creditBox').val('');
 				}
 				renameMainRows();
 				
@@ -357,8 +364,11 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 					windowContainer.html('<table width=90% ><tbody></tbody><tfoot><td colspan=4></td></tfoot></table>');
 					AddBankRow(SelectedTr);
 				}
+				else{
+					var windowContainer=$(this).closest('td').find('div.window');
+					windowContainer.html('');
+				}
 			});
-			
 			$('.delete-tr').die().live('click',function() 
 			{
 			$(this).closest('tr').remove();
@@ -368,7 +378,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			$('.dltrows').die().live('click',function() 
 			{	
 				$(this).closest('tr').remove();
-				rename_rows();
+				renameRefRows();
 			});
 		
 			$('.AddMainRow').die().live('click',function(){ 
@@ -383,29 +393,38 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			}
 			
 			function renameMainRows(){
-				var i=0;
+				var i=0; var main_debit=0; main_credit=0;
 				$('#MainTable tbody#MainTbody tr.MainTr').each(function(){
 					$(this).attr('row_no',i);
 					var cr_dr=$(this).find('td:nth-child(1) select.cr_dr option:selected').val()
-					$(this).find('td:nth-child(1) select.cr_dr').attr({name:'receipt_rows['+i+'][cr_dr]',id:'receipt_rows-'+i+'-cr_dr'});
-					$(this).find('td:nth-child(2) select.ledger').attr({name:'receipt_rows['+i+'][ledger_id]',id:'receipt_rows-'+i+'-ledger_id'}).select2();
-					$(this).find('td:nth-child(3) input.debitBox').attr({name:'receipt_rows['+i+'][debit]',id:'receipt_rows-'+i+'-debit'});
-					$(this).find('td:nth-child(4) input.creditBox').attr({name:'receipt_rows['+i+'][credit]',id:'receipt_rows-'+i+'-credit'});
+					$(this).find('td:nth-child(1) select.cr_dr').attr({name:'payment_rows['+i+'][cr_dr]',id:'payment_rows-'+i+'-cr_dr'});
+					$(this).find('td:nth-child(2) select.ledger').attr({name:'payment_rows['+i+'][ledger_id]',id:'payment_rows-'+i+'-ledger_id'}).select2();
+					$(this).find('td:nth-child(3) input.debitBox').attr({name:'payment_rows['+i+'][debit]',id:'payment_rows-'+i+'-debit'});
+					$(this).find('td:nth-child(4) input.creditBox').attr({name:'payment_rows['+i+'][credit]',id:'payment_rows-'+i+'-credit'});
 					
 					if(cr_dr=='Dr'){
 						$(this).find('td:nth-child(3) input.debitBox').rules('add', 'required');
 						$(this).find('td:nth-child(4) input.creditBox').rules('remove', 'required');
 						$(this).find('td:nth-child(4) span.help-block-error').remove();
+						var debit_amt=parseFloat($(this).find('td:nth-child(3) input.debitBox').val());
+						if(!debit_amt){
+							debit_amt=0;
+						}
+						main_debit=main_debit+debit_amt;
 					}else{
 						$(this).find('td:nth-child(3) input.debitBox').rules('remove', 'required');
 						$(this).find('td:nth-child(3) span.help-block-error').remove();
 						$(this).find('td:nth-child(4) input.creditBox').rules('add', 'required');
+						var credit_amt=parseFloat($(this).find('td:nth-child(4) input.creditBox').val());
+						if(!credit_amt){
+							credit_amt=0;
+						}
+						main_credit=main_credit+credit_amt;
 					}
-					
-					
-					
 					i++;
 				});
+				$('#MainTable tfoot tr td:nth-child(2) input#totalMainDr').val(main_debit);
+				$('#MainTable tfoot tr td:nth-child(3) input#totalMainCr').val(main_credit);
 			}
 			
 			$('.addBankRow').die().live('click',function(){
@@ -486,6 +505,8 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				
 			}
 			
+			
+			var main_credit=0;
 			$('.calculation').die().live('blur',function()
 			{ 
 				var SelectedTr=$(this).closest('tr.MainTr');
@@ -516,16 +537,15 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 						$(this).closest('table').find(' tfoot td:nth-child(2) input.total').val('0');
 						$(this).closest('table').find(' tfoot td:nth-child(3) input.total_type').val('');	
 					}
+					
 				});
 				var SelectedTr=$(this).closest('tr.MainTr');
 				renameRefRows(SelectedTr);
 			});
-			
-
-			
-			
 		});
 	";
 ?>
+
 <?php echo $this->Html->scriptBlock($js, array('block' => 'scriptBottom'));  ?>
+
 
