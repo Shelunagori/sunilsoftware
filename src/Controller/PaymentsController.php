@@ -60,8 +60,8 @@ class PaymentsController extends AppController
         $payment = $this->Payments->newEntity();
 		
 		if ($this->request->is('post')) {
-			 
-			$payment->transaction_date = date('Y-m-d', strtotime($this->request->data['transaction_date']));
+			$transaction_date=$this->request->data('transaction_date');
+			$payment->transaction_date = date('Y-m-d', strtotime($transaction_date));
 			
 			$Voucher = $this->Payments->find()->select(['voucher_no'])->where(['company_id'=>$company_id])->order(['voucher_no' => 'DESC'])->first();
 			if($Voucher)
