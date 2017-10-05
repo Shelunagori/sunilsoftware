@@ -277,9 +277,17 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
                 },
 
                 submitHandler: function (form) {
-					 success1.show();
-                    error1.hide();
-                    form1[0].submit();
+					var totalMainDr  = parseFloat($('#totalMainDr').val());
+					if(!totalMainDr || totalMainDr==0){
+						alert('Error: zero amount payment can not be generated.');
+						return false;
+					}
+					else{
+						alert('Are you sure you want to submit.');
+						success1.show();
+						error1.hide();
+						form1[0].submit();
+					}
                 }
 			});
 			
