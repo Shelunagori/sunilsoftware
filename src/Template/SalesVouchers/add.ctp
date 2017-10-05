@@ -65,7 +65,7 @@ $this->set('title', 'Sales Voucher');
 										<div class="window" style="margin:auto;"></div>
 									</td>
 									<td width="10%" style="vertical-align: top !important;">
-										<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm  debitBox rightAligntextClass totalCalculation','placeholder'=>'Debit']); ?>
+										<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm  debitBox rightAligntextClass totalCalculation','placeholder'=>'Debit','required'=>'required']); ?>
 									</td>
 									<td width="10%" style="vertical-align: top !important;">
 										<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm creditBox rightAligntextClass totalCalculation','placeholder'=>'Credit','style'=>'display:none;']); ?>	
@@ -87,7 +87,7 @@ $this->set('title', 'Sales Voucher');
 										<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm  debitBox rightAligntextClass totalCalculation','placeholder'=>'Debit','style'=>'display:none;']); ?>
 									</td>
 									<td width="10%" style="vertical-align: top !important;">
-										<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm creditBox rightAligntextClass totalCalculation','placeholder'=>'Credit']); ?>	
+										<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm creditBox rightAligntextClass totalCalculation','placeholder'=>'Credit','required'=>'required']); ?>	
 									</td>
 									<td align="center"  width="10%" style="vertical-align: top !important;">
 										
@@ -411,8 +411,10 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				if(cr_dr=='Cr'){
 					$(this).closest('tr').find('.debitBox').val('');
 					$(this).closest('tr').find('.debitBox').hide();
+					//$(this).closest('tr').find('.creditBox').attr('required', true);
 					$(this).closest('tr').find('.creditBox').show();
 				}else{
+					//$(this).closest('tr').find('.debitBox').attr('required', false);
 					$(this).closest('tr').find('.debitBox').show();
 					$(this).closest('tr').find('.debitBox').val('');
 					$(this).closest('tr').find('.creditBox').hide();
