@@ -451,17 +451,20 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				$(this).closest('tr').remove();
 				renameMainRows();
 				renameBankRows();
-				renameRefRows();
+				var SelectedTr=$(this).closest('tr.MainTr');
+				renameRefRows(SelectedTr);
 			});
 			
 			$('.ref_delete').die().live('click',function() 
 			{
+				var SelectedTr=$(this).closest('tr.MainTr');
 				$(this).closest('tr').remove();
 				remove_ref_foot
-				renameRefRows();
+				renameRefRows(SelectedTr);
 			});
 			
 			$('.refType').die().live('change',function(){
+				var SelectedTr=$(this).closest('tr.MainTr');
 				var type=$(this).val();
 				var currentRefRow=$(this).closest('tr');
 				var ledger_id=$(this).closest('tr.MainTr').find('select.ledger option:selected').val();
@@ -474,6 +477,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 						url: url,
 					}).done(function(response) { 
 						currentRefRow.find('td:nth-child(2)').html(response);
+						renameRefRows(SelectedTr);
 					});
 				}else if(type=='On Account'){
 					currentRefRow.find('td:nth-child(2)').html('');
