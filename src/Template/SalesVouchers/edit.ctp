@@ -89,7 +89,17 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 											
 										</td>
 										<td width="65%">
-											<?php echo $this->Form->input('ledger_id', ['empty'=>'--Select--','options'=>@$ledgerOptions,'label' => false,'class' => 'form-control input-sm ledger','required'=>'required','value'=>$sales_voucher_row->ledger_id]); ?>
+										<?php
+										if($i==0)
+										{ 
+										?>
+											<?php echo $this->Form->input('ledger_id', ['empty'=>'--Select--','options'=>@$ledgerDroption,'label' => false,'class' => 'form-control input-sm ledger','required'=>'required','value'=>$sales_voucher_row->ledger_id]); 
+										}
+										else
+										{
+											echo $this->Form->input('ledger_id', ['empty'=>'--Select--','options'=>@$ledgerOptions,'label' => false,'class' => 'form-control input-sm ledger','required'=>'required','value'=>$sales_voucher_row->ledger_id]);
+										}
+										?>
 											<div class="window" style="margin:auto;">
 											<?php
 											if(!empty($sales_voucher_row->reference_details)){
