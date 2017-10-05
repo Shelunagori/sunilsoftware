@@ -61,7 +61,7 @@ $this->set('title', 'Sales Voucher');
 										echo $this->Form->input('cr_dr', ['input'=>'text','label' => false,'class' => 'form-control input-sm cr_dr','required'=>'required','value'=>'Dr','readonly'=>'readonly']); ?>
 									</td>
 									<td width="65%" style="vertical-align: top !important;">
-										<?php echo $this->Form->input('ledger_id', ['empty'=>'--Select--','options'=>@$Ledgers,'label' => false,'class' => 'form-control input-sm ledger','required'=>'required']); ?>
+										<?php echo $this->Form->input('ledger_id', ['empty'=>'--Select--','options'=>@$ledgerDroption,'label' => false,'class' => 'form-control input-sm ledger','required'=>'required']); ?>
 										<div class="window" style="margin:auto;"></div>
 									</td>
 									<td width="10%" style="vertical-align: top !important;">

@@ -132,9 +132,23 @@ class SalesVouchersController extends AppController
 				$Groups[]=$ChildGroup->id;
 			}
 		}
-		$Ledgers = $this->SalesVouchers->SalesVoucherRows->Ledgers->find('list')->where(['Ledgers.accounting_group_id IN' =>$Groups]);
+		$ParentLedgers = $this->SalesVouchers->SalesVoucherRows->Ledgers->find()->where(['Ledgers.accounting_group_id IN' =>$Groups]);
+		
+		$ledgerDroption =[];
+		foreach($ParentLedgers as $ParentLedger){
+		if(in_array($ParentLedger->accounting_group_id,$bankGroups)){
+				$ledgerDroption[]=['text' =>$ParentLedger->name, 'value' => $ParentLedger->id ,'open_window' => 'bank'];
+			}
+			else if($ParentLedger->bill_to_bill_accounting == 'yes'){
+				$ledgerDroption[]=['text' =>$ParentLedger->name, 'value' => $ParentLedger->id,'open_window' => 'party' ];
+			}
+			else{
+				$ledgerDroption[]=['text' =>$ParentLedger->name, 'value' => $ParentLedger->id,'open_window' => 'no' ];
+			}
+		}
 		
 		$ParentSalesAccountGroups = $this->SalesVouchers->SalesVoucherRows->Ledgers->AccountingGroups->find()->where(['sales_voucher_sales_account'=>1,'company_id'=>$company_id]); 
+		
 		$Groupcrs=[];
 		
 		foreach($ParentSalesAccountGroups as $ParentSalesAccountGroup)
@@ -147,10 +161,21 @@ class SalesVouchersController extends AppController
 			}
 		}
 		
-		$ledgerOptions = $this->SalesVouchers->SalesVoucherRows->Ledgers->find('list')->where(['Ledgers.accounting_group_id IN' =>$Groupcrs]);
-		
+		$ledgers = $this->SalesVouchers->SalesVoucherRows->Ledgers->find()->where(['Ledgers.accounting_group_id IN' =>$Groupcrs]);
+		$ledgerOptions =[];
+		foreach($ledgers as $ledger){
+		if(in_array($ledger->accounting_group_id,$bankGroups)){
+				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id ,'open_window' => 'bank'];
+			}
+			else if($ledger->bill_to_bill_accounting == 'yes'){
+				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id,'open_window' => 'party' ];
+			}
+			else{
+				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id,'open_window' => 'no' ];
+			}
+		}
 		$referenceDetails=$this->SalesVouchers->SalesVoucherRows->ReferenceDetails->find('list');
-        $this->set(compact('salesVoucher','voucher_no','ledgerOptions','company_id','referenceDetails','Ledgers'));
+        $this->set(compact('salesVoucher','voucher_no','ledgerOptions','company_id','referenceDetails','ledgerDroption'));
         $this->set('_serialize', ['salesVoucher']);
     }
 
