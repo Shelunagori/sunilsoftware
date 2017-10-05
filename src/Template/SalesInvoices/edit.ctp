@@ -43,7 +43,36 @@ foreach($partyOptions as $partyOption)
 						<div class="col-md-3">
 							<div class="form-group">
 								<label>Voucher No :</label>&nbsp;&nbsp;
-								<?= h('#'.str_pad($salesInvoice->voucher_no, 4, '0', STR_PAD_LEFT)) ?>
+								<?php
+								    $date = date('Y-m-d', strtotime($salesInvoice->transaction_date));
+									$d = date_parse_from_format('Y-m-d',$date);
+									$yr=$d["year"];$year= substr($yr, -2);
+									if($d["month"]=='01' || $d["month"]=='02' || $d["month"]=='03')
+									{
+									  $startYear=$year-1;
+									  $endYear=$year;
+									  $financialyear=$startYear.'-'.$endYear;
+									}
+									else
+									{
+									  $startYear=$year;
+									  $endYear=$year+1;
+									  $financialyear=$startYear.'-'.$endYear;
+									}
+								if($coreVariable['company_name']=='DANGI SAREES')
+								{
+								$field='DS';
+								}
+								else if($coreVariable['company_name']=='SUNIL TEXTILES')
+								{
+								$field='ST';
+								}
+								else if($coreVariable['company_name']=='SUNIL GARMENTS')
+								{
+								$field='SG';
+								}
+								?>
+								<?= $field.'/'.$financialyear.'/'. h(str_pad($salesInvoice->voucher_no, 3, '0', STR_PAD_LEFT))?>
 							</div>
 						</div>
 						<div class="col-md-3">
@@ -133,7 +162,11 @@ foreach($partyOptions as $partyOption)
 										<span class="itemQty" style="color:red"></span>
 								</td>
 								<td>
+<<<<<<< HEAD
 									<?php echo $this->Form->input('salesInvoiceRow.'.$i.'.quantity', ['type'=>'number','label' => false,'class' => 'form-control input-medium calculation quantity rightAligntextClass','id'=>'check','required'=>'required','placeholder'=>'Quantity', 'value'=>$salesInvoiceRow->quantity,'min'=>@$sales_return_qty[$salesInvoiceRow->item->id]]); ?>
+=======
+									<?php echo $this->Form->input('salesInvoiceRow.'.$i.'.quantity', ['label' => false,'class' => 'form-control input-sm calculation quantity rightAligntextClass','id'=>'check','required'=>'required','placeholder'=>'Quantity', 'value'=>$salesInvoiceRow->quantity]); ?>
+>>>>>>> origin/master
 								</td>
 								<td>
 									<?php echo $this->Form->input('salesInvoiceRow.'.$i.'.rate', ['label' => false,'class' => 'form-control input-sm calculation rate rightAligntextClass','required'=>'required','placeholder'=>'Rate','value'=>$salesInvoiceRow->rate, 'readonly'=>'readonly', 'tabindex'=>'-1']); ?>
@@ -169,6 +202,14 @@ foreach($partyOptions as $partyOption)
 						</td>
 						<td colspan="2">
 						<?php echo $this->Form->input('amount_before_tax', ['label' => false,'class' => 'form-control input-sm amount_before_tax rightAligntextClass','required'=>'required', 'readonly'=>'readonly','placeholder'=>'', 'tabindex'=>'-1']); ?>	
+						</td>
+						</tr>
+						
+						<tr>
+						<td colspan="6" align="right"><b>Discount Amount</b>
+						</td>
+						<td colspan="2">
+						<?php echo $this->Form->input('discount_amount', ['label' => false,'class' => 'form-control input-sm toalDiscount rightAligntextClass','required'=>'required', 'readonly'=>'readonly','placeholder'=>'', 'tabindex'=>'-1', 'style'=>'padding-right:25px']); ?>	
 						</td>
 						</tr>
 						
@@ -287,7 +328,7 @@ foreach($partyOptions as $partyOption)
 			<span class="itemQty" style="color:red;font-size:10px;"></span>
 			</td>
 			<td>
-				<?php echo $this->Form->input('quantity', ['label' => false,'class' => 'form-control input-medium calculation quantity rightAligntextClass','id'=>'check','required'=>'required','placeholder'=>'Quantity', 'value'=>1]); ?>
+				<?php echo $this->Form->input('quantity', ['label' => false,'class' => 'form-control input-sm calculation quantity rightAligntextClass','id'=>'check','required'=>'required','placeholder'=>'Quantity', 'value'=>1]); ?>
 			</td>
 			<td>
 				<?php echo $this->Form->input('rate', ['label' => false,'class' => 'form-control input-sm calculation rate rightAligntextClass','required'=>'required','placeholder'=>'Rate', 'readonly'=>'readonly', 'tabindex'=>'-1']); ?>
@@ -389,6 +430,7 @@ foreach($partyOptions as $partyOption)
 		{
 			$(this).closest('tr').remove();
 			rename_rows();
+			forward_total_amount();
 		});
 		ComponentsPickers.init();
 	});
@@ -415,7 +457,7 @@ foreach($partyOptions as $partyOption)
 		var itemId=$('option:selected', this).attr('value');
 		var sales_rate=$('option:selected', this).attr('sales_rate');
 		$(this).closest('tr').find('.gst_amount').val(gst_amount);
-		$(this).closest('tr').find('.rate').val(sales_rate);
+		//$(this).closest('tr').find('.rate').val(sales_rate);
 		//var itemId=$(this).val();
 		var url='".$this->Url->build(["controller" => "SalesInvoices", "action" => "ajaxItemQuantity"])."';
 		url=url+'/'+itemId
@@ -525,7 +567,8 @@ foreach($partyOptions as $partyOption)
 			var s_igst=0;
 			var newsgst=0;
 			var newigst=0;
-			var exactgstvalue=0;		
+			var exactgstvalue=0;
+            var totDiscounts=0;			
 			$('#main_table tbody#main_tbody tr.main_tr').each(function()
 			{
 			
@@ -536,7 +579,8 @@ foreach($partyOptions as $partyOption)
 			    var gstpaid=$('option:selected', this).attr('gst_amount');
 			    $(this).closest('tr').find('.gst_amount').val(gstpaid);
 			
-				var quantity  = Math.round($(this).find('.quantity').val());
+				var fetchQuantity  = $(this).find('.quantity').val();
+			    var quantity=round(fetchQuantity,2);
 				if(!quantity){quantity=0;}
 				var rate  = parseFloat($(this).find('.rate').val());
 				if(!rate){rate=0;}
@@ -546,6 +590,7 @@ foreach($partyOptions as $partyOption)
 				var discount  = parseFloat($(this).find('.discount').val());
 				if(!discount){discount=0;}
 				var discountValue=(discount*totamount)/100;
+				totDiscounts=round(parseFloat(totDiscounts)+parseFloat(discountValue), 2);
 				var discountAmount=totamount-discountValue;
 				$(this).find('.discountAmount').val(discountAmount.toFixed(2));
 
@@ -638,6 +683,7 @@ foreach($partyOptions as $partyOption)
 			$('.roundValue').val(round_of.toFixed(2));
 			$('.isRoundofType').val(isRoundofType);
 			$('.outOfStock').val(outOfStockValue);
+			$('.toalDiscount').val(totDiscounts);
 			rename_rows();
 		}
 		

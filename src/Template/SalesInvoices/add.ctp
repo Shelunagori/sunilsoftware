@@ -31,7 +31,37 @@ $this->set('title', 'Create Sales Invoice');
 						<div class="col-md-3">
 							<div class="form-group">
 								<label>Voucher No :</label>&nbsp;&nbsp;
-								<?= h('#'.str_pad($voucher_no, 4, '0', STR_PAD_LEFT)) ?>
+								
+								<?php
+								    $date = date('Y-m-d');
+									$d = date_parse_from_format('Y-m-d',$date);
+									$yr=$d["year"];$year= substr($yr, -2);
+									if($d["month"]=='01' || $d["month"]=='02' || $d["month"]=='03')
+									{
+									  $startYear=$year-1;
+									  $endYear=$year;
+									  $financialyear=$startYear.'-'.$endYear;
+									}
+									else
+									{
+									  $startYear=$year;
+									  $endYear=$year+1;
+									  $financialyear=$startYear.'-'.$endYear;
+									}
+								if($coreVariable['company_name']=='DANGI SAREES')
+								{
+								$field='DS';
+								}
+								else if($coreVariable['company_name']=='SUNIL TEXTILES')
+								{
+								$field='ST';
+								}
+								else if($coreVariable['company_name']=='SUNIL GARMENTS')
+								{
+								$field='SG';
+								}
+								?>
+								<?= $field.'/'.$financialyear.'/'. h(str_pad($voucher_no, 3, '0', STR_PAD_LEFT))?>
 							</div>
 						</div>
 						<div class="col-md-3">
@@ -93,6 +123,13 @@ $this->set('title', 'Create Sales Invoice');
 						</td>
 						<td colspan="2">
 						<?php echo $this->Form->input('amount_before_tax', ['label' => false,'class' => 'form-control input-sm amount_before_tax rightAligntextClass','required'=>'required', 'readonly'=>'readonly','placeholder'=>'', 'tabindex'=>'-1']); ?>	
+						</td>
+						</tr>
+						<tr>
+						<td colspan="6" align="right"><b>Discount Amount</b>
+						</td>
+						<td colspan="2">
+						<?php echo $this->Form->input('discount_amount', ['label' => false,'class' => 'form-control input-sm rightAligntextClass toalDiscount','required'=>'required', 'readonly'=>'readonly','placeholder'=>'', 'tabindex'=>'-1', 'style'=>'padding-right:25px']); ?>	
 						</td>
 						</tr>
 						<tr id="add_cgst">
@@ -275,34 +312,52 @@ $this->set('title', 'Create Sales Invoice');
 		$('#barcodeFrom').die().live('submit',function(e){
 		e.preventDefault();
 			var Inputitemcode=$('.itembarcode').val();
-			if(Inputitemcode){
-				var item_id=$('select.bottomSelect option[item_code='+Inputitemcode+']').val();
-				if(item_id){
-					var l=$('#main_table tbody#main_tbody tr:last').length;
-					if(l==1){
-						var is_sel=$('#main_table tbody#main_tbody tr:last select.attrGet').val();
-						if(!is_sel){
-							$('#main_table tbody#main_tbody tr:nth-child(1) select.attrGet').val(item_id).trigger('change').select2();
-							$('.itembarcode').val('');
+			
+			var addQuantity=0;
+			var addDB=0;
+			$('#main_table tbody#main_tbody tr.main_tr').each(function(){
+			var item_code=$(this).find('td:nth-child(1) select.attrGet option:selected').attr('item_code');
+			var quantity=$(this).find('td:nth-child(2) input.quantity').val();
+			addQuantity=parseFloat(quantity)+1;
+			if(!item_code){item_code=0;}
+			if(Inputitemcode==item_code)
+			{
+			addDB=1;
+			$(this).find('td:nth-child(2) input.quantity').val(addQuantity);
+			}
+			});
+			if(addDB==1)
+			{
+			//$(this).find('td:nth-child(2) input.quantity').val(addQuantity);
+			}
+			else {
+				if(Inputitemcode){
+					var item_id=$('select.bottomSelect option[item_code='+Inputitemcode+']').val();
+					if(item_id){
+						var l=$('#main_table tbody#main_tbody tr:last').length;
+						if(l==1){
+							var is_sel=$('#main_table tbody#main_tbody tr:last select.attrGet').val();
+							if(!is_sel){
+								$('#main_table tbody#main_tbody tr:nth-child(1) select.attrGet').val(item_id).trigger('change').select2();
+								$('.itembarcode').val('');
+							}else{
+								add_row();
+								$('#main_table tbody#main_tbody tr:last select.attrGet').val(item_id).trigger('change').select2();
+								$('.itembarcode').val('');
+							}
 						}else{
 							add_row();
 							$('#main_table tbody#main_tbody tr:last select.attrGet').val(item_id).trigger('change').select2();
 							$('.itembarcode').val('');
 						}
+						console.log(l);
+						
 					}else{
-						add_row();
-						$('#main_table tbody#main_tbody tr:last select.attrGet').val(item_id).trigger('change').select2();
-						$('.itembarcode').val('');
+						alert('Not found any item of this barcode.');
 					}
-					console.log(l);
-					
-				}else{
-					alert('Not found any item of this barcode.');
 				}
 			}
 		});
-		
-		
 		
 		$('.party_ledger_id').die().live('change',function(){
 			var customer_state_id=$('option:selected', this).attr('party_state_id');
@@ -348,6 +403,7 @@ $this->set('title', 'Create Sales Invoice');
 		{
 			$(this).closest('tr').remove();
 			rename_rows();
+			forward_total_amount();
 		});
 		ComponentsPickers.init();
 
@@ -382,10 +438,10 @@ $this->set('title', 'Create Sales Invoice');
 			$(this).find('.discountAmount').attr({name:'sales_invoice_rows['+i+'][net_amount]',id:'sales_invoice_rows['+i+'][net_amount]'});
 			$(this).find('.gstValue').attr({name:'sales_invoice_rows['+i+'][gst_value]',id:'sales_invoice_rows['+i+'][gst_value]'});
 			
-			if(i==0)
-			{
-			 $(this).closest('tr').find('.dlt').remove();
-			}
+			// if(i==0)
+			// {
+			 // $(this).closest('tr').find('.dlt').remove();
+			// }
 			i++;
 		});
 	}
@@ -413,13 +469,15 @@ $this->set('title', 'Create Sales Invoice');
 		var newsgst=0;
 		var newigst=0;
 		var exactgstvalue=0;
+		var totDiscounts=0;
 		$('#main_table tbody#main_tbody tr.main_tr').each(function()
 		{
 			var outdata=$(this).closest('tr').find('.outStock').val();
 			if(!outdata){outdata=0;}
 			outOfStockValue=parseFloat(outOfStockValue)+parseFloat(outdata);
 
-			var quantity  = Math.round($(this).find('.quantity').val());
+			var fetchQuantity  = $(this).find('.quantity').val();
+			var quantity=round(fetchQuantity,2);
 			if(!quantity){quantity=0;}
 			var rate  = parseFloat($(this).find('.rate').val());
 			if(!rate){rate=0;}
@@ -429,6 +487,7 @@ $this->set('title', 'Create Sales Invoice');
 			var discount  = parseFloat($(this).find('.discount').val());
 			if(!discount){discount=0;}
 			var discountValue=(discount*totamount)/100;
+			totDiscounts=round(parseFloat(totDiscounts)+parseFloat(discountValue), 2);
 			var discountAmount=totamount-discountValue;
 			
 			if(!discountAmount){discountAmount=0;}
@@ -521,6 +580,8 @@ $this->set('title', 'Create Sales Invoice');
 		$('.roundValue').val(round_of.toFixed(2));
 		$('.isRoundofType').val(isRoundofType);
 		$('.outOfStock').val(outOfStockValue);
+		$('.toalDiscount').val(totDiscounts);
+		
 		rename_rows();
 	}
 	
@@ -567,8 +628,6 @@ $this->set('title', 'Create Sales Invoice');
 			return false;
 		}
 	}
-	
 	";
-
 echo $this->Html->scriptBlock($js, array('block' => 'scriptBottom')); 
 ?>

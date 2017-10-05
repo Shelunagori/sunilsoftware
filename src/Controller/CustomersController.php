@@ -62,16 +62,21 @@ class CustomersController extends AppController
         if ($this->request->is('post')) {
 			
 			$customer = $this->Customers->patchEntity($customer, $this->request->data);
-			
+			$bill_to_bill_accounting=$customer->bill_to_bill_accounting;
 			if ($this->Customers->save($customer)) {
 				
+				$query=$this->Customers->query();
+						$result = $query->update()
+						->set(['customer_id' => $customer->id])
+						->where(['id' => $customer->id])
+						->execute();
 				//Create Ledger//
 				$ledger = $this->Customers->Ledgers->newEntity();
 				$ledger->name = $customer->name;
 				$ledger->accounting_group_id = $customer->accounting_group_id;
 				$ledger->company_id =$company_id;
 				$ledger->customer_id=$customer->id;
-				$ledger->bill_to_bill_accounting='no';//$customer->bill_to_bill_accounting;
+				$ledger->bill_to_bill_accounting=$$bill_to_bill_accounting;
 				
 				if($this->Customers->Ledgers->save($ledger))
 				{
@@ -124,8 +129,24 @@ class CustomersController extends AppController
 															return $row['state_code'].'-'. $row['name'] ;
 														}
 													}]);
+													
+		$cities = $this->Customers->Cities->  find('list',
+													['keyField' => function ($row) {
+														return $row['id'];
+													},
+													'valueField' => function ($row) 
+													{
+														if($row['city_code']<=9)
+														{
+															return str_pad($this->_properties['city_code'], 1, '0', STR_PAD_LEFT).$row['city_code'].'-'. $row['name'] ;
+														}
+														else
+														{
+															return $row['city_code'].'-'. $row['name'] ;
+														}
+													}]);
 		
-        $this->set(compact('customer', 'states','accountingGroups'));
+        $this->set(compact('customer', 'states','cities','accountingGroups'));
         $this->set('_serialize', ['customer', 'accountingGroups']);
     }
 
@@ -146,11 +167,12 @@ class CustomersController extends AppController
 		$company_id=$this->Auth->User('session_company_id');
         if ($this->request->is(['patch', 'post', 'put'])) {
             $customer = $this->Customers->patchEntity($customer, $this->request->getData());
+			$bill_to_bill_accounting=$customer->bill_to_bill_accounting;
             if ($this->Customers->save($customer)) {
 				$query = $this->Customers->Ledgers->query();
 					$query->update()
-						->set(['name' => $customer->name,'accounting_group_id'=>$customer->accounting_group_id])
-						->where(['customer_id' => $id,'company_id'=>$company_id,'bill_to_bill_accounting'=>'yes'])
+						->set(['name' => $customer->name,'accounting_group_id'=>$customer->accounting_group_id,'bill_to_bill_accounting'=>$bill_to_bill_accounting])
+						->where(['customer_id' => $id,'company_id'=>$company_id])
 						->execute();
 						
 					//Accounting Entry

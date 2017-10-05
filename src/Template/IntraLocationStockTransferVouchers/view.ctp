@@ -22,24 +22,20 @@ table.fixed td { overflow: hidden; }
 				  <tr>
 					<td ><b>Voucher No </b></td>
 					<td width="1%">:</td>
-					<td><?php echo '#'.str_pad($intraLocationStockTransferVoucher->voucher_no, 4, '0', STR_PAD_LEFT);?></td>
+					<td><?php echo str_pad($intraLocationStockTransferVoucher->voucher_no, 4, '0', STR_PAD_LEFT);?></td>
 					<td ><b>Transaction Date</b></td>
 					<td width="1%" >:</td>
 					<td><?php echo date("d-m-Y",strtotime($intraLocationStockTransferVoucher->transaction_date)); ?></td>
 				</tr>
 				<tr>
-					<td><b>Stock Transfer From Location</b></td>
+					<td><b>Stock Transfer From</b></td>
 					<td width="1%">:</td>
 					<td><?php echo $intraLocationStockTransferVoucher->TransferFromLocations->name; ?></td>
-					<td ><b>Stock Transfer To Location</b></td>
+					<td ><b>Stock Transfer To</b></td>
 					<td width="1%">:</td>
-					<td><?php echo $intraLocationStockTransferVoucher->TransferFromLocations->name;?></td>
+					<td><?php echo $intraLocationStockTransferVoucher->TransferToLocations->name;?></td>
 				  </tr>
-                  <tr style="padding-top:5px;">
-					<td width="8%" valign="top"><b>Narration </b></td>
-					<td width="1%" valign="top">:</td>
-					<td colspan="3"><?php echo $intraLocationStockTransferVoucher->narration;?></td>
-				  </tr>
+                  
                 </table><br>
        		    <table id="main_table" class="table table-condensed table-bordered" style="width:auto;" >
 					<thead>
@@ -51,8 +47,12 @@ table.fixed td { overflow: hidden; }
 					</thead>
 					<tbody id='main_tbody' class="tab">
 					 <?php 
-						$i=0;									
+						$i=0;	
+                        $totQty=0;						
 						foreach($intraLocationStockTransferVoucher->intra_location_stock_transfer_voucher_rows as $intra_location_stock_transfer_voucher_row):
+						
+						$totQty+=$intra_location_stock_transfer_voucher_row->quantity;
+						
 					?>
 						<tr class="main_tr" class="tab">
 							<td width="10%">
@@ -67,8 +67,17 @@ table.fixed td { overflow: hidden; }
 							</td>
 						</tr>
 					<?php $i++; endforeach; ?>
+					<tr><td colspan="2" align="right"><b>Total Quantity</b></td>
+					<td align="right"><b><?php echo $totQty;?></b></td></tr>
 					</tbody>
 					
+				</table>
+				<table>
+					<tr style="padding-top:5px;">
+					<td width="8%" valign="top"><b>Narration </b></td>
+					<td width="1%" valign="top">:</td>
+					<td colspan="3" width="89%"><?php echo $intraLocationStockTransferVoucher->narration;?></td>
+				    </tr>
 				</table>
 			</div>
 		</div>

@@ -39,7 +39,7 @@ $this->set('title', 'Create Customer');
 									<label>Mobile </label>
 									<?php echo $this->Form->control('mobile',['class'=>'form-control input-sm','placeholder'=>'Mobile no','label'=>false,'autofocus','maxlength'=>10]); ?>
 								</div>
-								<div class="form-group" style="display:none;">
+								<div class="form-group" >
 									<label>Bill to Bill Accounting </label>
 									<?php 
 									$option =[['value'=>'yes','text'=>'yes'],['value'=>'no','text'=>'no']];
@@ -52,9 +52,14 @@ $this->set('title', 'Create Customer');
 									<?php echo $this->Form->control('state_id',['class'=>'form-control input-sm select2me','label'=>false,'empty'=>'-State-', 'options' => $states,'required'=>'required']); ?>
 								</div>
 								<div class="form-group">
+									<label>City <span class="required">*</span></label>
+									<?php echo $this->Form->control('city_id',['class'=>'form-control input-sm select2me','label'=>false,'empty'=>'-City-', 'options' => $cities]); ?>
+								</div>
+								<div class="form-group">
 									<label>TAN</label>
 									<?php echo $this->Form->control('tan',['class'=>'form-control input-sm','label'=>false,'placeholder'=>'TAN']); ?>
 								</div>
+								
 								<div class="form-group">
 									<label>Email</label>
 									<?php echo $this->Form->control('email',['class'=>'form-control input-sm','label'=>false,'placeholder'=>'example@domain.com']); ?>
@@ -74,7 +79,7 @@ $this->set('title', 'Create Customer');
 								</div>
 							</div>
 							<div class="col-md-2" style="padding-left: 0px;padding-right:0;">
-							    <label style="visibility:hidden;">s</label>
+							    <label style="visibility:hidden;"></label>
 								<?php $option =[['value'=>'Dr','text'=>'Dr'],['value'=>'Cr','text'=>'Cr']];
 									echo $this->Form->control('debit_credit',['class'=>'form-control input-sm','label'=>false, 'options' => $option,'value'=>'debitor']);
 									?>

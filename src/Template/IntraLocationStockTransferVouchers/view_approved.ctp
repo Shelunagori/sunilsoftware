@@ -22,23 +22,18 @@ table.fixed td { overflow: hidden; }
 				  <tr>
 					<td ><b>Voucher No </b></td>
 					<td width="1%">:</td>
-					<td><?php echo '#'.str_pad($intraLocationStockTransferVoucher->voucher_no, 4, '0', STR_PAD_LEFT);?></td>
+					<td><?php echo str_pad($intraLocationStockTransferVoucher->voucher_no, 4, '0', STR_PAD_LEFT);?></td>
 					<td ><b>Transaction Date</b></td>
 					<td width="1%" >:</td>
 					<td><?php echo date("d-m-Y",strtotime($intraLocationStockTransferVoucher->transaction_date)); ?></td>
 				</tr>
 				<tr>
-					<td><b>Stock Transfer From Location</b></td>
+					<td><b>Stock Transfer From</b></td>
 					<td width="1%">:</td>
 					<td><?php echo $intraLocationStockTransferVoucher->TransferFromLocations->name; ?></td>
-					<td ><b>Stock Transfer To Location</b></td>
+					<td ><b>Stock Transfer To</b></td>
 					<td width="1%">:</td>
 					<td><?php echo $intraLocationStockTransferVoucher->TransferFromLocations->name;?></td>
-				  </tr>
-                  <tr style="padding-top:5px;">
-					<td width="8%" valign="top"><b>Narration </b></td>
-					<td width="1%" valign="top">:</td>
-					<td colspan="3"><?php echo $intraLocationStockTransferVoucher->narration;?></td>
 				  </tr>
                 </table><br>
        		    <table id="main_table" class="table table-condensed table-bordered" style="width:auto;" >
@@ -46,14 +41,21 @@ table.fixed td { overflow: hidden; }
 					<tr align="center">
 						<td align="left"><b>S.no</b></td>
 						<td align="left"><b>Item Name</b></td>
-						<td align="left"><b>Send Quantity</b></td>
+						<td align="left"><b>Sent Quantity</b></td>
 						<td align="left"><b>Received Quantity</b></td>
 					</tr>
 					</thead>
 					<tbody id='main_tbody' class="tab">
 					 <?php 
-						$i=0;									
+						$i=0;
+						$sendQty=0;
+						$recQty=0;
 						foreach($intraLocationStockTransferVoucher->intra_location_stock_transfer_voucher_rows as $intra_location_stock_transfer_voucher_row):
+						
+						$sendQty+=$intra_location_stock_transfer_voucher_row->quantity;
+						$recQty+=$intra_location_stock_transfer_voucher_row->receive_quantity;
+						
+						
 					?>
 						<tr class="main_tr" class="tab">
 							<td width="10%">
@@ -71,8 +73,26 @@ table.fixed td { overflow: hidden; }
 							</td>
 						</tr>
 					<?php $i++; endforeach; ?>
+					<tr><td colspan="2" align="right"><b>Total</b></td>
+					<td align="right"><b><?php echo $sendQty;?></b></td>
+					<td align="right"><b><?php echo $recQty;?></b></td></tr>
 					</tbody>
 					
+				</table>
+				<table>
+					<tr style="padding-top:5px;">
+					<td width="10%" valign="top"><b>Narration 1 </b></td>
+					<td width="1%" valign="top">:</td>
+					<td colspan="3" width="89%"><?php echo $intraLocationStockTransferVoucher->narration;?></td>
+					
+				  </tr>
+				</table>
+				<table>
+					<tr style="padding-top:5px;">
+					<td width="10%" valign="top"><b>Narration 2</b></td>
+					<td width="1%" valign="top">:</td>
+					<td colspan="3" width="89%"><?php echo $intraLocationStockTransferVoucher->narration_to;?></td>
+				  </tr>
 				</table>
 			</div>
 		</div>

@@ -27,6 +27,7 @@
             echo $this->Form->control('intra_location_stock_transfer_voucher_id', ['options' => $intraLocationStockTransferVouchers]);
             echo $this->Form->control('item_id', ['options' => $items]);
             echo $this->Form->control('quantity');
+			
         ?>
     </fieldset>
     <?= $this->Form->button(__('Submit')) ?>

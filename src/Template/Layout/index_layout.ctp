@@ -45,6 +45,11 @@ License: You must have a valid license purchased only from themeforest(the above
 		.rightAligntextClass{
 			text-align:right !important;
 		}
+		.help-block-error{
+			color: red;
+			font-size: 11px;
+			margin: 0;
+		}
 		</style>
 	</head>
 	<!-- END HEAD -->
@@ -67,7 +72,6 @@ License: You must have a valid license purchased only from themeforest(the above
 				<div class="page-logo" style="padding-left:2px;">
 					<a href="javascript:" style="margin-top: 5px;font-size: 16px;font-weight: bold;color: white;text-decoration: none;line-height: 15px;">
 						<span style="font-size:13px;"><?php echo $coreVariable['company_name']; ?></span> (<span style="font-size:13px;"><?php echo $coreVariable['location_name']; ?>)</span><br/>
-						
 						<span style="font-size:10px;">(<?php echo $coreVariable['fyValidFrom']; ?> to <?php echo $coreVariable['fyValidTo']; ?>)</span>
 					</a>
 					<div class="menu-toggler sidebar-toggler hide">

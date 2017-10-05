@@ -131,6 +131,7 @@ class SecondTampGrnRecordsController extends AppController
 						$barcode->setType('C128');
 						$barcode->setCode($data_to_encode);
 						$barcode->setSize(40,100);
+						$barcode->hideCodeType('N');
 							
 						// Generate filename     
 						$file = 'img/barcode/'.$item->id.'.png';
@@ -215,7 +216,32 @@ class SecondTampGrnRecordsController extends AppController
 			$voucher_no=1;
 			
 		} 
-		$this->set(compact('SecondTampGrnRecords','grn','voucher_no'));
+		$partyParentGroups = $this->SecondTampGrnRecords->Grns->GrnRows->Ledgers->AccountingGroups->find()
+						->where(['AccountingGroups.company_id'=>$company_id, 'AccountingGroups.
+						supplier'=>'1']);
+		$partyGroups=[];
+		
+		foreach($partyParentGroups as $partyParentGroup)
+		{
+			$accountingGroups = $this->SecondTampGrnRecords->Grns->GrnRows->Ledgers->AccountingGroups
+			->find('children', ['for' => $partyParentGroup->id])->toArray();
+			$partyGroups[]=$partyParentGroup->id;
+			foreach($accountingGroups as $accountingGroup){
+				$partyGroups[]=$accountingGroup->id;
+			}
+		}
+		if($partyGroups)
+		{  
+			$Partyledgers = $this->SecondTampGrnRecords->Grns->SupplierLedgers->find()
+							->where(['SupplierLedgers.accounting_group_id IN' =>$partyGroups,'SupplierLedgers.company_id'=>$company_id])
+							->contain(['Suppliers']);
+        }
+		
+		$partyOptions=[];
+		foreach($Partyledgers as $Partyledger){
+			$partyOptions[]=['text' =>$Partyledger->name, 'value' => $Partyledger->id];
+		}
+		$this->set(compact('SecondTampGrnRecords','grn','voucher_no','partyOptions'));
         $this->set('_serialize', ['SecondTampGrnRecords']);
 	}
 
@@ -331,7 +357,7 @@ class SecondTampGrnRecordsController extends AppController
 		$location_id=$this->Auth->User('session_location_id');
 		$SecondTampGrnRecords = $this->SecondTampGrnRecords->find()
 								->where(['user_id'=>$user_id,'company_id'=>$company_id,'processed'=>'no'])
-								->limit(1);
+								->limit(5);
 		if($SecondTampGrnRecords->count()==0){
 			goto Bottom;
 		}
@@ -486,8 +512,9 @@ class SecondTampGrnRecordsController extends AppController
 					$item->item_code=$SecondTampGrnRecord->item_code;
 					$data_to_encode = strtoupper($SecondTampGrnRecord->item_code);
 				}else{
-					$item->item_code=strtoupper(uniqid());
-					$data_to_encode = strtoupper(uniqid());
+					$item_code=strtoupper(uniqid());
+					$item->item_code=$item_code;
+					$data_to_encode = $item_code;
 				}
 				
 				$item->hsn_code=$SecondTampGrnRecord->hsn_code;
@@ -514,6 +541,7 @@ class SecondTampGrnRecordsController extends AppController
 					$barcode->setType('C128');
 					$barcode->setCode($data_to_encode);
 					$barcode->setSize(40,100);
+					$barcode->hideCodeType('N');
 						
 					// Generate filename     
 					$file = 'img/barcode/'.$item->id.'.png';

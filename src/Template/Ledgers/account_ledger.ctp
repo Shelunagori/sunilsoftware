@@ -20,7 +20,7 @@ $this->set('title', 'Account Ledger report');
 							<div class="form-group">
 								<label>Ledgers</label>
 								<?php 
-								echo $this->Form->input('ledger_id', ['options'=>$ledgers,'label' => false,'class' => 'form-control input-sm select2me' ,'value'=>'']); 
+								echo $this->Form->input('ledger_id', ['options'=>$ledgers,'label' => false,'class' => 'form-control input-sm select2me' ,'value'=>$ledger_id]); 
 								?>
 							</div>
 						</div>
@@ -74,7 +74,17 @@ $this->set('title', 'Account Ledger report');
 					<table class="table table-bordered table-hover table-condensed" width="100%">
 						<thead>
 							<tr>
-								<th colspan="3" style="text-align:right";><b>Opening Balance</b></th>
+								<th colspan="3">
+								<span style="float:left";>
+								<?php 
+								foreach($AccountingLedgers as $AccountingLedger)
+									{   
+						            ?>
+							        <?php }?>
+									<?php if(@$AccountingLedger->ledger->name){?>
+		<?php echo 'Account Ledger of '; echo @$id= $AccountingLedger->ledger->name; echo ' '; echo 'Date from '; echo $from_date; echo ' to '; echo $to_date;?>
+<?php }?>		</span>
+								<span style="float:right";><b>Opening Balance</b></span></th>
 								<th style="text-align:right";>
 								<?php
 									if(!empty($openingBalance_debit1))
@@ -113,7 +123,15 @@ $this->set('title', 'Account Ledger report');
 						?>
 							<tr>
 								<td><?php echo date("d-m-Y",strtotime($AccountingLedger->transaction_date)); ?></td>
-								<td><?php echo $voucher_type[$id]; ?></td>
+								<td>
+								<?php if($voucher_type[$id]=='Purchase Vouchers'){?>
+								<?= $this->Html->link(__($voucher_type[$id]), array('controller' => 'PurchaseVouchers', 'action' => 'index', $AccountingLedger->purchase_vouches_id))?>
+								<?php }else if($voucher_type[$id]=='Sales Invoices') {?>
+								<?= $this->Html->link(__($voucher_type[$id]), array('controller' => 'SalesInvoices', 'action' => 'salesInvoiceBill', $AccountingLedger->sales_invoice_id))?>
+								<?php } else{?>
+								<?= $voucher_type[$id] ?>
+								<?php }?>
+								</td>
 								<td class="rightAligntextClass"><?php echo $voucher_no[$id]; ?></td>
 								<td style="text-align:right";>
 								<?php 

@@ -15,7 +15,8 @@ $this->set('title', 'Sales Invoice List');
 			</div>
 			<div class="portlet-body">
 				<div class="table-responsive">
-					<?php $page_no=$this->Paginator->current('salesInvoices'); $page_no=($page_no-1)*20; ?>
+					<?php $page_no=$this->Paginator->current('SalesInvoices');
+					 $page_no=($page_no-1)*20; ?>
 					<table class="table table-bordered table-hover table-condensed">
 						<thead>
 							<tr>
@@ -55,6 +56,7 @@ $this->set('title', 'Sales Invoice List');
 					</ul>
 					<p><?= $this->Paginator->counter(['format' => __('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total')]) ?></p>
 				</div>
+				
 			</div>
 		</div>
 	</div>

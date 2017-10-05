@@ -19,7 +19,7 @@ $this->set('title', 'Approve Stock Transfer');
 						<div class="col-md-3">
 							<div class="form-group">
 								<label>Voucher No :</label>&nbsp;&nbsp;
-								<?= h('#'.str_pad($intraLocationStockTransferVoucher->voucher_no, 4, '0', STR_PAD_LEFT)) ?>
+								<?= h(str_pad($intraLocationStockTransferVoucher->voucher_no, 4, '0', STR_PAD_LEFT)) ?>
 							</div>
 						</div>
 						<div class="col-md-3">
@@ -49,8 +49,8 @@ $this->set('title', 'Approve Stock Transfer');
 									<tr align="center">
 										<td><label>Sr<label></td>
 										<td><label>Item<label></td>
-										<td><label>Send Qty<label></td>
-										<td><label>Receive Qty<label></td>
+										<td><label>Sent Qty<label></td>
+										<td><label>Received Qty<label></td>
 									</tr>
 								</thead>
 								<tbody id='main_tbody' class="tab">
@@ -61,8 +61,9 @@ $this->set('title', 'Approve Stock Transfer');
 								<tr class="main_tr" class="tab">
 									<td width="7%"><?php echo $i+1;?></td>
 									<td width="50%">
-										<?php echo $this->Form->control('item', ['type'=>'text','label' => false,'class' => 'form-control input-sm','required'=>'required','value'=>$intra_location_stock_transfer_voucher_row->item->name,'readonly'=>'readonly']);
-										echo $this->Form->control('intra_location_stock_transfer_voucher_rows.'.$i.'.item_id', ['type'=>'hidden','label' => false,'class' => 'form-control input-sm','required'=>'required','value'=>$intra_location_stock_transfer_voucher_row->item_id,'readonly'=>'readonly']);
+										<?php echo $this->Form->control('item', ['type'=>'text','label' => false,'class' => 'form-control input-sm','required'=>'required','value'=>$intra_location_stock_transfer_voucher_row->item->item_code.' '.$intra_location_stock_transfer_voucher_row->item->name,'readonly'=>'readonly']);
+										echo $this->Form->control('intra_location_stock_transfer_voucher_rows.'.$i.'.item_id', ['type'=>'hidden','required'=>'required','value'=>$intra_location_stock_transfer_voucher_row->item_id,'readonly'=>'readonly']);
+										echo $this->Form->control('intra_location_stock_transfer_voucher_rows.'.$i.'.id', ['value'=>$intra_location_stock_transfer_voucher_row->id,'type'=>'hidden']);
 										?>
 										</td>
 									

@@ -49,7 +49,7 @@ License: You must have a valid license purchased only from themeforest(the above
 	<body class="login">
 		<!-- BEGIN LOGO -->
 		<div class="logo">
-			<span style="font-size:26px;color:#44b6ae;"><b>Sunil Textile ERP</b></span>
+			</br>
 		</div>
 		<!-- END LOGO -->
 		<!-- BEGIN SIDEBAR TOGGLER BUTTON -->
@@ -58,6 +58,11 @@ License: You must have a valid license purchased only from themeforest(the above
 		<!-- END SIDEBAR TOGGLER BUTTON -->
 		<!-- BEGIN LOGIN -->
 		<div class="content">
+			<div align="center">
+				<?= $this->Html->Image('/img/b.jpg',['width'=>'100px;','style'=>'width:100px;']) ?>
+				<?= $this->Html->Image('/img/c.jpg',['width'=>'100px;','style'=>'width:100px;']) ?></br>
+				<span style="font-size:26px;color:#44b6ae;"><b>Sunil Textile ERP</b></span></br></br>
+			</div>
 			<?= $this->fetch('content') ?>
 		</div>
 		<!-- END LOGIN -->

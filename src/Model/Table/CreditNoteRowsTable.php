@@ -42,18 +42,13 @@ class CreditNoteRowsTable extends Table
             'foreignKey' => 'credit_note_id',
             'joinType' => 'INNER'
         ]);
-        $this->belongsTo('Items', [
-            'foreignKey' => 'item_id',
-            'joinType' => 'INNER'
-        ]);
-        $this->belongsTo('GstFigures', [
-            'foreignKey' => 'gst_figure_id',
-            'joinType' => 'INNER'
-        ]);
-		
-		$this->belongsTo('Ledgers', [
+       $this->belongsTo('Ledgers', [
             'foreignKey' => 'ledger_id',
             'joinType' => 'INNER'
+        ]);
+		$this->hasMany('ReferenceDetails', [
+            'foreignKey' => 'credit_note_row_id',
+			'saveStrategy'=>'replace'
         ]);
 		
     }
@@ -70,22 +65,7 @@ class CreditNoteRowsTable extends Table
             ->integer('id')
             ->allowEmpty('id', 'create');
 
-        $validator
-            ->decimal('quantity')
-            ->requirePresence('quantity', 'create')
-            ->notEmpty('quantity');
-
-        $validator
-            ->decimal('rate')
-            ->requirePresence('rate', 'create')
-            ->notEmpty('rate');
-
-        $validator
-            ->decimal('taxable_value')
-            ->requirePresence('taxable_value', 'create')
-            ->notEmpty('taxable_value');
-
-        return $validator;
+		return $validator;
     }
 
     /**
@@ -98,9 +78,7 @@ class CreditNoteRowsTable extends Table
     public function buildRules(RulesChecker $rules)
     {
         $rules->add($rules->existsIn(['credit_note_id'], 'CreditNotes'));
-        $rules->add($rules->existsIn(['item_id'], 'Items'));
-        $rules->add($rules->existsIn(['gst_figure_id'], 'GstFigures'));
-
+		$rules->add($rules->existsIn(['ledger_id'], 'Ledgers'));
         return $rules;
     }
 }

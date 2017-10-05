@@ -23,10 +23,10 @@ class GrnsController extends AppController
 		$this->viewBuilder()->layout('index_layout');
 		$company_id=$this->Auth->User('session_company_id');
         $this->paginate = [
-            'contain' => ['Companies']
+            'contain' => ['Companies','SupplierLedgers']
         ];
         $grns = $this->paginate($this->Grns->find()->where(['Grns.company_id'=>$company_id]));
-
+		
         $this->set(compact('grns'));
         $this->set('_serialize', ['grns']);
     }
@@ -41,6 +41,20 @@ class GrnsController extends AppController
     public function view($id = null)
     {
 		$this->viewBuilder()->layout('index_layout');
+		$company_id=$this->Auth->User('session_company_id');
+        $grn = $this->Grns->get($id, [
+            'contain' => ['Companies','GrnRows'=>['Items']]
+        ]);
+		$supplier_details= $this->Grns->GrnRows->Ledgers->get($grn->supplier_ledger_id);
+		$supplier_ledger=$supplier_details->name;
+		
+		$this->set(compact('grn','supplier_ledger'));
+		$this->set('_serialize', ['grn']);
+    }
+	
+	 public function printBarcode($id = null)
+    {
+		$this->viewBuilder()->layout('');
 		$company_id=$this->Auth->User('session_company_id');
         $grn = $this->Grns->get($id, [
             'contain' => ['Companies', 'GrnRows'=>['Items']]
@@ -132,8 +146,34 @@ class GrnsController extends AppController
 			$voucher_no=1;
 		} 
         //$locations = $this->Grns->Locations->find('list', ['limit' => 200]);
+		 $partyParentGroups = $this->Grns->GrnRows->Ledgers->AccountingGroups->find()
+						->where(['AccountingGroups.company_id'=>$company_id, 'AccountingGroups.
+						supplier'=>'1']);
+		$partyGroups=[];
+		
+		foreach($partyParentGroups as $partyParentGroup)
+		{
+			$accountingGroups = $this->Grns->GrnRows->Ledgers->AccountingGroups
+			->find('children', ['for' => $partyParentGroup->id])->toArray();
+			$partyGroups[]=$partyParentGroup->id;
+			foreach($accountingGroups as $accountingGroup){
+				$partyGroups[]=$accountingGroup->id;
+			}
+		}
+		if($partyGroups)
+		{  
+			$Partyledgers = $this->Grns->SupplierLedgers->find()
+							->where(['SupplierLedgers.accounting_group_id IN' =>$partyGroups,'SupplierLedgers.company_id'=>$company_id])
+							->contain(['Suppliers']);
+        }
+		
+		$partyOptions=[];
+		foreach($Partyledgers as $Partyledger){
+			$partyOptions[]=['text' =>$Partyledger->name, 'value' => $Partyledger->id];
+		}
+		
         $companies = $this->Grns->Companies->find('list');
-        $this->set(compact('grn','companies','voucher_no','itemOptions'));
+        $this->set(compact('grn','companies','voucher_no','itemOptions','partyOptions'));
         $this->set('_serialize', ['grn']);
     }
 
@@ -208,9 +248,34 @@ class GrnsController extends AppController
 		foreach($items as $item){
 			$itemOptions[]=['text' =>$item->item_code.' '.$item->name, 'value' => $item->id ,'gst_figure_id'=>$item->gst_figure_id, 'gst_figure_tax_name'=>@$item->gst_figure->name];
 		}
+		$partyParentGroups = $this->Grns->GrnRows->Ledgers->AccountingGroups->find()
+						->where(['AccountingGroups.company_id'=>$company_id, 'AccountingGroups.
+						supplier'=>'1']);
+		$partyGroups=[];
+		
+		foreach($partyParentGroups as $partyParentGroup)
+		{
+			$accountingGroups = $this->Grns->GrnRows->Ledgers->AccountingGroups
+			->find('children', ['for' => $partyParentGroup->id])->toArray();
+			$partyGroups[]=$partyParentGroup->id;
+			foreach($accountingGroups as $accountingGroup){
+				$partyGroups[]=$accountingGroup->id;
+			}
+		}
+		if($partyGroups)
+		{  
+			$Partyledgers = $this->Grns->SupplierLedgers->find()
+							->where(['SupplierLedgers.accounting_group_id IN' =>$partyGroups,'SupplierLedgers.company_id'=>$company_id])
+							->contain(['Suppliers']);
+        }
+		
+		$partyOptions=[];
+		foreach($Partyledgers as $Partyledger){
+			$partyOptions[]=['text' =>$Partyledger->name, 'value' => $Partyledger->id];
+		}
         //$locations = $this->Grns->Locations->find('list', ['limit' => 200]);
         $companies = $this->Grns->Companies->find('list');
-        $this->set(compact('grn','companies','itemOptions'));
+        $this->set(compact('grn','companies','itemOptions','partyOptions'));
         $this->set('_serialize', ['grn']);
     }
 
@@ -240,9 +305,9 @@ class GrnsController extends AppController
 		$this->viewBuilder()->layout('index_layout');
 		$company_id=$this->Auth->User('session_company_id');
 		$import_csv = $this->Grns->newEntity();
-		$units = $this->Grns->Units->find()->where(['company_id'=>$company_id]);
-		$shades = $this->Grns->Shades->find()->where(['company_id'=>$company_id]);
-		$sizes = $this->Grns->Sizes->find()->where(['company_id'=>$company_id]);
+		$units = $this->Grns->GrnRows->Items->Units->find()->where(['company_id'=>$company_id]);
+		$shades = $this->Grns->GrnRows->Items->Shades->find()->where(['company_id'=>$company_id]);
+		$sizes = $this->Grns->GrnRows->Items->Sizes->find()->where(['company_id'=>$company_id]);
 		$this->set(compact('import_csv','units','shades','sizes'));
         $this->set('_serialize', ['import_csv']);
 	}

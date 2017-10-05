@@ -34,6 +34,13 @@ $this->set('title', 'Create Grn');
 							<?php echo $this->Form->control('reference_no', ['label' => false,'class' => 'form-control input-sm ','placeholder'=>'Reference No.']); ?>
 						</div>	
 					</div>
+					<div class="col-md-3">
+						<div class="form-group">
+							<label>Supplier</label>
+							<?php echo $this->Form->control('supplier_ledger_id',['empty'=>'-Select Supplier-', 'class'=>'form-control input-sm supplier_ledger_id select2me','label'=>false, 'options' => $partyOptions,'required'=>'required']);
+							?>
+						</div>
+					</div>
 				</div>
 				<br>
 			</div>

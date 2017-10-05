@@ -30,6 +30,31 @@ class SalesInvoicesController extends AppController
         $this->set(compact('salesInvoices'));
         $this->set('_serialize', ['salesInvoices']);
     }
+	
+	public function reportFilter()
+    {
+		$this->viewBuilder()->layout('index_layout');
+    }
+	
+	public function report($id=null)
+    {
+	    $from=$this->request->query('from_date');
+		$from_date=date('Y-m-d', strtotime($from));
+
+		$to=$this->request->query('to_date');
+		$to_date=date('Y-m-d', strtotime($to));
+
+		$this->viewBuilder()->layout('index_layout');
+		$company_id=$this->Auth->User('session_company_id');
+		$salesInvoices = $this->SalesInvoices->find()->where(['SalesInvoices.company_id'=>$company_id,'transaction_date >='=>$from_date,'transaction_date <='=>$to_date])
+		->contain(['Companies', 'PartyLedgers'=>['Customers'], 'SalesLedgers', 'SalesInvoiceRows'=>['Items', 'GstFigures']]);
+        
+		//pr($salesInvoices->toArray());
+		//exit;
+		
+		$this->set(compact('salesInvoices', 'from', 'to'));
+        $this->set('_serialize', ['salesInvoices']);
+    }
     /**
      * View method
      *
@@ -147,6 +172,7 @@ class SalesInvoicesController extends AppController
 								])
 						->execute();
 						}
+								
            if($salesInvoice->is_interstate=='0'){
 		   for(@$i=0; $i<2; $i++){
 			   foreach($salesInvoice->sales_invoice_rows as $sales_invoice_row)
@@ -198,6 +224,8 @@ class SalesInvoicesController extends AppController
 		   }
 		    $this->Flash->success(__('The sales invoice has been saved.'));
             return $this->redirect(['action' => 'salesInvoiceBill/'.$salesInvoice->id]);
+			 return $this->redirect(['action' => 'salesInvoiceBill1/'.$salesInvoice->id]);
+			  return $this->redirect(['action' => 'salesInvoiceBill2/'.$salesInvoice->id]);
 		 }
 		 $this->Flash->error(__('The sales invoice could not be saved. Please, try again.'));
 		}
@@ -235,8 +263,9 @@ class SalesInvoicesController extends AppController
         }
 		$partyOptions=[];
 		foreach($Partyledgers as $Partyledger){
-			$partyOptions[]=['text' =>$Partyledger->name, 'value' => $Partyledger->id ,'party_state_id'=>@$Partyledger->customer->state_id];
+			$partyOptions[]=['text' =>str_pad(@$Partyledger->customer->customer_id, 4, '0', STR_PAD_LEFT).' - '.$Partyledger->name, 'value' => $Partyledger->id ,'party_state_id'=>@$Partyledger->customer->state_id];
 		}
+		
 		$accountLedgers = $this->SalesInvoices->SalesInvoiceRows->Ledgers->AccountingGroups->find()->where(['AccountingGroups.sale_invoice_sales_account'=>1,'AccountingGroups.company_id'=>$company_id])->first();
 
 		$accountingGroups2 = $this->SalesInvoices->SalesInvoiceRows->Ledgers->AccountingGroups
@@ -474,7 +503,7 @@ public function edit($id = null)
         }
 		$partyOptions=[];
 		foreach($Partyledgers as $Partyledger){
-			$partyOptions[]=['text' =>$Partyledger->name, 'value' => $Partyledger->id ,'party_state_id'=>@$Partyledger->customer->state_id];
+			$partyOptions[]=['text' =>str_pad(@$Partyledger->customer->customer_id, 4, '0', STR_PAD_LEFT).' - '.$Partyledger->name, 'value' => $Partyledger->id ,'party_state_id'=>@$Partyledger->customer->state_id];
 		}
 		
 		$accountLedgers = $this->SalesInvoices->SalesInvoiceRows->Ledgers->AccountingGroups->find()->where(['AccountingGroups.sale_invoice_sales_account'=>1,'AccountingGroups.company_id'=>$company_id])->first();
@@ -503,7 +532,7 @@ public function edit($id = null)
 	
 public function salesInvoiceBill($id=null)
     {
-		$this->viewBuilder()->layout('index_layout');
+		
 	    $this->viewBuilder()->layout('');
 		$company_id=$this->Auth->User('session_company_id');
 		$stateDetails=$this->Auth->User('session_company');
@@ -526,7 +555,7 @@ public function salesInvoiceBill($id=null)
 			{
 				$partyDetails= $this->SalesInvoices->Customers->find()
 				->where(['Customers.id'=>$partyCustomerid])
-				->contain(['States'])->first();
+				->contain(['States', 'Cities'])->first();
 				$data->partyDetails=$partyDetails;
 			}
 			else
@@ -534,6 +563,7 @@ public function salesInvoiceBill($id=null)
 				$partyDetails=(object)['name'=>'Cash Customer', 'state_id'=>$state_id];
 				$data->partyDetails=$partyDetails;
 			}
+			
 			if(@$data->company->state_id==$data->partyDetails->state_id){
 				$taxable_type='CGST/SGST';
 			}else{
@@ -567,9 +597,155 @@ public function salesInvoiceBill($id=null)
 		->contain(['GstFigures']);
         $sale_invoice_rows = ($query);
 		
+		//pr($invoiceBills->toArray());exit;
+		
 		$this->set(compact('invoiceBills','taxable_type','sale_invoice_rows','partyCustomerid'));
         $this->set('_serialize', ['invoiceBills']);
     }	
+	public function salesInvoiceBill1($id=null)
+    {
+		
+	    $this->viewBuilder()->layout('');
+		$company_id=$this->Auth->User('session_company_id');
+		$stateDetails=$this->Auth->User('session_company');
+		$state_id=$stateDetails->state_id;
+		$invoiceBills= $this->SalesInvoices->find()
+		->where(['SalesInvoices.id'=>$id])
+		->contain(['Companies'=>['States'],'SalesInvoiceRows'=>['Items'=>['Sizes'], 'GstFigures']]);
+	
+	    foreach($invoiceBills->toArray() as $data){
+		foreach($data->sales_invoice_rows as $sales_invoice_row){
+		$item_id=$sales_invoice_row->item_id;
+		$accountingEntries= $this->SalesInvoices->AccountingEntries->find()
+		->where(['AccountingEntries.sales_invoice_id'=>$data->id]);
+		$sales_invoice_row->accountEntries=$accountingEntries->toArray();
+		
+			$partyDetail= $this->SalesInvoices->SalesInvoiceRows->Ledgers->find()
+			->where(['id'=>$data->party_ledger_id])->first();
+		    $partyCustomerid=$partyDetail->customer_id;
+			if($partyCustomerid>0)
+			{
+				$partyDetails= $this->SalesInvoices->Customers->find()
+				->where(['Customers.id'=>$partyCustomerid])
+				->contain(['States', 'Cities'])->first();
+				$data->partyDetails=$partyDetails;
+			}
+			else
+			{
+				$partyDetails=(object)['name'=>'Cash Customer', 'state_id'=>$state_id];
+				$data->partyDetails=$partyDetails;
+			}
+			
+			if(@$data->company->state_id==$data->partyDetails->state_id){
+				$taxable_type='CGST/SGST';
+			}else{
+				$taxable_type='IGST';
+			}
+			
+		}
+		}
+		//pr($id);exit;
+		$query = $this->SalesInvoices->SalesInvoiceRows->find();
+		
+		$totalTaxableAmt = $query->newExpr()
+			->addCase(
+				$query->newExpr()->add(['sales_invoice_id']),
+				$query->newExpr()->add(['taxable_value']),
+				'integer'
+			);
+		$totalgstAmt = $query->newExpr()
+			->addCase(
+				$query->newExpr()->add(['sales_invoice_id']),
+				$query->newExpr()->add(['gst_value']),
+				'integer'
+			);
+		$query->select([
+			'total_taxable_amount' => $query->func()->sum($totalTaxableAmt),
+			'total_gst_amount' => $query->func()->sum($totalgstAmt),'sales_invoice_id','item_id'
+		])
+		->where(['SalesInvoiceRows.sales_invoice_id' => $id])
+		->group('gst_figure_id')
+		->autoFields(true)
+		->contain(['GstFigures']);
+        $sale_invoice_rows = ($query);
+		
+		//pr($invoiceBills->toArray());exit;
+		
+		$this->set(compact('invoiceBills','taxable_type','sale_invoice_rows','partyCustomerid'));
+        $this->set('_serialize', ['invoiceBills']);
+    }
+	public function salesInvoiceBill2($id=null)
+    {
+		
+	    $this->viewBuilder()->layout('');
+		$company_id=$this->Auth->User('session_company_id');
+		$stateDetails=$this->Auth->User('session_company');
+		$state_id=$stateDetails->state_id;
+		$invoiceBills= $this->SalesInvoices->find()
+		->where(['SalesInvoices.id'=>$id])
+		->contain(['Companies'=>['States'],'SalesInvoiceRows'=>['Items'=>['Sizes'], 'GstFigures']]);
+	
+	    foreach($invoiceBills->toArray() as $data){
+		foreach($data->sales_invoice_rows as $sales_invoice_row){
+		$item_id=$sales_invoice_row->item_id;
+		$accountingEntries= $this->SalesInvoices->AccountingEntries->find()
+		->where(['AccountingEntries.sales_invoice_id'=>$data->id]);
+		$sales_invoice_row->accountEntries=$accountingEntries->toArray();
+		
+			$partyDetail= $this->SalesInvoices->SalesInvoiceRows->Ledgers->find()
+			->where(['id'=>$data->party_ledger_id])->first();
+		    $partyCustomerid=$partyDetail->customer_id;
+			if($partyCustomerid>0)
+			{
+				$partyDetails= $this->SalesInvoices->Customers->find()
+				->where(['Customers.id'=>$partyCustomerid])
+				->contain(['States', 'Cities'])->first();
+				$data->partyDetails=$partyDetails;
+			}
+			else
+			{
+				$partyDetails=(object)['name'=>'Cash Customer', 'state_id'=>$state_id];
+				$data->partyDetails=$partyDetails;
+			}
+			
+			if(@$data->company->state_id==$data->partyDetails->state_id){
+				$taxable_type='CGST/SGST';
+			}else{
+				$taxable_type='IGST';
+			}
+			
+		}
+		}
+		//pr($id);exit;
+		$query = $this->SalesInvoices->SalesInvoiceRows->find();
+		
+		$totalTaxableAmt = $query->newExpr()
+			->addCase(
+				$query->newExpr()->add(['sales_invoice_id']),
+				$query->newExpr()->add(['taxable_value']),
+				'integer'
+			);
+		$totalgstAmt = $query->newExpr()
+			->addCase(
+				$query->newExpr()->add(['sales_invoice_id']),
+				$query->newExpr()->add(['gst_value']),
+				'integer'
+			);
+		$query->select([
+			'total_taxable_amount' => $query->func()->sum($totalTaxableAmt),
+			'total_gst_amount' => $query->func()->sum($totalgstAmt),'sales_invoice_id','item_id'
+		])
+		->where(['SalesInvoiceRows.sales_invoice_id' => $id])
+		->group('gst_figure_id')
+		->autoFields(true)
+		->contain(['GstFigures']);
+        $sale_invoice_rows = ($query);
+		
+		//pr($invoiceBills->toArray());exit;
+		
+		$this->set(compact('invoiceBills','taxable_type','sale_invoice_rows','partyCustomerid'));
+        $this->set('_serialize', ['invoiceBills']);
+    }
 	
 	public function ajaxItemQuantity($itemId=null)
     {
@@ -640,6 +816,7 @@ public function salesInvoiceBill($id=null)
 		  }
 		  exit;
 }	
+
 
     /**
      * Edit method

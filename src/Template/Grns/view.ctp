@@ -19,11 +19,14 @@ $this->set('title', 'View');
 					<div class="col-md-3">
 						<label>Voucher No :<?php echo '#'.str_pad($grn->voucher_no, 4, '0', STR_PAD_LEFT); ?></label>
 					</div>
-					<div class="col-md-4 form-group">
+					<div class="col-md-3 form-group">
 						<label>Transaction Date: <?php echo $grn->transaction_date; ?></label>
 					</div>
 					<div class="col-md-3 form-group">
 						<label>Reference No.: <?php echo $grn->reference_no; ?></label>
+					</div>
+					<div class="col-md-3 form-group">
+						<label>Supplier.: <?php echo $supplier_ledger; ?></label>
 					</div>
 				</div>
 				<br>
@@ -40,7 +43,13 @@ $this->set('title', 'View');
 								</tr>
 							</thead>
 							<tbody id='main_tbody' class="tab">
-								<?php foreach ($grn->grn_rows as $grnRows): ?>
+								<?php
+								$total_qty=0; $total_purchase_rate=0; $total_sales_rate=0;
+								foreach ($grn->grn_rows as $grnRows): 
+								$total_qty+=$grnRows->quantity;
+								$total_purchase_rate+=$grnRows->purchase_rate;
+								$total_sales_rate+=$grnRows->sale_rate;
+								?>
 								<tr class="main_tr" class="tab">
 									<td><?= h($grnRows->item->name) ?></td>
 									<td class="rightAligntextClass"><?= h($grnRows->quantity) ?></td>
@@ -49,11 +58,12 @@ $this->set('title', 'View');
 								</tr>
 								<?php endforeach; ?>
 							</tbody>
-							<!--<tfoot>
-								<td class="rightAligntextClass" colspan="2" ><b>Total</b></td>
-								<td class="rightAligntextClass"><b><?php echo $grn->total_purchase; ?></b></td>
-								<td class="rightAligntextClass"><b><?php echo $grn->total_sale; ?></b></td>
-							</tfoot>-->
+							<tfoot>
+								<td class="rightAligntextClass" ><b>Total</b></td>
+								<td class="rightAligntextClass"><b><?php echo $total_qty; ?></b></td>
+								<td class="rightAligntextClass"><b><?php echo $total_purchase_rate; ?></b></td>
+								<td class="rightAligntextClass"><b><?php echo $total_sales_rate; ?></b></td>
+							</tfoot>
 						</table>
 						<?php endif; ?>
 					</div>

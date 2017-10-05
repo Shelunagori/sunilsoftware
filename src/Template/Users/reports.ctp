@@ -17,13 +17,20 @@ $this->set('title', 'Report Setup');
 				<div class="row">
 					<div class="col-md-6">
 						<div class="list-group">
-							<?php echo $this->Html->link($this->Html->tag('i', '', ['class' => '']).'Trail Balance', '/Ledgers/trial_balance',['escape' => false, 'class'=>'list-group-item']); ?>
+							<?php echo $this->Html->link('Trail Balance', '/Ledgers/trial_balance',['escape' => false, 'class'=>'list-group-item']); ?>
 							</div>
 					</div>
 					<div class="col-md-6">
 						<div class="list-group">
-							<?php echo $this->Html->link($this->Html->tag('i', '', ['class' => '']).'Account Ledger', '/Ledgers/accountLedger',['escape' => false, 'class'=>'list-group-item']); ?>
+							<?php echo $this->Html->link('Account Ledger', '/Ledgers/accountLedger',['escape' => false, 'class'=>'list-group-item']); ?>
 						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-6">
+						<div class="list-group">
+							<?php echo $this->Html->link('Sales Report', '/SalesInvoices/reportFilter',['escape' => false, 'class'=>'list-group-item']); ?>
+							</div>
 					</div>
 				</div>
 			</div>

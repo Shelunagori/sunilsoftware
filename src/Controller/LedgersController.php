@@ -375,8 +375,7 @@ class LedgersController extends AppController
 		}
 		if(!empty($ledger_id) || !empty($from_date) || !empty($to_date))
 		$AccountingLedgers = $this->Ledgers->AccountingEntries->find()->where($where)->contain(['Ledgers','SalesInvoices','SaleReturns'])->order(['AccountingEntries.transaction_date'=>'ASC']);
-	//pr($where); exit;
-	//pr($AccountingLedgers->toArray()); exit;
+
 		if(!empty($AccountingLedgers))
 		{ 
 	
@@ -457,7 +456,6 @@ class LedgersController extends AppController
 			if($total_credit1 < $total_debit1)
 			{ 
 				$openingBalance_debit1 = $total_debit1-$total_credit1; 
-				
 			}
 			$closingBalance_credit1 = @$openingBalance_credit1+@$openingBalance_credit;
 			$closingBalance_debit1  = @$openingBalance_debit1+@$openingBalance_debit;
@@ -465,7 +463,23 @@ class LedgersController extends AppController
 		}
 		//pr($AccountingLedgers->toArray());exit;
 		$ledgers = $this->Ledgers->find('list')->where(['company_id'=>$company_id]);
-		$this->set(compact('accountLedger','ledgers','openingBalance_debit1','closingBalance_debit1','openingBalance_credit1','closingBalance_credit1','AccountingLedgers','from_date','to_date','voucher_type','voucher_no'));
+		$this->set(compact('accountLedger','ledgers','openingBalance_debit1','closingBalance_debit1','openingBalance_credit1','closingBalance_credit1','AccountingLedgers','from_date','to_date','voucher_type','voucher_no','ledger_id'));
         $this->set('_serialize', ['ledger']);
+    }
+	public function dayBook($id = null)
+    {
+		$this->viewBuilder()->layout('index_layout');
+		$currentDate=date('Y-m-d');
+		@$salesLedgers=$this->Ledgers->AccountingEntries->SalesInvoices->find()
+		->where(['SalesInvoices.transaction_date'=>$currentDate])
+		->contain(['AccountingEntries'])
+		->order(['id'=>'DESC']);
+		foreach($salesLedgers->toArray() as $data)
+		{
+		$data->voucher_type='Purchase Vouchers';
+		}
+		
+		$this->set(compact('salesLedgers'));
+        $this->set('_serialize', ['salesLedgers']);
     }
 }
