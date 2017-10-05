@@ -5,7 +5,8 @@ use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
-
+use Cake\Event\Event;
+use ArrayObject;
 /**
  * PaymentRows Model
  *
@@ -67,6 +68,10 @@ class PaymentRowsTable extends Table
 		return $validator;
     }
 
+	public function beforeMarshal(Event $event, ArrayObject $data)
+    {
+        @$data['cheque_date'] = trim(date('Y-m-d',strtotime(@$data['cheque_date'])));
+    }
     /**
      * Returns a rules checker object that will be used for validating
      * application integrity.

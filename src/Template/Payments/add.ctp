@@ -278,6 +278,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
                 },
 
                 submitHandler: function (form) {
+
 					var totalMainDr  = parseFloat($('#totalMainDr').val());
 					var totalBankCash = parseFloat($('#totalBankCash').val());
 					if(!totalMainDr || totalMainDr==0){
@@ -294,19 +295,20 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 						error1.hide();
 						form1[0].submit();
 					}
+
                 }
 			});
 			
 			$('.delete-tr').die().live('click',function() 
 			{	
 				$(this).closest('tr.MainTr').remove();
-				rename_rows();
+				renameMainRows();
 			});
 			
 			$('.delete-tr-ref').die().live('click',function() 
 			{	var SelectedTr=$(this).closest('tr.MainTr');
 				$(this).closest('tr').remove();
-				rename_rows();
+				renameMainRows();
 				renameRefRows(SelectedTr);
 			});
 			

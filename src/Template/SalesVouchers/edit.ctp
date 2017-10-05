@@ -73,8 +73,17 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 									<tr class="MainTr" row_no="<?php echo $i;?>">
 										<td width="10%">
 											<?php 
+											if($i==0)
+											{
+												echo $this->Form->input('sales_voucher_rows.'.$i.'.cr_dr', ['input'=>'text','label' => false,'class' => 'form-control input-sm cr_dr','required'=>'required','value'=>'Dr','readonly'=>'readonly']); 
+											}
+											else if($i==1)
+											{
+												echo $this->Form->input('sales_voucher_rows.'.$i.'.cr_dr', ['input'=>'text','label' => false,'class' => 'form-control input-sm cr_dr','required'=>'required','value'=>'Cr','readonly'=>'readonly']);
+											}
+											else{
 											echo $this->Form->input('sales_voucher_rows.'.$i.'.cr_dr', ['options'=>['Dr'=>'Dr','Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm cr_dr','required'=>'required','value'=>$sales_voucher_row->cr_dr]); 
-											
+											}
 											echo $this->Form->input('sales_voucher_rows.'.$i.'.id',['value'=>$sales_voucher_row->id]);
 											?>
 											
@@ -205,7 +214,12 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 										<?php } ?>
 										</td>
 										<td align="center"  width="10%">
+										<?php 
+											if($i>1)
+											{
+										?>
 											<a class="btn btn-danger delete-tr btn-xs" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
+										<?php } ?>
 										</td>
 									</tr>
 								<?php $i++; } } ?>
@@ -215,8 +229,8 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 										<td colspan="3" >	
 											<button type="button" class="AddMainRow btn btn-default input-sm"><i class="fa fa-plus"></i> Add row</button>
 										</td>
-										<td><input type="text" class="form-control input-sm rightAligntextClass noBorder" ></td>
-										<td><input type="text" class="form-control input-sm rightAligntextClass noBorder" ></td>
+										<td><input type="text" class="form-control input-sm rightAligntextClass noBorder"  id="totalMainDr" name="totalMainDr"></td>
+										<td><input type="text" class="form-control input-sm rightAligntextClass noBorder"  id="totalMainCr" name="totalMainCr"></td>
 									</tr>
 								</tfoot>
 							</table>
@@ -252,7 +266,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				<?php echo $this->Form->input('ref_name', ['type'=>'text','label' => false,'class' => 'form-control input-sm ref_name','placeholder'=>'Reference Name','required'=>'required']); ?>
 			</td>
 			
-			<td width="20%" style="padding-right:0px;">
+			<td width="20%" style="padding-left:0px; vertical-align: top !important;">
 				<?php echo $this->Form->input('amount', ['label' => false,'class' => 'form-control input-sm calculation rightAligntextClass','placeholder'=>'Amount','required'=>'required']); ?>
 			</td>
 			<td width="10%" style="padding-left:0px;">
@@ -397,7 +411,14 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
                 focusInvalid: false,
                 ignore: '', 
 				rules: {
-					
+					totalMainCr: {
+						equalTo: '#totalMainDr'
+					},
+				},
+				messages: {
+					totalMainCr: {
+						equalTo: 'Total debit and credit not matched !'
+					},
 				},
 
 				invalidHandler: function (event, validator) { //display error alert on form submit              
@@ -422,6 +443,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
                 },
 
                 submitHandler: function (form) {
+					alert('Are you sure you want to submit.');
                     success1.show();
                     error1.hide();
                     form1[0].submit();
@@ -506,7 +528,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 					var SelectedTr=$(this).closest('tr.MainTr');
 					var windowContainer=$(this).closest('td').find('div.window');
 					windowContainer.html('');
-					windowContainer.html('<table width=90%><tbody></tbody><tfoot><td colspan=2></td><td>$total_input</td><td>$total_type</td></tfoot></table><a role=button class=addRefRow>Add Row</a>');
+					windowContainer.html('<table width=90%><tbody></tbody><tfoot><tr style=border-top:double#a5a1a1><td colspan=2></td><td style=padding-right:0px;vertical-align: top !important;>$total_input</td><td style=padding-right:0px;vertical-align: top !important;>$total_type</td></tr></tfoot></table><a role=button class=addRefRow>Add Row</a>');
 					AddRefRow(SelectedTr);
 				}
 				else if(openWindow=='bank'){
