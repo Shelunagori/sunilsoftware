@@ -453,7 +453,6 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			
 			function AddBankRow(SelectedTr){
 				var bankTr=$('#sampleForBank tbody tr').clone();
-				//console.log(bankTr);
 				SelectedTr.find('td:nth-child(2) div.window table tbody').append(bankTr);
 				renameBankRows(SelectedTr);
 			}
