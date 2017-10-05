@@ -275,6 +275,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
                 },
 
                 submitHandler: function (form) {
+					
                     success1.show();
                     error1.hide();
                     form1[0].submit();
