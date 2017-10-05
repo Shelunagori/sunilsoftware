@@ -53,11 +53,12 @@ $this->set('title', 'Payment Voucher');
 								</tbody>
 								<tfoot>
 									<tr style="border-top:double;">
-										<td colspan="2" >	
+										<td colspan="2" valign="top" >	
 											<button type="button" class="AddMainRow btn btn-default input-sm"><i class="fa fa-plus"></i> Add row</button>
+											<input type="hidden" id="totalBankCash">
 										</td>
-										<td><input type="text" class="form-control input-sm rightAligntextClass noBorder" name="totalMainDr" id="totalMainDr"></td>
-										<td><input type="text" class="form-control input-sm rightAligntextClass noBorder" name="totalMainCr" id="totalMainCr"></td>
+										<td valign="top"><input type="text" class="form-control input-sm rightAligntextClass noBorder" name="totalMainDr" id="totalMainDr"></td>
+										<td valign="top"><input type="text" class="form-control input-sm rightAligntextClass noBorder" name="totalMainCr" id="totalMainCr"></td>
 										<td></td>
 									</tr>
 								</tfoot>
@@ -122,15 +123,15 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 <table id="sampleForBank" style="display:none;" width="100%">
 	<tbody>
 		<tr>
-			<td width="30%">
+			<td width="30%" valign="top">
 				<?php 
 				echo $this->Form->input('mode_of_payment', ['options'=>$option_mode,'label' => false,'class' => 'form-control input-sm paymentType','required'=>'required']); ?>
 			</td>
-			<td width="30%">
+			<td width="30%" valign="top">
 				<?php echo $this->Form->input('cheque_no', ['label' =>false,'class' => 'form-control input-sm cheque_no','placeholder'=>'Cheque No']); ?> 
 			</td>
 			
-			<td width="30%">
+			<td width="30%" valign="top">
 				<?php echo $this->Form->input('cheque_date', ['label' =>false,'class' => 'form-control input-sm date-picker cheque_date ','data-date-format'=>'dd-mm-yyyy','placeholder'=>'Cheque Date']); ?>
 			</td>
 			
@@ -142,21 +143,21 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 <table id="sampleMainTable" style="display:none;" width="100%">
 	<tbody class="sampleMainTbody">
 		<tr class="MainTr">
-			<td width="10%">
+			<td width="10%" valign="top">
 				<?php 
 				echo $this->Form->input('cr_dr', ['options'=>['Dr'=>'Dr','Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm cr_dr','required'=>'required','value'=>'Dr']); ?>
 			</td>
-			<td width="65%">
+			<td width="65%" valign="top">
 				<?php echo $this->Form->input('ledger_id', ['empty'=>'--Select--','options'=>@$ledgerOptions,'label' => false,'class' => 'form-control input-sm ledger','required'=>'required']); ?>
 				<div class="window" style="margin:auto;"></div>
 			</td>
-			<td width="10%">
-				<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm  debitBox rightAligntextClass','placeholder'=>'Debit']); ?>
+			<td width="10%" valign="top">
+				<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm  debitBox rightAligntextClass calculate_total','placeholder'=>'Debit']); ?>
 			</td>
-			<td width="10%">
-				<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm creditBox rightAligntextClass','placeholder'=>'Credit','style'=>'display:none;']); ?>	
+			<td width="10%" valign="top">
+				<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm creditBox rightAligntextClass calculate_total','placeholder'=>'Credit','style'=>'display:none;']); ?>	
 			</td>
-			<td align="center"  width="10%">
+			<td align="center"  width="10%" valign="top">
 				<a class="btn btn-danger delete-tr btn-xs" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
 			</td>
 		</tr>
@@ -170,6 +171,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 		</tr>
 	</tfoot>
 </table>
+
 
 
 		
@@ -194,7 +196,8 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 	<!-- BEGIN VALIDATEION -->
 	<?php echo $this->Html->script('/assets/global/plugins/jquery-validation/js/jquery.validate.min.js', ['block' => 'PAGE_LEVEL_PLUGINS_JS']); ?>
 	<!-- END VALIDATEION -->
-	
+
+<!-- BEGIN PAGE LEVEL PLUGINS -->
 	<!-- BEGIN COMPONENTS PICKERS -->
 	<?php echo $this->Html->script('/assets/global/plugins/bootstrap-datepicker/js/bootstrap-datepicker.js', ['block' => 'PAGE_LEVEL_PLUGINS_JS']); ?>
 	<?php echo $this->Html->script('/assets/global/plugins/bootstrap-timepicker/js/bootstrap-timepicker.min.js', ['block' => 'PAGE_LEVEL_PLUGINS_JS']); ?>
@@ -275,9 +278,22 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
                 },
 
                 submitHandler: function (form) {
-                    success1.show();
-                    error1.hide();
-                    form1[0].submit();
+					var totalMainDr  = parseFloat($('#totalMainDr').val());
+					var totalBankCash = parseFloat($('#totalBankCash').val());
+					if(!totalMainDr || totalMainDr==0){
+						alert('Error: zero amount payment can not be generated.');
+						return false;
+					}
+					else if(totalBankCash<=0){
+						alert('Error: No Bank or Cash Credited.');
+						return false;
+					}
+					else{
+						alert('Are you sure you want to submit.');
+						success1.show();
+						error1.hide();
+						form1[0].submit();
+					}
                 }
 			});
 			
@@ -288,9 +304,10 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			});
 			
 			$('.delete-tr-ref').die().live('click',function() 
-			{	
+			{	var SelectedTr=$(this).closest('tr.MainTr');
 				$(this).closest('tr').remove();
 				rename_rows();
+				renameRefRows(SelectedTr);
 			});
 			
 			$('.paymentType').die().live('change',function(){
@@ -337,21 +354,25 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			
 			$('.cr_dr').die().live('change',function(){
 				var cr_dr=$(this).val();
+				
 				if(cr_dr=='Cr'){
+					$(this).closest('tr').find('.debitBox').val('');
 					$(this).closest('tr').find('.debitBox').hide();
 					$(this).closest('tr').find('.creditBox').show();
 				}else{
+					$(this).closest('tr').find('.creditBox').val('');
 					$(this).closest('tr').find('.debitBox').show();
 					$(this).closest('tr').find('.creditBox').hide();
 				}
 				renameMainRows();
 				
 				var SelectedTr=$(this).closest('tr.MainTr');
-					renameRefRows(SelectedTr);
+				renameRefRows(SelectedTr);
 			});
 			
 			$('.ledger').die().live('change',function(){
 				var openWindow=$(this).find('option:selected').attr('open_window');
+				
 				if(openWindow=='party'){
 					var SelectedTr=$(this).closest('tr.MainTr');
 					var windowContainer=$(this).closest('td').find('div.window');
@@ -384,10 +405,11 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			}
 			
 			function renameMainRows(){
-				var i=0; var main_debit=0; main_credit=0;
+				var i=0; var main_debit=0; var main_credit=0; var count_bank_cash=0;
 				$('#MainTable tbody#MainTbody tr.MainTr').each(function(){
 					$(this).attr('row_no',i);
 					var cr_dr=$(this).find('td:nth-child(1) select.cr_dr option:selected').val()
+					var is_cash_bank=$(this).find('td:nth-child(2) option:selected').attr('bank_and_cash');
 					$(this).find('td:nth-child(1) select.cr_dr').attr({name:'payment_rows['+i+'][cr_dr]',id:'payment_rows-'+i+'-cr_dr'});
 					$(this).find('td:nth-child(2) select.ledger').attr({name:'payment_rows['+i+'][ledger_id]',id:'payment_rows-'+i+'-ledger_id'}).select2();
 					$(this).find('td:nth-child(3) input.debitBox').attr({name:'payment_rows['+i+'][debit]',id:'payment_rows-'+i+'-debit'});
@@ -411,11 +433,15 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 							credit_amt=0;
 						}
 						main_credit=main_credit+credit_amt;
+						if(is_cash_bank=='yes'){
+						 count_bank_cash++;
+						}
 					}
 					i++;
 				});
 				$('#MainTable tfoot tr td:nth-child(2) input#totalMainDr').val(main_debit);
 				$('#MainTable tfoot tr td:nth-child(3) input#totalMainCr').val(main_credit);
+				$('#MainTable tfoot tr td:nth-child(1) input#totalBankCash').val(count_bank_cash);
 			}
 			
 			$('.addBankRow').die().live('click',function(){
@@ -466,6 +492,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				SelectedTr.find('input.ledgerIdContainer').val(ledger_id);
 				SelectedTr.find('input.companyIdContainer').val(".$company_id.");
 				var row_no=SelectedTr.attr('row_no');
+				if(SelectedTr.find('td:nth-child(2) div.window table tbody tr').length>0){
 				SelectedTr.find('td:nth-child(2) div.window table tbody tr').each(function(){
 					$(this).find('td:nth-child(1) input.companyIdContainer').attr({name:'payment_rows['+row_no+'][reference_details]['+i+'][company_id]',id:'payment_rows-'+row_no+'-reference_details-'+i+'-company_id'});
 					$(this).find('td:nth-child(1) input.ledgerIdContainer').attr({name:'payment_rows['+row_no+'][reference_details]['+i+'][ledger_id]',id:'payment_rows-'+row_no+'-reference_details-'+i+'-ledger_id'});
@@ -493,8 +520,13 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 								equalTo: 'Enter bill wise details upto '+mainAmt+' '+cr_dr
 							}
 						});
-				
+				}
 			}
+			
+			$('.calculate_total').die().live('blur',function()
+			{ 
+				 renameMainRows();
+			});
 			
 			$('.calculation').die().live('blur',function()
 			{ 
@@ -531,12 +563,9 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				renameRefRows(SelectedTr);
 			});
 			
-
-			
-			
+			ComponentsPickers.init();	
 		});
 	";
 ?>
 <?php echo $this->Html->scriptBlock($js, array('block' => 'scriptBottom'));  ?>
-
 
