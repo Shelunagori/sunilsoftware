@@ -80,9 +80,12 @@ class ReceiptsController extends AppController
 			$voucher_no=1;
 		}
 		
+		//bank group
 		$bankParentGroups = $this->Receipts->ReceiptRows->Ledgers->AccountingGroups->find()
 						->where(['AccountingGroups.company_id'=>$company_id, 'AccountingGroups.bank'=>'1']);
+						
 		$bankGroups=[];
+		
 		foreach($bankParentGroups as $bankParentGroup)
 		{
 			$accountingGroups = $this->Receipts->ReceiptRows->Ledgers->AccountingGroups
@@ -92,17 +95,54 @@ class ReceiptsController extends AppController
 				$bankGroups[]=$accountingGroup->id;
 			}
 		}
+		
+		//cash-in-hand group
+		$cashParentGroups = $this->Receipts->ReceiptRows->Ledgers->AccountingGroups->find()
+						->where(['AccountingGroups.company_id'=>$company_id, 'AccountingGroups.cash'=>'1']);
+						
+		$cashGroups=[];
+		
+		foreach($cashParentGroups as $cashParentGroup)
+		{
+			$cashChildGroups = $this->Receipts->ReceiptRows->Ledgers->AccountingGroups
+			->find('children', ['for' => $cashParentGroup->id])->toArray();
+			$cashGroups[]=$cashParentGroup->id;
+			foreach($cashChildGroups as $cashChildGroup){
+				$cashGroups[]=$cashChildGroup->id;
+			}
+		}
+		
+		$partyParentGroups = $this->Receipts->ReceiptRows->Ledgers->AccountingGroups->find()
+							->where(['AccountingGroups.company_id'=>$company_id, 'AccountingGroups.payment_ledger'=>1]);
 
-		$ledgers = $this->Receipts->ReceiptRows->Ledgers->find()->where(['company_id'=>$company_id]);
-		foreach($ledgers as $ledger){
+		$partyGroups=[];
+		
+		foreach($partyParentGroups as $partyParentGroup)
+		{
+			
+			$partyChildGroups = $this->Receipts->ReceiptRows->Ledgers->AccountingGroups->find('children', ['for' => $partyParentGroup->id]);
+			$partyGroups[]=$partyParentGroup->id;
+			foreach($partyChildGroups as $partyChildGroup){
+				$partyGroups[]=$partyChildGroup->id;
+			}
+		}
+	
+		$partyLedgers = $this->Receipts->ReceiptRows->Ledgers->find()
+		->where(['Ledgers.accounting_group_id IN' =>$partyGroups,'Ledgers.company_id'=>$company_id]);
+		
+		//$ledgers = $this->Payments->PaymentRows->Ledgers->find()->where(['company_id'=>$company_id]);
+		foreach($partyLedgers as $ledger){
 			if(in_array($ledger->accounting_group_id,$bankGroups)){
-				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id ,'open_window' => 'bank'];
+				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id ,'open_window' => 'bank','bank_and_cash' => 'yes'];
 			}
 			else if($ledger->bill_to_bill_accounting == 'yes'){
-				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id,'open_window' => 'party' ];
+				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id,'open_window' => 'party','bank_and_cash' => 'no'];
+			}
+			else if(in_array($ledger->accounting_group_id,$cashGroups)){
+				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id ,'open_window' => 'no','bank_and_cash' => 'yes'];
 			}
 			else{
-				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id,'open_window' => 'no' ];
+				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id,'open_window' => 'no','bank_and_cash' => 'no' ];
 			}
 		}
 		$referenceDetails=$this->Receipts->ReceiptRows->ReferenceDetails->find('list');
@@ -154,9 +194,12 @@ class ReceiptsController extends AppController
 			$voucher_no=1;
 		}
 		
+		//bank group
 		$bankParentGroups = $this->Receipts->ReceiptRows->Ledgers->AccountingGroups->find()
 						->where(['AccountingGroups.company_id'=>$company_id, 'AccountingGroups.bank'=>'1']);
+						
 		$bankGroups=[];
+		
 		foreach($bankParentGroups as $bankParentGroup)
 		{
 			$accountingGroups = $this->Receipts->ReceiptRows->Ledgers->AccountingGroups
@@ -167,16 +210,53 @@ class ReceiptsController extends AppController
 			}
 		}
 		
-		$ledgers = $this->Receipts->ReceiptRows->Ledgers->find()->where(['company_id'=>$company_id]);
-		foreach($ledgers as $ledger){
+		//cash-in-hand group
+		$cashParentGroups = $this->Receipts->ReceiptRows->Ledgers->AccountingGroups->find()
+						->where(['AccountingGroups.company_id'=>$company_id, 'AccountingGroups.cash'=>'1']);
+						
+		$cashGroups=[];
+		
+		foreach($cashParentGroups as $cashParentGroup)
+		{
+			$cashChildGroups = $this->Receipts->ReceiptRows->Ledgers->AccountingGroups
+			->find('children', ['for' => $cashParentGroup->id])->toArray();
+			$cashGroups[]=$cashParentGroup->id;
+			foreach($cashChildGroups as $cashChildGroup){
+				$cashGroups[]=$cashChildGroup->id;
+			}
+		}
+		
+		$partyParentGroups = $this->Receipts->ReceiptRows->Ledgers->AccountingGroups->find()
+							->where(['AccountingGroups.company_id'=>$company_id, 'AccountingGroups.payment_ledger'=>1]);
+
+		$partyGroups=[];
+		
+		foreach($partyParentGroups as $partyParentGroup)
+		{
+			
+			$partyChildGroups = $this->Receipts->ReceiptRows->Ledgers->AccountingGroups->find('children', ['for' => $partyParentGroup->id]);
+			$partyGroups[]=$partyParentGroup->id;
+			foreach($partyChildGroups as $partyChildGroup){
+				$partyGroups[]=$partyChildGroup->id;
+			}
+		}
+	
+		$partyLedgers = $this->Receipts->ReceiptRows->Ledgers->find()
+		->where(['Ledgers.accounting_group_id IN' =>$partyGroups,'Ledgers.company_id'=>$company_id]);
+		
+		//$ledgers = $this->Payments->PaymentRows->Ledgers->find()->where(['company_id'=>$company_id]);
+		foreach($partyLedgers as $ledger){
 			if(in_array($ledger->accounting_group_id,$bankGroups)){
-				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id ,'open_window' => 'bank'];
+				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id ,'open_window' => 'bank','bank_and_cash' => 'yes'];
 			}
 			else if($ledger->bill_to_bill_accounting == 'yes'){
-				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id,'open_window' => 'party' ];
+				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id,'open_window' => 'party','bank_and_cash' => 'no'];
+			}
+			else if(in_array($ledger->accounting_group_id,$cashGroups)){
+				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id ,'open_window' => 'no','bank_and_cash' => 'yes'];
 			}
 			else{
-				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id,'open_window' => 'no' ];
+				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id,'open_window' => 'no','bank_and_cash' => 'no' ];
 			}
 		}
 		//pr($receipt);
