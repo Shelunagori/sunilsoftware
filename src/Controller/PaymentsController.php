@@ -20,10 +20,13 @@ class PaymentsController extends AppController
      */
     public function index()
     {
+		
+		$this->viewBuilder()->layout('index_layout');
+		$company_id=$this->Auth->User('session_company_id');
         $this->paginate = [
             'contain' => ['Companies']
         ];
-        $payments = $this->paginate($this->Payments);
+        $payments = $this->paginate($this->Payments->find()->where(['Payments.company_id'=>$company_id]));
 
         $this->set(compact('payments'));
         $this->set('_serialize', ['payments']);
@@ -37,9 +40,11 @@ class PaymentsController extends AppController
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
     public function view($id = null)
-    {
+    {	
+		$this->viewBuilder()->layout('index_layout');
+		$company_id=$this->Auth->User('session_company_id');
         $payment = $this->Payments->get($id, [
-            'contain' => ['Companies', 'PaymentRows']
+            'contain' => ['Companies', 'PaymentRows'=>['ReferenceDetails', 'Ledgers']]
         ]);
 
         $this->set('payment', $payment);
@@ -161,7 +166,7 @@ class PaymentsController extends AppController
 			
 		}
 		
-		$referenceDetails=$this->Payments->PaymentRows->ReferenceDetails->find('list');
+		//$referenceDetails=$this->Payments->PaymentRows->ReferenceDetails->find('list');
 		
 		$this->set(compact('payment', 'company_id','voucher_no','ledgerOptions', 'referenceDetails'));
 		$this->set('_serialize', ['payment']);
@@ -180,9 +185,10 @@ class PaymentsController extends AppController
 		$company_id=$this->Auth->User('session_company_id');
         $this->request->data['company_id'] =$company_id;
         $payment = $this->Payments->get($id, [
-            'contain' => []
+            'contain' => ['PaymentRows'=>['ReferenceDetails']]
         ]);
         if ($this->request->is(['patch', 'post', 'put'])) {
+			$this->request->data['transaction_date'] = date("Y-m-d",strtotime($this->request->getData()['transaction_date']));
             $payment = $this->Payments->patchEntity($payment, $this->request->getData());
             if ($this->Payments->save($payment)) {
                 $this->Flash->success(__('The payment has been saved.'));
@@ -229,8 +235,74 @@ class PaymentsController extends AppController
 			
 		}
 		
-		//$referenceDetails=$this->Payments->PaymentRows->ReferenceDetails->find('list');
+		//bank group
+		$bankParentGroups = $this->Payments->PaymentRows->Ledgers->AccountingGroups->find()
+						->where(['AccountingGroups.company_id'=>$company_id, 'AccountingGroups.bank'=>'1']);
+						
+		$bankGroups=[];
 		
+		foreach($bankParentGroups as $bankParentGroup)
+		{
+			$accountingGroups = $this->Payments->PaymentRows->Ledgers->AccountingGroups
+			->find('children', ['for' => $bankParentGroup->id])->toArray();
+			$bankGroups[]=$bankParentGroup->id;
+			foreach($accountingGroups as $accountingGroup){
+				$bankGroups[]=$accountingGroup->id;
+			}
+		}
+		
+		//cash-in-hand group
+		$cashParentGroups = $this->Payments->PaymentRows->Ledgers->AccountingGroups->find()
+						->where(['AccountingGroups.company_id'=>$company_id, 'AccountingGroups.cash'=>'1']);
+						
+		$cashGroups=[];
+		
+		foreach($cashParentGroups as $cashParentGroup)
+		{
+			$cashChildGroups = $this->Payments->PaymentRows->Ledgers->AccountingGroups
+			->find('children', ['for' => $cashParentGroup->id])->toArray();
+			$cashGroups[]=$cashParentGroup->id;
+			foreach($cashChildGroups as $cashChildGroup){
+				$cashGroups[]=$cashChildGroup->id;
+			}
+		}
+		
+		$partyParentGroups = $this->Payments->PaymentRows->Ledgers->AccountingGroups->find()
+							->where(['AccountingGroups.company_id'=>$company_id, 'AccountingGroups.payment_ledger'=>1]);
+
+		$partyGroups=[];
+		
+		foreach($partyParentGroups as $partyParentGroup)
+		{
+			
+			$partyChildGroups = $this->Payments->PaymentRows->Ledgers->AccountingGroups->find('children', ['for' => $partyParentGroup->id]);
+			$partyGroups[]=$partyParentGroup->id;
+			foreach($partyChildGroups as $partyChildGroup){
+				$partyGroups[]=$partyChildGroup->id;
+			}
+		}
+	
+		$partyLedgers = $this->Payments->PaymentRows->Ledgers->find()
+		->where(['Ledgers.accounting_group_id IN' =>$partyGroups,'Ledgers.company_id'=>$company_id]);
+		
+		//$ledgers = $this->Payments->PaymentRows->Ledgers->find()->where(['company_id'=>$company_id]);
+		foreach($partyLedgers as $ledger){
+			if(in_array($ledger->accounting_group_id,$bankGroups)){
+				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id ,'open_window' => 'bank','bank_and_cash' => 'yes'];
+			}
+			else if($ledger->bill_to_bill_accounting == 'yes'){
+				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id,'open_window' => 'party','bank_and_cash' => 'no'];
+			}
+			else if(in_array($ledger->accounting_group_id,$cashGroups)){
+				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id ,'open_window' => 'no','bank_and_cash' => 'yes'];
+			}
+			else{
+				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id,'open_window' => 'no','bank_and_cash' => 'no' ];
+			}
+			
+		}
+		
+		//$referenceDetails=$this->Payments->PaymentRows->ReferenceDetails->find('list');
 		$this->set(compact('payment', 'company_id','voucher_no','ledgerOptions', 'referenceDetails'));
         $this->set('_serialize', ['payment']);
     }

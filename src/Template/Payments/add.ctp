@@ -290,10 +290,15 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 						return false;
 					}
 					else{
-						alert('Are you sure you want to submit.');
-						success1.show();
-						error1.hide();
-						form1[0].submit();
+						if(confirm('Are you sure you want to submit!'))
+						{
+							success1.show();
+							error1.hide();
+							form1[0].submit();
+							$('.submit').attr('disabled','disabled');
+							$('.submit').text('Submiting...');
+							return true;
+						}
 					}
 
                 }
@@ -441,8 +446,8 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 					}
 					i++;
 				});
-				$('#MainTable tfoot tr td:nth-child(2) input#totalMainDr').val(main_debit);
-				$('#MainTable tfoot tr td:nth-child(3) input#totalMainCr').val(main_credit);
+				$('#MainTable tfoot tr td:nth-child(2) input#totalMainDr').val(round(main_debit,2));
+				$('#MainTable tfoot tr td:nth-child(3) input#totalMainCr').val(round(main_credit,2));
 				$('#MainTable tfoot tr td:nth-child(1) input#totalBankCash').val(count_bank_cash);
 			}
 			
