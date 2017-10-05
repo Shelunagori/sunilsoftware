@@ -150,7 +150,7 @@ $option_ref[]= ['value'=>'On Account','text'=>'On Account'];
 			</td>
 			
 			<td align="center" style="vertical-align: top !important;">
-				<a class="" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
+				<a class="ref_delete" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
 			</td>
 		</tr>
 	</tbody>
@@ -328,8 +328,8 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				var totalCredit=0;
 				var totalDebit=0;
 				$('#MainTable tbody#MainTbody tr.MainTr').each(function(){ 
-					var debit  = parseFloat($(this).find('td:nth-child(3) input').val()); 
-					var credit = parseFloat($(this).find('td:nth-child(4) input').val()); 
+					var debit  = parseFloat($(this).find('td:nth-child(3) input.totalCalculation').val()); 
+					var credit = parseFloat($(this).find('td:nth-child(4) input.totalCalculation').val()); 
 					if(debit)
 					{
 						totalDebit  = totalDebit+debit;
