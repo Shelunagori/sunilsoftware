@@ -58,7 +58,8 @@ $this->set('title', 'Sales Voucher');
 								<tr class="MainTr">
 									<td width="10%" style="vertical-align: top !important;">
 										<?php 
-										echo $this->Form->input('sales_voucher_rows[0][cr_dr]', ['input'=>'text','label' => false,'class' => 'form-control input-sm cr_dr','required'=>'required','value'=>'Dr','readonly'=>'readonly']); ?>
+										echo $this->Form->input('cr_dr', ['options'=>['Dr'=>'Dr'],'label' => false,'class' => 'form-control input-sm cr_dr','required'=>'required','value'=>'Dr','readonly'=>'readonly']);
+										?>
 									</td>
 									<td width="65%" style="vertical-align: top !important;">
 										<?php echo $this->Form->input('ledger_id', ['empty'=>'--Select--','options'=>@$ledgerDroption,'label' => false,'class' => 'form-control input-sm ledger','required'=>'required']); ?>
@@ -77,7 +78,8 @@ $this->set('title', 'Sales Voucher');
 								<tr class="MainTr">
 									<td width="10%" style="vertical-align: top !important;">
 										<?php 
-										echo $this->Form->input('sales_voucher_rows[1][cr_dr]', ['input'=>'text','label' => false,'class' => 'form-control input-sm cr_dr','required'=>'required','value'=>'Cr','readonly'=>'readonly']); ?>
+										echo $this->Form->input('cr_dr', ['options'=>['Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm cr_dr','required'=>'required','value'=>'Dr','readonly'=>'readonly']);
+										?>
 									</td>
 									<td width="65%" style="vertical-align: top !important;">
 										<?php echo $this->Form->input('ledger_id', ['empty'=>'--Select--','options'=>@$ledgerOptions,'label' => false,'class' => 'form-control input-sm ledger','required'=>'required']); ?>
@@ -447,7 +449,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 					var SelectedTr=$(this).closest('tr.MainTr');
 					var windowContainer=$(this).closest('td').find('div.window');
 					windowContainer.html('');
-					windowContainer.html('<table width=90%><tbody></tbody><tfoot><tr style=border-top:double#a5a1a1><td colspan=2></td><td>$total_input</td><td style=padding-right:0px;vertical-align: top !important;>$total_type</td></tr></tfoot></table><a role=button class=addRefRow>Add Row</a>');
+					windowContainer.html('<table width=90% class=refTbl><tbody></tbody><tfoot><tr style=border-top:double#a5a1a1><td colspan=2></td><td>$total_input</td><td style=padding-right:0px;vertical-align: top !important;>$total_type</td></tr></tfoot></table><a role=button class=addRefRow>Add Row</a>');
 					AddRefRow(SelectedTr);
 				}
 				else if(openWindow=='bank'){
@@ -533,7 +535,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 					var mainAmt=SelectedTr.find('td:nth-child(3) input.debitBox').val();
 				}else{
 					var eqlClass=SelectedTr.find('td:nth-child(4) input.creditBox').attr('id');
-					var mainAmt=SelectedTr.find('td:nth-child(4) input.creditBox').val();
+					var mainAmt=SelectedTr.find('td:nth-child(4) input.creditBox').val(); 
 				}
 				
 				SelectedTr.find('input.ledgerIdContainer').val(ledger_id);
