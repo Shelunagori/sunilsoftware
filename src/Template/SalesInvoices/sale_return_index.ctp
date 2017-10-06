@@ -61,7 +61,7 @@ $this->set('title', 'Create Sales Invoice');
 		</div>
 	</div>
 </div>
-<?php } else {?>
+<?php } else if(empty($SalesInvoice) && $sales_return=="Yes") {?>
 <div class="row">
 	<div class="col-md-12">
 		<div class="portlet light ">

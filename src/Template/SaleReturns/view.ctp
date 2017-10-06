@@ -41,7 +41,7 @@ $this->set('title', 'Stock Journal View');
 								</tr>
 								</thead>
 								<tbody id='main_tbody' class="tab">
-								 <?php 		$i=0;							
+								 <?php 		$i=0;	 $total=0;						
 										 foreach($saleReturn->sale_return_rows as $sale_return_row)
 										 {  
 								?>
@@ -57,7 +57,9 @@ $this->set('title', 'Stock Journal View');
 											<?php echo $sale_return_row->rate; ?>
 										</td>
 										<td width="25%" class="rightAligntextClass">
-											<?php echo $sale_return_row->taxable_value; ?>	
+											<?php echo $sale_return_row->taxable_value; 
+											$total+=$sale_return_row->taxable_value;
+											?>	
 										</td>
 									</tr>
 								<?php $i++; } ?>
@@ -65,7 +67,7 @@ $this->set('title', 'Stock Journal View');
 								<tfoot>
 									<tr>
 										<td colspan="4" class="rightAligntextClass">Total</td>
-										<td width="25%" class="rightAligntextClass"><?php echo $saleReturn->inward_amount_total;?></td>
+										<td width="25%" class="rightAligntextClass"><?php echo $total;?></td>
 									</tr>
 								</tfoot>
 							</table>

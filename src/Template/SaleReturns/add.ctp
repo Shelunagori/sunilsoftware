@@ -139,7 +139,6 @@ foreach($partyOptions as $partyOption)
 										echo $salesInvoiceRow->item->name;
 										echo $this->Form->input('q', ['value'=>$salesInvoiceRow->id,'type'=>'hidden']);
 										?>
-										<br><span class="itemQty" style="color:red" value=""></span>
 								</td>
 								<td width="10%" align="center">
 									<?php echo $this->Form->input('q', ['type'=>'hidden','label' => false,'class' => 'form-control input-sm calculation quantity rightAligntextClass','id'=>'check','disabled','required'=>'required','placeholder'=>'Quantity', 'value'=>$salesInvoiceRow->quantity-@$sales_return_qty
@@ -314,7 +313,7 @@ foreach($partyOptions as $partyOption)
 			var text=fetch.text;
 			var type=fetch.type;
 			var mainStock=fetch.mainStock;
-			itemQ.find('.itemQty').html(text);
+			//itemQ.find('.itemQty').html(text);
 			itemQ.find('.totStock').val(mainStock);
 		if(type=='true')
 		{
@@ -393,7 +392,7 @@ foreach($partyOptions as $partyOption)
 			var text=fetch.text;
 			var type=fetch.type;
 			var mainStock=fetch.mainStock;
-			itemQ.find('.itemQty').html(text);
+			//itemQ.find('.itemQty').html(text);
 			itemQ.find('.totStock').val(mainStock);
 			if(type=='true')
 			{
