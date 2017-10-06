@@ -208,12 +208,12 @@ $this->set('title', 'Receipt Voucher');
 										</td>
 										<td width="10%">
 										<?php if(!empty($receiptRows->debit)){?>
-											<?php echo $this->Form->input('receipt_rows.'.$i.'.debit', ['label' => false,'class' => 'form-control input-sm  debitBox rightAligntextClass totalCalculation calculate_total','placeholder'=>'Debit','value'=>$receiptRows->debit, 'type'=>'text']); ?>
+											<?php echo $this->Form->input('receipt_rows.'.$i.'.debit', ['label' => false,'class' => 'form-control input-sm debitBox rightAligntextClass totalCalculation calculate_total','placeholder'=>'Debit','value'=>$receiptRows->debit, 'type'=>'text']); ?>
 										<?php } ?>
 										</td>
 										<td width="10%">
 										<?php if(!empty($receiptRows->credit)){?>
-											<?php echo $this->Form->input('receipt_rows.'.$i.'.credit', ['label' => false,'class' => 'form-control input-sm  debitBox rightAligntextClass totalCalculation calculate_total','placeholder'=>'Credit','value'=>$receiptRows->credit, 'type'=>'text']); ?>
+											<?php echo $this->Form->input('receipt_rows.'.$i.'.credit', ['label' => false,'class' => 'form-control input-sm creditBox rightAligntextClass totalCalculation calculate_total','placeholder'=>'Credit','value'=>$receiptRows->credit, 'type'=>'text']); ?>
 										<?php } ?>
 										</td>
 										<td align="center"  width="10%">
@@ -578,12 +578,20 @@ $this->set('title', 'Receipt Voucher');
 				$('#MainTable tbody#MainTbody').append(tr);
 				renameMainRows();
 			}
+			$('.calculate_total').die().live('keyup',function()
+			{ 
+				 renameMainRows();
+				 
+			});
 			
 			function renameMainRows(){
 				var i=0; var main_debit=0; var main_credit=0; var count_bank_cash=0;
 				$('#MainTable tbody#MainTbody tr.MainTr').each(function(){
 					$(this).attr('row_no',i);
 					var cr_dr=$(this).find('td:nth-child(1) select.cr_dr option:selected').val()
+					var debit_amt=parseFloat($(this).find('td:nth-child(3) input.debitBox').val());
+					
+					
 					var is_cash_bank=$(this).find('td:nth-child(2) option:selected').attr('bank_and_cash');
 					$(this).find('td:nth-child(1) select.cr_dr').attr({name:'receipt_rows['+i+'][cr_dr]',id:'receipt_rows-'+i+'-cr_dr'});
 					$(this).find('td:nth-child(2) select.ledger').attr({name:'receipt_rows['+i+'][ledger_id]',id:'receipt_rows-'+i+'-ledger_id'}).select2();
@@ -591,14 +599,18 @@ $this->set('title', 'Receipt Voucher');
 					$(this).find('td:nth-child(4) input.creditBox').attr({name:'receipt_rows['+i+'][credit]',id:'receipt_rows-'+i+'-credit'});
 					
 					if(cr_dr=='Dr'){
+					//alert(cr_dr);
+					//alert(debit_amt);
 						$(this).find('td:nth-child(3) input.debitBox').rules('add', 'required');
 						$(this).find('td:nth-child(4) input.creditBox').rules('remove', 'required');
 						$(this).find('td:nth-child(4) span.help-block-error').remove();
 						var debit_amt=parseFloat($(this).find('td:nth-child(3) input.debitBox').val());
+						//alert(debit_amt);
 						if(!debit_amt){
 							debit_amt=0;
 						}
-						main_debit=main_debit+debit_amt;
+						main_debit=parseFloat(main_debit)+parseFloat(debit_amt);
+						alert(main_debit);
 						if(is_cash_bank=='yes'){
 						 count_bank_cash++;
 						}
@@ -700,11 +712,7 @@ $this->set('title', 'Receipt Voucher');
 				}
 			}
 			
-			$('.calculate_total').die().live('keyup',function()
-			{ 
-				 renameMainRows();
-				 
-			});
+			
 			
 			$('.calculation').die().live('blur',function()
 			{ 
