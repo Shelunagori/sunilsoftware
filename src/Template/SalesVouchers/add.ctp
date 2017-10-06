@@ -325,6 +325,11 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			});
 			
 			$('.totalCalculation').die().live('keyup',function(){
+				 calc();
+			});
+			
+			function calc()
+			{ 
 				var totalCredit=0;
 				var totalDebit=0;
 				$('#MainTable tbody#MainTbody tr.MainTr').each(function(){ 
@@ -338,13 +343,15 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 					{
 						totalCredit = totalCredit+credit;
 					}
-				});
+					
+				}); 
 				if(!totalDebit){ totalDebit=0; }
 				$('.total_debit').val(totalDebit);
 				
 				if(!totalCredit){totalCredit=0; }
 				$('.total_credit').val(totalCredit);
-			});
+			}
+			
 			$('.paymentType').die().live('change',function(){
 				var type=$(this).val();	
 				var currentRefRow=$(this).closest('tr');
@@ -362,15 +369,18 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			{
 				var SelectedTr=$(this).closest('tr.MainTr');
 				$(this).closest('tr').remove();
+				calc();
 				renameMainRows();
 				renameBankRows();
 				renameRefRows(SelectedTr);
+				
 			});
 			
 			$('.ref_delete').die().live('click',function() 
 			{
 				var SelectedTr=$(this).closest('tr.MainTr');
 				$(this).closest('tr').remove();
+				calculation(SelectedTr);
 				renameRefRows(SelectedTr);
 			});
 			
@@ -408,15 +418,20 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			
 			$('.cr_dr').die().live('change',function(){
 				var cr_dr=$(this).val();
+				
 				if(cr_dr=='Cr'){
 					$(this).closest('tr').find('.debitBox').val('');
+					calc();
 					$(this).closest('tr').find('.debitBox').hide();
 					//$(this).closest('tr').find('.creditBox').attr('required', true);
 					$(this).closest('tr').find('.creditBox').show();
-				}else{
+				}
+				else if(cr_dr=='Dr'){
+					
 					//$(this).closest('tr').find('.debitBox').attr('required', false);
 					$(this).closest('tr').find('.debitBox').show();
-					$(this).closest('tr').find('.debitBox').val('');
+					$(this).closest('tr').find('.creditBox').val('');
+					calc();
 					$(this).closest('tr').find('.creditBox').hide();
 				}
 			});
@@ -535,6 +550,12 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			$('.calculation').die().live('blur',function()
 			{ 
 				var SelectedTr=$(this).closest('tr.MainTr');
+				calculation(SelectedTr);
+				
+			});
+			
+			function calculation(SelectedTr)
+			{
 				var total_debit=0;var total_credit=0; var remaining=0; var i=0;
 				SelectedTr.find('td:nth-child(2) div.window table tbody tr').each(function(){
 				var Dr_Cr=$(this).find('td:nth-child(4) select option:selected').val();
@@ -571,7 +592,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				
 					
 				i++;
-			});
+			}
 			ComponentsPickers.init();
 		});
 	";
