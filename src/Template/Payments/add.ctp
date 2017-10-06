@@ -488,10 +488,10 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				var ledger_id=SelectedTr.find('td:nth-child(2) select.ledger').val();
 				var cr_dr=SelectedTr.find('td:nth-child(1) select.cr_dr option:selected').val();
 				if(cr_dr=='Dr'){
-					var eqlClass=SelectedTr.find('td:nth-child(3) input.debitBox').attr('id');
+					var eqlClassDr=SelectedTr.find('td:nth-child(3) input.debitBox').attr('id');
 					var mainAmt=SelectedTr.find('td:nth-child(3) input.debitBox').val();
 				}else{
-					var eqlClass=SelectedTr.find('td:nth-child(4) input.creditBox').attr('id');
+					var eqlClassCr=SelectedTr.find('td:nth-child(4) input.creditBox').attr('id');
 					var mainAmt=SelectedTr.find('td:nth-child(4) input.creditBox').val();
 				}
 				
@@ -518,6 +518,12 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 					}
 					i++;
 				});
+				var total_type=SelectedTr.find('td:nth-child(2) div.window table.refTbl tfoot tr td:nth-child(3) input.total_type').val();
+				if(total_type=='Dr'){
+					eqlClass=eqlClassDr;
+				}else{
+					eqlClass=eqlClassCr;
+				}
 				SelectedTr.find('td:nth-child(2) div.window table.refTbl tfoot tr td:nth-child(2) input.total')
 						.attr({name:'payment_rows['+row_no+'][total]',id:'payment_rows-'+row_no+'-total'})
 						.rules('add', {
