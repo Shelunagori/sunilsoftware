@@ -20,10 +20,12 @@ class CreditNotesController extends AppController
      */
     public function index()
     {
+		$this->viewBuilder()->layout('index_layout');
+		$company_id=$this->Auth->User('session_company_id');
         $this->paginate = [
             'contain' => ['Companies']
         ];
-        $creditNotes = $this->paginate($this->CreditNotes);
+        $creditNotes = $this->paginate($this->CreditNotes->find()->where(['CreditNotes.company_id'=>$company_id]));
 
         $this->set(compact('creditNotes'));
         $this->set('_serialize', ['creditNotes']);
@@ -38,8 +40,10 @@ class CreditNotesController extends AppController
      */
     public function view($id = null)
     {
+		$this->viewBuilder()->layout('index_layout');
+		$company_id=$this->Auth->User('session_company_id');
         $creditNote = $this->CreditNotes->get($id, [
-            'contain' => ['Companies','CreditNoteRows']
+            'contain' => ['Companies','CreditNoteRows'=>['ReferenceDetails', 'Ledgers']]
         ]);
 
         $this->set('creditNote', $creditNote);
@@ -59,8 +63,8 @@ class CreditNotesController extends AppController
         $creditNote = $this->CreditNotes->newEntity();
 		
         if ($this->request->is('post')) {
-			$creditNote->transaction_date = date('Y-m-d', strtotime($this->request->data['transaction_date']));
 			
+			$this->request->data['transaction_date'] = date("Y-m-d",strtotime($this->request->getData()['transaction_date']));
 			$Voucher = $this->CreditNotes->find()->select(['voucher_no'])->where(['company_id'=>$company_id])->order(['voucher_no' => 'DESC'])->first();
 			if($Voucher)
 			{

@@ -109,6 +109,23 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 														
 														<td width="20%" style="padding-right:0px;">
 															<?php 
+															$value="";
+															$cr_dr="";
+															
+															if(!empty($reference_detail->debit))
+															{
+																$value=$reference_detail->debit;
+																$total_amount_dr=$total_amount_dr+$reference_detail->debit;
+																$cr_dr="Dr";
+																$name="debit";
+															}
+															else
+															{
+																$value=$reference_detail->credit;
+																$total_amount_cr=$total_amount_cr+$reference_detail->credit;
+																$cr_dr="Cr";
+																$name="credit";
+															}
 															if(!empty($reference_detail->debit)){ ?>
 																<?php echo $this->Form->input('payment_rows.'.$i.'.reference_details.'.$j.'.amount', ['label' => false,'class' => 'form-control input-sm calculation rightAligntextClass','placeholder'=>'Amount','required'=>'required', 'value'=>$reference_detail->debit]); 
 															} else { ?>
@@ -135,6 +152,17 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 													?>
 												</tbody>
 												<tfoot>
+													<?php if($total_amount_dr>$total_amount_cr)
+													{
+														$total = $total_amount_dr-$total_amount_cr;
+														$type="Dr";
+													}
+													if($total_amount_dr<$total_amount_cr)
+													{
+														$total = $total_amount_cr-$total_amount_dr;
+														$type="Cr";
+													}
+													?>
 												    <tr class="remove_ref_foot">
 													<td colspan="2"></td>
 													<td><input type="text" class="form-control input-sm rightAligntextClass total" readonly value="<?php echo @$total;?>"></td>
@@ -165,21 +193,37 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 												</tbody>
 												<tfoot>
 												<td colspan='4'></td>
-												</tfoot>
+												</Tfoot>
 											</table>
 											<?php } ?>
 											</div>
 										</td>
+										
 										<td width="10%">
-										<?php if(!empty($payment_row->debit)){?>
-											<?php echo $this->Form->input('payment_rows.'.$i.'.debit', ['label' => false,'class' => 'form-control input-sm  debitBox rightAligntextClass calculate_total','placeholder'=>'Debit','value'=>$payment_row->debit]); ?>
-										<?php } ?>
+										<?php if(empty($payment_row->debit))
+											  {
+												  $style1="display:none;";
+											  }else
+											  {
+												   $style1="display:block;";
+											  }
+											?>
+											<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm  debitBox rightAligntextClass totalCalculation','placeholder'=>'Debit','value'=>$payment_row->debit,'style'=>@$style1]); ?>
+										
 										</td>
 										<td width="10%">
-										<?php if(!empty($payment_row->credit)){?>
-											<?php echo $this->Form->input('payment_rows.'.$i.'.credit', ['label' => false,'class' => 'form-control input-sm creditBox rightAligntextClass calculate_total','placeholder'=>'Credit','value'=>$payment_row->credit]); ?>
-										<?php } ?>
+										<?php 
+										      if(empty($payment_row->credit))
+											  {
+												  $style2="display:none;";
+											  }else
+											  {
+												   $style2="display:block;";
+											  }
+										?>
+											<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm  creditBox rightAligntextClass totalCalculation','placeholder'=>'Credit','value'=>$payment_row->credit,'style'=>@$style2]); ?>
 										</td>
+										
 										<td align="center"  width="10%">
 											<a class="btn btn-danger delete-tr btn-xs" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
 										</td>
@@ -276,11 +320,11 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				<?php echo $this->Form->input('ledger_id', ['empty'=>'--Select--','options'=>@$ledgerOptions,'label' => false,'class' => 'form-control input-sm ledger','required'=>'required']); ?>
 				<div class="window" style="margin:auto;"></div>
 			</td>
-			<td width="10%" valign="top">
-				<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm  debitBox rightAligntextClass calculate_total','placeholder'=>'Debit']); ?>
+			<td width="10%">
+				<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm  debitBox rightAligntextClass totalCalculation','placeholder'=>'Debit']); ?>
 			</td>
-			<td width="10%" valign="top">
-				<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm creditBox rightAligntextClass calculate_total','placeholder'=>'Credit','style'=>'display:none;']); ?>	
+			<td width="10%">
+				<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm  debitBox rightAligntextClass totalCalculation','placeholder'=>'Credit','style'=>'display:none;']); ?>	
 			</td>
 			<td align="center"  width="10%" valign="top">
 				<a class="btn btn-danger delete-tr btn-xs" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
@@ -360,7 +404,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 	$total_type='<input type="text" class="form-control input-sm total_type calculation noBorder" >';
 	$js="
 		$(document).ready(function() { 
-					var form1 = $('#form_sample_2');
+			var form1 = $('#form_sample_2');
             var error1 = $('.alert-danger', form1);
             var success1 = $('.alert-success', form1);
 
@@ -427,6 +471,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 
                 }
 			});
+					
 			
 			$('.delete-tr').die().live('click',function() 
 			{	
@@ -500,6 +545,8 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				var SelectedTr=$(this).closest('tr.MainTr');
 				renameRefRows(SelectedTr);
 			});
+			
+
 			
 			$('.ledger').die().live('change',function(){
 				var openWindow=$(this).find('option:selected').attr('open_window');
