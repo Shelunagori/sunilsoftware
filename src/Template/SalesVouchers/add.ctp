@@ -568,6 +568,8 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				}else{
 					eqlClass=eqlClassCr;
 				}
+				
+				
 				SelectedTr.find('td:nth-child(2) div.window table.refTbl tfoot tr td:nth-child(2) input.total')
 						.attr({name:'payment_rows['+row_no+'][total]',id:'payment_rows-'+row_no+'-total'})
 						.rules('add', {
@@ -621,7 +623,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 					}
 					
 				});
-				
+				renameRefRows(SelectedTr);
 					
 				i++;
 			}

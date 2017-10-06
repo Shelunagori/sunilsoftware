@@ -184,7 +184,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 												<tfoot>
 												    <tr class="remove_ref_foot">
 														<td colspan="2"><input type="hidden" id="htotal" value="<?php echo @$total;?>">
-													</td>
+													    </td>
 														<td><input type="text" class="form-control input-sm rightAligntextClass total calculation ttl noBorder" readonly value=""></td>
 														<td><input type="text" class="form-control input-sm total_type calculation noBorder" readonly value="<?php echo @$type;?>"></td>
 													</tr>
@@ -219,14 +219,27 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 											</div>
 										</td>
 										<td width="10%">
-										<?php if(!empty($sales_voucher_row->debit)){?>
-											<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm  debitBox rightAligntextClass totalCalculation','placeholder'=>'Debit','value'=>$sales_voucher_row->debit]); ?>
-										<?php } ?>
+										<?php if(empty($sales_voucher_row->debit))
+											  {
+												  $style1="display:none;";
+											  }else
+											  {
+												   $style1="display:block;";
+											  }
+											?>
+											<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm  debitBox rightAligntextClass totalCalculation','placeholder'=>'Debit','value'=>$sales_voucher_row->debit,'style'=>@$style1]); ?>
+										
 										</td>
 										<td width="10%">
-										<?php if(!empty($sales_voucher_row->credit)){?>
-											<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm  debitBox rightAligntextClass totalCalculation','placeholder'=>'Credit','value'=>$sales_voucher_row->credit]); ?>
-										<?php } ?>
+										<?php if(empty($sales_voucher_row->credit))
+											  {
+												  $style2="display:none;";
+											  }else
+											  {
+												   $style2="display:block;";
+											  }
+										?>
+											<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm  creditBox rightAligntextClass totalCalculation','placeholder'=>'Credit','value'=>$sales_voucher_row->credit,'style'=>@$style2]); ?>
 										</td>
 										<td align="center"  width="10%">
 										<?php 
@@ -331,7 +344,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm  debitBox rightAligntextClass totalCalculation','placeholder'=>'Debit']); ?>
 			</td>
 			<td width="10%">
-				<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm  debitBox rightAligntextClass totalCalculation','placeholder'=>'Credit','style'=>'display:none;']); ?>	
+				<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm  creditBox rightAligntextClass totalCalculation','placeholder'=>'Credit','style'=>'display:none;']); ?>	
 			</td>
 			<td align="center"  width="10%">
 				<a class="btn btn-danger delete-tr btn-xs" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
@@ -556,16 +569,17 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			});
 			
 			$('.cr_dr').die().live('change',function(){
-				var cr_dr=$(this).val();
 				
-				if(cr_dr=='Cr'){
+				var cr_dr=$(this).val();
+				if(cr_dr=='Cr')
+				{
 					$(this).closest('tr').find('.debitBox').val('');
 					calc();
 					$(this).closest('tr').find('.debitBox').hide();
 					//$(this).closest('tr').find('.creditBox').attr('required', true);
 					$(this).closest('tr').find('.creditBox').show();
 				}
-				else if(cr_dr=='Dr'){
+				else{
 					
 					//$(this).closest('tr').find('.debitBox').attr('required', false);
 					$(this).closest('tr').find('.debitBox').show();
