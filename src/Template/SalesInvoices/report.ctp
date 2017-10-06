@@ -108,8 +108,9 @@ table td {
 					
 						if($salesInvoicedata->discount_percentage>0)
 						{
+						   $salesInvoicedata->discount_percentage;
 						   $totrate=$salesInvoicedata->quantity*$salesInvoicedata->rate;
-						   $dis=$totrate*100/$salesInvoicedata->discount_percentage;
+						   $dis=$totrate*$salesInvoicedata->discount_percentage/100;
 						}
 						else{
 						   $dis=0;

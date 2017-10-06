@@ -61,7 +61,7 @@ class ReceiptsController extends AppController
 		$company_id=$this->Auth->User('session_company_id');
         if ($this->request->is('post')) {
 		 $receipt = $this->Receipts->patchEntity($receipt, $this->request->getData(),['associated' => ['ReceiptRows','ReceiptRows.ReferenceDetails']]);
-		  $tdate=$this->request->data('transaction_date');
+		 $tdate=$this->request->data('transaction_date');
 		 $receipt->transaction_date=date('Y-m-d',strtotime($tdate));
 		 
             if ($this->Receipts->save($receipt)) {
@@ -168,15 +168,51 @@ class ReceiptsController extends AppController
      */
      public function edit($id = null)
     {
+	
         $this->viewBuilder()->layout('index_layout');
         $receipt = $this->Receipts->get($id, [
             'contain' => ['ReceiptRows'=>['ReferenceDetails']]
         ]);
 		$company_id=$this->Auth->User('session_company_id');
-        if ($this->request->is('post')) {
+		
+		$refDropDown =[];
+		foreach($receipt->receipt_rows as $receipt_row)
+		{
+			if(!empty($receipt_row->reference_details))
+			{
+				$query = $this->Receipts->ReceiptRows->ReferenceDetails->find();
+				$query->select(['total_debit' => $query->func()->sum('ReferenceDetails.debit'),'total_credit' => $query->func()->sum('ReferenceDetails.credit')])
+				->where(['ReferenceDetails.ledger_id'=>$receipt_row->ledger_id,'ReferenceDetails.type !='=>'On Account'])
+				->group(['ReferenceDetails.ref_name'])
+				->autoFields(true);
+				$referenceDetails=$query;
+				$option=[];
+				foreach($referenceDetails as $referenceDetail){
+					$remider=$referenceDetail->total_debit-$referenceDetail->total_credit;
+					if($remider>0){
+						$bal=abs($remider).' Dr';
+					}else if($remider<0){
+						$bal=abs($remider).' Cr';
+					}
+					if($referenceDetail->total_debit!=$referenceDetail->total_credit){
+						$option[$referenceDetail->ref_name]=$referenceDetail->ref_name;
+					}
+				}
+				$refDropDown[$receipt_row->id] = $option;
+			}
+		}
+		
+		
+        if ($this->request->is('put','patch','post')) {
+		
 		 $receipt = $this->Receipts->patchEntity($receipt, $this->request->getData(),['associated' => ['ReceiptRows','ReceiptRows.ReferenceDetails']]);
-		  $tdate=$this->request->data('transaction_date');
+		 $tdate=$this->request->data('transaction_date');
 		 $receipt->transaction_date=date('Y-m-d',strtotime($tdate));
+		 
+		pr($receipt);
+		exit;
+		
+		
             if ($this->Receipts->save($receipt)) {
                 $this->Flash->success(__('The receipt has been saved.'));
 
@@ -184,15 +220,6 @@ class ReceiptsController extends AppController
             }
             $this->Flash->error(__('The receipt could not be saved. Please, try again.'));
         }
-		$Voucher_no = $this->Receipts->find()->select(['voucher_no'])->where(['company_id'=>$company_id])->order(['voucher_no' => 'DESC'])->first();
-		if($Voucher_no)
-		{
-			$voucher_no=$Voucher_no->voucher_no+1;
-		}
-		else
-		{
-			$voucher_no=1;
-		}
 		
 		//bank group
 		$bankParentGroups = $this->Receipts->ReceiptRows->Ledgers->AccountingGroups->find()
@@ -263,7 +290,7 @@ class ReceiptsController extends AppController
 	//exit;
 		$referenceDetails=$this->Receipts->ReceiptRows->ReferenceDetails->find('list');
         $companies = $this->Receipts->Companies->find('list', ['limit' => 200]);
-        $this->set(compact('receipt', 'companies','voucher_no','ledgerOptions','company_id','referenceDetails'));
+        $this->set(compact('receipt', 'companies','voucher_no','ledgerOptions','company_id','referenceDetails','refDropDown'));
         $this->set('_serialize', ['receipt']);
     }
 

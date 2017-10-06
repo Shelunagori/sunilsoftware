@@ -28,8 +28,8 @@ $this->set('title', 'Receipt Voucher');
 							<label>Voucher No :</label>&nbsp;&nbsp;
 							<?= h('#'.str_pad($receipt->voucher_no, 4, '0', STR_PAD_LEFT)) ?>
 						
-						<input type="hidden" name="voucher_no" value="<?php echo $voucher_no;?>" >
-						<input type="hidden" name="company_id" value="<?php echo $company_id;?>" >
+						<input type="hidden" name="voucher_no" value="<?php echo $receipt->voucher_no;?>" >
+						<input type="hidden" name="company_id" value="<?php echo $receipt->company_id;?>" >
 						</div>
 					</div>
 					<div class="col-md-3">
@@ -64,7 +64,7 @@ $this->set('title', 'Receipt Voucher');
 								         foreach($receipt->receipt_rows as $receiptRows)
 									     {?>
 									
-									<tr class="MainTr">
+									<tr class="MainTr" row_no="<?php echo $i;?>">
 										<td width="10%">
 											<?php 
 											echo $this->Form->input('receipt_rows.'.$i.'.cr_dr', ['options'=>['Dr'=>'Dr','Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm cr_dr','required'=>'required','value'=>$receiptRows->cr_dr]); 
@@ -103,7 +103,6 @@ $this->set('title', 'Receipt Voucher');
 															<?php } if($reference_detail->type=='Against')
 															{?>
 															<?php 
- 
 															if(!empty($refDropDown[$receiptRows->id]))
 															{
 																echo $this->Form->input('mode_of_payment', ['options'=>$refDropDown[3],'label' => false,'class' => 'form-control input-sm paymentType','required'=>'required','value'=>$reference_detail->type]);

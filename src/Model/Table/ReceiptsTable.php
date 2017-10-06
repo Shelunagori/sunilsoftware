@@ -43,7 +43,8 @@ class ReceiptsTable extends Table
             'joinType' => 'INNER'
         ]);
         $this->hasMany('ReceiptRows', [
-            'foreignKey' => 'receipt_id'
+            'foreignKey' => 'receipt_id',
+			'saveStrategy'=>'replace'
         ]);
         $this->hasMany('ReferenceDetails', [
             'foreignKey' => 'receipt_id'
