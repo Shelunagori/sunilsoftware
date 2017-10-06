@@ -44,7 +44,8 @@ class PaymentsTable extends Table
         ]);
 		
         $this->hasMany('PaymentRows', [
-            'foreignKey' => 'payment_id'
+            'foreignKey' => 'payment_id',
+			'saveStrategy'=>'replace'
         ]);
     }
 

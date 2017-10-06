@@ -130,7 +130,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
  
 															if(!empty($refDropDown[$sales_voucher_row->id]))
 															{
-																echo $this->Form->input('mode_of_payment', ['options'=>$refDropDown[3],'label' => false,'class' => 'form-control input-sm paymentType','required'=>'required','value'=>$reference_detail->type]);
+																echo $this->Form->input('mode_of_payment', ['options'=>$refDropDown[$sales_voucher_row->id],'label' => false,'class' => 'form-control input-sm paymentType','required'=>'required','value'=>$reference_detail->type]);
 																
 															} }?>
 															
@@ -244,8 +244,8 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 										<td colspan="2" >	
 											<button type="button" class="AddMainRow btn btn-default input-sm"><i class="fa fa-plus"></i> Add row</button>
 										</td>
-										<td><input type="text" class="form-control input-sm rightAligntextClass total_debit" placeholder="Total Debit" id="totalMainDr" name="totalMainDr"></td>
-										<td><input type="text" class="form-control input-sm rightAligntextClass total_credit" placeholder="Total Credit" id="totalMainCr" name="totalMainCr"></td>
+										<td><input type="text" class="form-control input-sm rightAligntextClass total_debit" placeholder="Total Debit" id="totalMainDr" name="totalMainDr" value="<?php echo $salesVoucher->totalMainDr;?>"></td>
+										<td><input type="text" class="form-control input-sm rightAligntextClass total_credit" placeholder="Total Credit" id="totalMainCr" name="totalMainCr" value="<?php echo $salesVoucher->totalMainCr;?>"></td>
 									</tr>
 								</tfoot>
 							</table>
@@ -466,6 +466,11 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			});
 			
 			$('.totalCalculation').die().live('keyup',function(){
+				 calc();
+			});
+			
+			function calc()
+			{ 
 				var totalCredit=0;
 				var totalDebit=0;
 				$('#MainTable tbody#MainTbody tr.MainTr').each(function(){ 
@@ -479,13 +484,14 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 					{
 						totalCredit = totalCredit+credit;
 					}
-				});
+					
+				}); 
 				if(!totalDebit){ totalDebit=0; }
 				$('.total_debit').val(totalDebit);
 				
 				if(!totalCredit){totalCredit=0; }
 				$('.total_credit').val(totalCredit);
-			});
+			}
 			
 			$('.paymentType').die().live('change',function(){
 				var type=$(this).val();	
@@ -512,13 +518,14 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				renameBankRows();
 				var SelectedTr=$(this).closest('tr.MainTr');
 				renameRefRows(SelectedTr);
+				calc();
 			});
 			
 			$('.ref_delete').die().live('click',function() 
 			{
 				var SelectedTr=$(this).closest('tr.MainTr');
 				$(this).closest('tr').remove();
-				remove_ref_foot
+				calculation(SelectedTr);
 				renameRefRows(SelectedTr);
 			});
 			
@@ -550,11 +557,20 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			
 			$('.cr_dr').die().live('change',function(){
 				var cr_dr=$(this).val();
+				
 				if(cr_dr=='Cr'){
+					$(this).closest('tr').find('.debitBox').val('');
+					calc();
 					$(this).closest('tr').find('.debitBox').hide();
+					//$(this).closest('tr').find('.creditBox').attr('required', true);
 					$(this).closest('tr').find('.creditBox').show();
-				}else{
+				}
+				else if(cr_dr=='Dr'){
+					
+					//$(this).closest('tr').find('.debitBox').attr('required', false);
 					$(this).closest('tr').find('.debitBox').show();
+					$(this).closest('tr').find('.creditBox').val('');
+					calc();
 					$(this).closest('tr').find('.creditBox').hide();
 				}
 			});
@@ -674,10 +690,15 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			$('.calculation').die().live('blur',function()
 			{ 
 				var SelectedTr=$(this).closest('tr.MainTr');
+				calculation(SelectedTr);
+				
+			});
+			
+			function calculation(SelectedTr)
+			{
 				var total_debit=0;var total_credit=0; var remaining=0; var i=0;
 				SelectedTr.find('td:nth-child(2) div.window table tbody tr').each(function(){
 				var Dr_Cr=$(this).find('td:nth-child(4) select option:selected').val();
-				
 				//console.log(Dr_Cr);
 				var amt= parseFloat($(this).find('td:nth-child(3) input').val());
 				
@@ -693,13 +714,11 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 					remaining=total_debit-total_credit;
 					
 					if(remaining>0){
-						
-						//console.log(remaining); 
+						//console.log(remaining);
 						$(this).closest('table').find(' tfoot td:nth-child(2) input.total').val(remaining);
 						$(this).closest('table').find(' tfoot td:nth-child(3) input.total_type').val('Dr');
 					}
-					else if(remaining<0){ 
-					
+					else if(remaining<0){
 						remaining=Math.abs(remaining)
 						$(this).closest('table').find(' tfoot td:nth-child(2) input.total').val(remaining);
 						$(this).closest('table').find(' tfoot td:nth-child(3) input.total_type').val('Cr');
@@ -713,7 +732,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				
 					
 				i++;
-			});
+			}
 			ComponentsPickers.init();
 		});
 	";

@@ -2,7 +2,7 @@
 /**
  * @Author: PHP Poets IT Solutions Pvt. Ltd.
  */
-$this->set('title', 'Receipt View');
+$this->set('title', 'Payment View');
 ?>
 <style>
 table th {

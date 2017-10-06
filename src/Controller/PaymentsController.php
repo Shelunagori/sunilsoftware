@@ -188,7 +188,6 @@ class PaymentsController extends AppController
             'contain' => ['PaymentRows'=>['ReferenceDetails']]
         ]);
         if ($this->request->is(['patch', 'post', 'put'])) {
-			$this->request->data['transaction_date'] = date("Y-m-d",strtotime($this->request->getData()['transaction_date']));
             $payment = $this->Payments->patchEntity($payment, $this->request->getData());
             if ($this->Payments->save($payment)) {
                 $this->Flash->success(__('The payment has been saved.'));

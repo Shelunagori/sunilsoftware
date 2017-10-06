@@ -41,9 +41,9 @@ class SalesVouchersController extends AppController
     {
 		$this->viewBuilder()->layout('index_layout');
         $salesVoucher = $this->SalesVouchers->get($id, [
-            'contain' => ['Companies', 'SalesVoucherRows']
+            'contain' => ['Companies', 'SalesVoucherRows'=>['Ledgers','ReferenceDetails'],]
         ]);
-
+       // pr($salesVoucher);exit;
         $this->set('salesVoucher', $salesVoucher);
         $this->set('_serialize', ['salesVoucher']);
     }
@@ -224,6 +224,7 @@ class SalesVouchersController extends AppController
 
                 return $this->redirect(['action' => 'index']);
             }
+			
             $this->Flash->error(__('The sales voucher could not be saved. Please, try again.'));
         }
 		

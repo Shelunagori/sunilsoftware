@@ -1,81 +1,201 @@
 <?php
 /**
-  * @var \App\View\AppView $this
-  * @var \App\Model\Entity\SalesVoucher $salesVoucher
-  */
+ * @Author: PHP Poets IT Solutions Pvt. Ltd.
+ */
+$this->set('title', 'Sales Voucher');
 ?>
-<nav class="large-3 medium-4 columns" id="actions-sidebar">
-    <ul class="side-nav">
-        <li class="heading"><?= __('Actions') ?></li>
-        <li><?= $this->Html->link(__('Edit Sales Voucher'), ['action' => 'edit', $salesVoucher->id]) ?> </li>
-        <li><?= $this->Form->postLink(__('Delete Sales Voucher'), ['action' => 'delete', $salesVoucher->id], ['confirm' => __('Are you sure you want to delete # {0}?', $salesVoucher->id)]) ?> </li>
-        <li><?= $this->Html->link(__('List Sales Vouchers'), ['action' => 'index']) ?> </li>
-        <li><?= $this->Html->link(__('New Sales Voucher'), ['action' => 'add']) ?> </li>
-        <li><?= $this->Html->link(__('List Companies'), ['controller' => 'Companies', 'action' => 'index']) ?> </li>
-        <li><?= $this->Html->link(__('New Company'), ['controller' => 'Companies', 'action' => 'add']) ?> </li>
-        <li><?= $this->Html->link(__('List Sales Voucher Rows'), ['controller' => 'SalesVoucherRows', 'action' => 'index']) ?> </li>
-        <li><?= $this->Html->link(__('New Sales Voucher Row'), ['controller' => 'SalesVoucherRows', 'action' => 'add']) ?> </li>
-    </ul>
-</nav>
-<div class="salesVouchers view large-9 medium-8 columns content">
-    <h3><?= h($salesVoucher->id) ?></h3>
-    <table class="vertical-table">
-        <tr>
-            <th scope="row"><?= __('Company') ?></th>
-            <td><?= $salesVoucher->has('company') ? $this->Html->link($salesVoucher->company->name, ['controller' => 'Companies', 'action' => 'view', $salesVoucher->company->id]) : '' ?></td>
-        </tr>
-        <tr>
-            <th scope="row"><?= __('Id') ?></th>
-            <td><?= $this->Number->format($salesVoucher->id) ?></td>
-        </tr>
-        <tr>
-            <th scope="row"><?= __('Voucher No') ?></th>
-            <td><?= $this->Number->format($salesVoucher->voucher_no) ?></td>
-        </tr>
-        <tr>
-            <th scope="row"><?= __('Transaction Date') ?></th>
-            <td><?= h($salesVoucher->transaction_date) ?></td>
-        </tr>
-    </table>
-    <div class="row">
-        <h4><?= __('Narration') ?></h4>
-        <?= $this->Text->autoParagraph(h($salesVoucher->narration)); ?>
-    </div>
-    <div class="related">
-        <h4><?= __('Related Sales Voucher Rows') ?></h4>
-        <?php if (!empty($salesVoucher->sales_voucher_rows)): ?>
-        <table cellpadding="0" cellspacing="0">
-            <tr>
-                <th scope="col"><?= __('Id') ?></th>
-                <th scope="col"><?= __('Sales Voucher Id') ?></th>
-                <th scope="col"><?= __('Cr Dr') ?></th>
-                <th scope="col"><?= __('Ledger Id') ?></th>
-                <th scope="col"><?= __('Debit') ?></th>
-                <th scope="col"><?= __('Credit') ?></th>
-                <th scope="col"><?= __('Mode Of Payment') ?></th>
-                <th scope="col"><?= __('Cheque No') ?></th>
-                <th scope="col"><?= __('Cheque Date') ?></th>
-                <th scope="col" class="actions"><?= __('Actions') ?></th>
-            </tr>
-            <?php foreach ($salesVoucher->sales_voucher_rows as $salesVoucherRows): ?>
-            <tr>
-                <td><?= h($salesVoucherRows->id) ?></td>
-                <td><?= h($salesVoucherRows->sales_voucher_id) ?></td>
-                <td><?= h($salesVoucherRows->cr_dr) ?></td>
-                <td><?= h($salesVoucherRows->ledger_id) ?></td>
-                <td><?= h($salesVoucherRows->debit) ?></td>
-                <td><?= h($salesVoucherRows->credit) ?></td>
-                <td><?= h($salesVoucherRows->mode_of_payment) ?></td>
-                <td><?= h($salesVoucherRows->cheque_no) ?></td>
-                <td><?= h($salesVoucherRows->cheque_date) ?></td>
-                <td class="actions">
-                    <?= $this->Html->link(__('View'), ['controller' => 'SalesVoucherRows', 'action' => 'view', $salesVoucherRows->id]) ?>
-                    <?= $this->Html->link(__('Edit'), ['controller' => 'SalesVoucherRows', 'action' => 'edit', $salesVoucherRows->id]) ?>
-                    <?= $this->Form->postLink(__('Delete'), ['controller' => 'SalesVoucherRows', 'action' => 'delete', $salesVoucherRows->id], ['confirm' => __('Are you sure you want to delete # {0}?', $salesVoucherRows->id)]) ?>
-                </td>
-            </tr>
-            <?php endforeach; ?>
-        </table>
-        <?php endif; ?>
-    </div>
+<style>
+.noBorder{
+	border:none;
+}
+</style>
+<div class="row">
+	<div class="col-md-12">
+		<div class="portlet light ">
+			<div class="portlet-title">
+				<div class="caption">
+					<i class="icon-bar-chart font-green-sharp hide"></i>
+					<span class="caption-subject font-green-sharp bold ">Sales Voucher</span>
+				</div>
+				<div class="actions">
+				</div>
+			</div>
+			<div class="portlet-body">
+				<?= $this->Form->create($salesVoucher,['id'=>'form_sample_2']) ?>
+				<div class="row">
+					<div class="col-md-3">
+						<div class="form-group">
+							<label><b>Voucher No</b> :</label>&nbsp;&nbsp;
+							<?= h('#'.str_pad($salesVoucher->voucher_no, 4, '0', STR_PAD_LEFT)) ?>
+						</div>
+					</div>
+					<div class="col-md-3">
+						<div class="form-group">
+							<label><b>Transaction Date</b> :</label>
+							<?php echo $salesVoucher->transaction_date; ?>
+						</div>
+					</div>
+					<div class="col-md-3">
+						<div class="form-group">
+							<label><b>Reference No</b> :</label>
+							<?php echo $salesVoucher->reference_no; ?>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+						<div class="table-responsive">
+							<table id="MainTable" class="table table-condensed table-striped" width="100%">
+								<thead>
+									<tr>
+										<td></td>
+										<td>Particulars</td>
+										<td>Debit</td>
+										<td>Credit</td>
+										<td width="10%"></td>
+									</tr>
+								</thead>
+								<tbody id='MainTbody' class="tab">
+								<?php
+								if(!empty($salesVoucher->sales_voucher_rows))
+								{
+									$i=0; 
+									foreach($salesVoucher->sales_voucher_rows as $sales_voucher_row){	
+								?>
+									<tr class="MainTr" >
+										<td width="10%">
+											<?php echo $sales_voucher_row->cr_dr; ?>
+										</td>
+										<td width="65%">
+										<?php echo $sales_voucher_row->ledger->name; 
+										?>
+											<div class="window" style="margin:auto;">
+											<?php
+											if(!empty($sales_voucher_row->reference_details)){
+											?>
+												<table width=90%><tbody>
+												<?php
+												    $j=0;$total_amount_dr=0;$total_amount_cr=0;$colspan=0;
+												    foreach($sales_voucher_row->reference_details as $reference_detail)
+													{
+												?>
+													<tr>
+														<td width="20%">
+															<?php 
+															echo $reference_detail->type; ?>
+														</td>
+														
+														<td width="">
+															<?php echo $reference_detail->type;?>
+														</td>
+														<td width="20%" style="padding-right:0px;">
+															<?php
+															$value="";
+															$cr_dr="";
+															
+															if(!empty($reference_detail->debit))
+															{
+																$value=$reference_detail->debit;
+																$total_amount_dr=$total_amount_dr+$reference_detail->debit;
+																$cr_dr="Dr";
+																$name="debit";
+															}
+															else
+															{
+																$value=$reference_detail->credit;
+																$total_amount_cr=$total_amount_cr+$reference_detail->credit;
+																$cr_dr="Cr";
+																$name="credit";
+															}
+
+															echo $value; ?>
+														</td>
+														<td width="10%" style="padding-left:0px;">
+															<?php 
+															echo $cr_dr; ?>
+														</td>
+														<td align="center"></td>
+													</tr>
+													<?php $j++;} 
+													if($total_amount_dr>$total_amount_cr)
+													{
+														$total = $total_amount_dr-$total_amount_cr;
+														$type="Dr";
+													}
+													if($total_amount_dr<$total_amount_cr)
+													{
+														$total = $total_amount_cr-$total_amount_dr;
+														$type="Cr";
+													}
+													?>
+												</tbody>
+												<tfoot>
+												    <tr class="remove_ref_foot">
+														<td colspan="2"></td>
+														<td><input type="text" class="form-control input-sm rightAligntextClass total calculation ttl noBorder" readonly value="<?php echo $total;?>"></td>
+														<td><?php echo @$type;?></td>
+													</tr>
+												</tfoot>
+												</table>
+											<?php } ?>
+											<?php
+											if(!empty($sales_voucher_row->mode_of_payment)){
+											?>
+											<table width='90%'>
+												<tbody>
+													<tr>
+														<td width="30%">
+															<?php 
+															echo $sales_voucher_row->mode_of_payment; ?>
+														</td>
+														<td width="30%">
+															<?php echo $sales_voucher_row->cheque_no; ?> 
+														</td>
+														<td width="30%">
+															<?php echo date("d-m-Y",strtotime($sales_voucher_row->cheque_date)); ?>
+														</td>
+													</tr>
+												</tbody>
+												<tfoot>
+												<td colspan='4'></td>
+												</tfoot>
+											</table>
+											<?php } ?>
+											</div>
+										</td>
+										<td width="10%">
+										<?php if(!empty($sales_voucher_row->debit)){?>
+											<?php echo $sales_voucher_row->debit; ?>
+										<?php } ?>
+										</td>
+										<td width="10%">
+										<?php if(!empty($sales_voucher_row->credit)){?>
+											<?php echo $sales_voucher_row->credit; ?>
+										<?php } ?>
+										</td>
+											<td align="center"  width="10%">
+										</td>
+									</tr>
+								<?php $i++; } } ?>
+								</tbody>
+								<tfoot>
+									<tr style="border-top:double;">
+										<td colspan="2" ></td>
+										<td><?php echo $salesVoucher->totalMainDr;?></td>
+										<td><?php echo $salesVoucher->totalMainCr;?></td>
+									</tr>
+								</tfoot>
+							</table>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-5">
+							<div class="form-group">
+								<label>Narration :</label>
+								<?php echo $salesVoucher->narration; ?>
+							</div>
+						</div>
+					</div>
+			</div>
+		</div>
+	</div>
 </div>
