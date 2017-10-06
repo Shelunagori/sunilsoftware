@@ -71,7 +71,7 @@ class SaleReturnsController extends AppController
 					
 				}
 			}
-		
+		//pr($sales_return_qty); exit;
 		$company_id=$this->Auth->User('session_company_id');
 		$stateDetails=$this->Auth->User('session_company');
 		$location_id=$this->Auth->User('session_location_id');

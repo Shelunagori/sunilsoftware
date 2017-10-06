@@ -24,14 +24,13 @@ foreach($partyOptions as $partyOption)
 <div class="row">
 	<div class="col-md-12">
 		<div class="portlet light ">
-			<div class="portlet-title">
-				<div class="caption">
-					<i class="icon-bar-chart font-green-sharp hide"></i>
-					<span class="caption-subject font-green-sharp bold ">Sales Return</span>
-				</div>
-			</div>
+			
 			<div class="portlet-body">
 				<?= $this->Form->create($salesInvoice,['onsubmit'=>'return checkValidation()']) ?>
+					<div class="row">
+						<div class="col-md-6 caption-subject font-green-sharp bold " align="center" style="font-size:16px"><b>SALES INVOICE</b></div>
+						<div class="col-md-6 caption-subject font-green-sharp bold " align="center" style="font-size:16px"><b>SALES RETURN</b></div>
+					</div><br><br>
 					<div class="row">
 						<div class="col-md-2">
 							<div class="form-group">
@@ -81,12 +80,7 @@ foreach($partyOptions as $partyOption)
 							</div>
 						</div>
 					</div>
-					<br>
-				   <div class="row">
-					<div class="col-md-10"><b>Sales Invoice</b></div>
-					<div class="col-md-2"><b>Sales Return</b></div>
-				   </div>
-				   <div class="row"></div>
+					
 				   <div class="row">
 				  <div class="table-responsive">
 								<table id="main_table" class="table table-condensed table-bordered" style="margin-bottom: 4px;" width="100%">
@@ -105,8 +99,10 @@ foreach($partyOptions as $partyOption)
 										?>
 									<label></td>
 									<td><label>Net Amount<label></td>
-									<td><label>Return Quantity<label></td>
-									<td></td>
+									<td style="border-left-width:2px; border-left-color:black;">Is Return</td>
+									<td ><label>Return Quantity<label></td>
+									<td ><label>Return Amount<label></td>
+									
 								</tr>
 								</thead>
 								<tbody id='main_tbody' class="tab">
@@ -120,7 +116,7 @@ foreach($partyOptions as $partyOption)
 									}else if(@$party_state_id==$state_id) { $exactgst=$salesInvoiceRow->gst_value/2;}
 							     ?>
 								<tr class="main_tr" class="tab">
-									<td width="20%">
+									<td width="17%">
 										<input type="hidden" name="salesInvoiceRow<?php echo $i;?>id" class="id" value="<?php echo $salesInvoiceRow->id; ?>">
 										<input type="hidden" name="q" class="attrGet calculation" value="<?php echo $salesInvoiceRow->item->id; ?>">
 										<input type="hidden" name="salesInvoiceRow<?php echo $i;?>gst_figure_id" class="gst_figure_id" value="<?php echo $salesInvoiceRow->gst_figure_id; ?>">
@@ -140,20 +136,18 @@ foreach($partyOptions as $partyOption)
 										echo $this->Form->input('q', ['value'=>$salesInvoiceRow->id,'type'=>'hidden']);
 										?>
 								</td>
-								<td width="10%" align="center">
-									<?php echo $this->Form->input('q', ['type'=>'hidden','label' => false,'class' => 'form-control input-sm calculation quantity rightAligntextClass','id'=>'check','disabled','required'=>'required','placeholder'=>'Quantity', 'value'=>$salesInvoiceRow->quantity-@$sales_return_qty
-									[@$salesInvoiceRow->item->id]]); 
-									echo $salesInvoiceRow->quantity-@$sales_return_qty
-									[@$salesInvoiceRow->item->id];
+								<td width="5%" align="center">
+									<?php echo $this->Form->input('q', ['type'=>'hidden','label' => false,'class' => 'form-control input-sm calculation quantity rightAligntextClass','id'=>'check','disabled','required'=>'required','placeholder'=>'Quantity', 'value'=>$salesInvoiceRow->quantity]); 
+									echo $salesInvoiceRow->quantity;
 									
 									?>
 								</td>
-								<td width="10%" align="center">
+								<td width="5%" align="center">
 									<?php echo $this->Form->input('q', ['type'=>'hidden','label' => false,'class' => 'form-control input-sm calculation rate rightAligntextClass','required'=>'required','placeholder'=>'Rate','value'=>$salesInvoiceRow->rate, 'readonly'=>'readonly', 'tabindex'=>'-1']);
 									echo $salesInvoiceRow->rate;
 									?>
 								</td>
-								<td width="10%" align="center">
+								<td width="5%" align="center">
 									<?php echo $this->Form->input('q', ['type'=>'hidden','label' => false,'class' => 'form-control input-sm calculation discount rightAligntextClass','placeholder'=>'Dis.','disabled', 'value'=>$salesInvoiceRow->discount_percentage]); 
 									echo $salesInvoiceRow->discount_percentage;
 									?>	
@@ -163,72 +157,87 @@ foreach($partyOptions as $partyOption)
 								echo $salesInvoiceRow->taxable_value;
 								?>	
 								</td>
-								<td width="10%" align="center">
+								<td width="5%" align="center">
 									<?php echo $this->Form->input('q', ['type'=>'hidden','label' => false,'class' => 'form-control input-sm gst_figure_tax_name rightAligntextClass', 'readonly'=>'readonly','required'=>'required','placeholder'=>'', 'value'=> $salesInvoiceRow->gst_figure->name, 'tabindex'=>'-1']);
 									echo $salesInvoiceRow->gst_figure->name;
 										?>	
 								</td>
-								<td width="10%" align="center">
-									<?php echo $this->Form->input('q', ['label' => false,'class' => 'form-control input-sm discountAmount calculation rightAligntextClass','required'=>'required', 'readonly'=>'readonly','placeholder'=>'Taxable Value', 'value'=>$salesInvoiceRow->net_amount, 'tabindex'=>'-1']); ?>	
+								<td width="9%" align="center">
+									<?php
+									echo $salesInvoiceRow->net_amount;
+									?>	
 								</td>
-
-								<td>
-									<?php echo $this->Form->input('q', ['label' => false,'class' => 'form-control input-sm returnQty calculation rightAligntextClass','placeholder'=>'Return Quantity',  'tabindex'=>'-1','type'=>'number']); ?>	
-								</td>
-															
-								<td align="center">
+								<td valign="top" width="10%" align="center" style="border-left-width:2px; border-left-color:black; margin-top:-10px">
 								<?php if($salesInvoiceRow->quantity-@$sales_return_qty
 									[@$salesInvoiceRow->item->id] > 0){ ?>
-									<label><?php echo $this->Form->input('check', ['label' => false,'type'=>'checkbox','class'=>'rename_check','value' => @$salesInvoiceRow->item->id]); ?></label>
+									<label style="margin-top:-10px"><?php echo $this->Form->input('check', ['label' => false,'type'=>'checkbox','class'=>'rename_check','value' => @$salesInvoiceRow->item->id]); ?></label>
 									<?php  } ?>
 								</td>
+
+								<td >
+									<?php echo $this->Form->input('q', ['label' => false,'class' => 'form-control input-sm returnQty calculation rightAligntextClass','placeholder'=>'Return Quantity',  'tabindex'=>'-1','type'=>'number','max'=>$salesInvoiceRow->quantity-@$sales_return_qty[$salesInvoiceRow->item->id]]);
+											//echo $salesInvoiceRow->quantity;
+											//echo $sales_return_qty[$salesInvoiceRow->item->id];
+									?>	
+								</td>
+								<td>
+								<?php echo $this->Form->input('q', ['label' => false,'class' => 'form-control input-sm discountAmount calculation rightAligntextClass','required'=>'required', 'readonly'=>'readonly','placeholder'=>'Taxable Value', 'value'=>$salesInvoiceRow->net_amount, 'tabindex'=>'-1']); ?>
+								</td>
+															
+								
 							</tr>
 								<?php $i++; } ?>
 								</tbody>
 								<tfoot>
 									
 						<tr>
-						<td colspan="7" align="right"><b>Amt Before Tax</b>
+						<td colspan="7" style="border-right-width:2px; border-right-color:black;"></td>
+						<td  colspan="2"  align="right"><b>Amt Before Tax</b>
 						</td>
-						<td colspan="2">
+						<td>
 						<?php echo $this->Form->input('amount_before_tax', ['label' => false,'class' => 'form-control input-sm amount_before_tax rightAligntextClass','required'=>'required', 'readonly'=>'readonly','placeholder'=>'', 'tabindex'=>'-1']); ?>	
 						</td>
 						</tr>
 						
 						<tr id="add_cgst">
-						<td colspan="7" align="right"><b>Total CGST</b>
+						<td colspan="7" style="border-right-width:2px; border-right-color:black;"></td>
+						<td colspan="2" align="right"><b>Total CGST</b>
 						</td>
-						<td colspan="2">
+						<td >
 						<?php echo $this->Form->input('total_cgst', ['label' => false,'class' => 'form-control input-sm add_cgst rightAligntextClass','required'=>'required', 'readonly'=>'readonly','placeholder'=>'', 'tabindex'=>'-1']); ?>	
 						</td>
 						</tr>
 						<tr id="add_sgst">
-						<td colspan="7" align="right"><b>Total SGST</b>
+						<td colspan="7" style="border-right-width:2px; border-right-color:black;"></td>
+						<td colspan="2" align="right"><b>Total SGST</b>
 						</td>
-						<td colspan="2">
+						<td >
 						<?php echo $this->Form->input('total_sgst', ['label' => false,'class' => 'form-control input-sm add_sgst rightAligntextClass','required'=>'required', 'readonly'=>'readonly','placeholder'=>'', 'tabindex'=>'-1']); ?>	
 						</td>
 						</tr>
 						<tr id="add_igst" style="">
-						<td colspan="7" align="right"><b>Total IGST</b>
+						<td colspan="7" style="border-right-width:2px; border-right-color:black;"></td>
+						<td colspan="2" align="right"><b>Total IGST</b>
 						</td>
-						<td colspan="2">
+						<td >
 						<?php echo $this->Form->input('total_igst', ['label' => false,'class' => 'form-control input-sm add_igst rightAligntextClass','required'=>'required', 'readonly'=>'readonly','placeholder'=>'', 'tabindex'=>'-1']); ?>	
 						</td>
 						</tr>
 				
 						<tr>
-						<td colspan="7" align="right"><b>Round OFF</b>
+						<td colspan="7" style="border-right-width:2px; border-right-color:black;"></td>
+						<td  colspan="2" align="right"><b>Round OFF</b>
 						</td>
-						<td colspan="2">
+						<td>
 						<?php echo $this->Form->input('round_off', ['label' => false,'class' => 'form-control input-sm roundValue rightAligntextClass','required'=>'required', 'readonly'=>'readonly','placeholder'=>'', 'tabindex'=>'-1']); ?>	
 						</td>
 						</tr>
 									
 						<tr>
-						<td colspan="7" align="right"><b>Amt After Tax</b>
+						<td colspan="7" style="border-right-width:2px; border-right-color:black;"></td>
+						<td colspan="2" align="right"><b>Amt After Tax</b>
 						</td>
-						<td colspan="2">
+						<td >
 						<?php echo $this->Form->input('amount_after_tax', ['label' => false,'class' => 'form-control input-sm amount_after_tax rightAligntextClass','required'=>'required', 'readonly'=>'readonly','placeholder'=>'', 'tabindex'=>'-1']); ?>	
 						</td>
 						</tr>
@@ -422,7 +431,7 @@ foreach($partyOptions as $partyOption)
 			$(this).find('td:nth-child(1) input.attrGet').attr({name:'sale_return_rows['+i+'][item_id]',id:'sale_return_rows['+i+'][item_id]'});
 		  $(this).find('.quantity').attr({name:'sale_return_rows['+i+'][quantity]',id:'sale_return_rows['+i+'][quantity]'});
 		 
-			var max_qty=$(this).find('.quantity').val();
+			var max_qty=$(this).find('.returnQty').attr('max');
 			$(this).find('.rate').attr({name:'sale_return_rows['+i+'][rate]',id:'sale_return_rows['+i+'][rate]'});
 		  $(this).find('.discount').attr({name:'sale_return_rows['+i+'][discount_percentage]',id:'sale_return_rows['+i+'][discount_percentage]'});
 		  

@@ -21,8 +21,10 @@ class SalesVouchersController extends AppController
     public function index()
     {
 		$this->viewBuilder()->layout('index_layout');
+		$company_id=$this->Auth->User('session_company_id');
         $this->paginate = [
-            'contain' => ['Companies']
+            'contain' => ['Companies'],
+			'where'   => $company_id
         ];
         $salesVouchers = $this->paginate($this->SalesVouchers);
 
