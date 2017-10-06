@@ -52,7 +52,8 @@ $this->set('title', 'Receipt Voucher');
 									</tr>
 								</thead>
 								<tbody id='MainTbody' class="tab">
-								 <?php 
+								 <?php
+                          //  unset($option_ref);								 
 							$option_ref[]= ['value'=>'New Ref','text'=>'New Ref'];
 							$option_ref[]= ['value'=>'Against','text'=>'Against'];
 							$option_ref[]= ['value'=>'Advance','text'=>'Advance'];
@@ -60,6 +61,7 @@ $this->set('title', 'Receipt Voucher');
 							$option_mode[]= ['value'=>'Cheque','text'=>'Cheque'];
 							$option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 								 if(!empty($receipt->receipt_rows))
+								 {
                                          $i=0;		
 								         foreach($receipt->receipt_rows as $receiptRows)
 									     {?>
@@ -73,16 +75,24 @@ $this->set('title', 'Receipt Voucher');
 										</td>
 										<td width="65%">
 										<?php
-										
-											echo $this->Form->input('ledger_id', ['empty'=>'--Select--','options'=>@$ledgerOptions,'label' => false,'class' => 'form-control input-sm ledger','required'=>'required','value'=>$receiptRows->ledger_id]);
+										if($i==0)
+										{ 
 										?>
+											<?php echo $this->Form->input('receipt_rows.'.$i.'.ledger_id', ['empty'=>'--Select--','options'=>@$ledgerOptions,'label' => false,'class' => 'form-control input-sm ledger','required'=>'required','value'=>$receiptRows->ledger_id]);
+										}
+										else
+										{
+											echo $this->Form->input('receipt_rows.'.$i.'.ledger_id', ['empty'=>'--Select--','options'=>@$ledgerOptions,'label' => false,'class' => 'form-control input-sm ledger','required'=>'required','value'=>$receiptRows->ledger_id]);
+										}
+										?>
+										
 											<div class="window" style="margin:auto;">
 											<?php
 											if(!empty($receiptRows->reference_details)){
 											?>
 												<table width=90%><tbody>
 												<?php
-												    $j=0;$total_amount_dr=0;$total_amount_cr=0;$colspan=0;
+												    $j=0;$total_amount_dr=0;$total_amount_cr=0;$colspan=0; 
 												    foreach($receiptRows->reference_details as $reference_detail)
 													{
 												?>
@@ -131,7 +141,7 @@ $this->set('title', 'Receipt Voucher');
 																$name="credit";
 															}
 
-															echo $this->Form->input('receipt_rows.'.$i.'.reference_details.'.$j.'.'.$name, ['label' => false,'class' => 'form-control input-sm calculation rightAligntextClass','placeholder'=>'Amount','required'=>'required','value'=>$value]); ?>
+															echo $this->Form->input('receipt_rows.'.$i.'.reference_details.'.$j.'.'.$name, ['label' => false,'class' => 'form-control input-sm calculation rightAligntextClass','placeholder'=>'Amount','required'=>'required','value'=>$value, 'type'=>'text']); ?>
 														</td>
 														<td width="10%" style="padding-left:0px;">
 															<?php 
@@ -198,12 +208,12 @@ $this->set('title', 'Receipt Voucher');
 										</td>
 										<td width="10%">
 										<?php if(!empty($receiptRows->debit)){?>
-											<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm  debitBox rightAligntextClass totalCalculation','placeholder'=>'Debit','value'=>$receiptRows->debit]); ?>
+											<?php echo $this->Form->input('receipt_rows.'.$i.'.debit', ['label' => false,'class' => 'form-control input-sm  debitBox rightAligntextClass totalCalculation calculate_total','placeholder'=>'Debit','value'=>$receiptRows->debit, 'type'=>'text']); ?>
 										<?php } ?>
 										</td>
 										<td width="10%">
 										<?php if(!empty($receiptRows->credit)){?>
-											<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm  debitBox rightAligntextClass totalCalculation','placeholder'=>'Credit','value'=>$receiptRows->credit]); ?>
+											<?php echo $this->Form->input('receipt_rows.'.$i.'.credit', ['label' => false,'class' => 'form-control input-sm  debitBox rightAligntextClass totalCalculation calculate_total','placeholder'=>'Credit','value'=>$receiptRows->credit, 'type'=>'text']); ?>
 										<?php } ?>
 										</td>
 										<td align="center"  width="10%">
@@ -215,7 +225,7 @@ $this->set('title', 'Receipt Voucher');
 										<?php } ?>
 										</td>
 									</tr>
-								<?php } ?>
+								<?php $i++; } } ?>
 								</tbody>
 								<tfoot>
 									<tr style="border-top:double;">
@@ -245,13 +255,7 @@ $this->set('title', 'Receipt Voucher');
 		</div>
 	</div>
 </div>
-<?php
-$option_ref[]= ['value'=>'New Ref','text'=>'New Ref'];
-$option_ref[]= ['value'=>'Against','text'=>'Against'];
-$option_ref[]= ['value'=>'Advance','text'=>'Advance'];
-$option_ref[]= ['value'=>'On Account','text'=>'On Account'];
 
-?>
 
 
 <table id="sampleForRef" style="display:none;" width="100%">
@@ -282,11 +286,6 @@ $option_ref[]= ['value'=>'On Account','text'=>'On Account'];
 	</tbody>
 </table>
 
-
-<?php
-$option_mode[]= ['value'=>'Cheque','text'=>'Cheque'];
-$option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
-?>
 <table id="sampleForBank" style="display:none;" width="100%">
 	<tbody>
 		<tr>
@@ -575,6 +574,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			//addMainRow();
 			function addMainRow(){
 				var tr=$('#sampleMainTable tbody.sampleMainTbody tr.MainTr').clone();
+				console.log(tr);
 				$('#MainTable tbody#MainTbody').append(tr);
 				renameMainRows();
 			}
@@ -628,7 +628,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			
 			function AddBankRow(SelectedTr){
 				var bankTr=$('#sampleForBank tbody tr').clone();
-				//console.log(bankTr);
+				console.log(bankTr);
 				SelectedTr.find('td:nth-child(2) div.window table tbody').append(bankTr);
 				renameBankRows(SelectedTr);
 			}
