@@ -44,12 +44,6 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 							<?php echo $this->Form->control('transaction_date',['class'=>'form-control input-sm date-picker','data-date-format'=>'dd-mm-yyyy', 'label'=>false,'placeholder'=>'DD-MM-YYYY','type'=>'text','data-date-start-date'=>@$coreVariable[fyValidFrom],'data-date-end-date'=>@$coreVariable[fyValidTo],'value'=>date('d-m-Y'),'required'=>'required']); ?>
 						</div>
 					</div>
-					<div class="col-md-3">
-						<div class="form-group">
-							<label>Reference No </label>
-							<?php echo $this->Form->control('reference_no',['class'=>'form-control input-sm','label'=>false,'placeholder'=>'refrence no','type'=>'text']); ?>
-						</div>
-					</div>
 				</div>
 				<div class="row">
 						<div class="table-responsive">
@@ -160,9 +154,13 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 													?>
 												</tbody>
 												<tfoot>
-												   <tr style="border-top:double;">
-														
+												   <tr class="remove_ref_foot">
+														<td colspan="2"><input type="hidden" id="htotal" value="<?php echo @$total;?>">
+														</td>
+														<td><input type="text" class="form-control input-sm rightAligntextClass total calculation ttl noBorder" readonly value=""></td>
+														<td><input type="text" class="form-control input-sm total_type calculation noBorder" readonly value="<?php echo @$type;?>"></td>
 													</tr>
+													
 												</tfoot>
 												</table>
 												<a role=button class=addRefRow>Add Row</a>
@@ -213,11 +211,13 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 								</tbody>
 								<tfoot>
 									<tr style="border-top:double;">
-										<td colspan="2" >	
+										<td colspan="2" valign="top" >	
 											<button type="button" class="AddMainRow btn btn-default input-sm"><i class="fa fa-plus"></i> Add row</button>
+											<input type="hidden" id="totalBankCash">
 										</td>
-										<td><input type="text" class="form-control input-sm rightAligntextClass total_debit" placeholder="Total Debit" id="totalMainDr" name="totalMainDr" value="<?php echo $payment->totalMainDr;?>"></td>
-										<td><input type="text" class="form-control input-sm rightAligntextClass total_credit" placeholder="Total Credit" id="totalMainCr" name="totalMainCr" value="<?php echo $payment->totalMainCr;?>"></td>
+										<td valign="top"><input type="text" class="form-control input-sm rightAligntextClass noBorder" name="totalMainDr" id="totalMainDr"></td>
+										<td valign="top"><input type="text" class="form-control input-sm rightAligntextClass noBorder" name="totalMainCr" id="totalMainCr"></td>
+										<td></td>
 									</tr>
 								</tfoot>
 							</table>
@@ -382,12 +382,6 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 	$js="
 		$(document).ready(function() {
 			
-			var htotal = $('#htotal').val();
-			if(htotal!=0)
-			{
-				$('.ttl').val(htotal);
-			}
-			
 			var form1 = $('#form_sample_2');
             var error1 = $('.alert-danger', form1);
             var success1 = $('.alert-success', form1);
@@ -430,12 +424,38 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
                 },
 
                 submitHandler: function (form) {
-					alert('Are you sure you want to submit.');
-                    success1.show();
-                    error1.hide();
-                    form1[0].submit();
+
+					var totalMainDr  = parseFloat($('#totalMainDr').val());
+					var totalBankCash = parseFloat($('#totalBankCash').val());
+					if(!totalMainDr || totalMainDr==0){
+						alert('Error: zero amount payment can not be generated.');
+						return false;
+					}
+					else if(totalBankCash<=0){
+						alert('Error: No Bank or Cash Credited.');
+						return false;
+					}
+					else{
+						if(confirm('Are you sure you want to submit!'))
+						{
+							success1.show();
+							error1.hide();
+							form1[0].submit();
+							$('.submit').attr('disabled','disabled');
+							$('.submit').text('Submiting...');
+							return true;
+						}
+					}
+
                 }
 			});
+			
+			var htotal = $('#htotal').val();
+			if(htotal!=0)
+			{
+				$('.ttl').val(htotal);
+			}
+			
 			
 			$('.totalCalculation').die().live('keyup',function(){
 				 calc();
@@ -572,7 +592,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			$('.AddMainRow').die().live('click',function(){ 
 				addMainRow();
 			});
-			
+			renameMainRows();
 			//addMainRow();
 			function addMainRow(){
 				var tr=$('#sampleMainTable tbody.sampleMainTbody tr.MainTr').clone();
@@ -584,15 +604,44 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			
 			function renameMainRows()
 			{
-				var i=0;
+				var i=0; var main_debit=0; var main_credit=0; var count_bank_cash=0;
 				$('#MainTable tbody#MainTbody tr.MainTr').each(function(){
 					$(this).attr('row_no',i);
+					var cr_dr=$(this).find('td:nth-child(1) select.cr_dr option:selected').val()
+					var is_cash_bank=$(this).find('td:nth-child(2) option:selected').attr('bank_and_cash');
 					$(this).find('td:nth-child(1) select.cr_dr').attr({name:'payment_rows['+i+'][cr_dr]',id:'payment_rows-'+i+'-cr_dr'});
 					$(this).find('td:nth-child(2) select.ledger').attr({name:'payment_rows['+i+'][ledger_id]',id:'payment_rows-'+i+'-ledger_id'}).select2();
 					$(this).find('td:nth-child(3) input.debitBox').attr({name:'payment_rows['+i+'][debit]',id:'payment_rows-'+i+'-debit'});
 					$(this).find('td:nth-child(4) input.creditBox').attr({name:'payment_rows['+i+'][credit]',id:'payment_rows-'+i+'-credit'});
+					
+					if(cr_dr=='Dr'){
+						$(this).find('td:nth-child(3) input.debitBox').rules('add', 'required');
+						$(this).find('td:nth-child(4) input.creditBox').rules('remove', 'required');
+						$(this).find('td:nth-child(4) span.help-block-error').remove();
+						var debit_amt=parseFloat($(this).find('td:nth-child(3) input.debitBox').val());
+						if(!debit_amt){
+							debit_amt=0;
+						}
+						main_debit=main_debit+debit_amt;
+					}else{
+						$(this).find('td:nth-child(3) input.debitBox').rules('remove', 'required');
+						$(this).find('td:nth-child(3) span.help-block-error').remove();
+						$(this).find('td:nth-child(4) input.creditBox').rules('add', 'required');
+						var credit_amt=parseFloat($(this).find('td:nth-child(4) input.creditBox').val());
+						if(!credit_amt){
+							credit_amt=0;
+						}
+						main_credit=main_credit+credit_amt;
+						if(is_cash_bank=='yes'){
+						 count_bank_cash++;
+						}
+					}
 					i++;
 				});
+				$('#MainTable tfoot tr td:nth-child(2) input#totalMainDr').val(round(main_debit,2));
+				$('#MainTable tfoot tr td:nth-child(3) input#totalMainCr').val(round(main_credit,2));
+				$('#MainTable tfoot tr td:nth-child(1) input#totalBankCash').val(count_bank_cash);
+			
 			}
 			
 			$('.addBankRow').die().live('click',function(){
