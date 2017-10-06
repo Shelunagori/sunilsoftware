@@ -198,16 +198,32 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 											<?php } ?>
 											</div>
 										</td>
+										
 										<td width="10%">
-										<?php if(!empty($payment_row->debit)){?>
-											<?php echo $this->Form->input('payment_rows.'.$i.'.debit', ['label' => false,'class' => 'form-control input-sm  debitBox rightAligntextClass calculate_total','placeholder'=>'Debit','value'=>$payment_row->debit]); ?>
-										<?php } ?>
+										<?php if(empty($payment_row->debit))
+											  {
+												  $style1="display:none;";
+											  }else
+											  {
+												   $style1="display:block;";
+											  }
+											?>
+											<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm  debitBox rightAligntextClass totalCalculation','placeholder'=>'Debit','value'=>$payment_row->debit,'style'=>@$style1]); ?>
+										
 										</td>
 										<td width="10%">
-										<?php if(!empty($payment_row->credit)){?>
-											<?php echo $this->Form->input('payment_rows.'.$i.'.credit', ['label' => false,'class' => 'form-control input-sm creditBox rightAligntextClass calculate_total','placeholder'=>'Credit','value'=>$payment_row->credit]); ?>
-										<?php }  ?>
+										<?php 
+										      if(empty($payment_row->credit))
+											  {
+												  $style2="display:none;";
+											  }else
+											  {
+												   $style2="display:block;";
+											  }
+										?>
+											<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm  creditBox rightAligntextClass totalCalculation','placeholder'=>'Credit','value'=>$payment_row->credit,'style'=>@$style2]); ?>
 										</td>
+										
 										<td align="center"  width="10%">
 											<a class="btn btn-danger delete-tr btn-xs" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
 										</td>
