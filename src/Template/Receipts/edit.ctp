@@ -9,13 +9,14 @@ $this->set('title', 'Receipt Voucher');
 	border:none;
 }
 </style>
+
 <div class="row">
 	<div class="col-md-12">
 		<div class="portlet light ">
 			<div class="portlet-title">
 				<div class="caption">
 					<i class="icon-bar-chart font-green-sharp hide"></i>
-					<span class="caption-subject font-green-sharp bold ">Receipt Voucher</span>
+					<span class="caption-subject font-green-sharp bold ">Update Receipt Voucher</span>
 				</div>
 				<div class="actions">
 				</div>
@@ -61,8 +62,7 @@ $this->set('title', 'Receipt Voucher');
 							$option_mode[]= ['value'=>'Cheque','text'=>'Cheque'];
 							$option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 								 if(!empty($receipt->receipt_rows))
-								 {
-                                         $i=0;		
+								 {$i=0;		
 								         foreach($receipt->receipt_rows as $receiptRows)
 									     {?>
 									
@@ -90,7 +90,7 @@ $this->set('title', 'Receipt Voucher');
 											<?php
 											if(!empty($receiptRows->reference_details)){
 											?>
-												<table width=90%><tbody>
+												<table width="90%" class="refTbl"><tbody>
 												<?php
 												    $j=0;$total_amount_dr=0;$total_amount_cr=0;$colspan=0; 
 												    foreach($receiptRows->reference_details as $reference_detail)
@@ -171,14 +171,18 @@ $this->set('title', 'Receipt Voucher');
 												<tfoot>
 												    <tr class="remove_ref_foot">
 														<td colspan="2"><input type="hidden" id="htotal" value="<?php echo $total;?>">
+													<a role="button" class="addRefRow">Add Row</a>
 													</td>
-														<td><input type="text" class="form-control input-sm rightAligntextClass total calculation ttl noBorder" readonly value="<?php echo $total;?>"></td>
+			<td>
+			<input type="text" class="form-control input-sm rightAligntextClass total calculation noBorder" name="receipt_rows[<?php echo $i;?>][total]" id="receipt_rows-<?php echo $i;?>-total" aria-invalid="true" aria-describedby="receipt_rows-<?php echo $i;?>-total-error" value="<?php echo $total;?>">
+			
+			</td>
 														
-														<td><input type="text" class="form-control input-sm total_type calculation noBorder" readonly value="<?php echo @$type;?>"></td>
+														<td><input type="text" class="form-control input-sm total_type calculation noBorder" readonly value="<?php echo @$type;?>" name="receipt_rows<?php echo $i;?>reference_details<?php echo $i;?>type_cr_dr"></td>
 													</tr>
 												</tfoot>
 												</table>
-												<a role="button" class="addRefRow">Add Row</a>
+												
 											<?php } ?>
 											<?php
 											if(!empty($receiptRows->mode_of_payment)){
@@ -207,14 +211,11 @@ $this->set('title', 'Receipt Voucher');
 											</div>
 										</td>
 										<td width="10%">
-										<?php if(!empty($receiptRows->debit)){?>
 											<?php echo $this->Form->input('receipt_rows.'.$i.'.debit', ['label' => false,'class' => 'form-control input-sm debitBox rightAligntextClass totalCalculation calculate_total','placeholder'=>'Debit','value'=>$receiptRows->debit, 'type'=>'text']); ?>
-										<?php } ?>
 										</td>
 										<td width="10%">
-										<?php if(!empty($receiptRows->credit)){?>
 											<?php echo $this->Form->input('receipt_rows.'.$i.'.credit', ['label' => false,'class' => 'form-control input-sm creditBox rightAligntextClass totalCalculation calculate_total','placeholder'=>'Credit','value'=>$receiptRows->credit, 'type'=>'text']); ?>
-										<?php } ?>
+										
 										</td>
 										<td align="center"  width="10%">
 										<?php 
@@ -231,10 +232,10 @@ $this->set('title', 'Receipt Voucher');
 									<tr style="border-top:double;">
 										<td colspan="2" valign="top" >	
 											<button type="button" class="AddMainRow btn btn-default input-sm"><i class="fa fa-plus"></i> Add row</button>
-											<input type="text" id="totalBankCash">
+											<input type="hidden" id="totalBankCash">
 										</td>
-										<td valign="top"><input type="text" class="form-control input-sm rightAligntextClass  total_debit" name="totalMainDr" id="totalMainDr"></td>
-										<td valign="top"><input type="text" class="form-control input-sm rightAligntextClass  total_credit" name="totalMainCr" id="totalMainCr"></td>
+										<td valign="top"><input type="text" class="form-control input-sm rightAligntextClass noBorder" readonly name="totalMainDr" id="totalMainDr"></td>
+										<td valign="top"><input type="text" class="form-control input-sm rightAligntextClass noBorder" readonly name="totalMainCr" id="totalMainCr"></td>
 										<td></td>
 									</tr>
 								</tfoot>
@@ -245,7 +246,7 @@ $this->set('title', 'Receipt Voucher');
 						<div class="col-md-5">
 							<div class="form-group">
 								<label>Narration </label>
-								<?php echo $this->Form->control('narration',['class'=>'form-control input-sm','label'=>false,'placeholder'=>'Narration','rows'=>'4']); ?>
+								<?php echo $this->Form->control('narration',['class'=>'form-control input-sm ','label'=>false,'placeholder'=>'Narration','rows'=>'4']); ?>
 							</div>
 						</div>
 					</div>
@@ -255,7 +256,6 @@ $this->set('title', 'Receipt Voucher');
 		</div>
 	</div>
 </div>
-
 
 
 <table id="sampleForRef" style="display:none;" width="100%">
@@ -286,6 +286,7 @@ $this->set('title', 'Receipt Voucher');
 	</tbody>
 </table>
 
+
 <table id="sampleForBank" style="display:none;" width="100%">
 	<tbody>
 		<tr>
@@ -294,14 +295,12 @@ $this->set('title', 'Receipt Voucher');
 				echo $this->Form->input('mode_of_payment', ['options'=>$option_mode,'label' => false,'class' => 'form-control input-sm paymentType','required'=>'required']); ?>
 			</td>
 			<td width="30%" valign="top">
-				<?php echo $this->Form->input('cheque_no', ['label' =>false,'class' => 'form-control input-sm cheque_no positiveValue','placeholder'=>'Cheque No']); ?> 
+				<?php echo $this->Form->input('cheque_no', ['label' =>false,'class' => 'form-control input-sm cheque_no','placeholder'=>'Cheque No']); ?> 
 			</td>
 			
 			<td width="30%" valign="top">
 				<?php echo $this->Form->input('cheque_date', ['label' =>false,'class' => 'form-control input-sm date-picker cheque_date ','data-date-format'=>'dd-mm-yyyy','placeholder'=>'Cheque Date']); ?>
 			</td>
-			
-			
 		</tr>
 	</tbody>
 </table>
@@ -400,12 +399,10 @@ $this->set('title', 'Receipt Voucher');
 	$total_input='<input type="text" class="form-control input-sm rightAligntextClass total calculation noBorder" >';
 	$total_type='<input type="text" class="form-control input-sm total_type calculation noBorder" >';
 	$js="
-		$(document).ready(function() {
-
-			var form1 = $('#form_sample_2');
+		$(document).ready(function() { 
+					var form1 = $('#form_sample_2');
             var error1 = $('.alert-danger', form1);
             var success1 = $('.alert-success', form1);
-
 
 			form1.validate({
                 errorElement: 'span',
@@ -445,29 +442,30 @@ $this->set('title', 'Receipt Voucher');
                 },
 
                 submitHandler: function (form) {
+
 					var totalMainDr  = parseFloat($('#totalMainDr').val());
 					var totalBankCash = parseFloat($('#totalBankCash').val());
 					if(!totalMainDr || totalMainDr==0){
-						alert('Error: zero amount receipt can not be generated.');
+						alert('Error: zero amount payment can not be generated.');
 						return false;
 					}
 					else if(totalBankCash<=0){
-						alert('Error: No Bank or Cash Debited.');
+						alert('Error: No Bank or Cash Credited.');
 						return false;
 					}
 					else{
 						if(confirm('Are you sure you want to submit!'))
-							{
-								success1.show();
-								error1.hide();
-								form1[0].submit();
-								$('.submit').attr('disabled','disabled');
-								$('.submit').text('Submiting...');
-								return true;
-							}
+						{
+							success1.show();
+							error1.hide();
+							form1[0].submit();
+							$('.submit').attr('disabled','disabled');
+							$('.submit').text('Submiting...');
+							return true;
+						}
 					}
-                }
 
+                }
 			});
 			
 			$('.delete-tr').die().live('click',function() 
@@ -543,6 +541,28 @@ $this->set('title', 'Receipt Voucher');
 				renameRefRows(SelectedTr);
 			});
 			
+			hideShow();
+			function hideShow()
+			{
+				$('#MainTable tbody#MainTbody tr.MainTr').each(function(){
+				var cr_dr=$(this).find('td:nth-child(1) select.cr_dr option:selected').val();
+				if(cr_dr=='Cr'){
+					$(this).closest('tr').find('.debitBox').val('');
+					$(this).closest('tr').find('.debitBox').hide();
+					$(this).closest('tr').find('.creditBox').show();
+					//$(this).closest('tr').find('.debitBox').attr('style','display:none');
+				}else{
+					$(this).closest('tr').find('.creditBox').val('');
+					$(this).closest('tr').find('.debitBox').show();
+					$(this).closest('tr').find('.creditBox').hide();
+					//$(this).closest('tr').find('.creditBox').css('display', 'none');
+				}
+				//renameMainRows();
+				//var SelectedTr=$(this).closest('tr.MainTr');
+				//renameRefRows(SelectedTr);
+			});
+			}
+			
 			
 			$('.ledger').die().live('change',function(){
 				var openWindow=$(this).find('option:selected').attr('open_window');
@@ -571,26 +591,21 @@ $this->set('title', 'Receipt Voucher');
 				addMainRow();
 			});
 			
-			//addMainRow();
+			
 			function addMainRow(){
 				var tr=$('#sampleMainTable tbody.sampleMainTbody tr.MainTr').clone();
-				console.log(tr);
 				$('#MainTable tbody#MainTbody').append(tr);
 				renameMainRows();
 			}
-			$('.calculate_total').die().live('keyup',function()
-			{ 
-				 renameMainRows();
-				 
-			});
 			
+			
+			
+			renameMainRows();
 			function renameMainRows(){
 				var i=0; var main_debit=0; var main_credit=0; var count_bank_cash=0;
 				$('#MainTable tbody#MainTbody tr.MainTr').each(function(){
 					$(this).attr('row_no',i);
-					var cr_dr=$(this).find('td:nth-child(1) select.cr_dr option:selected').val()
-					var debit_amt=parseFloat($(this).find('td:nth-child(3) input.debitBox').val());
-					
+					var cr_dr=$(this).find('td:nth-child(1) select.cr_dr option:selected').val();
 					
 					var is_cash_bank=$(this).find('td:nth-child(2) option:selected').attr('bank_and_cash');
 					$(this).find('td:nth-child(1) select.cr_dr').attr({name:'receipt_rows['+i+'][cr_dr]',id:'receipt_rows-'+i+'-cr_dr'});
@@ -599,37 +614,31 @@ $this->set('title', 'Receipt Voucher');
 					$(this).find('td:nth-child(4) input.creditBox').attr({name:'receipt_rows['+i+'][credit]',id:'receipt_rows-'+i+'-credit'});
 					
 					if(cr_dr=='Dr'){
-					//alert(cr_dr);
-					//alert(debit_amt);
-						$(this).find('td:nth-child(3) input.debitBox').rules('add', 'required');
-						$(this).find('td:nth-child(4) input.creditBox').rules('remove', 'required');
-						$(this).find('td:nth-child(4) span.help-block-error').remove();
+						//$(this).find('td:nth-child(3) input.debitBox').rules('add', 'required');
+						//$(this).find('td:nth-child(4) input.creditBox').rules('remove');
+						//$(this).find('td:nth-child(4) span.help-block-error').remove();
 						var debit_amt=parseFloat($(this).find('td:nth-child(3) input.debitBox').val());
-						//alert(debit_amt);
 						if(!debit_amt){
 							debit_amt=0;
 						}
-						main_debit=parseFloat(main_debit)+parseFloat(debit_amt);
-						alert(main_debit);
-						if(is_cash_bank=='yes'){
-						 count_bank_cash++;
-						}
-						
+						main_debit=main_debit+debit_amt;
 					}else{
-						$(this).find('td:nth-child(3) input.debitBox').rules('remove', 'required');
-						$(this).find('td:nth-child(3) span.help-block-error').remove();
-						$(this).find('td:nth-child(4) input.creditBox').rules('add', 'required');
+						//$(this).find('td:nth-child(3) input.debitBox').rules('remove');
+						//$(this).find('td:nth-child(3) span.help-block-error').remove();
+						//$(this).find('td:nth-child(4) input.creditBox').rules('add', 'required');
 						var credit_amt=parseFloat($(this).find('td:nth-child(4) input.creditBox').val());
 						if(!credit_amt){
 							credit_amt=0;
 						}
 						main_credit=main_credit+credit_amt;
-						
+						if(is_cash_bank=='yes'){
+						 count_bank_cash++;
+						}
 					}
 					i++;
 				});
-				$('#MainTable tfoot tr td:nth-child(2) input#totalMainDr').val(main_debit);
-				$('#MainTable tfoot tr td:nth-child(3) input#totalMainCr').val(main_credit);
+				$('#MainTable tfoot tr td:nth-child(2) input#totalMainDr').val(round(main_debit,2));
+				$('#MainTable tfoot tr td:nth-child(3) input#totalMainCr').val(round(main_credit,2));
 				$('#MainTable tfoot tr td:nth-child(1) input#totalBankCash').val(count_bank_cash);
 			}
 			
@@ -640,7 +649,6 @@ $this->set('title', 'Receipt Voucher');
 			
 			function AddBankRow(SelectedTr){
 				var bankTr=$('#sampleForBank tbody tr').clone();
-				console.log(bankTr);
 				SelectedTr.find('td:nth-child(2) div.window table tbody').append(bankTr);
 				renameBankRows(SelectedTr);
 			}
@@ -653,7 +661,6 @@ $this->set('title', 'Receipt Voucher');
 					$(this).find('td:nth-child(3) input.cheque_date').attr({name:'receipt_rows['+row_no+'][cheque_date]',id:'receipt_rows-'+row_no+'-cheque_date'}).datepicker();
 				});
 			}
-			
 			$('.addRefRow').die().live('click',function(){
 				var SelectedTr=$(this).closest('tr.MainTr');
 				AddRefRow(SelectedTr);
@@ -665,7 +672,6 @@ $this->set('title', 'Receipt Voucher');
 				SelectedTr.find('td:nth-child(2) div.window table tbody').append(refTr);
 				renameRefRows(SelectedTr);
 			}
-			
 			function renameRefRows(SelectedTr){
 				var i=0;
 				var ledger_id=SelectedTr.find('td:nth-child(2) select.ledger').val();
@@ -689,7 +695,7 @@ $this->set('title', 'Receipt Voucher');
 					var is_select=$(this).find('td:nth-child(2) select.refList').length;
 					var is_input=$(this).find('td:nth-child(2) input.ref_name').length;
 					if(is_select){
-						$(this).find('td:nth-child(2) select.refList').attr({name:'receipt_rows['+row_no+'][reference_details]['+i+'][ref_name]',id:'receipt_rows-'+row_no+'-reference_details-'+i+'-ref_name'}).rules('add', 'required');;
+						$(this).find('td:nth-child(2) select.refList').attr({name:'receipt_rows['+row_no+'][reference_details]['+i+'][ref_name]',id:'receipt_rows-'+row_no+'-reference_details-'+i+'-ref_name'}).rules('add', 'required');
 					}else if(is_input){
 						$(this).find('td:nth-child(2) input.ref_name').attr({name:'receipt_rows['+row_no+'][reference_details]['+i+'][ref_name]',id:'receipt_rows-'+row_no+'-reference_details-'+i+'-ref_name'}).rules('add', 'required');;
 					}
@@ -711,33 +717,40 @@ $this->set('title', 'Receipt Voucher');
 						});
 				}
 			}
+				
 			
-			
-			
+			$('.calculate_total').die().live('keyup',function()
+			{ 
+				 renameMainRows();
+			});
 			$('.calculation').die().live('blur',function()
 			{ 
-			    var total_debit=0;var total_credit=0;
 				var SelectedTr=$(this).closest('tr.MainTr');
-				var total_debit=0;var total_credit=0; var remaining=0;
+				calculation(SelectedTr);
+				
+			});
+			
+			function calculation(SelectedTr)
+			{
+				var total_debit=0;var total_credit=0; var remaining=0; var i=0;
 				SelectedTr.find('td:nth-child(2) div.window table tbody tr').each(function(){
-					var Dr_Cr=$(this).find('td:nth-child(4) select option:selected').val();
-					
-					
-					var amt= parseFloat($(this).find('td:nth-child(3) input').val());
-					
-					if(!amt){ amt=0; }
+				var Dr_Cr=$(this).find('td:nth-child(4) select option:selected').val();
+				//console.log(Dr_Cr);
+				var amt= parseFloat($(this).find('td:nth-child(3) input').val());
+				
 					if(Dr_Cr=='Dr'){
 						total_debit=total_debit+amt;
-						//console.log(total_debit);
+						
 					}
 					else if(Dr_Cr=='Cr'){
 						total_credit=total_credit+amt;
-						//console.log(total_credit);
+						console.log(total_credit);
 					}
 					
 					remaining=total_debit-total_credit;
 					
 					if(remaining>0){
+						//console.log(remaining);
 						$(this).closest('table').find(' tfoot td:nth-child(2) input.total').val(remaining);
 						$(this).closest('table').find(' tfoot td:nth-child(3) input.total_type').val('Dr');
 					}
@@ -747,15 +760,16 @@ $this->set('title', 'Receipt Voucher');
 						$(this).closest('table').find(' tfoot td:nth-child(3) input.total_type').val('Cr');
 					}
 					else{
-						$(this).closest('table').find(' tfoot td:nth-child(2) input.total').val('0');
-						$(this).closest('table').find(' tfoot td:nth-child(3) input.total_type').val('');	
+					$(this).closest('table').find(' tfoot td:nth-child(2) input.total').val('0');
+					$(this).closest('table').find(' tfoot td:nth-child(3) input.total_type').val('');	
 					}
+					
 				});
-				var SelectedTr=$(this).closest('tr.MainTr');
-				renameRefRows(SelectedTr);
-			});
-			
-			ComponentsPickers.init();	
+				
+					
+				i++;
+			}
+			ComponentsPickers.init();
 		});
 	";
 ?>
