@@ -75,11 +75,11 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 											<?php 
 											if($i==0)
 											{
-												echo $this->Form->input('sales_voucher_rows.'.$i.'.cr_dr', ['input'=>'text','label' => false,'class' => 'form-control input-sm cr_dr','required'=>'required','value'=>'Dr','readonly'=>'readonly']); 
+												echo $this->Form->input('sales_voucher_rows.'.$i.'.cr_dr', ['options'=>['Dr'=>'Dr'],'label' => false,'class' => 'form-control input-sm cr_dr','required'=>'required','readonly'=>'readonly']); 
 											}
 											else if($i==1)
 											{
-												echo $this->Form->input('sales_voucher_rows.'.$i.'.cr_dr', ['input'=>'text','label' => false,'class' => 'form-control input-sm cr_dr','required'=>'required','value'=>'Cr','readonly'=>'readonly']);
+												echo $this->Form->input('sales_voucher_rows.'.$i.'.cr_dr', ['options'=>['Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm cr_dr','required'=>'required','value'=>'Cr','readonly'=>'readonly']);
 											}
 											else{
 											echo $this->Form->input('sales_voucher_rows.'.$i.'.cr_dr', ['options'=>['Dr'=>'Dr','Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm cr_dr','required'=>'required','value'=>$sales_voucher_row->cr_dr]); 
@@ -104,7 +104,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 											<?php
 											if(!empty($sales_voucher_row->reference_details)){
 											?>
-												<table width=90%><tbody>
+												<table width=90% class="refTbl"><tbody>
 												<?php
 												    $j=0;$total_amount_dr=0;$total_amount_cr=0;$colspan=0;
 												    foreach($sales_voucher_row->reference_details as $reference_detail)
@@ -185,7 +185,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 												    <tr class="remove_ref_foot">
 														<td colspan="2"><input type="hidden" id="htotal" value="<?php echo @$total;?>">
 													    </td>
-														<td><input type="text" class="form-control input-sm rightAligntextClass total calculation ttl noBorder" readonly value=""></td>
+														<td><input type="text" class="form-control input-sm rightAligntextClass total calculation ttl noBorder" readonly value=""name="payment_rows[<?php echo $i;?>][total]"></td>
 														<td><input type="text" class="form-control input-sm total_type calculation noBorder" readonly value="<?php echo @$type;?>"></td>
 													</tr>
 												</tfoot>
@@ -231,7 +231,8 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 										
 										</td>
 										<td width="10%">
-										<?php if(empty($sales_voucher_row->credit))
+										<?php 
+										      if(empty($sales_voucher_row->credit))
 											  {
 												  $style2="display:none;";
 											  }else
@@ -471,10 +472,15 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
                 },
 
                 submitHandler: function (form) {
-					alert('Are you sure you want to submit.');
-                    success1.show();
-                    error1.hide();
-                    form1[0].submit();
+					if(confirm('Are you sure you want to submit!'))
+					{
+						success1.show();
+						error1.hide();
+						form1[0].submit();
+						$('.submit').attr('disabled','disabled');
+						$('.submit').text('Submiting...');
+						return true;
+					}
                 }
 			});
 			
@@ -595,7 +601,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 					var SelectedTr=$(this).closest('tr.MainTr');
 					var windowContainer=$(this).closest('td').find('div.window');
 					windowContainer.html('');
-					windowContainer.html('<table width=90%><tbody></tbody><tfoot><tr style=border-top:double#a5a1a1><td colspan=2></td><td style=padding-right:0px;vertical-align: top !important;>$total_input</td><td style=padding-right:0px;vertical-align: top !important;>$total_type</td></tr></tfoot></table><a role=button class=addRefRow>Add Row</a>');
+					windowContainer.html('<table width=90% class=refTbl><tbody></tbody><tfoot><tr style=border-top:double#a5a1a1><td colspan=2></td><td style=padding-right:0px;vertical-align: top !important;>$total_input</td><td style=padding-right:0px;vertical-align: top !important;>$total_type</td></tr></tfoot></table><a role=button class=addRefRow>Add Row</a>');
 					AddRefRow(SelectedTr);
 				}
 				else if(openWindow=='bank'){
@@ -624,7 +630,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			}
 			
 			
-			
+			renameMainRows();
 			function renameMainRows()
 			{
 				var i=0;
@@ -635,6 +641,10 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 					$(this).find('td:nth-child(3) input.debitBox').attr({name:'sales_voucher_rows['+i+'][debit]',id:'sales_voucher_rows-'+i+'-debit'});
 					$(this).find('td:nth-child(4) input.creditBox').attr({name:'sales_voucher_rows['+i+'][credit]',id:'sales_voucher_rows-'+i+'-credit'});
 					i++;
+					
+					var SelectedTr=$(this).closest('tr.MainTr');
+					renameBankRows(SelectedTr);
+					renameRefRows(SelectedTr);
 				});
 			}
 			
@@ -676,9 +686,19 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				var i=0;
 				var ledger_id=SelectedTr.find('td:nth-child(2) select.ledger').val();
 				
+				var cr_dr=SelectedTr.find('td:nth-child(1) select.cr_dr option:selected').val();
+				if(cr_dr=='Dr'){
+					var eqlClassDr=SelectedTr.find('td:nth-child(3) input.debitBox').attr('id');
+					var mainAmt=SelectedTr.find('td:nth-child(3) input.debitBox').val();
+				}else{
+					var eqlClassCr=SelectedTr.find('td:nth-child(4) input.creditBox').attr('id');
+					var mainAmt=SelectedTr.find('td:nth-child(4) input.creditBox').val(); 
+				}
+				
 				SelectedTr.find('input.ledgerIdContainer').val(ledger_id);
 				SelectedTr.find('input.companyIdContainer').val(".$company_id.");
 				var row_no=SelectedTr.attr('row_no');
+				if(SelectedTr.find('td:nth-child(2) div.window table tbody tr').length>0){
 				SelectedTr.find('td:nth-child(2) div.window table tbody tr').each(function(){
 					$(this).find('td:nth-child(1) input.companyIdContainer').attr({name:'sales_voucher_rows['+row_no+'][reference_details]['+i+'][company_id]',id:'sales_voucher_rows-'+row_no+'-reference_details-'+i+'-company_id'});
 					$(this).find('td:nth-child(1) input.ledgerIdContainer').attr({name:'sales_voucher_rows['+row_no+'][reference_details]['+i+'][ledger_id]',id:'sales_voucher_rows-'+row_no+'-reference_details-'+i+'-ledger_id'});
@@ -698,6 +718,23 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 					}
 					i++;
 				});
+				var total_type=SelectedTr.find('td:nth-child(2) div.window table.refTbl tfoot tr td:nth-child(3) input.total_type').val();
+				if(total_type=='Dr'){
+					eqlClass=eqlClassDr;
+				}else{
+					eqlClass=eqlClassCr;
+				}
+				
+				
+				SelectedTr.find('td:nth-child(2) div.window table.refTbl tfoot tr td:nth-child(2) input.total')
+						.attr({name:'payment_rows['+row_no+'][total]',id:'payment_rows-'+row_no+'-total'})
+						.rules('add', {
+							equalTo: '#'+eqlClass,
+							messages: {
+								equalTo: 'Enter bill wise details upto '+mainAmt+' '+cr_dr
+							}
+						});
+				}
 				
 			}
 			
