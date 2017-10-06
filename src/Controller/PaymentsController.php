@@ -217,6 +217,9 @@ class PaymentsController extends AppController
 		}
         if ($this->request->is(['patch', 'post', 'put'])) {
             $payment = $this->Payments->patchEntity($payment, $this->request->getData());
+			$payment = $this->Payments->patchEntity($payment, $this->request->getData(), [
+							'associated' => ['PaymentRows','PaymentRows.ReferenceDetails']
+						]);
             if ($this->Payments->save($payment)) {
                 $this->Flash->success(__('The payment has been saved.'));
 
