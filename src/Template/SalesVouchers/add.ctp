@@ -317,10 +317,15 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
                 },
 
                 submitHandler: function (form) {
-					alert('Are you sure you want to submit.');
-                    success1.show();
-                    error1.hide();
-                    form1[0].submit();
+					if(confirm('Are you sure you want to submit!'))
+					{
+						success1.show();
+						error1.hide();
+						form1[0].submit();
+						$('.submit').attr('disabled','disabled');
+						$('.submit').text('Submiting...');
+						return true;
+					}
                 }
 			});
 			
@@ -522,6 +527,15 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				var i=0;
 				var ledger_id=SelectedTr.find('td:nth-child(2) select.ledger').val();
 				
+				var cr_dr=SelectedTr.find('td:nth-child(1) select.cr_dr option:selected').val();
+				if(cr_dr=='Dr'){
+					var eqlClass=SelectedTr.find('td:nth-child(3) input.debitBox').attr('id');
+					var mainAmt=SelectedTr.find('td:nth-child(3) input.debitBox').val();
+				}else{
+					var eqlClass=SelectedTr.find('td:nth-child(4) input.creditBox').attr('id');
+					var mainAmt=SelectedTr.find('td:nth-child(4) input.creditBox').val();
+				}
+				
 				SelectedTr.find('input.ledgerIdContainer').val(ledger_id);
 				SelectedTr.find('input.companyIdContainer').val(".$company_id.");
 				var row_no=SelectedTr.attr('row_no');
@@ -545,6 +559,14 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 					i++;
 				});
 				
+				SelectedTr.find('td:nth-child(2) div.window table.refTbl tfoot tr td:nth-child(2) input.total')
+						.attr({name:'payment_rows['+row_no+'][total]',id:'payment_rows-'+row_no+'-total'})
+						.rules('add', {
+							equalTo: '#'+eqlClass,
+							messages: {
+								equalTo: 'Enter bill wise details upto '+mainAmt+' '+cr_dr
+							}
+						});
 			}
 			
 			$('.calculation').die().live('blur',function()
