@@ -661,6 +661,7 @@ $this->set('title', 'Receipt Voucher');
 					$(this).find('td:nth-child(3) input.cheque_date').attr({name:'receipt_rows['+row_no+'][cheque_date]',id:'receipt_rows-'+row_no+'-cheque_date'}).datepicker();
 				});
 			}
+			
 			$('.addRefRow').die().live('click',function(){
 				var SelectedTr=$(this).closest('tr.MainTr');
 				AddRefRow(SelectedTr);

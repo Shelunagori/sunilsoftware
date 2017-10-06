@@ -65,6 +65,21 @@ class ReceiptsController extends AppController
 		 $receipt->transaction_date=date('Y-m-d',strtotime($tdate));
 		 
             if ($this->Receipts->save($receipt)) {
+			
+			$accountData = $this->Receipts->ReceiptRows->AccountingEntries->query();
+						$accountData->insert(['ledger_id', 'debit','credit', 'transaction_date', 'company_id', 'sales_invoice_id'])
+								->values([
+								'ledger_id' => $salesInvoice->sales_ledger_id,
+								'debit' => '',
+								'credit' => $salesInvoice->amount_before_tax,
+								'transaction_date' => $salesInvoice->transaction_date,
+								'company_id' => $salesInvoice->company_id,
+								'sales_invoice_id' => $salesInvoice->id
+								])
+						->execute();
+			
+			
+			
                 $this->Flash->success(__('The receipt has been saved.'));
                 return $this->redirect(['action' => 'index']);
             }
