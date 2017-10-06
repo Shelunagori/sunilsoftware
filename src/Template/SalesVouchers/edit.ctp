@@ -557,6 +557,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			
 			$('.cr_dr').die().live('change',function(){
 				var cr_dr=$(this).val();
+				
 				if(cr_dr=='Cr'){
 					$(this).closest('tr').find('.debitBox').val('');
 					calc();
