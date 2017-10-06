@@ -187,6 +187,34 @@ class PaymentsController extends AppController
         $payment = $this->Payments->get($id, [
             'contain' => ['PaymentRows'=>['ReferenceDetails']]
         ]);
+		$refDropDown =[];
+		foreach($payment->payment_rows as $payment_row)
+		{
+			if(!empty($payment_row->reference_details))
+			{
+				$query = $this->Payments->PaymentRows->ReferenceDetails->find();
+				$query->select(['total_debit' => $query->func()->sum('ReferenceDetails.debit'),'total_credit' => $query->func()->sum('ReferenceDetails.credit')])
+				->where(['ReferenceDetails.ledger_id'=>$payment_row->ledger_id,'ReferenceDetails.type !='=>'On Account'])
+				->group(['ReferenceDetails.ref_name'])
+				->autoFields(true);
+				$referenceDetails=$query;
+				$option=[];
+				foreach($referenceDetails as $referenceDetail){
+					$remider=$referenceDetail->total_debit-$referenceDetail->total_credit;
+					if($remider>0){
+						$bal=abs($remider).' Dr';
+					}else if($remider<0){
+						$bal=abs($remider).' Cr';
+					}
+					if($referenceDetail->total_debit!=$referenceDetail->total_credit){
+						$option[$referenceDetail->ref_name]=$referenceDetail->ref_name;
+						 
+					}
+				}
+				
+				$refDropDown[$payment_row->id] = $option;
+			}
+		}
         if ($this->request->is(['patch', 'post', 'put'])) {
             $payment = $this->Payments->patchEntity($payment, $this->request->getData());
             if ($this->Payments->save($payment)) {
@@ -302,7 +330,7 @@ class PaymentsController extends AppController
 		}
 		
 		//$referenceDetails=$this->Payments->PaymentRows->ReferenceDetails->find('list');
-		$this->set(compact('payment', 'company_id','voucher_no','ledgerOptions', 'referenceDetails'));
+		$this->set(compact('payment', 'company_id','voucher_no','ledgerOptions', 'referenceDetails','refDropDown'));
         $this->set('_serialize', ['payment']);
     }
 
