@@ -80,6 +80,20 @@ class SalesVouchersController extends AppController
 						]);
 			//pr($salesVoucher->sales_voucher_rows); exit;
             if ($this->SalesVouchers->save($salesVoucher)) {
+				
+				foreach($salesVoucher->sales_voucher_rows as $sales_voucher_row)
+				{
+					$accountEntry = $this->SalesVouchers->AccountingEntries->newEntity();
+					$accountEntry->ledger_id                  = $sales_voucher_row->ledger_id;
+					$accountEntry->debit                      = $sales_voucher_row->debit;
+					$accountEntry->credit                     = $sales_voucher_row->credit;
+					$accountEntry->transaction_date           = $salesVoucher->transaction_date;
+					$accountEntry->company_id                 = $company_id;
+					$accountEntry->sales_voucher_id           = $salesVoucher->id;
+					$accountEntry->sales_voucher_row_id       = $sales_voucher_row->id;
+					
+					$this->SalesVouchers->AccountingEntries->save($accountEntry);
+				}
                 $this->Flash->success(__('The sales voucher has been saved.'));
 
                 return $this->redirect(['action' => 'index']);
@@ -222,6 +236,24 @@ class SalesVouchersController extends AppController
 						]);
 			//pr($salesVoucher);exit;
 			if ($this->SalesVouchers->save($salesVoucher)) {
+				$query_delete = $this->SalesVouchers->AccountingEntries->query();
+					$query_delete->delete()
+					->where(['sales_voucher_id' => $salesVoucher->id,'company_id'=>$company_id])
+					->execute();
+					
+				foreach($salesVoucher->sales_voucher_rows as $sales_voucher_row)
+				{
+					$accountEntry = $this->SalesVouchers->AccountingEntries->newEntity();
+					$accountEntry->ledger_id                  = $sales_voucher_row->ledger_id;
+					$accountEntry->debit                      = $sales_voucher_row->debit;
+					$accountEntry->credit                     = $sales_voucher_row->credit;
+					$accountEntry->transaction_date           = $salesVoucher->transaction_date;
+					$accountEntry->company_id                 = $company_id;
+					$accountEntry->sales_voucher_id           = $salesVoucher->id;
+					$accountEntry->sales_voucher_row_id       = $sales_voucher_row->id;
+					
+					$this->SalesVouchers->AccountingEntries->save($accountEntry);
+				}
                 $this->Flash->success(__('The sales voucher has been saved.'));
 
                 return $this->redirect(['action' => 'index']);

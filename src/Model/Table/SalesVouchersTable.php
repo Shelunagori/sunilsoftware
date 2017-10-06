@@ -45,6 +45,10 @@ class SalesVouchersTable extends Table
             'foreignKey' => 'sales_voucher_id',
 			'saveStrategy'=>'replace'
         ]);
+		 $this->hasMany('AccountingEntries', [
+            'foreignKey' => 'sales_voucher_id',
+            'joinType' => 'INNER'
+        ]);
     }
 
     /**

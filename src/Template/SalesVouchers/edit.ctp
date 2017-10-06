@@ -506,10 +506,10 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 					
 				}); 
 				if(!totalDebit){ totalDebit=0; }
-				$('.total_debit').val(totalDebit);
+				$('.total_debit').val(round(totalDebit,2));
 				
 				if(!totalCredit){totalCredit=0; }
-				$('.total_credit').val(totalCredit);
+				$('.total_credit').val(round(totalCredit,2));
 			}
 			
 			$('.paymentType').die().live('change',function(){
