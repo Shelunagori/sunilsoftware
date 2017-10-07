@@ -229,6 +229,10 @@ class PaymentsController extends AppController
 			$payment = $this->Payments->patchEntity($payment, $this->request->getData(), [
 							'associated' => ['PaymentRows','PaymentRows.ReferenceDetails']
 						]);
+						
+						pr($payment);
+						exit;
+						
             if ($this->Payments->save($payment)) {
 			
 			$query_delete = $this->Payments->AccountingEntries->query();
