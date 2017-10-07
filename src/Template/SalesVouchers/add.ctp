@@ -583,7 +583,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				}
 			}
 			
-			$('.calculation').die().live('blur',function()
+			$('.calculation').die().live('keyup',function()
 			{ 
 				var SelectedTr=$(this).closest('tr.MainTr');
 				calculation(SelectedTr);
@@ -600,11 +600,11 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				
 					if(Dr_Cr=='Dr'){
 						total_debit=total_debit+amt;
-						console.log(total_debit);
+						//console.log(total_debit);
 					}
 					else if(Dr_Cr=='Cr'){
 						total_credit=total_credit+amt;
-						console.log(total_credit);
+						//console.log(total_credit);
 					}
 					
 					remaining=total_debit-total_credit;

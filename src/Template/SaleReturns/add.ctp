@@ -631,6 +631,9 @@ foreach($partyOptions as $partyOption)
 		if(!amount_before_tax || amount_before_tax==0){
 			alert('Error: zero amount invoice can not be generated.');
 			return false;
+		}else if(amount_before_tax < 0){
+			alert('Error: Minus amount invoice can not be generated.');
+			return false;
 		}
 		
 		var StockDB=[]; var StockInput = {};
