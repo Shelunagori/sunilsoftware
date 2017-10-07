@@ -129,7 +129,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 															<?php } if($reference_detail->type=='Against')
 															{?>
 															<?php 
- 
+                                                            
 															if(!empty($refDropDown[$sales_voucher_row->id]))
 															{
 																echo $this->Form->input('mode_of_payment', ['options'=>$refDropDown[$sales_voucher_row->id],'label' => false,'class' => 'form-control input-sm paymentType','required'=>'required','value'=>$reference_detail->type]);
