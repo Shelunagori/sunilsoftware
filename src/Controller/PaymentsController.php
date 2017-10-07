@@ -223,15 +223,26 @@ class PaymentsController extends AppController
 				$refDropDown[$payment_row->id] = $option;
 			}
 		}
-		
+		$originalPayment=$payment;
         if ($this->request->is(['patch', 'post', 'put'])) {
-            $payment = $this->Payments->patchEntity($payment, $this->request->getData());
+		
+		//GET ORIGINAL DATA AND DELETE REFERENCE DATA//
+			$orignalPayment_ids=[];
+			foreach($originalPayment->payment_rows as $originalPayment_rows){
+				$orignalPayment_ids[]=$originalPayment_rows->id;
+			}
+			$this->Payments->PaymentRows->ReferenceDetails->deleteAll(['ReferenceDetails.payment_row_id IN'=>$orignalPayment_ids]);
+			$query_update = $this->Payments->PaymentRows->query();
+					$query_update->update()
+					->set(['mode_of_payment' => '', 'cheque_no' => '', 'cheque_date' => ''])
+					->where(['payment_id' => $payment->id])
+					->execute();
+			//GET ORIGINAL DATA AND DELETE REFERENCE DATA//
+			
+		
 			$payment = $this->Payments->patchEntity($payment, $this->request->getData(), [
 							'associated' => ['PaymentRows','PaymentRows.ReferenceDetails']
 						]);
-						
-						pr($payment);
-						exit;
 						
             if ($this->Payments->save($payment)) {
 			
@@ -269,34 +280,6 @@ class PaymentsController extends AppController
 		{ 
 			$voucher_no=1;
 		} 
-		$bankParentGroups = $this->Payments->PaymentRows->Ledgers->AccountingGroups->find()
-						->where(['AccountingGroups.company_id'=>$company_id, 'AccountingGroups.bank'=>'1']);
-						
-		$bankGroups=[];
-		
-		foreach($bankParentGroups as $bankParentGroup)
-		{
-			$accountingGroups = $this->Payments->PaymentRows->Ledgers->AccountingGroups
-			->find('children', ['for' => $bankParentGroup->id])->toArray();
-			$bankGroups[]=$bankParentGroup->id;
-			foreach($accountingGroups as $accountingGroup){
-				$bankGroups[]=$accountingGroup->id;
-			}
-		}
-		
-		$ledgers = $this->Payments->PaymentRows->Ledgers->find()->where(['company_id'=>$company_id]);
-		foreach($ledgers as $ledger){
-			if(in_array($ledger->accounting_group_id,$bankGroups)){
-				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id ,'open_window' => 'bank'];
-			}
-			else if($ledger->bill_to_bill_accounting == 'yes'){
-				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id,'open_window' => 'party' ];
-			}
-			else{
-				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id,'open_window' => 'no' ];
-			}
-			
-		}
 		
 		//bank group
 		$bankParentGroups = $this->Payments->PaymentRows->Ledgers->AccountingGroups->find()
@@ -362,8 +345,8 @@ class PaymentsController extends AppController
 			else{
 				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id,'open_window' => 'no','bank_and_cash' => 'no' ];
 			}
-			
 		}
+		
 		
 		//$referenceDetails=$this->Payments->PaymentRows->ReferenceDetails->find('list');
 		$this->set(compact('payment', 'company_id','voucher_no','ledgerOptions', 'referenceDetails','refDropDown'));
