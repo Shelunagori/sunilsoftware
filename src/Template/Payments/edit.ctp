@@ -69,6 +69,8 @@ $this->set('title', 'Payment Voucher');
 									<tr class="MainTr" row_no="<?php echo $i;?>">
 										<td width="10%">
 											<?php 
+											echo $this->Form->input('payment_rows.'.$i.'.id',['value'=>$paymentRows->id]);
+											
 											echo $this->Form->input('payment_rows.'.$i.'.cr_dr', ['options'=>['Dr'=>'Dr','Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm cr_dr','required'=>'required','value'=>$paymentRows->cr_dr]); 
 											echo $this->Form->input('payment_rows.'.$i.'.id',['value'=>$paymentRows->id]);
 											?>

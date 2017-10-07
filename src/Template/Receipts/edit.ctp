@@ -69,6 +69,8 @@ $this->set('title', 'Receipt Voucher');
 									<tr class="MainTr" row_no="<?php echo $i;?>">
 										<td width="10%">
 											<?php 
+											echo $this->Form->input('receipt_rows.'.$i.'.id',['value'=>$receiptRows->id]);
+											
 											echo $this->Form->input('receipt_rows.'.$i.'.cr_dr', ['options'=>['Dr'=>'Dr','Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm cr_dr','required'=>'required','value'=>$receiptRows->cr_dr]); 
 											echo $this->Form->input('receipt_rows.'.$i.'.id',['value'=>$receiptRows->id]);
 											?>
@@ -107,6 +109,8 @@ $this->set('title', 'Receipt Voucher');
 															echo $this->Form->input('receipt_rows.'.$i.'.reference_details.'.$j.'.type', ['options'=>$option_ref,'label' => false,'class' => 'form-control input-sm refType','required'=>'required','value'=>$reference_detail->type]); 
 															
 															echo $this->Form->input('receipt_rows.'.$i.'.reference_details.'.$j.'.id', ['type'=>'hidden','value'=>$reference_detail->id]); ?>
+														
+														
 														</td>
 														
 														<td width="">
