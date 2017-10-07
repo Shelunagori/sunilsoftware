@@ -118,7 +118,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 															<?php 
 															echo $this->Form->input('sales_voucher_rows.'.$i.'.reference_details.'.$j.'.type', ['options'=>$option_ref,'label' => false,'class' => 'form-control input-sm refType','required'=>'required','value'=>$reference_detail->type]); 
 															
-															echo $this->Form->input('sales_voucher_rows.'.$i.'.reference_details.'.$j.'.id', ['type'=>'hidden','value'=>$reference_detail->id]);
+															
 															 ?>
 														</td>
 														
