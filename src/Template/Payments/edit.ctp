@@ -774,7 +774,7 @@ $this->set('title', 'Payment Voucher');
 					}
 					else if(Dr_Cr=='Cr'){
 						total_credit=total_credit+amt;
-						console.log(total_credit);
+						//console.log(total_credit);
 					}
 					
 					remaining=total_debit-total_credit;
