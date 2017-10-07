@@ -200,12 +200,14 @@ class SalesVouchersController extends AppController
 		$originalSalesVoucher=$salesVoucher;
 		
 		if ($this->request->is(['patch', 'post', 'put'])) {
+			//GET ORIGINAL DATA AND DELETE REFERENCE DATA//
 			$orignalSales_voucher_row_ids=[];
 			foreach($originalSalesVoucher->sales_voucher_rows as $originalSales_voucher_rows){
 				$orignalSales_voucher_row_ids[]=$originalSales_voucher_rows->id;
 			}
-			
 			$this->SalesVouchers->SalesVoucherRows->ReferenceDetails->deleteAll(['ReferenceDetails.sales_voucher_row_id IN'=>$orignalSales_voucher_row_ids]);
+			//GET ORIGINAL DATA AND DELETE REFERENCE DATA//
+			
 			$this->request->data['transaction_date'] = date("Y-m-d",strtotime($this->request->getData()['transaction_date']));
            
 			$salesVoucher = $this->SalesVouchers->patchEntity($salesVoucher, $this->request->getData(), [
