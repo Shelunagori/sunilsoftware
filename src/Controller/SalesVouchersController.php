@@ -85,8 +85,8 @@ class SalesVouchersController extends AppController
 				{
 					$accountEntry = $this->SalesVouchers->AccountingEntries->newEntity();
 					$accountEntry->ledger_id                  = $sales_voucher_row->ledger_id;
-					$accountEntry->debit                      = $sales_voucher_row->debit;
-					$accountEntry->credit                     = $sales_voucher_row->credit;
+					$accountEntry->debit                      = round($sales_voucher_row->debit,2);
+					$accountEntry->credit                     = round($sales_voucher_row->credit,2);
 					$accountEntry->transaction_date           = $salesVoucher->transaction_date;
 					$accountEntry->company_id                 = $company_id;
 					$accountEntry->sales_voucher_id           = $salesVoucher->id;
@@ -226,15 +226,13 @@ class SalesVouchersController extends AppController
 				$refDropDown[$sales_voucher_row->id] = $option;
 			}
 		}
-		//pr($refDropDown);exit;
-        if ($this->request->is(['patch', 'post', 'put'])) {
+		if ($this->request->is(['patch', 'post', 'put'])) {
 			$this->request->data['transaction_date'] = date("Y-m-d",strtotime($this->request->getData()['transaction_date']));
-            $salesVoucher = $this->SalesVouchers->patchEntity($salesVoucher, $this->request->getData());
-	 
+           
 			$salesVoucher = $this->SalesVouchers->patchEntity($salesVoucher, $this->request->getData(), [
 							'associated' => ['SalesVoucherRows','SalesVoucherRows.ReferenceDetails']
 						]);
-			//pr($salesVoucher);exit;
+		    //pr($salesVoucher);exit;
 			if ($this->SalesVouchers->save($salesVoucher)) {
 				$query_delete = $this->SalesVouchers->AccountingEntries->query();
 					$query_delete->delete()
@@ -245,8 +243,8 @@ class SalesVouchersController extends AppController
 				{
 					$accountEntry = $this->SalesVouchers->AccountingEntries->newEntity();
 					$accountEntry->ledger_id                  = $sales_voucher_row->ledger_id;
-					$accountEntry->debit                      = $sales_voucher_row->debit;
-					$accountEntry->credit                     = $sales_voucher_row->credit;
+					$accountEntry->debit                      = round($sales_voucher_row->debit,2);
+					$accountEntry->credit                     = round($sales_voucher_row->credit,2);
 					$accountEntry->transaction_date           = $salesVoucher->transaction_date;
 					$accountEntry->company_id                 = $company_id;
 					$accountEntry->sales_voucher_id           = $salesVoucher->id;
