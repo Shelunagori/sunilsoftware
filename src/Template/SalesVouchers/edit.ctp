@@ -118,7 +118,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 															<?php 
 															echo $this->Form->input('sales_voucher_rows.'.$i.'.reference_details.'.$j.'.type', ['options'=>$option_ref,'label' => false,'class' => 'form-control input-sm refType','required'=>'required','value'=>$reference_detail->type]); 
 															
-															echo $this->Form->input('sales_voucher_rows.'.$i.'.reference_details.'.$j.'.id', ['type'=>'hidden','value'=>$reference_detail->id]);
+															
 															 ?>
 														</td>
 														
@@ -662,10 +662,16 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 					$(this).find('td:nth-child(3) input.debitBox').attr({name:'sales_voucher_rows['+i+'][debit]',id:'sales_voucher_rows-'+i+'-debit'});
 					$(this).find('td:nth-child(4) input.creditBox').attr({name:'sales_voucher_rows['+i+'][credit]',id:'sales_voucher_rows-'+i+'-credit'});
 					i++;
+					var type=$(this).find('td:nth-child(2) option:selected').attr('open_window'); 
 					
 					var SelectedTr=$(this).closest('tr.MainTr');
-					//renameBankRows(SelectedTr);
-					//renameRefRows(SelectedTr);
+					if(type=='party'){
+						renameRefRows(SelectedTr);
+					}
+					if(type=='bank'){
+						renameBankRows(SelectedTr);
+					}
+					
 				});
 			}
 			
@@ -691,7 +697,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				
 			}
 			
-			$('.addRefRow').die().live('click',function(){ alert();
+			$('.addRefRow').die().live('click',function(){ 
 				var SelectedTr=$(this).closest('tr.MainTr');
 				AddRefRow(SelectedTr);
 			});
