@@ -769,6 +769,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			$('.calculation').die().live('keyup',function()
 			{ 
 				var SelectedTr=$(this).closest('tr.MainTr');
+				renameRefRows(SelectedTr);
 				calculation(SelectedTr);
 				
 			});
@@ -776,6 +777,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			$('.reload').die().live('change',function()
 			{ 
 				var SelectedTr=$(this).closest('tr.MainTr');
+				renameRefRows(SelectedTr);
 				calculation(SelectedTr);
 				
 			});
