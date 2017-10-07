@@ -73,7 +73,10 @@ class SalesVoucherRowsTable extends Table
 
 	public function beforeMarshal(Event $event, ArrayObject $data)
     {
-        @$data['cheque_date'] = trim(date('Y-m-d',strtotime(@$data['cheque_date'])));
+		if(@$data['cheque_date']!="")
+		{
+			@$data['cheque_date'] = trim(date('Y-m-d',strtotime(@$data['cheque_date'])));
+		}
     }
     /**
      * Returns a rules checker object that will be used for validating

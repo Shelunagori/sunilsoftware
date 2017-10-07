@@ -162,7 +162,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 														</td>
 														<td width="10%" style="padding-left:0px;">
 															<?php 
-															echo $this->Form->input('type_cr_dr', ['options'=>['Dr'=>'Dr','Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm  calculation refDrCr','value'=>$cr_dr]); ?>
+															echo $this->Form->input('type_cr_dr', ['options'=>['Dr'=>'Dr','Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm  calculation refDrCr reload','value'=>$cr_dr]); ?>
 														</td>
 														
 														<td align="center">
@@ -196,20 +196,32 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 											<?php } ?>
 											<?php
 											if(!empty($sales_voucher_row->mode_of_payment)){
+												if($sales_voucher_row->mode_of_payment=='NEFT/RTGS')
+												{  
+													$style="display:none;";
+												}
+												else 
+												{
+													$style="";
+												} 
+												if(!empty($sales_voucher_row->cheque_date))
+												{
+													$date = date("d-m-Y",strtotime($sales_voucher_row->cheque_date));
+												}
 											?>
 											<table width='90%'>
 												<tbody>
 													<tr>
-														<td width="30%">
+														<td width="30%" >
 															<?php 
 															echo $this->Form->input('sales_voucher_rows.'.$i.'.mode_of_payment', ['options'=>$option_mode,'label' => false,'class' => 'form-control input-sm paymentType','required'=>'required','value'=>$sales_voucher_row->mode_of_payment]); ?>
 														</td>
-														<td width="30%">
+														<td width="30%" style="<?php echo @$style;?>">
 															<?php echo $this->Form->input('sales_voucher_rows.'.$i.'.cheque_no', ['label' =>false,'class' => 'form-control input-sm cheque_no','placeholder'=>'Cheque No','value'=>$sales_voucher_row->cheque_no]); ?> 
 														</td>
 														
-														<td width="30%">
-															<?php echo $this->Form->input('sales_voucher_rows.'.$i.'.cheque_date', ['label' =>false,'class' => 'form-control input-sm date-picker cheque_date ','data-date-format'=>'dd-mm-yyyy','placeholder'=>'Cheque Date','value'=>date("d-m-Y",strtotime($sales_voucher_row->cheque_date)),'type'=>'text']); ?>
+														<td width="30%" style="<?php echo @$style;?>">
+															<?php echo $this->Form->input('sales_voucher_rows.'.$i.'.cheque_date', ['label' =>false,'class' => 'form-control input-sm date-picker cheque_date ','data-date-format'=>'dd-mm-yyyy','placeholder'=>'Cheque Date','value'=>@$date,'type'=>'text']); ?>
 														</td>
 													</tr>
 												</tbody>
@@ -302,7 +314,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			</td>
 			<td width="10%" style="padding-left:0px;">
 				<?php 
-				echo $this->Form->input('type_cr_dr', ['options'=>['Dr'=>'Dr','Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm  calculation refDrCr','value'=>'Dr']); ?>
+				echo $this->Form->input('type_cr_dr', ['options'=>['Dr'=>'Dr','Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm  calculation refDrCr reload','value'=>'Dr']); ?>
 			</td>
 			
 			<td align="center">
@@ -518,15 +530,18 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			$('.paymentType').die().live('change',function(){
 				var type=$(this).val();	
 				var currentRefRow=$(this).closest('tr');
+				var SelectedTr=$(this).closest('tr.MainTr');
 				if(type=='NEFT/RTGS'){
 					currentRefRow.find('td:nth-child(2) input').val('');
 					currentRefRow.find('td:nth-child(3) input').val('');
 					currentRefRow.find('td:nth-child(2)').hide();
 					currentRefRow.find('td:nth-child(3)').hide();
+					renameBankRows(SelectedTr);
 				}
 				else{
 					currentRefRow.find('td:nth-child(2)').show();
 					currentRefRow.find('td:nth-child(3)').show();
+					renameBankRows(SelectedTr);
 				}
 			});
 			
@@ -601,12 +616,13 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			});
 			
 			$('.ledger').die().live('change',function(){
-				var openWindow=$(this).find('option:selected').attr('open_window');
+				
+				var openWindow=$(this).find('option:selected').attr('open_window'); 
 				if(openWindow=='party'){
 					var SelectedTr=$(this).closest('tr.MainTr');
 					var windowContainer=$(this).closest('td').find('div.window');
 					windowContainer.html('');
-					windowContainer.html('<table width=90% class=refTbl><tbody></tbody><tfoot><tr style=border-top:double#a5a1a1><td colspan=2></td><td style=padding-right:0px;vertical-align: top !important;>$total_input</td><td style=padding-right:0px;vertical-align: top !important;>$total_type</td></tr></tfoot></table><a role=button class=addRefRow>Add Row</a>');
+					windowContainer.html('<table width=90% class=refTbl><tbody></tbody><tfoot><tr style=border-top:double#a5a1a1><td colspan=2></td><td>$total_input</td><td>$total_type</td></tr></tfoot></table><a role=button class=addRefRow>Add Row</a>');
 					AddRefRow(SelectedTr);
 				}
 				else if(openWindow=='bank'){
@@ -648,8 +664,8 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 					i++;
 					
 					var SelectedTr=$(this).closest('tr.MainTr');
-					renameBankRows(SelectedTr);
-					renameRefRows(SelectedTr);
+					//renameBankRows(SelectedTr);
+					//renameRefRows(SelectedTr);
 				});
 			}
 			
@@ -675,14 +691,15 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				
 			}
 			
-			$('.addRefRow').die().live('click',function(){
+			$('.addRefRow').die().live('click',function(){ alert();
 				var SelectedTr=$(this).closest('tr.MainTr');
 				AddRefRow(SelectedTr);
 			});
 			
 			function AddRefRow(SelectedTr){
 				var refTr=$('#sampleForRef tbody tr').clone();
-				//console.log(refTr);
+				//console.log(refTr); 
+				
 				SelectedTr.find('td:nth-child(2) div.window table tbody').append(refTr);
 				renameRefRows(SelectedTr);
 			}
@@ -743,7 +760,14 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				
 			}
 			
-			$('.calculation').die().live('blur',function()
+			$('.calculation').die().live('keyup',function()
+			{ 
+				var SelectedTr=$(this).closest('tr.MainTr');
+				calculation(SelectedTr);
+				
+			});
+			
+			$('.reload').die().live('change',function()
 			{ 
 				var SelectedTr=$(this).closest('tr.MainTr');
 				calculation(SelectedTr);
