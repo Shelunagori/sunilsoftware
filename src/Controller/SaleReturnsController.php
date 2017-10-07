@@ -62,16 +62,12 @@ class SaleReturnsController extends AppController
 			}],'SalesInvoiceRows'=>['Items', 'GstFigures']])
         ]);
 		
-		//pr($salesInvoice); exit;
-		
 		$sales_return_qty=[];
-			foreach($salesInvoice->sale_returns as $sale_returns){
-				foreach($sale_returns->sale_return_rows as $sale_return_row){
-					$sales_return_qty[@$sale_return_row->item_id]=@$sales_return_qty[$sale_return_row->item_id]+$sale_return_row->total;
-					
-				}
+		foreach($salesInvoice->sale_returns as $sale_returns){
+			foreach($sale_returns->sale_return_rows as $sale_return_row){
+				$sales_return_qty[@$sale_return_row->item_id]=@$sales_return_qty[$sale_return_row->item_id]+$sale_return_row->total;
 			}
-		//pr($sales_return_qty); exit;
+		}
 		$company_id=$this->Auth->User('session_company_id');
 		$stateDetails=$this->Auth->User('session_company');
 		$location_id=$this->Auth->User('session_location_id');
@@ -82,92 +78,71 @@ class SaleReturnsController extends AppController
         $saleReturn = $this->SaleReturns->newEntity();
         if ($this->request->is(['patch', 'post', 'put'])) {
 			$transaction_date=date('Y-m-d', strtotime($this->request->data['transaction_date']));
-			//pr($this->request->getData()); exit;
-            $saleReturn = $this->SaleReturns->patchEntity($saleReturn, $this->request->getData());
-			
-			 $saleReturn->transaction_date=$transaction_date;
-			 $saleReturn->sales_invoice_id=$id;
-			
+			$saleReturn = $this->SaleReturns->patchEntity($saleReturn, $this->request->getData());
+			$saleReturn->transaction_date=$transaction_date;
+			$saleReturn->sales_invoice_id=$id;
 			$Voucher_no = $this->SaleReturns->find()->select(['voucher_no'])->where(['company_id'=>$company_id])->order(['voucher_no' => 'DESC'])->first();
-				if($Voucher_no)
-				{
-					$voucher_no=$Voucher_no->voucher_no+1;
-				}
-				else
-				{
-					$voucher_no=1;
-				} 
-				$saleReturn->voucher_no=$voucher_no;
-				$saleReturn->sales_ledger_id=$salesInvoice->sales_ledger_id;
-				$saleReturn->party_ledger_id=$salesInvoice->party_ledger_id;
-				//pr($saleReturn);exit;
-            if ($this->SaleReturns->save($saleReturn)) {
+			
+			if($Voucher_no){
+				$voucher_no=$Voucher_no->voucher_no+1;
+			}else{
+				$voucher_no=1;
+			} 
+			$saleReturn->voucher_no=$voucher_no;
+			$saleReturn->sales_ledger_id=$salesInvoice->sales_ledger_id;
+			$saleReturn->party_ledger_id=$salesInvoice->party_ledger_id;
+            if($this->SaleReturns->save($saleReturn)){
 				$gstVal=0;
 				$gVal=0;
-			foreach($saleReturn->sale_return_rows as $sale_return_row)
-			   { //pr($sale_return_row);
+				foreach($saleReturn->sale_return_rows as $sale_return_row){ 
 					$exactRate=$sale_return_row['taxable_value']/$sale_return_row['return_quantity'];
-					 $stockData = $this->SaleReturns->SalesInvoices->ItemLedgers->query();
-						$stockData->insert(['item_id', 'transaction_date','quantity', 'rate', 'amount', 'status', 'company_id', 'sale_return_id', 'sale_return_row_id', 'location_id'])
-								->values([
-								'item_id' => $sale_return_row['item_id'],
-								'transaction_date' => $saleReturn->transaction_date,
-								'quantity' => $sale_return_row['return_quantity'],
-								'rate' => $exactRate,
-								'amount' => $sale_return_row['taxable_value'],
-								'status' => 'in',
-								'company_id' => $saleReturn->company_id,
-								'sale_return_id' => $saleReturn->id,
-								'sale_return_row_id' => $sale_return_row->id,
-								'location_id'=>$saleReturn->location_id
-								])
-						->execute();
-
-					
-				//pr($SalesInvoiceRow); exit;
-			} 
-			
-			$query1 = $this->SaleReturns->SalesInvoices->query();
-						$query1->update()
-							->set(['sale_return_id' => $saleReturn->id])
-							->where(['id' => $salesInvoice->id])
-							->execute();
-	
-			  $partyData = $this->SaleReturns->SalesInvoices->AccountingEntries->query();
-						$partyData->insert(['ledger_id', 'debit','credit', 'transaction_date', 'company_id', 'sale_return_id'])
-								->values([
-								'ledger_id' => $saleReturn->party_ledger_id,
-								'debit' => '',
-								'credit' => $saleReturn->amount_after_tax,
-								'transaction_date' => $saleReturn->transaction_date,
-								'company_id' => $saleReturn->company_id,
-								'sale_return_id' => $saleReturn->id
-								])
-						->execute();
-						$accountData = $this->SaleReturns->SalesInvoices->AccountingEntries->query();
-						$accountData->insert(['ledger_id', 'debit','credit', 'transaction_date', 'company_id', 'sale_return_id'])
-								->values([
-								'ledger_id' => $saleReturn->sales_ledger_id,
-								'debit' => $saleReturn->amount_before_tax,
-								'credit' =>  '',
-								'transaction_date' => $saleReturn->transaction_date,
-								'company_id' => $saleReturn->company_id,
-								'sale_return_id' => $saleReturn->id
-								])
-						->execute();
-						if(str_replace('-',' ',$saleReturn->round_off)>0)
-						{
-							$roundData = $this->SaleReturns->SalesInvoices->AccountingEntries->query();
-							if($saleReturn->isRoundofType=='0')
-							{
+					$stockData = $this->SaleReturns->SalesInvoices->ItemLedgers->query();
+					$stockData->insert(['item_id', 'transaction_date','quantity', 'rate', 'amount', 'status', 'company_id', 'sale_return_id', 'sale_return_row_id', 'location_id'])
+							->values([
+							'item_id' => $sale_return_row['item_id'],
+							'transaction_date' => $saleReturn->transaction_date,
+							'quantity' => $sale_return_row['return_quantity'],
+							'rate' => $exactRate,
+							'amount' => $sale_return_row['taxable_value'],
+							'status' => 'in',
+							'company_id' => $saleReturn->company_id,
+							'sale_return_id' => $saleReturn->id,
+							'sale_return_row_id' => $sale_return_row->id,
+							'location_id'=>$saleReturn->location_id
+							])
+					->execute();
+				} 
+					$partyData = $this->SaleReturns->SalesInvoices->AccountingEntries->query();
+					$partyData->insert(['ledger_id', 'debit','credit', 'transaction_date', 'company_id', 'sale_return_id'])
+							->values([
+							'ledger_id' => $saleReturn->party_ledger_id,
+							'debit' => '',
+							'credit' => $saleReturn->amount_after_tax,
+							'transaction_date' => $saleReturn->transaction_date,
+							'company_id' => $saleReturn->company_id,
+							'sale_return_id' => $saleReturn->id
+							])
+					->execute();
+					$accountData = $this->SaleReturns->SalesInvoices->AccountingEntries->query();
+					$accountData->insert(['ledger_id', 'debit','credit', 'transaction_date', 'company_id', 'sale_return_id'])
+							->values([
+							'ledger_id' => $saleReturn->sales_ledger_id,
+							'debit' => $saleReturn->amount_before_tax,
+							'credit' =>  '',
+							'transaction_date' => $saleReturn->transaction_date,
+							'company_id' => $saleReturn->company_id,
+							'sale_return_id' => $saleReturn->id
+							])
+					->execute();
+					if(str_replace('-',' ',$saleReturn->round_off)>0){
+						$roundData = $this->SaleReturns->SalesInvoices->AccountingEntries->query();
+						if($saleReturn->isRoundofType=='0'){
 							$debit=0;
 							$credit=str_replace('-',' ',$saleReturn->round_off);
-							}
-							else if($saleReturn->isRoundofType=='1')
-							{
+						}else if($saleReturn->isRoundofType=='1'){
 							$credit=0;
 							$debit=str_replace('-',' ',$saleReturn->round_off);
-							}
+						}
 						$roundData->insert(['ledger_id', 'debit','credit', 'transaction_date', 'company_id', 'sale_return_id'])
 								->values([
 								'ledger_id' => $roundOffId->id,
@@ -178,63 +153,65 @@ class SaleReturnsController extends AppController
 								'sale_return_id' => $saleReturn->id
 								])
 						->execute();
-					    }
-           if($saleReturn->is_interstate=='0'){
-		   for(@$i=0; $i<2; $i++){
-			   foreach($saleReturn->sale_return_rows as $sale_return_row)
+					}
+				if($saleReturn->is_interstate=='0')
+				{
+					for(@$i=0; $i<2; $i++)
+					{
+						foreach($saleReturn->sale_return_rows as $sale_return_row)
+						{
+							$gstVal=$sale_return_row['gst_value']/2;
+							if($i==0){
+								$gstLedgers = $this->SaleReturns->SalesInvoices->SalesInvoiceRows->Ledgers->find()
+								->where(['Ledgers.gst_figure_id' =>$sale_return_row['gst_figure_id'],'Ledgers.company_id'=>$company_id, 'Ledgers.input_output'=>'output', 'Ledgers.gst_type'=>'CGST'])->first();
+								$ledgerId=$gstLedgers->id;
+							}
+							if($i==1){ 
+								$gstLedgers = $this->SaleReturns->SalesInvoices->SalesInvoiceRows->Ledgers->find()
+								->where(['Ledgers.gst_figure_id' =>$sale_return_row['gst_figure_id'],'Ledgers.company_id'=>$company_id, 'Ledgers.input_output'=>'output', 'Ledgers.gst_type'=>'SGST'])->first();
+								$ledgerId=$gstLedgers->id;
+							}
+							$accountData = $this->SaleReturns->SalesInvoices->AccountingEntries->query();
+							$accountData->insert(['ledger_id', 'debit','credit', 'transaction_date', 'company_id', 'sale_return_id'])
+							->values([
+							'ledger_id' => $ledgerId,
+							'debit' => $gstVal,
+							'credit' => '',
+							'transaction_date' => $saleReturn->transaction_date,
+							'company_id' => $saleReturn->company_id,
+							'sale_return_id' => $saleReturn->id
+							])
+							->execute();
+						}
+					}
+				}
+			   else if($saleReturn->is_interstate=='1')
 			   {
-			    $gstVal=$sale_return_row['gst_value']/2;
-			    if($i==0){
-			       $gstLedgers = $this->SaleReturns->SalesInvoices->SalesInvoiceRows->Ledgers->find()
-							->where(['Ledgers.gst_figure_id' =>$sale_return_row['gst_figure_id'],'Ledgers.company_id'=>$company_id, 'Ledgers.input_output'=>'output', 'Ledgers.gst_type'=>'CGST'])->first();
-			       $ledgerId=$gstLedgers->id;
-				   
-			    }
-			    if($i==1){ 
-			       $gstLedgers = $this->SaleReturns->SalesInvoices->SalesInvoiceRows->Ledgers->find()
-							->where(['Ledgers.gst_figure_id' =>$sale_return_row['gst_figure_id'],'Ledgers.company_id'=>$company_id, 'Ledgers.input_output'=>'output', 'Ledgers.gst_type'=>'SGST'])->first();
-			       $ledgerId=$gstLedgers->id;
-			    }
-			    $accountData = $this->SaleReturns->SalesInvoices->AccountingEntries->query();
+					foreach($saleReturn->sale_return_rows as $sale_return_row)
+					{
+						@$gstVal=$sale_return_row['gst_value'];
+						$gstLedgers = $this->SaleReturns->SalesInvoices->SalesInvoiceRows->Ledgers->find()
+						->where(['Ledgers.gst_figure_id' =>$sale_return_row['gst_figure_id'],'Ledgers.company_id'=>$company_id, 'Ledgers.input_output'=>'output', 'Ledgers.gst_type'=>'IGST'])->first();
+						$ledgerId=$gstLedgers->id;
+						$accountData = $this->SaleReturns->SalesInvoices->AccountingEntries->query();
 						$accountData->insert(['ledger_id', 'debit','credit', 'transaction_date', 'company_id', 'sale_return_id'])
-								->values([
-								'ledger_id' => $ledgerId,
-								'debit' => $gstVal,
-								'credit' => '',
-								'transaction_date' => $saleReturn->transaction_date,
-								'company_id' => $saleReturn->company_id,
-								'sale_return_id' => $saleReturn->id
-								])
+						->values([
+						'ledger_id' => $ledgerId,
+						'debit' => $gstVal,
+						'credit' => '',
+						'transaction_date' => $saleReturn->transaction_date,
+						'company_id' => $saleReturn->company_id,
+						'sale_return_id' => $saleReturn->id
+						])
 						->execute();
+					}
 			   }
-			 }
-		   }
-		   else if($saleReturn->is_interstate=='1'){
-		    foreach($saleReturn->sale_return_rows as $sale_return_row)
-			   {
-			   @$gstVal=$sale_return_row['gst_value'];
-			   $gstLedgers = $this->SaleReturns->SalesInvoices->SalesInvoiceRows->Ledgers->find()
-							->where(['Ledgers.gst_figure_id' =>$sale_return_row['gst_figure_id'],'Ledgers.company_id'=>$company_id, 'Ledgers.input_output'=>'output', 'Ledgers.gst_type'=>'IGST'])->first();
-			   $ledgerId=$gstLedgers->id;
-			   $accountData = $this->SaleReturns->SalesInvoices->AccountingEntries->query();
-						$accountData->insert(['ledger_id', 'debit','credit', 'transaction_date', 'company_id', 'sale_return_id'])
-								->values([
-								'ledger_id' => $ledgerId,
-								'debit' => $gstVal,
-								'credit' => '',
-								'transaction_date' => $saleReturn->transaction_date,
-								'company_id' => $saleReturn->company_id,
-								'sale_return_id' => $saleReturn->id
-								])
-						->execute();
-			   }
-		   }
-                $this->Flash->success(__('The sale return has been saved.'));
-                return $this->redirect(['action' => 'index']);
+				$this->Flash->success(__('The sale return has been saved.'));
+				return $this->redirect(['action' => 'index']);
             } else{
-				//pr($saleReturn); exit;
+				 $this->Flash->error(__('The sale return could not be saved. Please, try again.'));
 			}
-            $this->Flash->error(__('The sale return could not be saved. Please, try again.'));
+           
         }
        
 		$customers = $this->SaleReturns->SalesInvoices->Customers->find()

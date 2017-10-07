@@ -162,7 +162,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 														</td>
 														<td width="10%" style="padding-left:0px;">
 															<?php 
-															echo $this->Form->input('type_cr_dr', ['options'=>['Dr'=>'Dr','Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm  calculation refDrCr','value'=>$cr_dr]); ?>
+															echo $this->Form->input('type_cr_dr', ['options'=>['Dr'=>'Dr','Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm  calculation refDrCr reload','value'=>$cr_dr]); ?>
 														</td>
 														
 														<td align="center">
@@ -314,7 +314,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			</td>
 			<td width="10%" style="padding-left:0px;">
 				<?php 
-				echo $this->Form->input('type_cr_dr', ['options'=>['Dr'=>'Dr','Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm  calculation refDrCr','value'=>'Dr']); ?>
+				echo $this->Form->input('type_cr_dr', ['options'=>['Dr'=>'Dr','Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm  calculation refDrCr reload','value'=>'Dr']); ?>
 			</td>
 			
 			<td align="center">
@@ -616,7 +616,8 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			});
 			
 			$('.ledger').die().live('change',function(){
-				var openWindow=$(this).find('option:selected').attr('open_window');
+				
+				var openWindow=$(this).find('option:selected').attr('open_window'); 
 				if(openWindow=='party'){
 					var SelectedTr=$(this).closest('tr.MainTr');
 					var windowContainer=$(this).closest('td').find('div.window');
@@ -663,8 +664,8 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 					i++;
 					
 					var SelectedTr=$(this).closest('tr.MainTr');
-					renameBankRows(SelectedTr);
-					renameRefRows(SelectedTr);
+					//renameBankRows(SelectedTr);
+					//renameRefRows(SelectedTr);
 				});
 			}
 			
@@ -760,6 +761,13 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			}
 			
 			$('.calculation').die().live('keyup',function()
+			{ 
+				var SelectedTr=$(this).closest('tr.MainTr');
+				calculation(SelectedTr);
+				
+			});
+			
+			$('.reload').die().live('change',function()
 			{ 
 				var SelectedTr=$(this).closest('tr.MainTr');
 				calculation(SelectedTr);

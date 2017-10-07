@@ -74,6 +74,8 @@ $this->set('title', 'Receipt Voucher');
 											?>
 										</td>
 										<td width="65%">
+										<input type="hidden" class="BankValueDefine" name=" receipt_rows[<?php echo $i;?>][BankDefination]">
+							
 										<?php
 										if($i==0)
 										{ 
@@ -82,6 +84,7 @@ $this->set('title', 'Receipt Voucher');
 										}
 										else
 										{
+										
 											echo $this->Form->input('receipt_rows.'.$i.'.ledger_id', ['empty'=>'--Select--','options'=>@$ledgerOptions,'label' => false,'class' => 'form-control input-sm ledger','required'=>'required','value'=>$receiptRows->ledger_id]);
 										}
 										?>
@@ -174,8 +177,7 @@ $this->set('title', 'Receipt Voucher');
 													<a role="button" class="addRefRow">Add Row</a>
 													</td>
 			<td>
-			<input type="text" class="form-control input-sm rightAligntextClass total calculation noBorder" name="receipt_rows[<?php echo $i;?>][total]" id="receipt_rows-<?php echo $i;?>-total" aria-invalid="true" aria-describedby="receipt_rows-<?php echo $i;?>-total-error" value="<?php echo $total;?>">
-			
+			<input type="text" class="form-control input-sm rightAligntextClass total calculation noBorder" name="receipt_rows[<?php echo $i;?>][total]" id="receipt_rows-<?php echo $i;?>-total" aria-invalid="true" aria-describedby="receipt_rows-<?php echo $i;?>-total-error" value="<?php echo $total;?>" readonly>
 			</td>
 														
 														<td><input type="text" class="form-control input-sm total_type calculation noBorder" readonly value="<?php echo @$type;?>" name="receipt_rows<?php echo $i;?>reference_details<?php echo $i;?>type_cr_dr"></td>
@@ -194,11 +196,18 @@ $this->set('title', 'Receipt Voucher');
 															<?php 
 															echo $this->Form->input('receipt_rows.'.$i.'.mode_of_payment', ['options'=>$option_mode,'label' => false,'class' => 'form-control input-sm paymentType','required'=>'required','value'=>$receiptRows->mode_of_payment]); ?>
 														</td>
-														<td width="30%">
+														
+													<?php if($receiptRows->mode_of_payment=='NEFT/RTGS'){?>
+														 <?php $style='display:none';?>
+														<?php } else if($receiptRows->mode_of_payment=='Cheque'){ ?>
+														 <?php $style='';?>
+														<?php }?>
+														
+														
+						<td width="30%" style="<?php echo $style;?>">
 															<?php echo $this->Form->input('receipt_rows.'.$i.'.cheque_no', ['label' =>false,'class' => 'form-control input-sm cheque_no','placeholder'=>'Cheque No','value'=>$receiptRows->cheque_no]); ?> 
 														</td>
-														
-														<td width="30%">
+						<td width="30%" style="<?php echo $style;?>">
 															<?php echo $this->Form->input('receipt_rows.'.$i.'.cheque_date', ['label' =>false,'class' => 'form-control input-sm date-picker cheque_date ','data-date-format'=>'dd-mm-yyyy','placeholder'=>'Cheque Date','value'=>date("d-m-Y",strtotime($receiptRows->cheque_date)),'type'=>'text']); ?>
 														</td>
 													</tr>
@@ -313,6 +322,7 @@ $this->set('title', 'Receipt Voucher');
 				echo $this->Form->input('cr_dr', ['options'=>['Dr'=>'Dr','Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm cr_dr','required'=>'required','value'=>'Dr']); ?>
 			</td>
 			<td width="65%" valign="top">
+			     <input type="hidden" class="BankValueDefine" name="BankDefination"/>
 				<?php echo $this->Form->input('ledger_id', ['empty'=>'--Select--','options'=>@$ledgerOptions,'label' => false,'class' => 'form-control input-sm ledger','required'=>'required']); ?>
 				<div class="window" style="margin:auto;"></div>
 			</td>
@@ -446,7 +456,7 @@ $this->set('title', 'Receipt Voucher');
 					var totalMainDr  = parseFloat($('#totalMainDr').val());
 					var totalBankCash = parseFloat($('#totalBankCash').val());
 					if(!totalMainDr || totalMainDr==0){
-						alert('Error: zero amount payment can not be generated.');
+						alert('Error: zero amount receipt can not be generated.');
 						return false;
 					}
 					else if(totalBankCash<=0){
@@ -479,16 +489,21 @@ $this->set('title', 'Receipt Voucher');
 				$(this).closest('tr').remove();
 				renameMainRows();
 				renameRefRows(SelectedTr);
+				calculation(SelectedTr);
 			});
 			
 			$('.paymentType').die().live('change',function(){
 				var type=$(this).val();	
 				var currentRefRow=$(this).closest('tr');
 				if(type=='NEFT/RTGS'){
+				    currentRefRow.find('td:nth-child(2) input').val('');
+					currentRefRow.find('td:nth-child(3) input').val('');
 					currentRefRow.find('td:nth-child(2)').hide();
 					currentRefRow.find('td:nth-child(3)').hide();
 				}
 				else{
+				    currentRefRow.find('td:nth-child(2)').removeAttr('style');
+					currentRefRow.find('td:nth-child(3)').removeAttr('style');
 					currentRefRow.find('td:nth-child(2)').show();
 					currentRefRow.find('td:nth-child(3)').show();
 				}
@@ -563,24 +578,34 @@ $this->set('title', 'Receipt Voucher');
 			});
 			}
 			
+			
+			
 			$('.ledger').die().live('change',function(){
 				var openWindow=$(this).find('option:selected').attr('open_window');
 				
 				if(openWindow=='party'){
+				    var bankValue=1;
 					var SelectedTr=$(this).closest('tr.MainTr');
-					var windowContainer=$(this).closest('td').find('div.window');
+					SelectedTr.find('.BankValueDefine').val(bankValue);
+                    var windowContainer=$(this).closest('td').find('div.window');
 					windowContainer.html('');
 					windowContainer.html('<table width=90% class=refTbl><tbody></tbody><tfoot><tr style=border-top:double#a5a1a1><td colspan=2><a role=button class=addRefRow>Add Row</a></td><td>$total_input</td><td>$total_type</td></tr></tfoot></table>');
 					AddRefRow(SelectedTr);
 				}
 				else if(openWindow=='bank'){
-					var SelectedTr=$(this).closest('tr.MainTr')
+				    var bankValue=2;
+					var SelectedTr=$(this).closest('tr.MainTr');
+					SelectedTr.find('.BankValueDefine').val(bankValue);
 					var windowContainer=$(this).closest('td').find('div.window');
 					windowContainer.html('');
 					windowContainer.html('<table width=90% ><tbody></tbody><tfoot><td colspan=4></td></tfoot></table>');
 					AddBankRow(SelectedTr);
 				}
 				else{
+				    var bankValue=0;
+					var SelectedTr=$(this).closest('tr.MainTr');
+					SelectedTr.find('.BankValueDefine').val(bankValue);
+					
 					var windowContainer=$(this).closest('td').find('div.window');
 					windowContainer.html('');
 				}
@@ -608,6 +633,9 @@ $this->set('title', 'Receipt Voucher');
 					
 					var is_cash_bank=$(this).find('td:nth-child(2) option:selected').attr('bank_and_cash');
 					$(this).find('td:nth-child(1) select.cr_dr').attr({name:'receipt_rows['+i+'][cr_dr]',id:'receipt_rows-'+i+'-cr_dr'});
+					
+	$(this).find('td:nth-child(2) input.BankValueDefine').attr({name:'receipt_rows['+i+'][BankDefination]',id:'receipt_rows-'+i+'-BankDefination'});
+					
 					$(this).find('td:nth-child(2) select.ledger').attr({name:'receipt_rows['+i+'][ledger_id]',id:'receipt_rows-'+i+'-ledger_id'}).select2();
 					$(this).find('td:nth-child(3) input.debitBox').attr({name:'receipt_rows['+i+'][debit]',id:'receipt_rows-'+i+'-debit'});
 					$(this).find('td:nth-child(4) input.creditBox').attr({name:'receipt_rows['+i+'][credit]',id:'receipt_rows-'+i+'-credit'});
@@ -655,7 +683,6 @@ $this->set('title', 'Receipt Voucher');
 			function renameBankRows(SelectedTr){
 				var row_no=SelectedTr.attr('row_no');
 				SelectedTr.find('td:nth-child(2) div.window table tbody tr').each(function(){
-					
 					$(this).find('td:nth-child(1) select.paymentType').attr({name:'receipt_rows['+row_no+'][mode_of_payment]',id:'receipt_rows-'+row_no+'-mode_of_payment'});
 					$(this).find('td:nth-child(2) input.cheque_no').attr({name:'receipt_rows['+row_no+'][cheque_no]',id:'receipt_rows-'+row_no+'-cheque_no'});
 					$(this).find('td:nth-child(3) input.cheque_date').attr({name:'receipt_rows['+row_no+'][cheque_date]',id:'receipt_rows-'+row_no+'-cheque_date'}).datepicker();
@@ -666,6 +693,8 @@ $this->set('title', 'Receipt Voucher');
 				var SelectedTr=$(this).closest('tr.MainTr');
 				AddRefRow(SelectedTr);
 			});
+			
+			
 			
 			function AddRefRow(SelectedTr){
 				var refTr=$('#sampleForRef tbody tr').clone();
@@ -724,7 +753,7 @@ $this->set('title', 'Receipt Voucher');
 			{ 
 				 renameMainRows();
 			});
-			$('.calculation').die().live('blur',function()
+			$('.calculation').die().live('keyup',function()
 			{ 
 				var SelectedTr=$(this).closest('tr.MainTr');
 				calculation(SelectedTr);
