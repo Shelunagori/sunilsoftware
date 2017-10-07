@@ -73,6 +73,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 									<tr class="MainTr" row_no="<?php echo $i;?>">
 										<td width="10%">
 											<?php 
+											echo $this->Form->input('sales_voucher_rows.'.$i.'.id',['value'=>$sales_voucher_row->id]);
 											if($i==0)
 											{
 												echo $this->Form->input('sales_voucher_rows.'.$i.'.cr_dr', ['options'=>['Dr'=>'Dr'],'label' => false,'class' => 'form-control input-sm cr_dr','required'=>'required','readonly'=>'readonly']); 
@@ -84,7 +85,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 											else{
 											echo $this->Form->input('sales_voucher_rows.'.$i.'.cr_dr', ['options'=>['Dr'=>'Dr','Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm cr_dr','required'=>'required','value'=>$sales_voucher_row->cr_dr]); 
 											}
-											echo $this->Form->input('sales_voucher_rows.'.$i.'.id',['value'=>$sales_voucher_row->id]);
+											
 											?>
 											
 										</td>
@@ -112,12 +113,13 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 												?>
 													<tr>
 														<td width="20%">
-															<input type="hidden" class="ledgerIdContainer" value="<?php echo $reference_detail->ledger_id;?>"/>
+														<input type="hidden" class="ledgerIdContainer" value="<?php echo $reference_detail->ledger_id;?>"/>
 															<input type="hidden" class="companyIdContainer" value="<?php echo $reference_detail->company_id;?>"/>
 															<?php 
 															echo $this->Form->input('sales_voucher_rows.'.$i.'.reference_details.'.$j.'.type', ['options'=>$option_ref,'label' => false,'class' => 'form-control input-sm refType','required'=>'required','value'=>$reference_detail->type]); 
 															
-															echo $this->Form->input('sales_voucher_rows.'.$i.'.reference_details.'.$j.'.id', ['type'=>'hidden','value'=>$reference_detail->id]); ?>
+															echo $this->Form->input('sales_voucher_rows.'.$i.'.reference_details.'.$j.'.id', ['type'=>'hidden','value'=>$reference_detail->id]);
+															 ?>
 														</td>
 														
 														<td width="">
@@ -160,7 +162,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 														</td>
 														<td width="10%" style="padding-left:0px;">
 															<?php 
-															echo $this->Form->input('sales_voucher_rows.'.$i.'.reference_details.'.$j.'.type_cr_dr', ['options'=>['Dr'=>'Dr','Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm  calculation refDrCr','value'=>$cr_dr]); ?>
+															echo $this->Form->input('type_cr_dr', ['options'=>['Dr'=>'Dr','Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm  calculation refDrCr','value'=>$cr_dr]); ?>
 														</td>
 														
 														<td align="center">
@@ -185,8 +187,8 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 												    <tr class="remove_ref_foot">
 														<td colspan="2"><input type="hidden" id="htotal" value="<?php echo @$total;?>">
 													    </td>
-														<td><input type="text" class="form-control input-sm rightAligntextClass total calculation ttl noBorder" readonly value=""name="payment_rows[<?php echo $i;?>][total]"></td>
-														<td><input type="text" class="form-control input-sm total_type calculation noBorder" readonly value="<?php echo @$type;?>"></td>
+														<td><input type="text" class="form-control input-sm rightAligntextClass total calculation ttl noBorder"  value=""name="sales_voucher_rows[<?php echo $i;?>][total]"></td>
+														<td><input type="text" class="form-control input-sm total_type calculation noBorder"  value="<?php echo @$type;?>"></td>
 													</tr>
 												</tfoot>
 												</table>
@@ -421,6 +423,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 	$kk='<input type="text" class="form-control input-sm ref_name " placeholder="Reference Name">';
 	$total_input='<input type="text" class="form-control input-sm rightAligntextClass total calculation noBorder" >';
 	$total_type='<input type="text" class="form-control input-sm total_type calculation noBorder" >';
+
 	$js="
 		$(document).ready(function() {
 			
@@ -516,6 +519,8 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				var type=$(this).val();	
 				var currentRefRow=$(this).closest('tr');
 				if(type=='NEFT/RTGS'){
+					currentRefRow.find('td:nth-child(2) input').val('');
+					currentRefRow.find('td:nth-child(3) input').val('');
 					currentRefRow.find('td:nth-child(2)').hide();
 					currentRefRow.find('td:nth-child(3)').hide();
 				}
@@ -534,8 +539,8 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			{
 				$(this).closest('tr').remove();
 				renameMainRows();
-				renameBankRows();
 				var SelectedTr=$(this).closest('tr.MainTr');
+				renameBankRows(SelectedTr);
 				renameRefRows(SelectedTr);
 				calc();
 			});
@@ -727,7 +732,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				
 				
 				SelectedTr.find('td:nth-child(2) div.window table.refTbl tfoot tr td:nth-child(2) input.total')
-						.attr({name:'payment_rows['+row_no+'][total]',id:'payment_rows-'+row_no+'-total'})
+						.attr({name:'sales_voucher_rows['+row_no+'][total]',id:'sales_voucher_rows-'+row_no+'-total'})
 						.rules('add', {
 							equalTo: '#'+eqlClass,
 							messages: {
