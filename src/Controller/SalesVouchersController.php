@@ -243,6 +243,37 @@ class SalesVouchersController extends AppController
 		
         }
 		
+		$refDropDown =[];
+		foreach($salesVoucher->sales_voucher_rows as $sales_voucher_row)
+		{
+			if(!empty($sales_voucher_row->reference_details))
+			{
+				$query = $this->SalesVouchers->SalesVoucherRows->ReferenceDetails->find();
+				$query->select(['total_debit' => $query->func()->sum('ReferenceDetails.debit'),'total_credit' => $query->func()->sum('ReferenceDetails.credit')])
+				->where(['ReferenceDetails.ledger_id'=>$sales_voucher_row->ledger_id,'ReferenceDetails.type !='=>'On Account'])
+				->group(['ReferenceDetails.ref_name'])
+				->autoFields(true);
+				$referenceDetails=$query;
+				$option=[];
+				foreach($referenceDetails as $referenceDetail){
+					$remider=$referenceDetail->total_debit-$referenceDetail->total_credit;
+					if($remider>0){
+						$bal=abs($remider).' Dr';
+					}else if($remider<0){
+						$bal=abs($remider).' Cr';
+					}
+					if($referenceDetail->total_debit!=$referenceDetail->total_credit){
+						$option[$referenceDetail->ref_name]=$referenceDetail->ref_name;
+						 
+					}
+				}
+				
+				$refDropDown[$sales_voucher_row->id] = $option;
+			}
+		}
+		
+		
+		
 		$bankParentGroups = $this->SalesVouchers->SalesVoucherRows->Ledgers->AccountingGroups->find()
 						->where(['AccountingGroups.company_id'=>$company_id, 'AccountingGroups.bank'=>'1']);
 						
