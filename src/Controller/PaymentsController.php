@@ -81,7 +81,18 @@ class PaymentsController extends AppController
 						]);
 			
 			if ($this->Payments->save($payment)) {
-				
+			foreach($payment->payment_rows as $payment_row)
+				{
+					$accountEntry = $this->Payments->AccountingEntries->newEntity();
+					$accountEntry->ledger_id                  = $payment_row->ledger_id;
+					$accountEntry->debit                      = @$payment_row->debit;
+					$accountEntry->credit                     = @$payment_row->credit;
+					$accountEntry->transaction_date           = $payment->transaction_date;
+					$accountEntry->company_id                 = $company_id;
+					$accountEntry->payment_id                 = $payment->id;
+					$accountEntry->payment_row_id             = $payment_row->id;
+					$this->Payments->AccountingEntries->save($accountEntry);
+				}
 				$this->Flash->success(__('The payment has been saved.'));
 
 				return $this->redirect(['action' => 'index']);
@@ -96,9 +107,7 @@ class PaymentsController extends AppController
 		else
 		{ 
 			$voucher_no=1;
-		} 
-		
-		
+		} 		
 		//bank group
 		$bankParentGroups = $this->Payments->PaymentRows->Ledgers->AccountingGroups->find()
 						->where(['AccountingGroups.company_id'=>$company_id, 'AccountingGroups.bank'=>'1']);
@@ -187,6 +196,7 @@ class PaymentsController extends AppController
         $payment = $this->Payments->get($id, [
             'contain' => ['PaymentRows'=>['ReferenceDetails']]
         ]);
+		
 		$refDropDown =[];
 		foreach($payment->payment_rows as $payment_row)
 		{
@@ -208,19 +218,38 @@ class PaymentsController extends AppController
 					}
 					if($referenceDetail->total_debit!=$referenceDetail->total_credit){
 						$option[$referenceDetail->ref_name]=$referenceDetail->ref_name;
-						 
 					}
 				}
-				
 				$refDropDown[$payment_row->id] = $option;
 			}
 		}
+		
         if ($this->request->is(['patch', 'post', 'put'])) {
             $payment = $this->Payments->patchEntity($payment, $this->request->getData());
 			$payment = $this->Payments->patchEntity($payment, $this->request->getData(), [
 							'associated' => ['PaymentRows','PaymentRows.ReferenceDetails']
 						]);
             if ($this->Payments->save($payment)) {
+			
+			$query_delete = $this->Payments->AccountingEntries->query();
+					$query_delete->delete()
+					->where(['payment_id' => $payment->id,'company_id'=>$company_id])
+					->execute();
+					
+			foreach($payment->payment_rows as $payment_row)
+				{
+					$accountEntry = $this->Payments->AccountingEntries->newEntity();
+					$accountEntry->ledger_id                  = $payment_row->ledger_id;
+					$accountEntry->debit                      = @$payment_row->debit;
+					$accountEntry->credit                     = @$payment_row->credit;
+					$accountEntry->transaction_date           = $payment->transaction_date;
+					$accountEntry->company_id                 = $company_id;
+					$accountEntry->payment_id                 = $payment->id;
+					$accountEntry->payment_row_id             = $payment_row->id;
+					$this->Payments->AccountingEntries->save($accountEntry);
+				}
+				
+				
                 $this->Flash->success(__('The payment has been saved.'));
 
                 return $this->redirect(['action' => 'index']);

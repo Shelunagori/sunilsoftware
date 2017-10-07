@@ -47,6 +47,10 @@ class PaymentsTable extends Table
             'foreignKey' => 'payment_id',
 			'saveStrategy'=>'replace'
         ]);
+		$this->hasMany('AccountingEntries', [
+            'foreignKey' => 'receipt_id',
+            'joinType' => 'INNER'
+        ]);
     }
 
     /**

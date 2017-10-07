@@ -66,19 +66,18 @@ class ReceiptsController extends AppController
 		 
             if ($this->Receipts->save($receipt)) {
 			
-			$accountData = $this->Receipts->ReceiptRows->AccountingEntries->query();
-						$accountData->insert(['ledger_id', 'debit','credit', 'transaction_date', 'company_id', 'sales_invoice_id'])
-								->values([
-								'ledger_id' => $salesInvoice->sales_ledger_id,
-								'debit' => '',
-								'credit' => $salesInvoice->amount_before_tax,
-								'transaction_date' => $salesInvoice->transaction_date,
-								'company_id' => $salesInvoice->company_id,
-								'sales_invoice_id' => $salesInvoice->id
-								])
-						->execute();
-			
-			
+			foreach($receipt->receipt_rows as $receipt_row)
+				{
+					$accountEntry = $this->Receipts->AccountingEntries->newEntity();
+					$accountEntry->ledger_id                  = $receipt_row->ledger_id;
+					$accountEntry->debit                      = @$receipt_row->debit;
+					$accountEntry->credit                     = @$receipt_row->credit;
+					$accountEntry->transaction_date           = $receipt->transaction_date;
+					$accountEntry->company_id                 = $company_id;
+					$accountEntry->receipt_id                 = $receipt->id;
+					$accountEntry->receipt_row_id             = $receipt_row->id;
+					$this->Receipts->AccountingEntries->save($accountEntry);
+				}
 			
                 $this->Flash->success(__('The receipt has been saved.'));
                 return $this->redirect(['action' => 'index']);
@@ -229,6 +228,24 @@ class ReceiptsController extends AppController
 		
 		
             if ($this->Receipts->save($receipt)) {
+			$query_delete = $this->Receipts->AccountingEntries->query();
+					$query_delete->delete()
+					->where(['receipt_id' => $receipt->id,'company_id'=>$company_id])
+					->execute();
+			
+			foreach($receipt->receipt_rows as $receipt_row)
+				{
+					$accountEntry = $this->Receipts->AccountingEntries->newEntity();
+					$accountEntry->ledger_id                  = $receipt_row->ledger_id;
+					$accountEntry->debit                      = @$receipt_row->debit;
+					$accountEntry->credit                     = @$receipt_row->credit;
+					$accountEntry->transaction_date           = $receipt->transaction_date;
+					$accountEntry->company_id                 = $company_id;
+					$accountEntry->receipt_id                 = $receipt->id;
+					$accountEntry->receipt_row_id             = $receipt_row->id;
+					$this->Receipts->AccountingEntries->save($accountEntry);
+				}
+
                 $this->Flash->success(__('The receipt has been saved.'));
 
                 return $this->redirect(['action' => 'index']);

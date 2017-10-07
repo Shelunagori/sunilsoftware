@@ -49,6 +49,10 @@ class ReceiptsTable extends Table
         $this->hasMany('ReferenceDetails', [
             'foreignKey' => 'receipt_id'
         ]);
+		$this->hasMany('AccountingEntries', [
+            'foreignKey' => 'receipt_id',
+            'joinType' => 'INNER'
+        ]);
     }
 
     /**

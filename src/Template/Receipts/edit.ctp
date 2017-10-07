@@ -450,7 +450,7 @@ $this->set('title', 'Receipt Voucher');
 						return false;
 					}
 					else if(totalBankCash<=0){
-						alert('Error: No Bank or Cash Credited.');
+						alert('Error: No Bank or Cash Debited.');
 						return false;
 					}
 					else{
@@ -563,7 +563,6 @@ $this->set('title', 'Receipt Voucher');
 			});
 			}
 			
-			
 			$('.ledger').die().live('change',function(){
 				var openWindow=$(this).find('option:selected').attr('open_window');
 				
@@ -656,6 +655,7 @@ $this->set('title', 'Receipt Voucher');
 			function renameBankRows(SelectedTr){
 				var row_no=SelectedTr.attr('row_no');
 				SelectedTr.find('td:nth-child(2) div.window table tbody tr').each(function(){
+					
 					$(this).find('td:nth-child(1) select.paymentType').attr({name:'receipt_rows['+row_no+'][mode_of_payment]',id:'receipt_rows-'+row_no+'-mode_of_payment'});
 					$(this).find('td:nth-child(2) input.cheque_no').attr({name:'receipt_rows['+row_no+'][cheque_no]',id:'receipt_rows-'+row_no+'-cheque_no'});
 					$(this).find('td:nth-child(3) input.cheque_date').attr({name:'receipt_rows['+row_no+'][cheque_date]',id:'receipt_rows-'+row_no+'-cheque_date'}).datepicker();
