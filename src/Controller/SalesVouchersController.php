@@ -214,6 +214,9 @@ class SalesVouchersController extends AppController
 							'associated' => ['SalesVoucherRows','SalesVoucherRows.ReferenceDetails']
 						]);
 
+			//pr($salesVoucher);
+			//exit;
+			
 			
 			if ($this->SalesVouchers->save($salesVoucher)) {
 				$query_delete = $this->SalesVouchers->AccountingEntries->query();
