@@ -61,7 +61,9 @@ class PurchaseVouchersController extends AppController
 		$company_id=$this->Auth->User('session_company_id');
 		if ($this->request->is('post')) 
 		{
-			$purchaseVoucher = $this->PurchaseVouchers->patchEntity($purchaseVoucher, $this->request->getData());
+			$purchaseVoucher = $this->PurchaseVouchers->patchEntity($purchaseVoucher, $this->request->getData(), [
+							'associated' => ['PurchaseVoucherRows','PurchaseVoucherRows.ReferenceDetails']
+						]);
 			$Voucher_no = $this->PurchaseVouchers->find()->select(['voucher_no'])->where(['company_id'=>$company_id])->order(['voucher_no' => 'DESC'])->first();
 			if($Voucher_no)
 			{
@@ -111,44 +113,80 @@ class PurchaseVouchersController extends AppController
 		} 
 
 		$ledgers = $this->PurchaseVouchers->PurchaseVoucherRows->Ledgers->find('list')->where(['company_id'=>$company_id]);
-		$accountGroupCredits = $this->PurchaseVouchers->PurchaseVoucherRows->Ledgers->AccountingGroups->find()->where(['purchase_voucher_party'=>1,'company_id'=>$company_id]);
-		foreach($accountGroupCredits as $accountGroupCredit)
+		
+		$bankParentGroups = $this->PurchaseVouchers->PurchaseVoucherRows->Ledgers->AccountingGroups->find()
+						->where(['AccountingGroups.company_id'=>$company_id, 'AccountingGroups.bank'=>'1']);
+						
+		$bankGroups=[];
+		
+		foreach($bankParentGroups as $bankParentGroup)
 		{
 			$accountingGroups = $this->PurchaseVouchers->PurchaseVoucherRows->Ledgers->AccountingGroups
-			->find('children', ['for' => $accountGroupCredit->id])
-			->find('List')->toArray();
-			$accountingGroups[$accountGroupCredit->id]=$accountGroupCredit->name;
+			->find('children', ['for' => $bankParentGroup->id])->toArray();
+			$bankGroups[]=$bankParentGroup->id;
+			foreach($accountingGroups as $accountingGroup){
+				$bankGroups[]=$accountingGroup->id;
+			}
 		}
-		ksort($accountingGroups);
-		if($accountingGroups)
-		{   
-			$account_ids="";
-			foreach($accountingGroups as $key=>$accountingGroup)
-			{
-				$account_ids .=$key.',';
-			}
-			$account_ids = explode(",",trim($account_ids,','));
-			$Creditledgers = $this->PurchaseVouchers->PurchaseVoucherRows->Ledgers->find('list')->where(['Ledgers.accounting_group_id IN' =>$account_ids]);
-        }
 		
-		$accountGroupdebit = $this->PurchaseVouchers->PurchaseVoucherRows->Ledgers->AccountingGroups->find()->where(['purchase_voucher_purchase_account'=>1,'company_id'=>$company_id])->first();
-
-		$accountingGroups = $this->PurchaseVouchers->PurchaseVoucherRows->Ledgers->AccountingGroups
-		->find('children', ['for' => $accountGroupdebit->id])
-		->find('List')->toArray();
-		$accountingGroups[$accountGroupdebit->id]=$accountGroupdebit->name;
-		ksort($accountingGroups);
-		if($accountingGroups)
-		{   
-			$account_ids="";
-			foreach($accountingGroups as $key=>$accountingGroup)
+		$accountGroupCreditParents = $this->PurchaseVouchers->PurchaseVoucherRows->Ledgers->AccountingGroups->find()->where(['purchase_voucher_party'=>1,'company_id'=>$company_id]); 
+		$CreditGroups=[];
+		foreach($accountGroupCreditParents as $accountGroupCreditParent)
+		{ 
+			$ChildGroups = $this->PurchaseVouchers->PurchaseVoucherRows->Ledgers->AccountingGroups->find('children', ['for' =>$accountGroupCreditParent->id])->toArray();
+			
+			$CreditGroups[]=$accountGroupCreditParent->id;
+			foreach($ChildGroups as $ChildGroup)
 			{
-				$account_ids .=$key.',';
+				$CreditGroups[]=$ChildGroup->id;
 			}
-			$account_ids = explode(",",trim($account_ids,','));
-			$Debitledgers = $this->PurchaseVouchers->PurchaseVoucherRows->Ledgers->find('list')->where(['Ledgers.accounting_group_id IN' =>$account_ids]);
-        }
-		$this->set(compact('purchaseVoucher','voucher_no','Creditledgers','Debitledgers','ledgers'));
+		}
+		$AllCreditledgers = $this->PurchaseVouchers->PurchaseVoucherRows->Ledgers->find()->where(['Ledgers.accounting_group_id IN' =>$CreditGroups]);
+		
+		$Creditledgers=[];
+		foreach($AllCreditledgers as $AllCreditledger){
+		if(in_array($AllCreditledger->accounting_group_id,$bankGroups)){
+				$Creditledgers[]=['text' =>$AllCreditledger->name, 'value' => $AllCreditledger->id ,'open_window' => 'bank'];
+			}
+			else if($AllCreditledger->bill_to_bill_accounting == 'yes'){
+				$Creditledgers[]=['text' =>$AllCreditledger->name, 'value' => $AllCreditledger->id,'open_window' => 'party' ];
+			}
+			else{
+				$Creditledgers[]=['text' =>$AllCreditledger->name, 'value' => $AllCreditledger->id,'open_window' => 'no' ];
+			}
+		}
+		
+		
+		$accountGroupdebits = $this->PurchaseVouchers->PurchaseVoucherRows->Ledgers->AccountingGroups->find()->where(['purchase_voucher_purchase_account'=>1,'company_id'=>$company_id]);
+        
+		$DebitGroups=[];
+		foreach($accountGroupdebits as $accountGroupdebit)
+		{ 
+			$AllChildGroups = $this->PurchaseVouchers->PurchaseVoucherRows->Ledgers->AccountingGroups->find('children', ['for' =>$accountGroupdebit->id])->toArray();
+			$DebitGroups[]=$accountGroupdebit->id;
+			foreach($AllChildGroups as $AllChildGroups)
+			{
+				$DebitGroups[]=$AllChildGroups->id;
+			}
+		}
+		
+		$AllDebitledgers = $this->PurchaseVouchers->PurchaseVoucherRows->Ledgers->find()->where(['Ledgers.accounting_group_id IN' =>$DebitGroups]);
+		
+		$Debitledgers=[];
+		foreach($AllDebitledgers as $AllDebitledger){
+		if(in_array($AllDebitledger->accounting_group_id,$bankGroups)){
+				$Debitledgers[]=['text' =>$AllDebitledger->name, 'value' => $AllDebitledger->id ,'open_window' => 'bank'];
+			}
+			else if($AllDebitledger->bill_to_bill_accounting == 'yes'){
+				$Debitledgers[]=['text' =>$AllDebitledger->name, 'value' => $AllDebitledger->id,'open_window' => 'party' ];
+			}
+			else{
+				$Debitledgers[]=['text' =>$AllDebitledger->name, 'value' => $AllDebitledger->id,'open_window' => 'no' ];
+			}
+		}
+		
+		
+		$this->set(compact('purchaseVoucher','voucher_no','Creditledgers','Debitledgers','ledgers','company_id'));
 		$this->set('_serialize', ['purchaseVoucher']);
     }
 
