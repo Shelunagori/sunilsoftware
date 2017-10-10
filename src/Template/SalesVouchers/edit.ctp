@@ -642,6 +642,21 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				}
 			});
 			
+			$(document).ready(ledgerShow);
+			function ledgerShow()
+			{
+			    $('#MainTable tbody#MainTbody tr.MainTr').each(function(){
+				var openWindow=$(this).find('td:nth-child(2) select.ledger option:selected').attr('open_window');
+				if(openWindow=='no'){
+				    var bankValue=0;
+					var SelectedTr=$(this).closest('tr.MainTr');
+					SelectedTr.find('.BankValueDefine').val(bankValue);
+					var windowContainer=SelectedTr.find('td:nth-child(2) select.ledger option:selected').closest('td').find('div.window');
+					windowContainer.html('');
+				}
+			  });
+			}
+			
 			$('.AddMainRow').die().live('click',function(){ 
 				addMainRow();
 			});

@@ -196,7 +196,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 												    <tr class="remove_ref_foot">
 														<td colspan="2">
 													    </td>
-														<td><input type="text" class="form-control input-sm rightAligntextClass total calculation ttl noBorder"  value="<?php echo $spurchase_voucher_row->total;?>" name="purchase_voucher_rows[<?php echo $i;?>][total]"></td>
+														<td><input type="text" class="form-control input-sm rightAligntextClass total calculation ttl noBorder"  value="<?php echo $purchase_voucher_row->total;?>" name="purchase_voucher_rows[<?php echo $i;?>][total]"></td>
 														<td style="vertical-align: top !important;"><input type="text" class="form-control input-sm total_type calculation noBorder"  value="<?php echo @$type;?>"></td>
 													</tr>
 												</tfoot>
@@ -647,6 +647,21 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 					windowContainer.html('');
 				}
 			});
+			
+			$(document).ready(ledgerShow);
+			function ledgerShow()
+			{
+			    $('#MainTable tbody#MainTbody tr.MainTr').each(function(){
+				var openWindow=$(this).find('td:nth-child(2) select.ledger option:selected').attr('open_window');
+				 if(openWindow=='no'){
+				    var bankValue=0;
+					var SelectedTr=$(this).closest('tr.MainTr');
+					SelectedTr.find('.BankValueDefine').val(bankValue);
+					var windowContainer=SelectedTr.find('td:nth-child(2) select.ledger option:selected').closest('td').find('div.window');
+					windowContainer.html('');
+				}
+			  });
+			}
 			
 			$('.AddMainRow').die().live('click',function(){ 
 				addMainRow();
