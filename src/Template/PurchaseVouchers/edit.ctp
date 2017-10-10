@@ -102,9 +102,12 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 										?>
 											<?php echo $this->Form->input('ledger_id', ['empty'=>'--Select--','options'=>@$Creditledgers,'label' => false,'class' => 'form-control input-sm ledger','required'=>'required','value'=>$purchase_voucher_row->ledger_id]); 
 										}
-										else
+										else if($i==1)
 										{
 											echo $this->Form->input('ledger_id', ['empty'=>'--Select--','options'=>@$Debitledgers,'label' => false,'class' => 'form-control input-sm ledger','required'=>'required','value'=>$purchase_voucher_row->ledger_id]);
+										}
+										else{
+											echo $this->Form->input('ledger_id', ['empty'=>'--Select--','options'=>@$ledgers,'label' => false,'class' => 'form-control input-sm ledger','required'=>'required','value'=>$purchase_voucher_row->ledger_id]);
 										}
 										?>
 											<div class="window" style="margin:auto;">
@@ -358,7 +361,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				echo $this->Form->input('cr_dr', ['options'=>['Dr'=>'Dr','Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm cr_dr','required'=>'required','value'=>'Dr']); ?>
 			</td>
 			<td width="65%">
-				<?php echo $this->Form->input('ledger_id', ['empty'=>'--Select--','options'=>@$Debitledgers,'label' => false,'class' => 'form-control input-sm ledger','required'=>'required']); ?>
+				<?php echo $this->Form->input('ledger_id', ['empty'=>'--Select--','options'=>@$ledgers,'label' => false,'class' => 'form-control input-sm ledger','required'=>'required']); ?>
 				<div class="window" style="margin:auto;"></div>
 			</td>
 			<td width="10%">
