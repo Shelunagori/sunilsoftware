@@ -16,6 +16,9 @@ $this->set('title', 'Stock Journal View');
 			<div class="portlet-body">
 				<table width="100%" >
 				  <tr>
+					<td width="15%"><b>Sales Voucher No </b></td>
+					<td width="1%">:</td>
+					<td><?php echo '#'.str_pad($saleReturn->sales_invoice->voucher_no, 4, '0', STR_PAD_LEFT);?></td>
 					<td width="15%"><b>Voucher No </b></td>
 					<td width="1%">:</td>
 					<td><?php echo '#'.str_pad($saleReturn->voucher_no, 4, '0', STR_PAD_LEFT);?></td>
@@ -31,12 +34,14 @@ $this->set('title', 'Stock Journal View');
        		    <table width="100%" class="table  table-bordered" style="border:none;" border="0">
 					
 								<thead>
-								<tr><td align="center" colspan="6"><b>Inward</b></td></tr>
+								<tr></tr>
 								<tr align="center">
 									<td><b>Sr</b></td>
 									<td><b>Item</b></td>
 									<td><b>Qty</b></td>
 									<td><b>Rate</b></td>
+									<td><b>Discount</b></td>
+									<td><b>GST</b></td>
 									<td><b>Taxable Amount</b></td>
 								</tr>
 								</thead>
@@ -56,6 +61,12 @@ $this->set('title', 'Stock Journal View');
 										<td width="20%" class="rightAligntextClass">
 											<?php echo $sale_return_row->rate; ?>
 										</td>
+										<td width="20%" class="rightAligntextClass">
+											<?php echo $sale_return_row->discount_percentage; ?>
+										</td>
+										<td width="20%" class="rightAligntextClass">
+											<?php echo $sale_return_row->gst_figure->name; ?>
+										</td>
 										<td width="25%" class="rightAligntextClass">
 											<?php echo $sale_return_row->taxable_value; 
 											$total+=$sale_return_row->taxable_value;
@@ -66,7 +77,7 @@ $this->set('title', 'Stock Journal View');
 								</tbody>
 								<tfoot>
 									<tr>
-										<td colspan="4" class="rightAligntextClass">Total</td>
+										<td colspan="6" class="rightAligntextClass">Total</td>
 										<td width="25%" class="rightAligntextClass"><?php echo $total;?></td>
 									</tr>
 								</tfoot>

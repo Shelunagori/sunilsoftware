@@ -441,6 +441,26 @@ class GrnsController extends AppController
 		$this->set(compact('grn', 'countSecondTampGrnRecords', 'notvalid_to_importRecords'));
         $this->set('_serialize', ['grn']);
 	}
+	public function PurchaseInvoiceAdd()
+	{
+		$this->viewBuilder()->layout('index_layout');
+		$company_id=$this->Auth->User('session_company_id');
+		$stateDetails=$this->Auth->User('session_company');
+		@$grn_no=$this->request->query('grn_no');
+		$PurchaseInvoice="No";
+		if(!empty(@$grn_no)){ 
+		$Grns = $this->Grns->find()
+						->where(['Grns.voucher_no' =>$grn_no,'Grns.company_id'=>$company_id])
+						->contain(['Companies', 'SupplierLedgers'])
+						->first();
+		//pr($SalesInvoice->party_ledger->name); 
+		
+		$PurchaseInvoice="Yes";
+		}	
+
+		$this->set(compact('Grns','PurchaseInvoice'));
+		
+	}
 
 }
 

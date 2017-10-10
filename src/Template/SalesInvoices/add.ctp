@@ -69,6 +69,9 @@ $this->set('title', 'Create Sales Invoice');
 							<div class="form-group">
 								<label>Transaction Date <span class="required">*</span></label>
 								<?php echo $this->Form->control('transaction_date',['class'=>'form-control input-sm date-picker','data-date-format'=>'dd-mm-yyyy','label'=>false,'placeholder'=>'DD-MM-YYYY','type'=>'text','data-date-start-date'=>@$coreVariable[fyValidFrom],'data-date-end-date'=>@$coreVariable[fyValidTo],'value'=>date('d-m-Y')]); ?>
+								
+								
+							
 							</div>
 						</div>
 						<input type="hidden" name="outOfStock" class="outOfStock" value="0">

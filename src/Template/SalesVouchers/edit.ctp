@@ -56,11 +56,11 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 							<table id="MainTable" class="table table-condensed table-striped" width="100%">
 								<thead>
 									<tr>
-										<td></td>
-										<td>Particulars</td>
-										<td>Debit</td>
-										<td>Credit</td>
-										<td width="10%"></td>
+										<th></th>
+										<th>Particulars</th>
+										<th>Debit</th>
+										<th>Credit</th>
+										<th width="10%"></th>
 									</tr>
 								</thead>
 								<tbody id='MainTbody' class="tab">
@@ -96,9 +96,12 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 										?>
 											<?php echo $this->Form->input('ledger_id', ['empty'=>'--Select--','options'=>@$ledgerDroption,'label' => false,'class' => 'form-control input-sm ledger','required'=>'required','value'=>$sales_voucher_row->ledger_id]); 
 										}
-										else
+										else if($i==1)
 										{
 											echo $this->Form->input('ledger_id', ['empty'=>'--Select--','options'=>@$ledgerOptions,'label' => false,'class' => 'form-control input-sm ledger','required'=>'required','value'=>$sales_voucher_row->ledger_id]);
+										}
+										else{
+											echo $this->Form->input('ledger_id', ['empty'=>'--Select--','options'=>@$AllLedgers,'label' => false,'class' => 'form-control input-sm ledger','required'=>'required','value'=>$sales_voucher_row->ledger_id]);
 										}
 										?>
 											<div class="window" style="margin:auto;">
@@ -352,7 +355,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				echo $this->Form->input('cr_dr', ['options'=>['Dr'=>'Dr','Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm cr_dr','required'=>'required','value'=>'Dr']); ?>
 			</td>
 			<td width="65%">
-				<?php echo $this->Form->input('ledger_id', ['empty'=>'--Select--','options'=>@$ledgerOptions,'label' => false,'class' => 'form-control input-sm ledger','required'=>'required']); ?>
+				<?php echo $this->Form->input('ledger_id', ['empty'=>'--Select--','options'=>@$AllLedgers,'label' => false,'class' => 'form-control input-sm ledger','required'=>'required']); ?>
 				<div class="window" style="margin:auto;"></div>
 			</td>
 			<td width="10%">
@@ -800,21 +803,17 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 						console.log(total_credit);
 					}
 					
-					remaining=total_debit-total_credit;
-					
-					if(remaining>0){
-						//console.log(remaining);
-						$(this).closest('table').find(' tfoot td:nth-child(2) input.total').val(remaining);
+					if(total_debit>total_credit)
+					{
+					    remaining=total_debit-total_credit;
+						$(this).closest('table').find(' tfoot td:nth-child(2) input.total').val(round(remaining,2));
 						$(this).closest('table').find(' tfoot td:nth-child(3) input.total_type').val('Dr');
 					}
-					else if(remaining<0){
-						remaining=Math.abs(remaining)
-						$(this).closest('table').find(' tfoot td:nth-child(2) input.total').val(remaining);
+					if(total_debit<total_credit)
+					{
+					    remaining= total_credit-total_debit;
+						$(this).closest('table').find(' tfoot td:nth-child(2) input.total').val(round(remaining,2));
 						$(this).closest('table').find(' tfoot td:nth-child(3) input.total_type').val('Cr');
-					}
-					else{
-					$(this).closest('table').find(' tfoot td:nth-child(2) input.total').val('0');
-					$(this).closest('table').find(' tfoot td:nth-child(3) input.total_type').val('');	
 					}
 					
 				});

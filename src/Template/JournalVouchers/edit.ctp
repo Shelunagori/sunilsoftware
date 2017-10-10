@@ -56,11 +56,11 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 							<table id="MainTable" class="table table-condensed table-striped" width="100%">
 								<thead>
 									<tr>
-										<td></td>
-										<td>Particulars</td>
-										<td>Debit</td>
-										<td>Credit</td>
-										<td width="10%"></td>
+										<th></th>
+										<th>Particulars</th>
+										<th>Debit</th>
+										<th>Credit</th>
+										<th width="10%"></th>
 									</tr>
 								</thead>
 								<tbody id='MainTbody' class="tab">
@@ -188,7 +188,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 														<td colspan="2"><input type="hidden" id="htotal" value="<?php echo @$total;?>">
 													    </td>
 														<td><input type="text" class="form-control input-sm rightAligntextClass total calculation ttl noBorder"  value=""name="journal_voucher_rows[<?php echo $i;?>][total]"></td>
-														<td><input type="text" class="form-control input-sm total_type calculation noBorder"  value="<?php echo @$type;?>"></td>
+														<td style="vertical-align: top !important;"><input type="text" class="form-control input-sm total_type calculation noBorder"  value="<?php echo @$type;?>"></td>
 													</tr>
 												</tfoot>
 												</table>
@@ -793,29 +793,26 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				
 					if(Dr_Cr=='Dr'){
 						total_debit=total_debit+amt;
-						console.log(total_debit);
+						//console.log(total_debit);
 					}
 					else if(Dr_Cr=='Cr'){
 						total_credit=total_credit+amt;
-						console.log(total_credit);
+						//console.log(total_credit);
 					}
 					
-					remaining=total_debit-total_credit;
-					
-					if(remaining>0){
-						//console.log(remaining);
-						$(this).closest('table').find(' tfoot td:nth-child(2) input.total').val(remaining);
+					if(total_debit>total_credit)
+					{
+					    remaining=total_debit-total_credit;
+						$(this).closest('table').find(' tfoot td:nth-child(2) input.total').val(round(remaining,2));
 						$(this).closest('table').find(' tfoot td:nth-child(3) input.total_type').val('Dr');
 					}
-					else if(remaining<0){
-						remaining=Math.abs(remaining)
-						$(this).closest('table').find(' tfoot td:nth-child(2) input.total').val(remaining);
+					if(total_debit<total_credit)
+					{
+					    remaining= total_credit-total_debit;
+						$(this).closest('table').find(' tfoot td:nth-child(2) input.total').val(round(remaining,2));
 						$(this).closest('table').find(' tfoot td:nth-child(3) input.total_type').val('Cr');
 					}
-					else{
-					$(this).closest('table').find(' tfoot td:nth-child(2) input.total').val('0');
-					$(this).closest('table').find(' tfoot td:nth-child(3) input.total_type').val('');	
-					}
+					
 					
 				});
 				

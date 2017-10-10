@@ -148,7 +148,7 @@ class StockJournalsController extends AppController
 			$data=$this->request->getData();
 			//$data['outwards']=null;
 			//pr($data); exit;
-			 $stockJournal = $this->StockJournals->get($id);
+			$stockJournal = $this->StockJournals->get($id);
             $stockJournal = $this->StockJournals->patchEntity($stockJournal, $data);
 			$stockJournal->edited_by = $user_id;
 			$stockJournal->edited_on = date('Y-m-d');
