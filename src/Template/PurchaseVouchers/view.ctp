@@ -80,7 +80,7 @@ $this->set('title', 'Purchase Voucher');
 											<?php
 											if(!empty($purchase_voucher_row->reference_details)){
 											?>
-												<table width=90%><tbody>
+												<table width="90%" class="table table-condensed"><tbody>
 												<?php
 												    $j=0;$total_amount_dr=0;$total_amount_cr=0;$colspan=0;
 												    foreach($purchase_voucher_row->reference_details as $reference_detail)

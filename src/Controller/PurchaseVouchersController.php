@@ -23,7 +23,7 @@ class PurchaseVouchersController extends AppController
 		$this->viewBuilder()->layout('index_layout');
 		$company_id=$this->Auth->User('session_company_id');
 		$this->paginate = [
-            'contain' => ['Companies']
+            'contain' => []
         ];
         $purchaseVouchers = $this->paginate($this->PurchaseVouchers->find()->where(['PurchaseVouchers.company_id'=>$company_id]));
 

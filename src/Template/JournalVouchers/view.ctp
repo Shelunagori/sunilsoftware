@@ -71,7 +71,7 @@ $this->set('title', 'Journal Voucher');
 											<?php
 											if(!empty($journal_voucher_row->reference_details)){
 											?>
-												<table width=90%><tbody>
+												<table width="90%" class="table table-condensed"><tbody>
 												<?php
 												    $j=0;$total_amount_dr=0;$total_amount_cr=0;$colspan=0;
 												    foreach($journal_voucher_row->reference_details as $reference_detail)
