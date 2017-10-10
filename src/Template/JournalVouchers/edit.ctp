@@ -188,7 +188,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 														<td colspan="2"><input type="hidden" id="htotal" value="<?php echo @$total;?>">
 													    </td>
 														<td><input type="text" class="form-control input-sm rightAligntextClass total calculation ttl noBorder"  value=""name="journal_voucher_rows[<?php echo $i;?>][total]"></td>
-														<td><input type="text" class="form-control input-sm total_type calculation noBorder"  value="<?php echo @$type;?>"></td>
+														<td style="vertical-align: top !important;"><input type="text" class="form-control input-sm total_type calculation noBorder"  value="<?php echo @$type;?>"></td>
 													</tr>
 												</tfoot>
 												</table>
@@ -804,12 +804,12 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 					
 					if(remaining>0){
 						//console.log(remaining);
-						$(this).closest('table').find(' tfoot td:nth-child(2) input.total').val(remaining);
+						$(this).closest('table').find(' tfoot td:nth-child(2) input.total').val(round(remaining,2));
 						$(this).closest('table').find(' tfoot td:nth-child(3) input.total_type').val('Dr');
 					}
 					else if(remaining<0){
 						remaining=Math.abs(remaining)
-						$(this).closest('table').find(' tfoot td:nth-child(2) input.total').val(remaining);
+						$(this).closest('table').find(' tfoot td:nth-child(2) input.total').val(round(remaining,2));
 						$(this).closest('table').find(' tfoot td:nth-child(3) input.total_type').val('Cr');
 					}
 					else{
