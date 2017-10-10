@@ -242,6 +242,36 @@ class PurchaseVouchersController extends AppController
             $this->Flash->error(__('The purchase voucher could not be saved. Please, try again.'));
         }
 		$ledgers = $this->PurchaseVouchers->PurchaseVoucherRows->Ledgers->find('list')->where(['company_id'=>$company_id]);
+		
+		$refDropDown =[];
+		foreach($purchaseVoucher->purchase_voucher_rows as $purchase_voucher_row)
+		{
+			if(!empty($purchase_voucher_row->reference_details))
+			{
+				$query = $this->PurchaseVouchers->PurchaseVoucherRows->ReferenceDetails->find();
+				$query->select(['total_debit' => $query->func()->sum('ReferenceDetails.debit'),'total_credit' => $query->func()->sum('ReferenceDetails.credit')])
+				->where(['ReferenceDetails.ledger_id'=>$purchase_voucher_row->ledger_id,'ReferenceDetails.type !='=>'On Account'])
+				->group(['ReferenceDetails.ref_name'])
+				->autoFields(true);
+				$referenceDetails=$query;
+				$option=[];
+				foreach($referenceDetails as $referenceDetail){
+					$remider=$referenceDetail->total_debit-$referenceDetail->total_credit;
+					if($remider>0){
+						$bal=abs($remider).' Dr';
+					}else if($remider<0){
+						$bal=abs($remider).' Cr';
+					}
+					if($referenceDetail->total_debit!=$referenceDetail->total_credit){
+						$option[$referenceDetail->ref_name]=$referenceDetail->ref_name;
+						 
+					}
+				}
+				
+				$refDropDown[$purchase_voucher_row->id] = $option;
+			}
+		}
+		
 		$bankParentGroups = $this->PurchaseVouchers->PurchaseVoucherRows->Ledgers->AccountingGroups->find()
 						->where(['AccountingGroups.company_id'=>$company_id, 'AccountingGroups.bank'=>'1']);
 						
@@ -312,7 +342,7 @@ class PurchaseVouchersController extends AppController
 				$Debitledgers[]=['text' =>$AllDebitledger->name, 'value' => $AllDebitledger->id,'open_window' => 'no' ];
 			}
 		}
-        $this->set(compact('purchaseVoucher','Creditledgers','Debitledgers','ledgers','company_id'));
+        $this->set(compact('purchaseVoucher','Creditledgers','Debitledgers','ledgers','company_id','refDropDown'));
         $this->set('_serialize', ['purchaseVoucher']);
     }
 
