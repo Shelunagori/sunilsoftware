@@ -2,7 +2,7 @@
 /**
  * @Author: PHP Poets IT Solutions Pvt. Ltd.
  */
-$this->set('title', 'Purchase Voucher');
+$this->set('title', 'Journal Voucher');
 ?>
 <style>
 .noBorder{
@@ -15,7 +15,7 @@ $this->set('title', 'Purchase Voucher');
 			<div class="portlet-title">
 				<div class="caption">
 					<i class="icon-bar-chart font-green-sharp hide"></i>
-					<span class="caption-subject font-green-sharp bold ">Purchase Voucher</span>
+					<span class="caption-subject font-green-sharp bold ">Journal Voucher</span>
 				</div>
 				<div class="actions">
 				</div>
@@ -25,28 +25,19 @@ $this->set('title', 'Purchase Voucher');
 					<div class="col-md-3">
 						<div class="form-group">
 							<label><b>Voucher No</b> :</label>&nbsp;&nbsp;
-							<?= h('#'.str_pad($purchaseVoucher->voucher_no, 4, '0', STR_PAD_LEFT)) ?>
+							<?= h('#'.str_pad($journalVoucher->voucher_no, 4, '0', STR_PAD_LEFT)) ?>
 						</div>
 					</div>
 					<div class="col-md-3">
 						<div class="form-group">
 							<label><b>Transaction Date</b> :</label>
-							<?php echo date("d-m-Y",strtotime($purchaseVoucher->transaction_date)); ?>
+							<?php echo $journalVoucher->transaction_date; ?>
 						</div>
 					</div>
 					<div class="col-md-3">
 						<div class="form-group">
-							<label><b>Supplier Invoice No</b> :</label>
-							<?php echo $purchaseVoucher->supplier_invoice_no; ?>
-						</div>
-					</div>
-					<div class="col-md-3">
-						<div class="form-group">
-							<label><b>Supplier Invoice Date</b> :</label>
-							<?php if(!empty($purchaseVoucher->supplier_invoice_date))
-							{
-								echo date("d-m-Y",strtotime($purchaseVoucher->supplier_invoice_date));	
-							} ?>
+							<label><b>Reference No</b> :</label>
+							<?php echo $journalVoucher->reference_no; ?>
 						</div>
 					</div>
 				</div>
@@ -64,26 +55,26 @@ $this->set('title', 'Purchase Voucher');
 								</thead>
 								<tbody id='MainTbody' class="tab">
 								<?php
-								if(!empty($purchaseVoucher->purchase_voucher_rows))
+								if(!empty($journalVoucher->journal_voucher_rows))
 								{
 									$i=0; 
-									foreach($purchaseVoucher->purchase_voucher_rows as $purchase_voucher_row){	
+									foreach($journalVoucher->journal_voucher_rows as $journal_voucher_row){	
 								?>
 									<tr class="MainTr" >
 										<td width="10%">
-											<?php echo $purchase_voucher_row->cr_dr; ?>
+											<?php echo $journal_voucher_row->cr_dr; ?>
 										</td>
 										<td width="65%">
-										<?php echo $purchase_voucher_row->ledger->name; 
+										<?php echo $journal_voucher_row->ledger->name; 
 										?>
 											<div class="window" style="margin:auto;">
 											<?php
-											if(!empty($purchase_voucher_row->reference_details)){
+											if(!empty($journal_voucher_row->reference_details)){
 											?>
 												<table width=90%><tbody>
 												<?php
 												    $j=0;$total_amount_dr=0;$total_amount_cr=0;$colspan=0;
-												    foreach($purchase_voucher_row->reference_details as $reference_detail)
+												    foreach($journal_voucher_row->reference_details as $reference_detail)
 													{
 												?>
 													<tr>
@@ -146,20 +137,20 @@ $this->set('title', 'Purchase Voucher');
 												</table>
 											<?php } ?>
 											<?php
-											if(!empty($purchase_voucher_row->mode_of_payment)){
+											if(!empty($journal_voucher_row->mode_of_payment)){
 											?>
 											<table width='90%'>
 												<tbody>
 													<tr>
 														<td width="30%">
 															<?php 
-															echo $purchase_voucher_row->mode_of_payment; ?>
+															echo $journal_voucher_row->mode_of_payment; ?>
 														</td>
 														<td width="30%">
-															<?php echo $purchase_voucher_row->cheque_no; ?> 
+															<?php echo $journal_voucher_row->cheque_no; ?> 
 														</td>
 														<td width="30%">
-															<?php echo date("d-m-Y",strtotime($purchase_voucher_row->cheque_date)); ?>
+															<?php echo date("d-m-Y",strtotime($journal_voucher_row->cheque_date)); ?>
 														</td>
 													</tr>
 												</tbody>
@@ -171,13 +162,13 @@ $this->set('title', 'Purchase Voucher');
 											</div>
 										</td>
 										<td width="10%">
-										<?php if(!empty($purchase_voucher_row->debit)){?>
-											<?php echo $purchase_voucher_row->debit; ?>
+										<?php if(!empty($journal_voucher_row->debit)){?>
+											<?php echo $journal_voucher_row->debit; ?>
 										<?php } ?>
 										</td>
 										<td width="10%">
-										<?php if(!empty($purchase_voucher_row->credit)){?>
-											<?php echo $purchase_voucher_row->credit; ?>
+										<?php if(!empty($journal_voucher_row->credit)){?>
+											<?php echo $journal_voucher_row->credit; ?>
 										<?php } ?>
 										</td>
 											<td align="center"  width="10%">
@@ -188,8 +179,8 @@ $this->set('title', 'Purchase Voucher');
 								<tfoot>
 									<tr style="border-top:double;">
 										<td colspan="2" ></td>
-										<td><?php echo $purchaseVoucher->total_debit_amount;?></td>
-										<td><?php echo $purchaseVoucher->total_credit_amount;?></td>
+										<td><?php echo $journalVoucher->total_debit_amount;?></td>
+										<td><?php echo $journalVoucher->total_credit_amount;?></td>
 									</tr>
 								</tfoot>
 							</table>
@@ -199,7 +190,7 @@ $this->set('title', 'Purchase Voucher');
 						<div class="col-md-5">
 							<div class="form-group">
 								<label>Narration :</label>
-								<?php echo $purchaseVoucher->narration; ?>
+								<?php echo $journalVoucher->narration; ?>
 							</div>
 						</div>
 					</div>

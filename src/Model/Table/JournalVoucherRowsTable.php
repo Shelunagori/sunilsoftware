@@ -7,20 +7,20 @@ use Cake\ORM\Table;
 use Cake\Validation\Validator;
 
 /**
- * PurchaseVoucherRows Model
+ * JournalVoucherRows Model
  *
- * @property \App\Model\Table\PurchaseVouchersTable|\Cake\ORM\Association\BelongsTo $PurchaseVouchers
+ * @property \App\Model\Table\JournalVouchersTable|\Cake\ORM\Association\BelongsTo $JournalVouchers
  * @property \App\Model\Table\LedgersTable|\Cake\ORM\Association\BelongsTo $Ledgers
  *
- * @method \App\Model\Entity\PurchaseVoucherRow get($primaryKey, $options = [])
- * @method \App\Model\Entity\PurchaseVoucherRow newEntity($data = null, array $options = [])
- * @method \App\Model\Entity\PurchaseVoucherRow[] newEntities(array $data, array $options = [])
- * @method \App\Model\Entity\PurchaseVoucherRow|bool save(\Cake\Datasource\EntityInterface $entity, $options = [])
- * @method \App\Model\Entity\PurchaseVoucherRow patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
- * @method \App\Model\Entity\PurchaseVoucherRow[] patchEntities($entities, array $data, array $options = [])
- * @method \App\Model\Entity\PurchaseVoucherRow findOrCreate($search, callable $callback = null, $options = [])
+ * @method \App\Model\Entity\JournalVoucherRow get($primaryKey, $options = [])
+ * @method \App\Model\Entity\JournalVoucherRow newEntity($data = null, array $options = [])
+ * @method \App\Model\Entity\JournalVoucherRow[] newEntities(array $data, array $options = [])
+ * @method \App\Model\Entity\JournalVoucherRow|bool save(\Cake\Datasource\EntityInterface $entity, $options = [])
+ * @method \App\Model\Entity\JournalVoucherRow patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
+ * @method \App\Model\Entity\JournalVoucherRow[] patchEntities($entities, array $data, array $options = [])
+ * @method \App\Model\Entity\JournalVoucherRow findOrCreate($search, callable $callback = null, $options = [])
  */
-class PurchaseVoucherRowsTable extends Table
+class JournalVoucherRowsTable extends Table
 {
 
     /**
@@ -33,12 +33,12 @@ class PurchaseVoucherRowsTable extends Table
     {
         parent::initialize($config);
 
-        $this->setTable('purchase_voucher_rows');
+        $this->setTable('journal_voucher_rows');
         $this->setDisplayField('id');
         $this->setPrimaryKey('id');
 
-        $this->belongsTo('PurchaseVouchers', [
-            'foreignKey' => 'purchase_voucher_id',
+        $this->belongsTo('JournalVouchers', [
+            'foreignKey' => 'journal_voucher_id',
             'joinType' => 'INNER'
         ]);
         $this->belongsTo('Ledgers', [
@@ -46,7 +46,7 @@ class PurchaseVoucherRowsTable extends Table
             'joinType' => 'INNER'
         ]);
 		$this->hasMany('ReferenceDetails', [
-            'foreignKey' => 'purchase_voucher_row_id',
+            'foreignKey' => 'journal_voucher_row_id',
 			'saveStrategy'=>'replace'
         ]);
     }
@@ -77,7 +77,7 @@ class PurchaseVoucherRowsTable extends Table
      */
     public function buildRules(RulesChecker $rules)
     {
-        $rules->add($rules->existsIn(['purchase_voucher_id'], 'PurchaseVouchers'));
+        $rules->add($rules->existsIn(['journal_voucher_id'], 'JournalVouchers'));
         $rules->add($rules->existsIn(['ledger_id'], 'Ledgers'));
 
         return $rules;
