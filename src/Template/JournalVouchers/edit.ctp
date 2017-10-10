@@ -2,7 +2,7 @@
 /**
  * @Author: PHP Poets IT Solutions Pvt. Ltd.
  */
-$this->set('title', 'Purchase Voucher');
+$this->set('title', 'Journal Voucher');
 ?>
 <style>
 .noBorder{
@@ -24,38 +24,32 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			<div class="portlet-title">
 				<div class="caption">
 					<i class="icon-bar-chart font-green-sharp hide"></i>
-					<span class="caption-subject font-green-sharp bold ">Edit Purchase Voucher</span>
+					<span class="caption-subject font-green-sharp bold ">Edit Journal Voucher</span>
 				</div>
 				<div class="actions">
 				</div>
 			</div>
 			<div class="portlet-body">
-				<?= $this->Form->create($purchaseVoucher,['id'=>'form_sample_2']) ?>
+				<?= $this->Form->create($journalVoucher,['id'=>'form_sample_2']) ?>
 				<div class="row">
 					<div class="col-md-3">
 						<div class="form-group">
 							<label>Voucher No :</label>&nbsp;&nbsp;
-							<?= h('#'.str_pad($purchaseVoucher->voucher_no, 4, '0', STR_PAD_LEFT)) ?>
+							<?= h('#'.str_pad($journalVoucher->voucher_no, 4, '0', STR_PAD_LEFT)) ?>
 						</div>
 					</div>
 					<div class="col-md-3">
 						<div class="form-group">
 							<label>Transaction Date <span class="required">*</span></label>
-							<?php echo $this->Form->control('transaction_date',['class'=>'form-control input-sm date-picker','data-date-format'=>'dd-mm-yyyy','label'=>false,'placeholder'=>'DD-MM-YYYY','type'=>'text','data-date-start-date'=>@$coreVariable[fyValidFrom],'data-date-end-date'=>@$coreVariable[fyValidTo],'value'=>date('d-m-Y')]); ?>
+							<?php echo $this->Form->control('transaction_date',['class'=>'form-control input-sm date-picker','data-date-format'=>'dd-mm-yyyy', 'label'=>false,'placeholder'=>'DD-MM-YYYY','type'=>'text','data-date-start-date'=>@$coreVariable[fyValidFrom],'data-date-end-date'=>@$coreVariable[fyValidTo],'required'=>'required']); ?>
 						</div>
 					</div>
 					<div class="col-md-3">
 						<div class="form-group">
-							<label>Supplier Invoice No </label>
-							<?php echo $this->Form->control('supplier_invoice_no',['class'=>'form-control input-sm','label'=>false,'placeholder'=>'Supplier Invoice No','autofocus']); ?>
+							<label>Reference No </label>
+							<?php echo $this->Form->control('reference_no',['class'=>'form-control input-sm','label'=>false,'placeholder'=>'refrence no','type'=>'text']); ?>
 						</div>
 					</div>
-					<div class="col-md-3">
-						<div class="form-group">
-							<label>Supplier Invoice Date</label>
-							<?php echo $this->Form->control('supplier_invoice_date',['class'=>'form-control input-sm date-picker','data-date-format'=>'dd-mm-yyyy','label'=>false,'placeholder'=>'DD-MM-YYYY','type'=>'text']); ?>
-						</div>
-					</div> 
 				</div>
 				<div class="row">
 						<div class="table-responsive">
@@ -71,25 +65,25 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 								</thead>
 								<tbody id='MainTbody' class="tab">
 								<?php
-								if(!empty($purchaseVoucher->purchase_voucher_rows))
+								if(!empty($journalVoucher->journal_voucher_rows))
 								{
 									$i=0; 
-									foreach($purchaseVoucher->purchase_voucher_rows as $purchase_voucher_row){	
+									foreach($journalVoucher->journal_voucher_rows as $journal_voucher_row){	
 								?>
 									<tr class="MainTr" row_no="<?php echo $i;?>">
 										<td width="10%">
 											<?php 
-											echo $this->Form->input('purchase_voucher_rows.'.$i.'.id',['value'=>$purchase_voucher_row->id,'class'=>'hidden']);
+											echo $this->Form->input('journal_voucher_rows.'.$i.'.id',['value'=>$journal_voucher_row->id,'class'=>'hidden']);
 											if($i==0)
 											{
-												echo $this->Form->input('purchase_voucher_rows.'.$i.'.cr_dr', ['options'=>['Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm cr_dr','required'=>'required','readonly'=>'readonly']); 
+												echo $this->Form->input('journal_voucher_rows.'.$i.'.cr_dr', ['options'=>['Dr'=>'Dr'],'label' => false,'class' => 'form-control input-sm cr_dr','required'=>'required','readonly'=>'readonly']); 
 											}
 											else if($i==1)
 											{
-												echo $this->Form->input('purchase_voucher_rows.'.$i.'.cr_dr', ['options'=>['Dr'=>'Dr'],'label' => false,'class' => 'form-control input-sm cr_dr','required'=>'required','value'=>'Cr','readonly'=>'readonly']);
+												echo $this->Form->input('journal_voucher_rows.'.$i.'.cr_dr', ['options'=>['Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm cr_dr','required'=>'required','value'=>'Cr','readonly'=>'readonly']);
 											}
 											else{
-											echo $this->Form->input('purchase_voucher_rows.'.$i.'.cr_dr', ['options'=>['Dr'=>'Dr','Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm cr_dr','required'=>'required','value'=>$purchase_voucher_row->cr_dr]); 
+											echo $this->Form->input('journal_voucher_rows.'.$i.'.cr_dr', ['options'=>['Dr'=>'Dr','Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm cr_dr','required'=>'required','value'=>$journal_voucher_row->cr_dr]); 
 											}
 											
 											?>
@@ -100,21 +94,21 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 										if($i==0)
 										{ 
 										?>
-											<?php echo $this->Form->input('ledger_id', ['empty'=>'--Select--','options'=>@$Creditledgers,'label' => false,'class' => 'form-control input-sm ledger','required'=>'required','value'=>$purchase_voucher_row->ledger_id]); 
+											<?php echo $this->Form->input('ledger_id', ['empty'=>'--Select--','options'=>@$ledgerDroption,'label' => false,'class' => 'form-control input-sm ledger','required'=>'required','value'=>$journal_voucher_row->ledger_id]); 
 										}
 										else
 										{
-											echo $this->Form->input('ledger_id', ['empty'=>'--Select--','options'=>@$Debitledgers,'label' => false,'class' => 'form-control input-sm ledger','required'=>'required','value'=>$purchase_voucher_row->ledger_id]);
+											echo $this->Form->input('ledger_id', ['empty'=>'--Select--','options'=>@$ledgers,'label' => false,'class' => 'form-control input-sm ledger','required'=>'required','value'=>$journal_voucher_row->ledger_id]);
 										}
 										?>
 											<div class="window" style="margin:auto;">
 											<?php
-											if(!empty($purchase_voucher_row->reference_details)){
+											if(!empty($journal_voucher_row->reference_details)){
 											?>
 												<table width=90% class="refTbl"><tbody>
 												<?php
 												    $j=0;$total_amount_dr=0;$total_amount_cr=0;$colspan=0;
-												    foreach($purchase_voucher_row->reference_details as $reference_detail)
+												    foreach($journal_voucher_row->reference_details as $reference_detail)
 													{
 												?>
 													<tr>
@@ -122,7 +116,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 														<input type="hidden" class="ledgerIdContainer" value="<?php echo $reference_detail->ledger_id;?>"/>
 															<input type="hidden" class="companyIdContainer" value="<?php echo $reference_detail->company_id;?>"/>
 															<?php 
-															echo $this->Form->input('purchase_voucher_rows.'.$i.'.reference_details.'.$j.'.type', ['options'=>$option_ref,'label' => false,'class' => 'form-control input-sm refType','required'=>'required','value'=>$reference_detail->type]); 
+															echo $this->Form->input('journal_voucher_rows.'.$i.'.reference_details.'.$j.'.type', ['options'=>$option_ref,'label' => false,'class' => 'form-control input-sm refType','required'=>'required','value'=>$reference_detail->type]); 
 															
 															
 															 ?>
@@ -131,14 +125,14 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 														<td width="">
 														<?php if($reference_detail->type=='New Ref' || $reference_detail->type=='Advance'){ 
 														?>
-															<?php echo $this->Form->input('purchase_voucher_rows.'.$i.'.reference_details.'.$j.'.ref_name', ['type'=>'text','label' => false,'class' => 'form-control input-sm ref_name','placeholder'=>'Reference Name','required'=>'required']); ?>
+															<?php echo $this->Form->input('journal_voucher_rows.'.$i.'.reference_details.'.$j.'.ref_name', ['type'=>'text','label' => false,'class' => 'form-control input-sm ref_name','placeholder'=>'Reference Name','required'=>'required']); ?>
 															<?php } if($reference_detail->type=='Against')
 															{?>
 															<?php 
                                                             
-															if(!empty($refDropDown[$purchase_voucher_row->id]))
+															if(!empty($refDropDown[$journal_voucher_row->id]))
 															{
-																echo $this->Form->input('mode_of_payment', ['options'=>$refDropDown[$purchase_voucher_row->id],'label' => false,'class' => 'form-control input-sm paymentType','required'=>'required','value'=>$reference_detail->type]);
+																echo $this->Form->input('mode_of_payment', ['options'=>$refDropDown[$journal_voucher_row->id],'label' => false,'class' => 'form-control input-sm paymentType','required'=>'required','value'=>$reference_detail->type]);
 																
 															} }?>
 															
@@ -164,7 +158,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 																$name="credit";
 															}
 
-															echo $this->Form->input('purchase_voucher_rows.'.$i.'.reference_details.'.$j.'.'.$name, ['label' => false,'class' => 'form-control input-sm calculation rightAligntextClass','placeholder'=>'Amount','required'=>'required','value'=>$value]); ?>
+															echo $this->Form->input('journal_voucher_rows.'.$i.'.reference_details.'.$j.'.'.$name, ['label' => false,'class' => 'form-control input-sm calculation rightAligntextClass','placeholder'=>'Amount','required'=>'required','value'=>$value]); ?>
 														</td>
 														<td width="10%" style="padding-left:0px;">
 															<?php 
@@ -193,7 +187,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 												    <tr class="remove_ref_foot">
 														<td colspan="2"><input type="hidden" id="htotal" value="<?php echo @$total;?>">
 													    </td>
-														<td><input type="text" class="form-control input-sm rightAligntextClass total calculation ttl noBorder"  value=""name="purchase_voucher_rows[<?php echo $i;?>][total]"></td>
+														<td><input type="text" class="form-control input-sm rightAligntextClass total calculation ttl noBorder"  value=""name="journal_voucher_rows[<?php echo $i;?>][total]"></td>
 														<td><input type="text" class="form-control input-sm total_type calculation noBorder"  value="<?php echo @$type;?>"></td>
 													</tr>
 												</tfoot>
@@ -201,8 +195,8 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 												<a role=button class=addRefRow>Add Row</a>
 											<?php } ?>
 											<?php
-											if(!empty($purchase_voucher_row->mode_of_payment)){
-												if($purchase_voucher_row->mode_of_payment=='NEFT/RTGS')
+											if(!empty($journal_voucher_row->mode_of_payment)){
+												if($journal_voucher_row->mode_of_payment=='NEFT/RTGS')
 												{  
 													$style="display:none;";
 												}
@@ -210,9 +204,9 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 												{
 													$style="";
 												} 
-												if(!empty($purchase_voucher_row->cheque_date))
+												if(!empty($journal_voucher_row->cheque_date))
 												{
-													$date = date("d-m-Y",strtotime($purchase_voucher_row->cheque_date));
+													$date = date("d-m-Y",strtotime($journal_voucher_row->cheque_date));
 												}
 											?>
 											<table width='90%'>
@@ -220,14 +214,14 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 													<tr>
 														<td width="30%" >
 															<?php 
-															echo $this->Form->input('purchase_voucher_rows.'.$i.'.mode_of_payment', ['options'=>$option_mode,'label' => false,'class' => 'form-control input-sm paymentType','required'=>'required','value'=>$purchase_voucher_row->mode_of_payment]); ?>
+															echo $this->Form->input('journal_voucher_rows.'.$i.'.mode_of_payment', ['options'=>$option_mode,'label' => false,'class' => 'form-control input-sm paymentType','required'=>'required','value'=>$journal_voucher_row->mode_of_payment]); ?>
 														</td>
 														<td width="30%" style="<?php echo @$style;?>">
-															<?php echo $this->Form->input('purchase_voucher_rows.'.$i.'.cheque_no', ['label' =>false,'class' => 'form-control input-sm cheque_no','placeholder'=>'Cheque No','value'=>$purchase_voucher_row->cheque_no]); ?> 
+															<?php echo $this->Form->input('journal_voucher_rows.'.$i.'.cheque_no', ['label' =>false,'class' => 'form-control input-sm cheque_no','placeholder'=>'Cheque No','value'=>$journal_voucher_row->cheque_no]); ?> 
 														</td>
 														
 														<td width="30%" style="<?php echo @$style;?>">
-															<?php echo $this->Form->input('purchase_voucher_rows.'.$i.'.cheque_date', ['label' =>false,'class' => 'form-control input-sm date-picker cheque_date ','data-date-format'=>'dd-mm-yyyy','placeholder'=>'Cheque Date','value'=>@$date,'type'=>'text']); ?>
+															<?php echo $this->Form->input('journal_voucher_rows.'.$i.'.cheque_date', ['label' =>false,'class' => 'form-control input-sm date-picker cheque_date ','data-date-format'=>'dd-mm-yyyy','placeholder'=>'Cheque Date','value'=>@$date,'type'=>'text']); ?>
 														</td>
 													</tr>
 												</tbody>
@@ -239,7 +233,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 											</div>
 										</td>
 										<td width="10%">
-										<?php if(empty($purchase_voucher_row->debit))
+										<?php if(empty($journal_voucher_row->debit))
 											  {
 												  $style1="display:none;";
 											  }else
@@ -247,12 +241,12 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 												   $style1="display:block;";
 											  }
 											?>
-											<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm  debitBox rightAligntextClass totalCalculation','placeholder'=>'Debit','value'=>$purchase_voucher_row->debit,'style'=>@$style1]); ?>
+											<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm  debitBox rightAligntextClass totalCalculation','placeholder'=>'Debit','value'=>$journal_voucher_row->debit,'style'=>@$style1]); ?>
 										
 										</td>
 										<td width="10%">
 										<?php 
-										      if(empty($purchase_voucher_row->credit))
+										      if(empty($journal_voucher_row->credit))
 											  {
 												  $style2="display:none;";
 											  }else
@@ -260,7 +254,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 												   $style2="display:block;";
 											  }
 										?>
-											<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm  creditBox rightAligntextClass totalCalculation','placeholder'=>'Credit','value'=>$purchase_voucher_row->credit,'style'=>@$style2]); ?>
+											<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm  creditBox rightAligntextClass totalCalculation','placeholder'=>'Credit','value'=>$journal_voucher_row->credit,'style'=>@$style2]); ?>
 										</td>
 										<td align="center"  width="10%">
 										<?php 
@@ -278,8 +272,8 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 										<td colspan="2" >	
 											<button type="button" class="AddMainRow btn btn-default input-sm"><i class="fa fa-plus"></i> Add row</button>
 										</td>
-										<td><input type="text" class="form-control input-sm rightAligntextClass total_debit" placeholder="Total Debit" id="total_debit_amount" name="total_debit_amount" value="<?php echo $purchaseVoucher->total_debit_amount;?>"></td>
-										<td><input type="text" class="form-control input-sm rightAligntextClass total_credit" placeholder="Total Credit" id="total_credit_amount" name="total_credit_amount" value="<?php echo $purchaseVoucher->total_credit_amount;?>"></td>
+										<td><input type="text" class="form-control input-sm rightAligntextClass total_debit" placeholder="Total Debit" id="total_debit_amount" name="total_debit_amount" value="<?php echo $journalVoucher->total_debit_amount;?>"></td>
+										<td><input type="text" class="form-control input-sm rightAligntextClass total_credit" placeholder="Total Credit" id="total_credit_amount" name="total_credit_amount" value="<?php echo $journalVoucher->total_credit_amount;?>"></td>
 									</tr>
 								</tfoot>
 							</table>
@@ -358,7 +352,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				echo $this->Form->input('cr_dr', ['options'=>['Dr'=>'Dr','Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm cr_dr','required'=>'required','value'=>'Dr']); ?>
 			</td>
 			<td width="65%">
-				<?php echo $this->Form->input('ledger_id', ['empty'=>'--Select--','options'=>@$Debitledgers,'label' => false,'class' => 'form-control input-sm ledger','required'=>'required']); ?>
+				<?php echo $this->Form->input('ledger_id', ['empty'=>'--Select--','options'=>@$ledgers,'label' => false,'class' => 'form-control input-sm ledger','required'=>'required']); ?>
 				<div class="window" style="margin:auto;"></div>
 			</td>
 			<td width="10%">
@@ -461,12 +455,12 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
                 focusInvalid: false,
                 ignore: '', 
 				rules: {
-					totalMainCr: {
-						equalTo: '#totalMainDr'
+					total_credit_amount: {
+						equalTo: '#total_debit_amount'
 					},
 				},
 				messages: {
-					totalMainCr: {
+					total_credit_amount: {
 						equalTo: 'Total debit and credit not matched !'
 					},
 				},
@@ -663,11 +657,11 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				var i=0;
 				$('#MainTable tbody#MainTbody tr.MainTr').each(function(){
 					$(this).attr('row_no',i);
-					$(this).find('td:nth-child(1) input.hidden').attr({name:'purchase_voucher_rows['+i+'][id]',id:'purchase_voucher_rows-'+i+'-id'});
-					$(this).find('td:nth-child(1) select.cr_dr').attr({name:'purchase_voucher_rows['+i+'][cr_dr]',id:'purchase_voucher_rows-'+i+'-cr_dr'});
-					$(this).find('td:nth-child(2) select.ledger').attr({name:'purchase_voucher_rows['+i+'][ledger_id]',id:'purchase_voucher_rows-'+i+'-ledger_id'}).select2();
-					$(this).find('td:nth-child(3) input.debitBox').attr({name:'purchase_voucher_rows['+i+'][debit]',id:'purchase_voucher_rows-'+i+'-debit'});
-					$(this).find('td:nth-child(4) input.creditBox').attr({name:'purchase_voucher_rows['+i+'][credit]',id:'purchase_voucher_rows-'+i+'-credit'});
+					$(this).find('td:nth-child(1) input.hidden').attr({name:'journal_voucher_rows['+i+'][id]',id:'journal_voucher_rows-'+i+'-id'});
+					$(this).find('td:nth-child(1) select.cr_dr').attr({name:'journal_voucher_rows['+i+'][cr_dr]',id:'journal_voucher_rows-'+i+'-cr_dr'});
+					$(this).find('td:nth-child(2) select.ledger').attr({name:'journal_voucher_rows['+i+'][ledger_id]',id:'journal_voucher_rows-'+i+'-ledger_id'}).select2();
+					$(this).find('td:nth-child(3) input.debitBox').attr({name:'journal_voucher_rows['+i+'][debit]',id:'journal_voucher_rows-'+i+'-debit'});
+					$(this).find('td:nth-child(4) input.creditBox').attr({name:'journal_voucher_rows['+i+'][credit]',id:'journal_voucher_rows-'+i+'-credit'});
 					i++;
 					var type=$(this).find('td:nth-child(2) option:selected').attr('open_window'); 
 					
@@ -697,9 +691,9 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			function renameBankRows(SelectedTr){
 				var row_no=SelectedTr.attr('row_no');
 				SelectedTr.find('td:nth-child(2) div.window table tbody tr').each(function(){
-					$(this).find('td:nth-child(1) select.paymentType').attr({name:'purchase_voucher_rows['+row_no+'][mode_of_payment]',id:'purchase_voucher_rows-'+row_no+'-mode_of_payment'});
-					$(this).find('td:nth-child(2) input.cheque_no').attr({name:'purchase_voucher_rows['+row_no+'][cheque_no]',id:'purchase_voucher_rows-'+row_no+'-cheque_no'});
-					$(this).find('td:nth-child(3) input.cheque_date').attr({name:'purchase_voucher_rows['+row_no+'][cheque_date]',id:'purchase_voucher_rows-'+row_no+'-cheque_date'}).datepicker();
+					$(this).find('td:nth-child(1) select.paymentType').attr({name:'journal_voucher_rows['+row_no+'][mode_of_payment]',id:'journal_voucher_rows-'+row_no+'-mode_of_payment'});
+					$(this).find('td:nth-child(2) input.cheque_no').attr({name:'journal_voucher_rows['+row_no+'][cheque_no]',id:'journal_voucher_rows-'+row_no+'-cheque_no'});
+					$(this).find('td:nth-child(3) input.cheque_date').attr({name:'journal_voucher_rows['+row_no+'][cheque_date]',id:'journal_voucher_rows-'+row_no+'-cheque_date'}).datepicker();
 				});
 				
 			}
@@ -735,21 +729,21 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				var row_no=SelectedTr.attr('row_no');
 				if(SelectedTr.find('td:nth-child(2) div.window table tbody tr').length>0){
 				SelectedTr.find('td:nth-child(2) div.window table tbody tr').each(function(){
-					$(this).find('td:nth-child(1) input.companyIdContainer').attr({name:'purchase_voucher_rows['+row_no+'][reference_details]['+i+'][company_id]',id:'purchase_voucher_rows-'+row_no+'-reference_details-'+i+'-company_id'});
-					$(this).find('td:nth-child(1) input.ledgerIdContainer').attr({name:'purchase_voucher_rows['+row_no+'][reference_details]['+i+'][ledger_id]',id:'purchase_voucher_rows-'+row_no+'-reference_details-'+i+'-ledger_id'});
-					$(this).find('td:nth-child(1) select.refType').attr({name:'purchase_voucher_rows['+row_no+'][reference_details]['+i+'][type]',id:'purchase_voucher_rows-'+row_no+'-reference_details-'+i+'-type'});
+					$(this).find('td:nth-child(1) input.companyIdContainer').attr({name:'journal_voucher_rows['+row_no+'][reference_details]['+i+'][company_id]',id:'journal_voucher_rows-'+row_no+'-reference_details-'+i+'-company_id'});
+					$(this).find('td:nth-child(1) input.ledgerIdContainer').attr({name:'journal_voucher_rows['+row_no+'][reference_details]['+i+'][ledger_id]',id:'journal_voucher_rows-'+row_no+'-reference_details-'+i+'-ledger_id'});
+					$(this).find('td:nth-child(1) select.refType').attr({name:'journal_voucher_rows['+row_no+'][reference_details]['+i+'][type]',id:'journal_voucher_rows-'+row_no+'-reference_details-'+i+'-type'});
 					var is_select=$(this).find('td:nth-child(2) select.refList').length;
 					var is_input=$(this).find('td:nth-child(2) input.ref_name').length;
 					if(is_select){
-						$(this).find('td:nth-child(2) select.refList').attr({name:'purchase_voucher_rows['+row_no+'][reference_details]['+i+'][ref_name]',id:'purchase_voucher_rows-'+row_no+'-reference_details-'+i+'-ref_name'});
+						$(this).find('td:nth-child(2) select.refList').attr({name:'journal_voucher_rows['+row_no+'][reference_details]['+i+'][ref_name]',id:'journal_voucher_rows-'+row_no+'-reference_details-'+i+'-ref_name'});
 					}else if(is_input){
-						$(this).find('td:nth-child(2) input.ref_name').attr({name:'purchase_voucher_rows['+row_no+'][reference_details]['+i+'][ref_name]',id:'purchase_voucher_rows-'+row_no+'-reference_details-'+i+'-ref_name'});
+						$(this).find('td:nth-child(2) input.ref_name').attr({name:'journal_voucher_rows['+row_no+'][reference_details]['+i+'][ref_name]',id:'journal_voucher_rows-'+row_no+'-reference_details-'+i+'-ref_name'});
 					}
 					var Dr_Cr=$(this).find('td:nth-child(4) select option:selected').val();
 					if(Dr_Cr=='Dr'){
-						$(this).find('td:nth-child(3) input').attr({name:'purchase_voucher_rows['+row_no+'][reference_details]['+i+'][debit]',id:'purchase_voucher_rows-'+row_no+'-reference_details-'+i+'-debit'});
+						$(this).find('td:nth-child(3) input').attr({name:'journal_voucher_rows['+row_no+'][reference_details]['+i+'][debit]',id:'journal_voucher_rows-'+row_no+'-reference_details-'+i+'-debit'});
 					}else{
-						$(this).find('td:nth-child(3) input').attr({name:'purchase_voucher_rows['+row_no+'][reference_details]['+i+'][credit]',id:'purchase_voucher_rows-'+row_no+'-reference_details-'+i+'-credit'});
+						$(this).find('td:nth-child(3) input').attr({name:'journal_voucher_rows['+row_no+'][reference_details]['+i+'][credit]',id:'journal_voucher_rows-'+row_no+'-reference_details-'+i+'-credit'});
 					}
 					i++;
 				});
@@ -762,7 +756,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				
 				
 				SelectedTr.find('td:nth-child(2) div.window table.refTbl tfoot tr td:nth-child(2) input.total')
-						.attr({name:'purchase_voucher_rows['+row_no+'][total]',id:'purchase_voucher_rows-'+row_no+'-total'})
+						.attr({name:'journal_voucher_rows['+row_no+'][total]',id:'journal_voucher_rows-'+row_no+'-total'})
 						.rules('add', {
 							equalTo: '#'+eqlClass,
 							messages: {

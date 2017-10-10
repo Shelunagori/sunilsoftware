@@ -1,0 +1,251 @@
+<?php
+namespace App\Controller;
+
+use App\Controller\AppController;
+
+/**
+ * JournalVouchers Controller
+ *
+ * @property \App\Model\Table\JournalVouchersTable $JournalVouchers
+ *
+ * @method \App\Model\Entity\JournalVoucher[] paginate($object = null, array $settings = [])
+ */
+class JournalVouchersController extends AppController
+{
+
+    /**
+     * Index method
+     *
+     * @return \Cake\Http\Response|void
+     */
+    public function index()
+    {
+		$this->viewBuilder()->layout('index_layout');
+        $this->paginate = [
+            'contain' => ['Companies']
+        ];
+        $journalVouchers = $this->paginate($this->JournalVouchers);
+
+        $this->set(compact('journalVouchers'));
+        $this->set('_serialize', ['journalVouchers']);
+    }
+
+    /**
+     * View method
+     *
+     * @param string|null $id Journal Voucher id.
+     * @return \Cake\Http\Response|void
+     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
+     */
+    public function view($id = null)
+    {
+		$this->viewBuilder()->layout('index_layout');
+        $journalVoucher = $this->JournalVouchers->get($id, [
+            'contain' => ['JournalVoucherRows'=>['Ledgers','ReferenceDetails']]
+        ]);
+
+        $this->set('journalVoucher', $journalVoucher);
+        $this->set('_serialize', ['journalVoucher']);
+    }
+
+    /**
+     * Add method
+     *
+     * @return \Cake\Http\Response|null Redirects on successful add, renders view otherwise.
+     */
+    public function add()
+    {
+		$this->viewBuilder()->layout('index_layout');
+		$company_id=$this->Auth->User('session_company_id');
+        $journalVoucher = $this->JournalVouchers->newEntity();
+        if ($this->request->is('post')) {
+			$journalVoucher = $this->JournalVouchers->patchEntity($journalVoucher, $this->request->getData());
+			$Voucher_no = $this->JournalVouchers->find()->select(['voucher_no'])->where(['company_id'=>$company_id])->order(['voucher_no' => 'DESC'])->first();
+			if($Voucher_no)
+			{
+				$journalVoucher->voucher_no = $Voucher_no->voucher_no+1;
+			}
+			else
+			{
+				$journalVoucher->voucher_no = 1;
+			} 
+			$journalVoucher->company_id            = $company_id;
+            
+			$journalVoucher = $this->JournalVouchers->patchEntity($journalVoucher, $this->request->getData(), [
+							'associated' => ['JournalVoucherRows','JournalVoucherRows.ReferenceDetails']
+						]);
+			$journalVoucher->transaction_date      = date("Y-m-d",strtotime($journalVoucher->transaction_date));
+			//pr($journalVoucher);exit;
+            if ($this->JournalVouchers->save($journalVoucher)) 
+			{
+				foreach($journalVoucher->journal_voucher_rows as $journal_voucher_row)
+				{
+					$accountEntry = $this->JournalVouchers->AccountingEntries->newEntity();
+					$accountEntry->ledger_id                  = $journal_voucher_row->ledger_id;
+					$accountEntry->debit                      = $journal_voucher_row->debit;
+					$accountEntry->credit                     = $journal_voucher_row->credit;
+					$accountEntry->transaction_date           = $journalVoucher->transaction_date;
+					$accountEntry->company_id                 = $company_id;
+					$accountEntry->journal_voucher_id         = $journalVoucher->id;
+					$accountEntry->journal_voucher_row_id     = $journal_voucher_row->id;
+					
+					$this->JournalVouchers->AccountingEntries->save($accountEntry);
+				}
+                $this->Flash->success(__('The journal voucher has been saved.'));
+
+                return $this->redirect(['action' => 'index']);
+            }
+            $this->Flash->error(__('The journal voucher could not be saved. Please, try again.'));
+        }
+		$Voucher_no = $this->JournalVouchers->find()->select(['voucher_no'])->where(['company_id'=>$company_id])->order(['voucher_no' => 'DESC'])->first();
+		if($Voucher_no)
+		{
+			$voucher_no=$Voucher_no->voucher_no+1;
+		}
+		else
+		{
+			$voucher_no=1;
+		} 
+		
+		$bankParentGroups = $this->JournalVouchers->JournalVoucherRows->Ledgers->AccountingGroups->find()
+						->where(['AccountingGroups.company_id'=>$company_id, 'AccountingGroups.bank'=>'1']);
+						
+		$bankGroups=[];
+		
+		foreach($bankParentGroups as $bankParentGroup)
+		{
+			$accountingGroups = $this->JournalVouchers->JournalVoucherRows->Ledgers->AccountingGroups
+			->find('children', ['for' => $bankParentGroup->id])->toArray();
+			$bankGroups[]=$bankParentGroup->id;
+			foreach($accountingGroups as $accountingGroup){
+				$bankGroups[]=$accountingGroup->id;
+			}
+		}
+		
+		$accountGroupParents = $this->JournalVouchers->JournalVoucherRows->Ledgers->AccountingGroups->find()->where(['journal_voucher_ledger'=>1,'company_id'=>$company_id]); 
+		$CreditGroups=[];
+		foreach($accountGroupParents as $accountGroupParent)
+		{ 
+			$ChildGroups = $this->JournalVouchers->JournalVoucherRows->Ledgers->AccountingGroups->find('children', ['for' =>$accountGroupParent->id])->toArray();
+			
+			$CreditGroups[]=$accountGroupParent->id;
+			foreach($ChildGroups as $ChildGroup)
+			{
+				$CreditGroups[]=$ChildGroup->id;
+			}
+		}
+		$AllCreditledgers = $this->JournalVouchers->JournalVoucherRows->Ledgers->find()->where(['Ledgers.accounting_group_id IN' =>$CreditGroups]);
+		
+		$ledgers=[];
+		foreach($AllCreditledgers as $AllCreditledger){
+		if(in_array($AllCreditledger->accounting_group_id,$bankGroups)){
+				$ledgers[]=['text' =>$AllCreditledger->name, 'value' => $AllCreditledger->id ,'open_window' => 'bank'];
+			}
+			else if($AllCreditledger->bill_to_bill_accounting == 'yes'){
+				$ledgers[]=['text' =>$AllCreditledger->name, 'value' => $AllCreditledger->id,'open_window' => 'party' ];
+			}
+			else{
+				$ledgers[]=['text' =>$AllCreditledger->name, 'value' => $AllCreditledger->id,'open_window' => 'no' ];
+			}
+		}
+		
+        $this->set(compact('journalVoucher', 'company_id','ledgers','voucher_no'));
+        $this->set('_serialize', ['journalVoucher']);
+    }
+
+    /**
+     * Edit method
+     *
+     * @param string|null $id Journal Voucher id.
+     * @return \Cake\Http\Response|null Redirects on successful edit, renders view otherwise.
+     * @throws \Cake\Network\Exception\NotFoundException When record not found.
+     */
+    public function edit($id = null)
+    {
+		$this->viewBuilder()->layout('index_layout');
+		$company_id=$this->Auth->User('session_company_id');
+        $journalVoucher = $this->JournalVouchers->get($id, [
+            'contain' => ['JournalVoucherRows'=>['Ledgers','ReferenceDetails']]
+        ]);
+        if ($this->request->is(['patch', 'post', 'put'])) {
+            $journalVoucher = $this->JournalVouchers->patchEntity($journalVoucher, $this->request->getData());
+			
+			$journalVoucher = $this->JournalVouchers->patchEntity($journalVoucher, $this->request->getData(), [
+							'associated' => ['JournalVoucherRows','JournalVoucherRows.ReferenceDetails']
+						]);
+			$journalVoucher->transaction_date      = date("Y-m-d",strtotime($journalVoucher->transaction_date));
+			//pr($journalVoucher);exit;
+            if ($this->JournalVouchers->save($journalVoucher)) {
+                $this->Flash->success(__('The journal voucher has been saved.'));
+
+                return $this->redirect(['action' => 'index']);
+            }
+            $this->Flash->error(__('The journal voucher could not be saved. Please, try again.'));
+        }
+		$bankParentGroups = $this->JournalVouchers->JournalVoucherRows->Ledgers->AccountingGroups->find()
+						->where(['AccountingGroups.company_id'=>$company_id, 'AccountingGroups.bank'=>'1']);
+						
+		$bankGroups=[];
+		
+		foreach($bankParentGroups as $bankParentGroup)
+		{
+			$accountingGroups = $this->JournalVouchers->JournalVoucherRows->Ledgers->AccountingGroups
+			->find('children', ['for' => $bankParentGroup->id])->toArray();
+			$bankGroups[]=$bankParentGroup->id;
+			foreach($accountingGroups as $accountingGroup){
+				$bankGroups[]=$accountingGroup->id;
+			}
+		}
+		
+		$accountGroupParents = $this->JournalVouchers->JournalVoucherRows->Ledgers->AccountingGroups->find()->where(['journal_voucher_ledger'=>1,'company_id'=>$company_id]); 
+		$CreditGroups=[];
+		foreach($accountGroupParents as $accountGroupParent)
+		{ 
+			$ChildGroups = $this->JournalVouchers->JournalVoucherRows->Ledgers->AccountingGroups->find('children', ['for' =>$accountGroupParent->id])->toArray();
+			
+			$CreditGroups[]=$accountGroupParent->id;
+			foreach($ChildGroups as $ChildGroup)
+			{
+				$CreditGroups[]=$ChildGroup->id;
+			}
+		}
+		$AllCreditledgers = $this->JournalVouchers->JournalVoucherRows->Ledgers->find()->where(['Ledgers.accounting_group_id IN' =>$CreditGroups]);
+		
+		$ledgers=[];
+		foreach($AllCreditledgers as $AllCreditledger)
+		{
+		    if(in_array($AllCreditledger->accounting_group_id,$bankGroups)){
+				$ledgers[]=['text' =>$AllCreditledger->name, 'value' => $AllCreditledger->id ,'open_window' => 'bank'];
+			}
+			else if($AllCreditledger->bill_to_bill_accounting == 'yes'){
+				$ledgers[]=['text' =>$AllCreditledger->name, 'value' => $AllCreditledger->id,'open_window' => 'party' ];
+			}
+			else{
+				$ledgers[]=['text' =>$AllCreditledger->name, 'value' => $AllCreditledger->id,'open_window' => 'no' ];
+			}
+		}
+		
+        $this->set(compact('journalVoucher', 'company_id','ledgers'));
+        $this->set('_serialize', ['journalVoucher']);
+    }
+
+    /**
+     * Delete method
+     *
+     * @param string|null $id Journal Voucher id.
+     * @return \Cake\Http\Response|null Redirects to index.
+     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
+     */
+    public function delete($id = null)
+    {
+        $this->request->allowMethod(['post', 'delete']);
+        $journalVoucher = $this->JournalVouchers->get($id);
+        if ($this->JournalVouchers->delete($journalVoucher)) {
+            $this->Flash->success(__('The journal voucher has been deleted.'));
+        } else {
+            $this->Flash->error(__('The journal voucher could not be deleted. Please, try again.'));
+        }
+
+        return $this->redirect(['action' => 'index']);
+    }
+}

@@ -64,6 +64,11 @@ class AccountingEntriesTable extends Table
             'foreignKey' => 'sales_voucher_id',
             'joinType' => 'INNER'
         ]);
+		
+		$this->belongsTo('JournalVouchers', [
+            'foreignKey' => 'journal_voucher_id',
+            'joinType' => 'INNER'
+        ]);
     }
 
     /**

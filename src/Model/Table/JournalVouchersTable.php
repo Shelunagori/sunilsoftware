@@ -7,20 +7,20 @@ use Cake\ORM\Table;
 use Cake\Validation\Validator;
 
 /**
- * PurchaseVouchers Model
+ * JournalVouchers Model
  *
  * @property \App\Model\Table\CompaniesTable|\Cake\ORM\Association\BelongsTo $Companies
- * @property \App\Model\Table\PurchaseVoucherRowsTable|\Cake\ORM\Association\HasMany $PurchaseVoucherRows
+ * @property \App\Model\Table\JournalVoucherRowsTable|\Cake\ORM\Association\HasMany $JournalVoucherRows
  *
- * @method \App\Model\Entity\PurchaseVoucher get($primaryKey, $options = [])
- * @method \App\Model\Entity\PurchaseVoucher newEntity($data = null, array $options = [])
- * @method \App\Model\Entity\PurchaseVoucher[] newEntities(array $data, array $options = [])
- * @method \App\Model\Entity\PurchaseVoucher|bool save(\Cake\Datasource\EntityInterface $entity, $options = [])
- * @method \App\Model\Entity\PurchaseVoucher patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
- * @method \App\Model\Entity\PurchaseVoucher[] patchEntities($entities, array $data, array $options = [])
- * @method \App\Model\Entity\PurchaseVoucher findOrCreate($search, callable $callback = null, $options = [])
+ * @method \App\Model\Entity\JournalVoucher get($primaryKey, $options = [])
+ * @method \App\Model\Entity\JournalVoucher newEntity($data = null, array $options = [])
+ * @method \App\Model\Entity\JournalVoucher[] newEntities(array $data, array $options = [])
+ * @method \App\Model\Entity\JournalVoucher|bool save(\Cake\Datasource\EntityInterface $entity, $options = [])
+ * @method \App\Model\Entity\JournalVoucher patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
+ * @method \App\Model\Entity\JournalVoucher[] patchEntities($entities, array $data, array $options = [])
+ * @method \App\Model\Entity\JournalVoucher findOrCreate($search, callable $callback = null, $options = [])
  */
-class PurchaseVouchersTable extends Table
+class JournalVouchersTable extends Table
 {
 
     /**
@@ -33,7 +33,7 @@ class PurchaseVouchersTable extends Table
     {
         parent::initialize($config);
 
-        $this->setTable('purchase_vouchers');
+        $this->setTable('journal_vouchers');
         $this->setDisplayField('id');
         $this->setPrimaryKey('id');
 
@@ -41,12 +41,12 @@ class PurchaseVouchersTable extends Table
             'foreignKey' => 'company_id',
             'joinType' => 'INNER'
         ]);
-        $this->hasMany('PurchaseVoucherRows', [
-            'foreignKey' => 'purchase_voucher_id',
+        $this->hasMany('JournalVoucherRows', [
+            'foreignKey' => 'journal_voucher_id',
 			'saveStrategy' => 'replace'
-        ]);
+		]);
 		$this->hasMany('AccountingEntries', [
-            'foreignKey' => 'purchase_voucher_id',
+            'foreignKey' => 'journal_voucher_id',
             'joinType' => 'INNER'
         ]);
     }
@@ -63,17 +63,7 @@ class PurchaseVouchersTable extends Table
             ->integer('id')
             ->allowEmpty('id', 'create');
 
-
-        /*$validator
-            ->requirePresence('supplier_invoice_no', 'create')
-            ->notEmpty('supplier_invoice_no');*/
-
         
-
-        /*$validator
-            ->decimal('voucher_amount')
-            ->requirePresence('voucher_amount', 'create')
-            ->notEmpty('voucher_amount');*/
 
         return $validator;
     }

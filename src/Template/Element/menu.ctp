@@ -138,6 +138,17 @@ echo '<li>'.$this->Html->link($this->Html->tag('i', '', ['class' => 'icon-home']
 		<li><?php echo $this->Html->link($this->Html->tag('i', '', ['class' => 'fa fa-list-ul']).' List', '/Payments',['escape' => false]); ?></li>
 	</ul>
 </li>
+<li class="start ">
+	<a href="javascript:;">
+	<i class="fa fa-cab"></i>
+	<span class="title">Journal Voucher</span>
+	<span class="arrow "></span>
+	</a>
+	<ul class="sub-menu">
+		<li><?php echo $this->Html->link($this->Html->tag('i', '', ['class' => 'fa fa-plus-square']).' Create', '/JournalVouchers/Add',['escape' => false]); ?></li>
+		<li><?php echo $this->Html->link($this->Html->tag('i', '', ['class' => 'fa fa-list-ul']).' List', '/JournalVouchers',['escape' => false]); ?></li>
+	</ul>
+</li>
 <?php 
 echo '<li>'.$this->Html->link($this->Html->tag('i', '', ['class' => 'fa fa-barcode']).'Generate Barcode', '/Items/generateBarcode',['escape' => false]).'</li>';
 ?>

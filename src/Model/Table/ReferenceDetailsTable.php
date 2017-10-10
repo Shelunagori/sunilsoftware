@@ -75,6 +75,16 @@ class ReferenceDetailsTable extends Table
             'foreignKey' => 'sales_voucher_row_id',
 			'joinType' => 'INNER'
         ]);
+		
+		$this->belongsTo('PurchaseVoucherRows', [
+            'foreignKey' => 'sales_voucher_row_id',
+			'joinType' => 'INNER'
+        ]);
+		
+		$this->belongsTo('JournalVoucherRows', [
+            'foreignKey' => 'journal_voucher_row_id',
+			'joinType' => 'INNER'
+        ]);
     }
 
     /**
