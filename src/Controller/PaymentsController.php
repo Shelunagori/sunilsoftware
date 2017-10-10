@@ -244,9 +244,6 @@ class PaymentsController extends AppController
 							'associated' => ['PaymentRows','PaymentRows.ReferenceDetails']
 						]);
 						
-						pr($payment);
-						exit;
-						
             if ($this->Payments->save($payment)) {
 			
 			$query_delete = $this->Payments->AccountingEntries->query();

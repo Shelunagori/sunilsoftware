@@ -2,7 +2,7 @@
 /**
  * @Author: PHP Poets IT Solutions Pvt. Ltd.
  */
-$this->set('title', 'Credit Note View');
+$this->set('title', 'Debit Note View');
 ?>
 <style>
 table th {
@@ -22,13 +22,13 @@ table td {
 			<div class="portlet-title">
 				<div class="caption">
 					<i class="icon-bar-chart font-green-sharp hide"></i>
-					<span class="caption-subject font-green-sharp bold ">Credit Note View</span>
+					<span class="caption-subject font-green-sharp bold ">Debit Note View</span>
 				</div>
 			</div>
 			<div class="portlet-body table-responsive">
 				<table class="table table-bordered table-hover table-condensed" width="100%">
 					<thead>
-				<?php foreach($creditNotes as $data){?>
+				<?php foreach($debitNotes as $data){?>
 					<tr>
 						<th scope="col" style="text-align:center";>Voucher No: 
 						<?= h(str_pad($data->voucher_no, 4, '0', STR_PAD_LEFT)) ?></th>
@@ -60,27 +60,27 @@ table td {
 					$totalIgst=0;
 					$totalNet=0;
 					$totalTaxablevalue=0;
-					foreach($creditNotes->toArray() as $data){
+					foreach($debitNotes->toArray() as $data){
 					
-					foreach($data->credit_note_rows as $creditNoteRows)
+					foreach($data->debit_note_rows as $debitNoteRows)
 					{
 					?>
 					<tr>
-					<td style="text-align:center"><?=$creditNoteRows->cr_dr?></td>
-					<td style="text-align:center"><?=$creditNoteRows->ledger->name?></td>
-					<td class="rightAligntextClass"><?=$creditNoteRows->debit?></td>
-					<td class="rightAligntextClass"><?=$creditNoteRows->credit?></td>
-					<td class="" style="text-align:center"><?=$creditNoteRows->mode_of_payment?></td>
-					<td class="" style="text-align:center"><?=$creditNoteRows->cheque_no?></td>
+					<td style="text-align:center"><?=$debitNoteRows->cr_dr?></td>
+					<td style="text-align:center"><?=$debitNoteRows->ledger->name?></td>
+					<td class="rightAligntextClass"><?=$debitNoteRows->debit?></td>
+					<td class="rightAligntextClass"><?=$debitNoteRows->credit?></td>
+					<td class="" style="text-align:center"><?=$debitNoteRows->mode_of_payment?></td>
+					<td class="" style="text-align:center"><?=$debitNoteRows->cheque_no?></td>
 					<td class="" style="text-align:center">
-					<?php if($creditNoteRows->cheque_date=='000:00:00'){?>
+					<?php if($debitNoteRows->cheque_date=='000:00:00'){?>
 					<?php echo '';?> 
 					<?php } else{?>
-					<?php echo date('d-m-Y', strtotime($creditNoteRows->cheque_date));?>
+					<?php echo date('d-m-Y', strtotime($debitNoteRows->cheque_date));?>
 					<?php }?>
 					</td>
 					</tr>
-					<?php if(!empty($creditNoteRows->reference_details)){?>
+					<?php if(!empty($debitNoteRows->reference_details)){?>
 					<tr><td>&nbsp;</td><td colspan="5">
 					<table class="table table-bordered table-condensed" width="50%" align="center" style="background-color:#f1f3fa">
 					<thead>
@@ -92,7 +92,7 @@ table td {
 					</tr>
 					</thead>
 					<tbody>
-					<?php foreach($creditNoteRows->reference_details as $refdata)
+					<?php foreach($debitNoteRows->reference_details as $refdata)
 					{?>
 					<tr>
 					<td style="text-align:center"><?=$refdata->type?></td>

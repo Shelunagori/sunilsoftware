@@ -4,24 +4,24 @@ namespace App\Model\Entity;
 use Cake\ORM\Entity;
 
 /**
- * CreditNote Entity
+ * DebitNoteRow Entity
  *
  * @property int $id
- * @property int $voucher_no
- * @property int $company_id
- * @property \Cake\I18n\FrozenDate $transaction_date
- * @property string $narration
+ * @property int $credit_note_id
+ * @property string $cr_dr
+ * @property int $ledger_id
+ * @property float $debit
+ * @property float $credit
+ * @property string $mode_of_payment
+ * @property string $cheque_no
+ * @property \Cake\I18n\FrozenDate $cheque_date
  *
- * @property \App\Model\Entity\Company $company
- * @property \App\Model\Entity\Ledger $party_ledger
- * @property \App\Model\Entity\Customer $customer
+ * @property \App\Model\Entity\CreditNote $credit_note
  * @property \App\Model\Entity\Ledger $ledger
- * @property \App\Model\Entity\ItemLedger[] $item_ledgers
  * @property \App\Model\Entity\AccountingEntry[] $accounting_entries
- * @property \App\Model\Entity\Ledger $sales_ledger
- * @property \App\Model\Entity\CreditNoteRow[] $credit_note_rows
+ * @property \App\Model\Entity\ReferenceDetail[] $reference_details
  */
-class CreditNote extends Entity
+class DebitNoteRow extends Entity
 {
 
     /**
@@ -39,14 +39,14 @@ class CreditNote extends Entity
     ];
 	
 	protected $_virtual = [
-        'transaction_date'
+        'cheque_date'
     ];
                 
-                protected function _getTransactionDate()
+                protected function _getChequeDate()
     {
-                                if(!empty($this->_properties['transaction_date']))
+                                if(!empty($this->_properties['cheque_no']))
                                 {
-                                return date('Y-m-d', strtotime($this->_properties['transaction_date']));
+                                return date('Y-m-d', strtotime($this->_properties['cheque_date']));
                                 }
                                 else
                                 { return "000:00:00";}

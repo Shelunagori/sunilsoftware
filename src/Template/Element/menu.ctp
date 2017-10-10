@@ -82,6 +82,17 @@ echo '<li>'.$this->Html->link($this->Html->tag('i', '', ['class' => 'icon-home']
 </li>
 <li class="start ">
 	<a href="javascript:;">
+	<i class="fa fa-cab"></i>
+	<span class="title">Stock Transfer</span>
+	<span class="arrow "></span>
+	</a>
+	<ul class="sub-menu">
+		<li><?php echo $this->Html->link($this->Html->tag('i', '', ['class' => 'fa fa-plus-square']).' Create', '/IntraLocationStockTransferVouchers/Add',['escape' => false]); ?></li>
+		<li><?php echo $this->Html->link($this->Html->tag('i', '', ['class' => 'fa fa-list-ul']).' List', '/IntraLocationStockTransferVouchers',['escape' => false]); ?></li>
+	</ul>
+</li>
+<li class="start ">
+	<a href="javascript:;">
 	<i class="fa fa-pencil-square"></i>
 
 	<span class="title">Credit Note</span>
@@ -94,15 +105,17 @@ echo '<li>'.$this->Html->link($this->Html->tag('i', '', ['class' => 'icon-home']
 </li>
 <li class="start ">
 	<a href="javascript:;">
-	<i class="fa fa-cab"></i>
-	<span class="title">Stock Transfer</span>
+	<i class="fa fa-pencil-square"></i>
+
+	<span class="title">Debit Note</span>
 	<span class="arrow "></span>
 	</a>
 	<ul class="sub-menu">
-		<li><?php echo $this->Html->link($this->Html->tag('i', '', ['class' => 'fa fa-plus-square']).' Create', '/IntraLocationStockTransferVouchers/Add',['escape' => false]); ?></li>
-		<li><?php echo $this->Html->link($this->Html->tag('i', '', ['class' => 'fa fa-list-ul']).' List', '/IntraLocationStockTransferVouchers',['escape' => false]); ?></li>
+		<li><?php echo $this->Html->link($this->Html->tag('i', '', ['class' => 'fa fa-plus-square']).' Create', '/DebitNotes/Add',['escape' => false]); ?></li>
+		<li><?php echo $this->Html->link($this->Html->tag('i', '', ['class' => 'fa fa-list-ul']).' List', '/DebitNotes',['escape' => false]); ?></li>
 	</ul>
 </li>
+
 <li class="start ">
 	<a href="javascript:;">
 	<i class="fa fa-cab"></i>

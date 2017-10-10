@@ -5,25 +5,23 @@ use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
-use Cake\Event\Event;
-use ArrayObject;
+
 /**
- * CreditNotes Model
+ * DebitNotes Model
  *
  * @property \App\Model\Table\CompaniesTable|\Cake\ORM\Association\BelongsTo $Companies
  * @property \App\Model\Table\AccountingEntriesTable|\Cake\ORM\Association\HasMany $AccountingEntries
- * @property \App\Model\Table\CreditNoteRowsTable|\Cake\ORM\Association\HasMany $CreditNoteRows
- * @property \App\Model\Table\ItemLedgersTable|\Cake\ORM\Association\HasMany $ItemLedgers
+ * @property \App\Model\Table\ReferenceDetailsTable|\Cake\ORM\Association\HasMany $ReferenceDetails
  *
- * @method \App\Model\Entity\CreditNote get($primaryKey, $options = [])
- * @method \App\Model\Entity\CreditNote newEntity($data = null, array $options = [])
- * @method \App\Model\Entity\CreditNote[] newEntities(array $data, array $options = [])
- * @method \App\Model\Entity\CreditNote|bool save(\Cake\Datasource\EntityInterface $entity, $options = [])
- * @method \App\Model\Entity\CreditNote patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
- * @method \App\Model\Entity\CreditNote[] patchEntities($entities, array $data, array $options = [])
- * @method \App\Model\Entity\CreditNote findOrCreate($search, callable $callback = null, $options = [])
+ * @method \App\Model\Entity\DebitNote get($primaryKey, $options = [])
+ * @method \App\Model\Entity\DebitNote newEntity($data = null, array $options = [])
+ * @method \App\Model\Entity\DebitNote[] newEntities(array $data, array $options = [])
+ * @method \App\Model\Entity\DebitNote|bool save(\Cake\Datasource\EntityInterface $entity, $options = [])
+ * @method \App\Model\Entity\DebitNote patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
+ * @method \App\Model\Entity\DebitNote[] patchEntities($entities, array $data, array $options = [])
+ * @method \App\Model\Entity\DebitNote findOrCreate($search, callable $callback = null, $options = [])
  */
-class CreditNotesTable extends Table
+class DebitNotesTable extends Table
 {
 
     /**
@@ -36,7 +34,7 @@ class CreditNotesTable extends Table
     {
         parent::initialize($config);
 
-        $this->setTable('credit_notes');
+        $this->setTable('debit_notes');
         $this->setDisplayField('id');
         $this->setPrimaryKey('id');
 
@@ -44,19 +42,21 @@ class CreditNotesTable extends Table
             'foreignKey' => 'company_id',
             'joinType' => 'INNER'
         ]);
-   
-        $this->hasMany('CreditNoteRows', [
-            'foreignKey' => 'credit_note_id',
-			'saveStrategy'=>'replace'
-        ]);
+       
         $this->hasMany('ReferenceDetails', [
-            'foreignKey' => 'credit_note_id'
+            'foreignKey' => 'debit_note_id'
         ]);
 		$this->hasMany('AccountingEntries', [
-            'foreignKey' => 'credit_note_id',
+            'foreignKey' => 'debit_note_id',
             'joinType' => 'INNER'
         ]);
-        
+		
+		 $this->hasMany('DebitNoteRows', [
+            'foreignKey' => 'debit_note_id',
+			'saveStrategy'=>'replace'
+        ]);
+       
+
     }
 
     /**
@@ -71,12 +71,21 @@ class CreditNotesTable extends Table
             ->integer('id')
             ->allowEmpty('id', 'create');
 
-        return $validator;
-    }
+        $validator
+            ->integer('voucher_no')
+            ->requirePresence('voucher_no', 'create')
+            ->notEmpty('voucher_no');
 
-	public function beforeMarshal(Event $event, ArrayObject $data)
-    {
-        @$data['transaction_date'] = trim(date('Y-m-d',strtotime(@$data['transaction_date'])));
+        $validator
+            ->date('transaction_date')
+            ->requirePresence('transaction_date', 'create')
+            ->notEmpty('transaction_date');
+
+        $validator
+            ->requirePresence('narration', 'create')
+            ->notEmpty('narration');
+
+        return $validator;
     }
 
     /**

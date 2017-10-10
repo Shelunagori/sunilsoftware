@@ -51,7 +51,10 @@ class CreditNoteRowsTable extends Table
             'foreignKey' => 'credit_note_row_id',
 			'saveStrategy'=>'replace'
         ]);
-		
+		 $this->belongsTo('Companies', [
+            'foreignKey' => 'company_id',
+            'joinType' => 'INNER'
+        ]);
     }
 
     /**

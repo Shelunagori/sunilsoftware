@@ -106,9 +106,7 @@ $this->set('title', 'Payment Voucher');
 															<input type="hidden" class="ledgerIdContainer" value="<?php echo $reference_detail->ledger_id;?>"/>
 															<input type="hidden" class="companyIdContainer" value="<?php echo $reference_detail->company_id;?>"/>
 															<?php 
-															echo $this->Form->input('payment_rows.'.$i.'.reference_details.'.$j.'.type', ['options'=>$option_ref,'label' => false,'class' => 'form-control input-sm refType','required'=>'required','value'=>$reference_detail->type]); 
-															
-															echo $this->Form->input('payment_rows.'.$i.'.reference_details.'.$j.'.id', ['type'=>'hidden','value'=>$reference_detail->id]); ?>
+															echo $this->Form->input('payment_rows.'.$i.'.reference_details.'.$j.'.type', ['options'=>$option_ref,'label' => false,'class' => 'form-control input-sm refType','required'=>'required','value'=>$reference_detail->type]); ?>
 														</td>
 														
 														<td width="">

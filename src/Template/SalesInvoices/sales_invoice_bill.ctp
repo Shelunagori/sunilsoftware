@@ -78,7 +78,7 @@ margin-bottom: 0;
 	</tr>
 	<tr>
 		<td colspan="4" style="font-size:14px;">City: 
-		<?=$data->partyDetails->city->name?></td>
+		<?=@$data->partyDetails->city->name?></td>
 	</tr>
 	<tr>
 		<td colspan="4" style="font-size:14px;">State: 

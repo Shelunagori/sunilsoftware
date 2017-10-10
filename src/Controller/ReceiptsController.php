@@ -127,7 +127,7 @@ class ReceiptsController extends AppController
 		}
 		
 		$partyParentGroups = $this->Receipts->ReceiptRows->Ledgers->AccountingGroups->find()
-							->where(['AccountingGroups.company_id'=>$company_id, 'AccountingGroups.payment_ledger'=>1]);
+							->where(['AccountingGroups.company_id'=>$company_id, 'AccountingGroups.receipt_ledger'=>1]);
 
 		$partyGroups=[];
 		
@@ -304,7 +304,7 @@ class ReceiptsController extends AppController
 		}
 		
 		$partyParentGroups = $this->Receipts->ReceiptRows->Ledgers->AccountingGroups->find()
-							->where(['AccountingGroups.company_id'=>$company_id, 'AccountingGroups.payment_ledger'=>1]);
+							->where(['AccountingGroups.company_id'=>$company_id, 'AccountingGroups.receipt_ledger'=>1]);
 
 		$partyGroups=[];
 		

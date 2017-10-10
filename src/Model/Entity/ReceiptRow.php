@@ -51,7 +51,5 @@ class ReceiptRow extends Entity
                                 }
                                 else
                                 { return "000:00:00";}
-    }
-
-	
+    }	
 }

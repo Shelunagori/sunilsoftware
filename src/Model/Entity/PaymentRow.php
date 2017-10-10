@@ -51,14 +51,4 @@ class PaymentRow extends Entity
                                 else
                                 { return "000:00:00";}
     }
-	/* protected function _getBankDefination()
-    {
-                                if($this->_properties['BankDefination']=='2')
-                                {
-                                return $this->_properties['cheque_date'];
-								return $this->_properties['cheque_no'];
-                                }
-                                else
-                                { return "000:00:00";}
-    } */
 }

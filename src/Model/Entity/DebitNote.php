@@ -4,7 +4,7 @@ namespace App\Model\Entity;
 use Cake\ORM\Entity;
 
 /**
- * CreditNote Entity
+ * DebitNote Entity
  *
  * @property int $id
  * @property int $voucher_no
@@ -13,15 +13,10 @@ use Cake\ORM\Entity;
  * @property string $narration
  *
  * @property \App\Model\Entity\Company $company
- * @property \App\Model\Entity\Ledger $party_ledger
- * @property \App\Model\Entity\Customer $customer
- * @property \App\Model\Entity\Ledger $ledger
- * @property \App\Model\Entity\ItemLedger[] $item_ledgers
  * @property \App\Model\Entity\AccountingEntry[] $accounting_entries
- * @property \App\Model\Entity\Ledger $sales_ledger
- * @property \App\Model\Entity\CreditNoteRow[] $credit_note_rows
+ * @property \App\Model\Entity\ReferenceDetail[] $reference_details
  */
-class CreditNote extends Entity
+class DebitNote extends Entity
 {
 
     /**
@@ -51,5 +46,4 @@ class CreditNote extends Entity
                                 else
                                 { return "000:00:00";}
     }
-
 }

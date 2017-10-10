@@ -2,7 +2,7 @@
 /**
  * @Author: PHP Poets IT Solutions Pvt. Ltd.
  */
-$this->set('title', 'Credit Note Voucher');
+$this->set('title', 'Credit Note');
 ?>
 <style>
 .noBorder{
@@ -15,7 +15,7 @@ $this->set('title', 'Credit Note Voucher');
 			<div class="portlet-title">
 				<div class="caption">
 					<i class="icon-bar-chart font-green-sharp hide"></i>
-					<span class="caption-subject font-green-sharp bold ">Create Crdit Note Voucher</span>
+					<span class="caption-subject font-green-sharp bold ">Credit Note</span>
 				</div>
 				<div class="actions">
 				</div>
@@ -27,6 +27,9 @@ $this->set('title', 'Credit Note Voucher');
 						<div class="form-group">
 							<label>Voucher No :</label>&nbsp;&nbsp;
 							<?= h('#'.str_pad($voucher_no, 4, '0', STR_PAD_LEFT)) ?>
+						
+						<input type="hidden" name="voucher_no" value="<?php echo $voucher_no;?>" >
+						<input type="hidden" name="company_id" value="<?php echo $company_id;?>" >
 						</div>
 					</div>
 					<div class="col-md-3">
@@ -125,7 +128,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 		<tr>
 			<td width="30%" valign="top">
 				<?php 
-				echo $this->Form->input('mode_of_creditNote', ['options'=>$option_mode,'label' => false,'class' => 'form-control input-sm creditNoteType','required'=>'required']); ?>
+				echo $this->Form->input('mode_of_payment', ['options'=>$option_mode,'label' => false,'class' => 'form-control input-sm paymentType','required'=>'required']); ?>
 			</td>
 			<td width="30%" valign="top">
 				<?php echo $this->Form->input('cheque_no', ['label' =>false,'class' => 'form-control input-sm cheque_no','placeholder'=>'Cheque No']); ?> 
@@ -282,10 +285,13 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 					var totalMainDr  = parseFloat($('#totalMainDr').val());
 					var totalBankCash = parseFloat($('#totalBankCash').val());
 					if(!totalMainDr || totalMainDr==0){
-						alert('Error: zero amount creditNote can not be generated.');
+						alert('Error: zero amount value can not be generated.');
 						return false;
 					}
-					
+					else if(totalBankCash<=0){
+						alert('Error: No Bank or Cash Credited.');
+						return false;
+					}
 					else{
 						if(confirm('Are you sure you want to submit!'))
 						{
@@ -314,7 +320,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				renameRefRows(SelectedTr);
 			});
 			
-			$('.creditNoteType').die().live('change',function(){
+			$('.paymentType').die().live('change',function(){
 				var type=$(this).val();	
 				var currentRefRow=$(this).closest('tr');
 				if(type=='NEFT/RTGS'){
@@ -462,7 +468,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			function renameBankRows(SelectedTr){
 				var row_no=SelectedTr.attr('row_no');
 				SelectedTr.find('td:nth-child(2) div.window table tbody tr').each(function(){
-					$(this).find('td:nth-child(1) select.creditNoteType').attr({name:'credit_note_rows['+row_no+'][mode_of_creditNote]',id:'credit_note_rows-'+row_no+'-mode_of_creditNote'});
+					$(this).find('td:nth-child(1) select.paymentType').attr({name:'credit_note_rows['+row_no+'][mode_of_payment]',id:'credit_note_rows-'+row_no+'-mode_of_payment'});
 					$(this).find('td:nth-child(2) input.cheque_no').attr({name:'credit_note_rows['+row_no+'][cheque_no]',id:'credit_note_rows-'+row_no+'-cheque_no'});
 					$(this).find('td:nth-child(3) input.cheque_date').attr({name:'credit_note_rows['+row_no+'][cheque_date]',id:'credit_note_rows-'+row_no+'-cheque_date'}).datepicker();
 				});

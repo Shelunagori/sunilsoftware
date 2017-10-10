@@ -2,7 +2,7 @@
 /**
  * @Author: PHP Poets IT Solutions Pvt. Ltd.
  */
-$this->set('title', 'Receipt Voucher');
+$this->set('title', 'Debit Note Update');
 ?>
 <style>
 .noBorder{
@@ -16,27 +16,27 @@ $this->set('title', 'Receipt Voucher');
 			<div class="portlet-title">
 				<div class="caption">
 					<i class="icon-bar-chart font-green-sharp hide"></i>
-					<span class="caption-subject font-green-sharp bold ">Update Receipt Voucher</span>
+					<span class="caption-subject font-green-sharp bold ">Update Debit Note</span>
 				</div>
 				<div class="actions">
 				</div>
 			</div>
 			<div class="portlet-body">
-				<?= $this->Form->create($receipt,['id'=>'form_sample_2']) ?>
+				<?= $this->Form->create($debitNote,['id'=>'form_sample_2']) ?>
 				<div class="row">
 					<div class="col-md-3">
 						<div class="form-group">
 							<label>Voucher No :</label>&nbsp;&nbsp;
-							<?= h('#'.str_pad($receipt->voucher_no, 4, '0', STR_PAD_LEFT)) ?>
+							<?= h('#'.str_pad($debitNote->voucher_no, 4, '0', STR_PAD_LEFT)) ?>
 						
-						<input type="hidden" name="voucher_no" value="<?php echo $receipt->voucher_no;?>" >
-						<input type="hidden" name="company_id" value="<?php echo $receipt->company_id;?>" >
+						<input type="hidden" name="voucher_no" value="<?php echo $debitNote->voucher_no;?>" >
+						<input type="hidden" name="company_id" value="<?php echo $debitNote->company_id;?>" >
 						</div>
 					</div>
 					<div class="col-md-3">
 						<div class="form-group">
 							<label>Transaction Date <span class="required">*</span></label>
-							<?php echo $this->Form->control('transaction_date',['class'=>'form-control input-sm date-picker','data-date-format'=>'dd-mm-yyyy', 'label'=>false,'placeholder'=>'DD-MM-YYYY','type'=>'text','data-date-start-date'=>@$coreVariable[fyValidFrom],'data-date-end-date'=>@$coreVariable[fyValidTo],'value'=>date('d-m-Y', strtotime($receipt->transaction_date)),'required'=>'required']); ?>
+							<?php echo $this->Form->control('transaction_date',['class'=>'form-control input-sm date-picker','data-date-format'=>'dd-mm-yyyy', 'label'=>false,'placeholder'=>'DD-MM-YYYY','type'=>'text','data-date-start-date'=>@$coreVariable[fyValidFrom],'data-date-end-date'=>@$coreVariable[fyValidTo],'value'=>date('d-m-Y', strtotime($debitNote->transaction_date)),'required'=>'required']); ?>
 						</div>
 					</div>
 				</div>
@@ -61,44 +61,44 @@ $this->set('title', 'Receipt Voucher');
 							$option_ref[]= ['value'=>'On Account','text'=>'On Account'];
 							$option_mode[]= ['value'=>'Cheque','text'=>'Cheque'];
 							$option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
-								 if(!empty($receipt->receipt_rows))
+								 if(!empty($debitNote->debit_note_rows))
 								 {$i=0;		
-								         foreach($receipt->receipt_rows as $receiptRows)
+								         foreach($debitNote->debit_note_rows as $debitNoteRows)
 									     {?>
 									
 									<tr class="MainTr" row_no="<?php echo $i;?>">
 										<td width="10%">
 											<?php 
-											echo $this->Form->input('receipt_rows.'.$i.'.id',['value'=>$receiptRows->id]);
+											echo $this->Form->input('debit_note_rows.'.$i.'.id',['value'=>$debitNoteRows->id]);
 											
-											echo $this->Form->input('receipt_rows.'.$i.'.cr_dr', ['options'=>['Dr'=>'Dr','Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm cr_dr','required'=>'required','value'=>$receiptRows->cr_dr]); 
-											echo $this->Form->input('receipt_rows.'.$i.'.id',['value'=>$receiptRows->id]);
+											echo $this->Form->input('debit_note_rows.'.$i.'.cr_dr', ['options'=>['Dr'=>'Dr','Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm cr_dr','required'=>'required','value'=>$debitNoteRows->cr_dr]); 
+											echo $this->Form->input('debit_note_rows.'.$i.'.id',['value'=>$debitNoteRows->id]);
 											?>
 										</td>
 										<td width="65%">
-										<input type="hidden" class="BankValueDefine" name=" receipt_rows[<?php echo $i;?>][BankDefination]">
+										<input type="hidden" class="BankValueDefine" name=" debit_note_rows[<?php echo $i;?>][BankDefination]">
 							
 										<?php
 										if($i==0)
 										{ 
 										?>
-											<?php echo $this->Form->input('receipt_rows.'.$i.'.ledger_id', ['empty'=>'--Select--','options'=>@$ledgerOptions,'label' => false,'class' => 'form-control input-sm ledger','required'=>'required','value'=>$receiptRows->ledger_id]);
+											<?php echo $this->Form->input('debit_note_rows.'.$i.'.ledger_id', ['empty'=>'--Select--','options'=>@$ledgerOptions,'label' => false,'class' => 'form-control input-sm ledger','required'=>'required','value'=>$debitNoteRows->ledger_id]);
 										}
 										else
 										{
 										
-											echo $this->Form->input('receipt_rows.'.$i.'.ledger_id', ['empty'=>'--Select--','options'=>@$ledgerOptions,'label' => false,'class' => 'form-control input-sm ledger','required'=>'required','value'=>$receiptRows->ledger_id]);
+											echo $this->Form->input('debit_note_rows.'.$i.'.ledger_id', ['empty'=>'--Select--','options'=>@$ledgerOptions,'label' => false,'class' => 'form-control input-sm ledger','required'=>'required','value'=>$debitNoteRows->ledger_id]);
 										}
 										?>
 										
 											<div class="window" style="margin:auto;">
 											<?php
-											if(!empty($receiptRows->reference_details)){
+											if(!empty($debitNoteRows->reference_details)){
 											?>
 												<table width="90%" class="refTbl"><tbody>
 												<?php
 												    $j=0;$total_amount_dr=0;$total_amount_cr=0;$colspan=0; 
-												    foreach($receiptRows->reference_details as $reference_detail)
+												    foreach($debitNoteRows->reference_details as $reference_detail)
 													{
 												?>
 													<tr>
@@ -106,17 +106,17 @@ $this->set('title', 'Receipt Voucher');
 															<input type="hidden" class="ledgerIdContainer" value="<?php echo $reference_detail->ledger_id;?>"/>
 															<input type="hidden" class="companyIdContainer" value="<?php echo $reference_detail->company_id;?>"/>
 															<?php 
-															echo $this->Form->input('receipt_rows.'.$i.'.reference_details.'.$j.'.type', ['options'=>$option_ref,'label' => false,'class' => 'form-control input-sm refType','required'=>'required','value'=>$reference_detail->type]); ?>
+															echo $this->Form->input('debit_note_rows.'.$i.'.reference_details.'.$j.'.type', ['options'=>$option_ref,'label' => false,'class' => 'form-control input-sm refType','required'=>'required','value'=>$reference_detail->type]); ?>
 														</td>
 														
 														<td width="">
 														<?php if($reference_detail->type=='New Ref' || $reference_detail->type=='Advance'){ 
 														?>
-															<?php echo $this->Form->input('receipt_rows.'.$i.'.reference_details.'.$j.'.ref_name', ['type'=>'text','label' => false,'class' => 'form-control input-sm ref_name','placeholder'=>'Reference Name','required'=>'required', 'value'=>$reference_detail->ref_name]); ?>
+															<?php echo $this->Form->input('debit_note_rows.'.$i.'.reference_details.'.$j.'.ref_name', ['type'=>'text','label' => false,'class' => 'form-control input-sm ref_name','placeholder'=>'Reference Name','required'=>'required', 'value'=>$reference_detail->ref_name]); ?>
 															<?php } if($reference_detail->type=='Against')
 															{?>
 															<?php 
-															if(!empty($refDropDown[$receiptRows->id]))
+															if(!empty($refDropDown[$debitNoteRows->id]))
 															{
 																echo $this->Form->input('mode_of_payment', ['options'=>$refDropDown[3],'label' => false,'class' => 'form-control input-sm paymentType','required'=>'required','value'=>$reference_detail->type]);
 																
@@ -144,11 +144,11 @@ $this->set('title', 'Receipt Voucher');
 																$name="credit";
 															}
 
-															echo $this->Form->input('receipt_rows.'.$i.'.reference_details.'.$j.'.'.$name, ['label' => false,'class' => 'form-control input-sm calculation rightAligntextClass','placeholder'=>'Amount','required'=>'required','value'=>$value, 'type'=>'text']); ?>
+															echo $this->Form->input('debit_note_rows.'.$i.'.reference_details.'.$j.'.'.$name, ['label' => false,'class' => 'form-control input-sm calculation rightAligntextClass','placeholder'=>'Amount','required'=>'required','value'=>$value, 'type'=>'text']); ?>
 														</td>
 														<td width="10%" style="padding-left:0px;">
 															<?php 
-															echo $this->Form->input('receipt_rows.'.$i.'.reference_details.'.$j.'.type_cr_dr', ['options'=>['Dr'=>'Dr','Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm  calculation refDrCr','value'=>$cr_dr]); ?>
+															echo $this->Form->input('debit_note_rows.'.$i.'.reference_details.'.$j.'.type_cr_dr', ['options'=>['Dr'=>'Dr','Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm  calculation refDrCr','value'=>$cr_dr]); ?>
 														</td>
 														
 														<td align="center">
@@ -177,38 +177,38 @@ $this->set('title', 'Receipt Voucher');
 													<a role="button" class="addRefRow">Add Row</a>
 													</td>
 			<td>
-			<input type="text" class="form-control input-sm rightAligntextClass total calculation noBorder" name="receipt_rows[<?php echo $i;?>][total]" id="receipt_rows-<?php echo $i;?>-total" aria-invalid="true" aria-describedby="receipt_rows-<?php echo $i;?>-total-error" value="<?php echo $total;?>" readonly>
+			<input type="text" class="form-control input-sm rightAligntextClass total calculation noBorder" name="debit_note_rows[<?php echo $i;?>][total]" id="debit_note_rows-<?php echo $i;?>-total" aria-invalid="true" aria-describedby="debit_note_rows-<?php echo $i;?>-total-error" value="<?php echo $total;?>" readonly>
 			</td>
 														
-														<td><input type="text" class="form-control input-sm total_type calculation noBorder" readonly value="<?php echo @$type;?>" name="receipt_rows<?php echo $i;?>reference_details<?php echo $i;?>type_cr_dr"></td>
+														<td><input type="text" class="form-control input-sm total_type calculation noBorder" readonly value="<?php echo @$type;?>" name="debit_note_rows<?php echo $i;?>reference_details<?php echo $i;?>type_cr_dr"></td>
 													</tr>
 												</tfoot>
 												</table>
 												
 											<?php } ?>
 											<?php
-											if(!empty($receiptRows->mode_of_payment)){
+											if(!empty($debitNoteRows->mode_of_payment)){
 											?>
 											<table width='90%'>
 												<tbody>
 													<tr>
 														<td width="30%">
 															<?php 
-															echo $this->Form->input('receipt_rows.'.$i.'.mode_of_payment', ['options'=>$option_mode,'label' => false,'class' => 'form-control input-sm paymentType','required'=>'required','value'=>$receiptRows->mode_of_payment]); ?>
+															echo $this->Form->input('debit_note_rows.'.$i.'.mode_of_payment', ['options'=>$option_mode,'label' => false,'class' => 'form-control input-sm paymentType','required'=>'required','value'=>$debitNoteRows->mode_of_payment]); ?>
 														</td>
 														
-													<?php if($receiptRows->mode_of_payment=='NEFT/RTGS'){?>
+													<?php if($debitNoteRows->mode_of_payment=='NEFT/RTGS'){?>
 														 <?php $style='display:none';?>
-														<?php } else if($receiptRows->mode_of_payment=='Cheque'){ ?>
+														<?php } else if($debitNoteRows->mode_of_payment=='Cheque'){ ?>
 														 <?php $style='';?>
 														<?php }?>
 														
 														
 						<td width="30%" style="<?php echo $style;?>">
-															<?php echo $this->Form->input('receipt_rows.'.$i.'.cheque_no', ['label' =>false,'class' => 'form-control input-sm cheque_no','placeholder'=>'Cheque No','value'=>$receiptRows->cheque_no]); ?> 
+															<?php echo $this->Form->input('debit_note_rows.'.$i.'.cheque_no', ['label' =>false,'class' => 'form-control input-sm cheque_no','placeholder'=>'Cheque No','value'=>$debitNoteRows->cheque_no]); ?> 
 														</td>
 						<td width="30%" style="<?php echo $style;?>">
-															<?php echo $this->Form->input('receipt_rows.'.$i.'.cheque_date', ['label' =>false,'class' => 'form-control input-sm date-picker cheque_date ','data-date-format'=>'dd-mm-yyyy','placeholder'=>'Cheque Date','value'=>date("d-m-Y",strtotime($receiptRows->cheque_date)),'type'=>'text']); ?>
+															<?php echo $this->Form->input('debit_note_rows.'.$i.'.cheque_date', ['label' =>false,'class' => 'form-control input-sm date-picker cheque_date ','data-date-format'=>'dd-mm-yyyy','placeholder'=>'Cheque Date','value'=>date("d-m-Y",strtotime($debitNoteRows->cheque_date)),'type'=>'text']); ?>
 														</td>
 													</tr>
 												</tbody>
@@ -220,10 +220,10 @@ $this->set('title', 'Receipt Voucher');
 											</div>
 										</td>
 										<td width="10%">
-											<?php echo $this->Form->input('receipt_rows.'.$i.'.debit', ['label' => false,'class' => 'form-control input-sm debitBox rightAligntextClass totalCalculation calculate_total','placeholder'=>'Debit','value'=>$receiptRows->debit, 'type'=>'text']); ?>
+											<?php echo $this->Form->input('debit_note_rows.'.$i.'.debit', ['label' => false,'class' => 'form-control input-sm debitBox rightAligntextClass totalCalculation calculate_total','placeholder'=>'Debit','value'=>$debitNoteRows->debit, 'type'=>'text']); ?>
 										</td>
 										<td width="10%">
-											<?php echo $this->Form->input('receipt_rows.'.$i.'.credit', ['label' => false,'class' => 'form-control input-sm creditBox rightAligntextClass totalCalculation calculate_total','placeholder'=>'Credit','value'=>$receiptRows->credit, 'type'=>'text']); ?>
+											<?php echo $this->Form->input('debit_note_rows.'.$i.'.credit', ['label' => false,'class' => 'form-control input-sm creditBox rightAligntextClass totalCalculation calculate_total','placeholder'=>'Credit','value'=>$debitNoteRows->credit, 'type'=>'text']); ?>
 										
 										</td>
 										<td align="center"  width="10%">
@@ -456,7 +456,7 @@ $this->set('title', 'Receipt Voucher');
 					var totalMainDr  = parseFloat($('#totalMainDr').val());
 					var totalBankCash = parseFloat($('#totalBankCash').val());
 					if(!totalMainDr || totalMainDr==0){
-						alert('Error: zero amount receipt can not be generated.');
+						alert('Error: zero amount value can not be generated.');
 						return false;
 					}
 					else if(totalBankCash<=0){
@@ -632,13 +632,13 @@ $this->set('title', 'Receipt Voucher');
 					var cr_dr=$(this).find('td:nth-child(1) select.cr_dr option:selected').val();
 					
 					var is_cash_bank=$(this).find('td:nth-child(2) option:selected').attr('bank_and_cash');
-					$(this).find('td:nth-child(1) select.cr_dr').attr({name:'receipt_rows['+i+'][cr_dr]',id:'receipt_rows-'+i+'-cr_dr'});
+					$(this).find('td:nth-child(1) select.cr_dr').attr({name:'debit_note_rows['+i+'][cr_dr]',id:'debit_note_rows-'+i+'-cr_dr'});
 					
-	$(this).find('td:nth-child(2) input.BankValueDefine').attr({name:'receipt_rows['+i+'][BankDefination]',id:'receipt_rows-'+i+'-BankDefination'});
+	$(this).find('td:nth-child(2) input.BankValueDefine').attr({name:'debit_note_rows['+i+'][BankDefination]',id:'debit_note_rows-'+i+'-BankDefination'});
 					
-					$(this).find('td:nth-child(2) select.ledger').attr({name:'receipt_rows['+i+'][ledger_id]',id:'receipt_rows-'+i+'-ledger_id'}).select2();
-					$(this).find('td:nth-child(3) input.debitBox').attr({name:'receipt_rows['+i+'][debit]',id:'receipt_rows-'+i+'-debit'});
-					$(this).find('td:nth-child(4) input.creditBox').attr({name:'receipt_rows['+i+'][credit]',id:'receipt_rows-'+i+'-credit'});
+					$(this).find('td:nth-child(2) select.ledger').attr({name:'debit_note_rows['+i+'][ledger_id]',id:'debit_note_rows-'+i+'-ledger_id'}).select2();
+					$(this).find('td:nth-child(3) input.debitBox').attr({name:'debit_note_rows['+i+'][debit]',id:'debit_note_rows-'+i+'-debit'});
+					$(this).find('td:nth-child(4) input.creditBox').attr({name:'debit_note_rows['+i+'][credit]',id:'debit_note_rows-'+i+'-credit'});
 					
 					if(cr_dr=='Dr'){
 						//$(this).find('td:nth-child(3) input.debitBox').rules('add', 'required');
@@ -683,9 +683,9 @@ $this->set('title', 'Receipt Voucher');
 			function renameBankRows(SelectedTr){
 				var row_no=SelectedTr.attr('row_no');
 				SelectedTr.find('td:nth-child(2) div.window table tbody tr').each(function(){
-					$(this).find('td:nth-child(1) select.paymentType').attr({name:'receipt_rows['+row_no+'][mode_of_payment]',id:'receipt_rows-'+row_no+'-mode_of_payment'});
-					$(this).find('td:nth-child(2) input.cheque_no').attr({name:'receipt_rows['+row_no+'][cheque_no]',id:'receipt_rows-'+row_no+'-cheque_no'});
-					$(this).find('td:nth-child(3) input.cheque_date').attr({name:'receipt_rows['+row_no+'][cheque_date]',id:'receipt_rows-'+row_no+'-cheque_date'}).datepicker();
+					$(this).find('td:nth-child(1) select.paymentType').attr({name:'debit_note_rows['+row_no+'][mode_of_payment]',id:'debit_note_rows-'+row_no+'-mode_of_payment'});
+					$(this).find('td:nth-child(2) input.cheque_no').attr({name:'debit_note_rows['+row_no+'][cheque_no]',id:'debit_note_rows-'+row_no+'-cheque_no'});
+					$(this).find('td:nth-child(3) input.cheque_date').attr({name:'debit_note_rows['+row_no+'][cheque_date]',id:'debit_note_rows-'+row_no+'-cheque_date'}).datepicker();
 				});
 			}
 			
@@ -719,26 +719,26 @@ $this->set('title', 'Receipt Voucher');
 				var row_no=SelectedTr.attr('row_no');
 				if(SelectedTr.find('td:nth-child(2) div.window table tbody tr').length>0){
 				SelectedTr.find('td:nth-child(2) div.window table tbody tr').each(function(){
-					$(this).find('td:nth-child(1) input.companyIdContainer').attr({name:'receipt_rows['+row_no+'][reference_details]['+i+'][company_id]',id:'receipt_rows-'+row_no+'-reference_details-'+i+'-company_id'});
-					$(this).find('td:nth-child(1) input.ledgerIdContainer').attr({name:'receipt_rows['+row_no+'][reference_details]['+i+'][ledger_id]',id:'receipt_rows-'+row_no+'-reference_details-'+i+'-ledger_id'});
-					$(this).find('td:nth-child(1) select.refType').attr({name:'receipt_rows['+row_no+'][reference_details]['+i+'][type]',id:'receipt_rows-'+row_no+'-reference_details-'+i+'-type'});
+					$(this).find('td:nth-child(1) input.companyIdContainer').attr({name:'debit_note_rows['+row_no+'][reference_details]['+i+'][company_id]',id:'debit_note_rows-'+row_no+'-reference_details-'+i+'-company_id'});
+					$(this).find('td:nth-child(1) input.ledgerIdContainer').attr({name:'debit_note_rows['+row_no+'][reference_details]['+i+'][ledger_id]',id:'debit_note_rows-'+row_no+'-reference_details-'+i+'-ledger_id'});
+					$(this).find('td:nth-child(1) select.refType').attr({name:'debit_note_rows['+row_no+'][reference_details]['+i+'][type]',id:'debit_note_rows-'+row_no+'-reference_details-'+i+'-type'});
 					var is_select=$(this).find('td:nth-child(2) select.refList').length;
 					var is_input=$(this).find('td:nth-child(2) input.ref_name').length;
 					if(is_select){
-						$(this).find('td:nth-child(2) select.refList').attr({name:'receipt_rows['+row_no+'][reference_details]['+i+'][ref_name]',id:'receipt_rows-'+row_no+'-reference_details-'+i+'-ref_name'}).rules('add', 'required');
+						$(this).find('td:nth-child(2) select.refList').attr({name:'debit_note_rows['+row_no+'][reference_details]['+i+'][ref_name]',id:'debit_note_rows-'+row_no+'-reference_details-'+i+'-ref_name'}).rules('add', 'required');
 					}else if(is_input){
-						$(this).find('td:nth-child(2) input.ref_name').attr({name:'receipt_rows['+row_no+'][reference_details]['+i+'][ref_name]',id:'receipt_rows-'+row_no+'-reference_details-'+i+'-ref_name'}).rules('add', 'required');;
+						$(this).find('td:nth-child(2) input.ref_name').attr({name:'debit_note_rows['+row_no+'][reference_details]['+i+'][ref_name]',id:'debit_note_rows-'+row_no+'-reference_details-'+i+'-ref_name'}).rules('add', 'required');;
 					}
 					var Dr_Cr=$(this).find('td:nth-child(4) select option:selected').val();
 					if(Dr_Cr=='Dr'){
-						$(this).find('td:nth-child(3) input').attr({name:'receipt_rows['+row_no+'][reference_details]['+i+'][debit]',id:'receipt_rows-'+row_no+'-reference_details-'+i+'-debit'}).rules('add', 'required');;
+						$(this).find('td:nth-child(3) input').attr({name:'debit_note_rows['+row_no+'][reference_details]['+i+'][debit]',id:'debit_note_rows-'+row_no+'-reference_details-'+i+'-debit'}).rules('add', 'required');;
 					}else{
-						$(this).find('td:nth-child(3) input').attr({name:'receipt_rows['+row_no+'][reference_details]['+i+'][credit]',id:'receipt_rows-'+row_no+'-reference_details-'+i+'-credit'}).rules('add', 'required');;
+						$(this).find('td:nth-child(3) input').attr({name:'debit_note_rows['+row_no+'][reference_details]['+i+'][credit]',id:'debit_note_rows-'+row_no+'-reference_details-'+i+'-credit'}).rules('add', 'required');;
 					}
 					i++;
 				});
 				SelectedTr.find('td:nth-child(2) div.window table.refTbl tfoot tr td:nth-child(2) input.total')
-						.attr({name:'receipt_rows['+row_no+'][total]',id:'receipt_rows-'+row_no+'-total'})
+						.attr({name:'debit_note_rows['+row_no+'][total]',id:'debit_note_rows-'+row_no+'-total'})
 						.rules('add', {
 							equalTo: '#'+eqlClass,
 							messages: {
