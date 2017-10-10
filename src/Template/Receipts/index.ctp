@@ -22,7 +22,6 @@ $this->set('title', 'Receipt List');
 							<tr>
 								<th scope="col"><?= __('Sr') ?></th>
 								<th scope="col"><?= $this->Paginator->sort('voucher_no') ?></th>
-								<th scope="col"><?= $this->Paginator->sort('Company') ?></th>
 								<th scope="col"><?= $this->Paginator->sort('transaction_date') ?></th>
 								<th scope="col"><?= $this->Paginator->sort('Narration') ?></th>
 								<th scope="col" class="actions"><?= __('Actions') ?></th>
@@ -37,7 +36,6 @@ $this->set('title', 'Receipt List');
 							<tr>
 								<td><?= h(++$page_no) ?></td>
 								<td><?= h('#'.str_pad($receipt->voucher_no, 4, '0', STR_PAD_LEFT)) ?></td>
-								<td><?= h($receipt->company->name) ?></td>
 								<td><?= h($transaction_date) ?></td>
 								<td class=""><?= h($receipt->narration) ?></td>
 								<td class="actions">

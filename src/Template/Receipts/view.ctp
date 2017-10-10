@@ -32,7 +32,7 @@ table td {
 					<tr>
 						<th scope="col" style="text-align:center";>Voucher No: 
 						<?= h(str_pad($data->voucher_no, 4, '0', STR_PAD_LEFT)) ?></th>
-						<th scope="col" style="text-align:center";>Company: <?=$data->company->name?></th>
+						
 						<th scope="col" style="text-align:center";>Transaction Date: <?=date('d-m-y',strtotime($data->transaction_date))?></th>
 						<th scope="col" style="text-align:center";>Narration: <?=$data->narration?></th>
 					</tr>

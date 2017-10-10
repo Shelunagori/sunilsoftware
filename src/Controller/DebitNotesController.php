@@ -20,11 +20,11 @@ class DebitNotesController extends AppController
      */
     public function index()
     {
+	$this->viewBuilder()->layout('index_layout');
         $this->paginate = [
             'contain' => ['Companies']
         ];
         $debitNotes = $this->paginate($this->DebitNotes);
-
         $this->set(compact('debitNotes'));
         $this->set('_serialize', ['debitNotes']);
     }

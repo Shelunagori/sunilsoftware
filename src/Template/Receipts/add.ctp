@@ -44,23 +44,42 @@ $this->set('title', 'Receipt Voucher');
 								<thead>
 									<tr>
 										<td></td>
-										<td>Particulars</td>
-										<td>Debit</td>
-										<td>Credit</td>
-										<td width="10%"></td>
+										<th>Particulars</th>
+										<th>Debit</th>
+										<th>Credit</th>
+										<th width="10%"></th>
 									</tr>
 								</thead>
 								<tbody id='MainTbody' class="tab">
-									
+									<tr class="MainTr">
+			<td width="10%" valign="top">
+				<?php 
+				echo $this->Form->input('cr_dr', ['options'=>['Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm cr_dr', 'readonly'=>'readonly','required'=>'required','value'=>'Cr']); ?>
+			</td>
+			<td width="65%" valign="top">
+				<?php echo $this->Form->input('ledger_id', ['empty'=>'--Select--','options'=>@$ledgerOptions,'label' => false,'class' => 'form-control input-sm ledger','required'=>'required']); ?>
+				<div class="window" style="margin:auto;"></div>
+			</td>
+			<td width="10%" valign="top">
+				<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm  debitBox rightAligntextClass calculate_total','placeholder'=>'Debit','style'=>'display:none;']); ?>
+			</td>
+			<td width="10%" valign="top">
+				<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm creditBox rightAligntextClass calculate_total','placeholder'=>'Credit']); ?>	
+			</td>
+			<td align="center"  width="10%" valign="top">
+				<!--<a class="btn btn-danger delete-tr btn-xs" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a> -->
+			</td>
+		</tr>
+		
 								</tbody>
 								<tfoot>
 									<tr style="border-top:double;">
 										<td colspan="2" valign="top" >	
 											<button type="button" class="AddMainRow btn btn-default input-sm"><i class="fa fa-plus"></i> Add row</button>
-											<input type="hidden" id="totalBankCash">
+											<input type="text" id="totalBankCash">
 										</td>
-										<td valign="top"><input type="text" class="form-control input-sm rightAligntextClass noBorder " name="totalMainDr" id="totalMainDr"></td>
-										<td valign="top"><input type="text" class="form-control input-sm rightAligntextClass noBorder" name="totalMainCr" id="totalMainCr"></td>
+										<td valign="top"><input type="text" class="form-control input-sm rightAligntextClass noBorder " name="totalMainDr" id="totalMainDr" readonly></td>
+										<td valign="top"><input type="text" class="form-control input-sm rightAligntextClass noBorder" name="totalMainCr" id="totalMainCr" readonly></td>
 										<td></td>
 									</tr>
 								</tfoot>
@@ -233,8 +252,8 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 <?php
 	$kk='<input type="text" class="form-control input-sm ref_name " placeholder="Reference Name">';
 	
-	$total_input='<input type="text" class="form-control input-sm rightAligntextClass total calculation noBorder" >';
-	$total_type='<input type="text" class="form-control input-sm total_type calculation noBorder" >';
+	$total_input='<input type="text" class="form-control input-sm rightAligntextClass total calculation noBorder" readonly >';
+	$total_type='<input type="text" class="form-control input-sm total_type calculation noBorder" readonly >';
 	$js="
 		$(document).ready(function() {
 		
@@ -405,7 +424,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				addMainRow();
 			});
 			
-			addMainRow();
+			//addMainRow();
 			function addMainRow(){
 				var tr=$('#sampleMainTable tbody.sampleMainTbody tr.MainTr').clone();
 				$('#MainTable tbody#MainTbody').append(tr);
@@ -431,7 +450,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 						if(!debit_amt){
 							debit_amt=0;
 						}
-						main_debit=main_debit+debit_amt;
+						main_debit=round(main_debit+debit_amt, 2);
 						if(is_cash_bank=='yes'){
 						 count_bank_cash++;
 						}
@@ -444,7 +463,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 						if(!credit_amt){
 							credit_amt=0;
 						}
-						main_credit=main_credit+credit_amt;
+						main_credit=round(main_credit+credit_amt, 2);
 						
 					}
 					i++;
@@ -538,7 +557,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				 renameMainRows();
 			});
 			
-			$('.calculation').die().live('blur',function()
+			$('.calculation').die().live('keyup',function()
 			{ 
 				var SelectedTr=$(this).closest('tr.MainTr');
 				var total_debit=0;var total_credit=0; var remaining=0;
@@ -547,13 +566,13 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 					var amt= parseFloat($(this).find('td:nth-child(3) input').val());
 					if(!amt){ amt=0; }
 					if(Dr_Cr=='Dr'){
-						total_debit=total_debit+amt;
+						total_debit=round(total_debit+amt, 2);
 					}
 					else if(Dr_Cr=='Cr'){
-						total_credit=total_credit+amt;
+						total_credit=round(total_credit+amt, 2);
 					}
 					
-					remaining=total_debit-total_credit;
+					remaining=round(total_debit-total_credit,2);
 					
 					if(remaining>0){
 						$(this).closest('table').find(' tfoot td:nth-child(2) input.total').val(remaining);
