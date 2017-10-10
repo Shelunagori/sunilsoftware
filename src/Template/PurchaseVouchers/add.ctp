@@ -53,11 +53,11 @@ $this->set('title', 'Purchase Voucher');
 							<table id="MainTable" class="table table-condensed table-striped" width="100%">
 								<thead>
 									<tr>
-										<td></td>
-										<td>Particulars</td>
-										<td>Debit</td>
-										<td>Credit</td>
-										<td width="10%"></td>
+										<th></th>
+										<th>Particulars</th>
+										<th>Debit</th>
+										<th>Credit</th>
+										<th width="10%"></th>
 									</tr>
 								</thead>
 								<tbody id='MainTbody' class="tab">
