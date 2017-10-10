@@ -176,6 +176,23 @@ class JournalVouchersController extends AppController
 			$journalVoucher->transaction_date      = date("Y-m-d",strtotime($journalVoucher->transaction_date));
 			//pr($journalVoucher);exit;
             if ($this->JournalVouchers->save($journalVoucher)) {
+				$query_delete = $this->JournalVouchers->AccountingEntries->query();
+					$query_delete->delete()
+					->where(['journal_voucher_id' => $journalVoucher->id,'company_id'=>$company_id])
+					->execute();
+				foreach($journalVoucher->journal_voucher_rows as $journal_voucher_row)
+				{
+					$accountEntry = $this->JournalVouchers->AccountingEntries->newEntity();
+					$accountEntry->ledger_id                  = $journal_voucher_row->ledger_id;
+					$accountEntry->debit                      = $journal_voucher_row->debit;
+					$accountEntry->credit                     = $journal_voucher_row->credit;
+					$accountEntry->transaction_date           = $journalVoucher->transaction_date;
+					$accountEntry->company_id                 = $company_id;
+					$accountEntry->journal_voucher_id         = $journalVoucher->id;
+					$accountEntry->journal_voucher_row_id     = $journal_voucher_row->id;
+					
+					$this->JournalVouchers->AccountingEntries->save($accountEntry);
+				}
                 $this->Flash->success(__('The journal voucher has been saved.'));
 
                 return $this->redirect(['action' => 'index']);
