@@ -185,9 +185,9 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 												</tbody>
 												<tfoot>
 												    <tr class="remove_ref_foot">
-														<td colspan="2"><input type="hidden" id="htotal" value="<?php echo @$total;?>">
+														<td colspan="2">
 													    </td>
-														<td><input type="text" class="form-control input-sm rightAligntextClass total calculation ttl noBorder"  value=""name="journal_voucher_rows[<?php echo $i;?>][total]"></td>
+														<td><input type="text" class="form-control input-sm rightAligntextClass total calculation ttl noBorder"  value="<?php echo $journal_voucher_row->total;?>" name="journal_voucher_rows[<?php echo $i;?>][total]"></td>
 														<td style="vertical-align: top !important;"><input type="text" class="form-control input-sm total_type calculation noBorder"  value="<?php echo @$type;?>"></td>
 													</tr>
 												</tfoot>
@@ -439,11 +439,11 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 	$js="
 		$(document).ready(function() {
 			
-			var htotal = $('#htotal').val();
+			/* var htotal = $('#htotal').val();
 			if(htotal!=0)
 			{
 				$('.ttl').val(htotal);
-			}
+			} */
 			
 			var form1 = $('#form_sample_2');
             var error1 = $('.alert-danger', form1);
