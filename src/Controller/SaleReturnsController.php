@@ -40,9 +40,9 @@ class SaleReturnsController extends AppController
     {
 		$this->viewBuilder()->layout('index_layout');
         $saleReturn = $this->SaleReturns->get($id, [
-            'contain' => ['Companies', 'SalesLedgers', 'PartyLedgers', 'Locations', 'SalesInvoices', 'SaleReturnRows'=>['Items']]
+            'contain' => ['Companies', 'SalesLedgers', 'PartyLedgers', 'Locations', 'SalesInvoices', 'SaleReturnRows'=>['GstFigures','Items']]
         ]);
-
+		//pr($saleReturn); exit;
         $this->set('saleReturn', $saleReturn);
         $this->set('_serialize', ['saleReturn']);
     }

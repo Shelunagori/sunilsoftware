@@ -41,7 +41,7 @@ foreach($partyOptions as $partyOption)
 						<div class="col-md-2">
 							<div class="form-group">
 								<label><b>Transaction Date</b></label><br>
-								<?php echo $this->Form->control('transaction_date',['type'=>'hidden','data-date-format'=>'dd-mm-yyyy','label'=>false,'placeholder'=>'DD-MM-YYYY','data-date-start-date'=>@$coreVariable[fyValidFrom],'data-date-end-date'=>@$coreVariable[fyValidTo],'value'=>$salesInvoice->transaction_date, 'autofocus'=>'autofocus']); 
+								<?php  
 								echo $salesInvoice->transaction_date;
 								?>
 							</div>
@@ -73,10 +73,10 @@ foreach($partyOptions as $partyOption)
 						</div> 
 						<div class="col-md-2">
 							<div class="form-group">
-								<label><b>Transaction Date</b></label><br>
-								<?php echo $this->Form->control('transaction_date',['type'=>'text','class'=>'form-control input-sm date-picker','data-date-format'=>'dd-mm-yyyy','label'=>false,'placeholder'=>'DD-MM-YYYY','data-date-start-date'=>@$coreVariable[fyValidFrom],'data-date-end-date'=>@$coreVariable[fyValidTo], 'autofocus'=>'autofocus']); 
+								<label>Transaction Date <span class="required">*</span></label>
+								<input type="text" name="transaction_date" class="form-control input-sm date-picker" data-date-format="dd-mm-yyyy" placeholder="DD-MM-YYYY" data-date-start-date="01-04-2017" data-date-end-date="31-03-2018" required="required" id="transaction-date" value="09-10-2017">
 								
-								?>
+								
 							</div>
 						</div>
 					</div>
@@ -99,7 +99,7 @@ foreach($partyOptions as $partyOption)
 										?>
 									<label></td>
 									<td><label>Net Amount<label></td>
-									<td style="border-left-width:2px; border-left-color:black;">Is Return</td>
+									<td style="border-left-width:2px; border-left-color:#4db3a2;">is Return</td>
 									<td ><label>Return Quantity<label></td>
 									<td ><label>Return Amount<label></td>
 									
@@ -167,7 +167,7 @@ foreach($partyOptions as $partyOption)
 									echo $salesInvoiceRow->net_amount;
 									?>	
 								</td>
-								<td valign="top" width="10%" align="center" style="border-left-width:2px; border-left-color:black; margin-top:-10px">
+								<td valign="top" width="10%" align="center" style="border-left-width:2px; border-left-color:#4db3a2; margin-top:-10px">
 								<?php if($salesInvoiceRow->quantity-@$sales_return_qty
 									[@$salesInvoiceRow->item->id] > 0){ ?>
 									<label style="margin-top:-10px"><?php echo $this->Form->input('check', ['label' => false,'type'=>'checkbox','class'=>'rename_check','value' => @$salesInvoiceRow->item->id]); ?></label>
@@ -175,10 +175,9 @@ foreach($partyOptions as $partyOption)
 								</td>
 
 								<td >
-									<?php echo $this->Form->input('q', ['label' => false,'class' => 'form-control input-sm returnQty calculation rightAligntextClass','placeholder'=>'Return Quantity',  'tabindex'=>'-1','type'=>'number','max'=>$salesInvoiceRow->quantity-@$sales_return_qty[$salesInvoiceRow->item->id]]);
-											//echo $salesInvoiceRow->quantity;
-											//echo $sales_return_qty[$salesInvoiceRow->item->id];
-									?>	
+									<?php echo $this->Form->input('q', ['label' => false,'class' => 'form-control input-sm returnQty calculation rightAligntextClass numberOnly','placeholder'=>'Return Quantity',  'tabindex'=>'-1','type'=>'text','max'=>$salesInvoiceRow->quantity-@$sales_return_qty[$salesInvoiceRow->item->id]]);
+											echo "<br>";
+									?>	<span align="center">Max Quantity:- <?php echo $salesInvoiceRow->quantity-@$sales_return_qty[$salesInvoiceRow->item->id];?></span>
 								</td>
 								<td>
 								<?php echo $this->Form->input('q', ['label' => false,'class' => 'form-control input-sm discountAmount calculation rightAligntextClass','required'=>'required', 'readonly'=>'readonly','placeholder'=>'Taxable Value', 'value'=>$salesInvoiceRow->net_amount, 'tabindex'=>'-1']); ?>
@@ -191,7 +190,7 @@ foreach($partyOptions as $partyOption)
 								<tfoot>
 									
 						<tr>
-						<td colspan="7" style="border-right-width:2px; border-right-color:black;"></td>
+						<td colspan="7" style="border-right-width:2px; border-right-color:#4db3a2;"></td>
 						<td  colspan="2"  align="right"><b>Amt Before Tax</b>
 						</td>
 						<td>
@@ -200,7 +199,7 @@ foreach($partyOptions as $partyOption)
 						</tr>
 						
 						<tr id="add_cgst">
-						<td colspan="7" style="border-right-width:2px; border-right-color:black;"></td>
+						<td colspan="7" style="border-right-width:2px; border-right-color:#4db3a2;"></td>
 						<td colspan="2" align="right"><b>Total CGST</b>
 						</td>
 						<td >
@@ -208,7 +207,7 @@ foreach($partyOptions as $partyOption)
 						</td>
 						</tr>
 						<tr id="add_sgst">
-						<td colspan="7" style="border-right-width:2px; border-right-color:black;"></td>
+						<td colspan="7" style="border-right-width:2px; border-right-color:#4db3a2;"></td>
 						<td colspan="2" align="right"><b>Total SGST</b>
 						</td>
 						<td >
@@ -216,7 +215,7 @@ foreach($partyOptions as $partyOption)
 						</td>
 						</tr>
 						<tr id="add_igst" style="">
-						<td colspan="7" style="border-right-width:2px; border-right-color:black;"></td>
+						<td colspan="7" style="border-right-width:2px; border-right-color:#4db3a2;"></td>
 						<td colspan="2" align="right"><b>Total IGST</b>
 						</td>
 						<td >
@@ -225,7 +224,7 @@ foreach($partyOptions as $partyOption)
 						</tr>
 				
 						<tr>
-						<td colspan="7" style="border-right-width:2px; border-right-color:black;"></td>
+						<td colspan="7" style="border-right-width:2px; border-right-color:#4db3a2;"></td>
 						<td  colspan="2" align="right"><b>Round OFF</b>
 						</td>
 						<td>
@@ -234,7 +233,7 @@ foreach($partyOptions as $partyOption)
 						</tr>
 									
 						<tr>
-						<td colspan="7" style="border-right-width:2px; border-right-color:black;"></td>
+						<td colspan="7" style="border-right-width:2px; border-right-color:#4db3a2;"></td>
 						<td colspan="2" align="right"><b>Amt After Tax</b>
 						</td>
 						<td >
@@ -272,12 +271,9 @@ foreach($partyOptions as $partyOption)
 <!-- BEGIN PAGE LEVEL PLUGINS -->
 	<!-- BEGIN COMPONENTS PICKERS -->
 	<?php echo $this->Html->script('/assets/global/plugins/bootstrap-datepicker/js/bootstrap-datepicker.js', ['block' => 'PAGE_LEVEL_PLUGINS_JS']); ?>
-	<?php echo $this->Html->script('/assets/global/plugins/bootstrap-timepicker/js/bootstrap-timepicker.min.js', ['block' => 'PAGE_LEVEL_PLUGINS_JS']); ?>
+	
 	<?php echo $this->Html->script('/assets/global/plugins/clockface/js/clockface.js', ['block' => 'PAGE_LEVEL_PLUGINS_JS']); ?>
-	<?php echo $this->Html->script('/assets/global/plugins/bootstrap-daterangepicker/moment.min.js', ['block' => 'PAGE_LEVEL_PLUGINS_JS']); ?>
-	<?php echo $this->Html->script('/assets/global/plugins/bootstrap-daterangepicker/daterangepicker.js', ['block' => 'PAGE_LEVEL_PLUGINS_JS']); ?>
-	<?php echo $this->Html->script('/assets/global/plugins/bootstrap-colorpicker/js/bootstrap-colorpicker.js', ['block' => 'PAGE_LEVEL_PLUGINS_JS']); ?>
-	<?php echo $this->Html->script('/assets/global/plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js', ['block' => 'PAGE_LEVEL_PLUGINS_JS']); ?>
+	
 	<!-- END COMPONENTS PICKERS -->
 	
 	<!-- BEGIN COMPONENTS DROPDOWNS -->
@@ -300,6 +296,8 @@ foreach($partyOptions as $partyOption)
 	<?php echo $this->Html->script('/assets/admin/pages/scripts/components-dropdowns.js', ['block' => 'PAGE_LEVEL_SCRIPTS_JS']); ?>
 	<!-- END COMPONENTS DROPDOWNS -->
 <!-- END PAGE LEVEL SCRIPTS -->
+
+
 
 <?php
 	$js="
@@ -459,7 +457,7 @@ foreach($partyOptions as $partyOption)
 		  
 		  $(this).find('.discountAmount').attr({name:'q'});
 		  $(this).find('.gstValue').attr({name:'q'});
-		  $(this).find('.returnQty').attr({name:'q' , readonly:'readonly'});
+		  $(this).find('.returnQty').attr({name:'q' , readonly:'readonly'}).val(0);
 		$(this).css('background-color','#FFF');
 		}
 
@@ -538,9 +536,10 @@ foreach($partyOptions as $partyOption)
 			    var gstpaid=$('option:selected', this).attr('gst_amount');
 			    $(this).closest('tr').find('.gst_amount').val(gstpaid);
 			
-				var quantity  = Math.round($(this).find('.returnQty').val());
+				var quantity  = $(this).find('.returnQty').val();
 				if(!quantity){quantity=0;}
 				var rate  = parseFloat($(this).find('.rate').val());
+				
 				if(!rate){rate=0;}
 				var totamount = quantity*rate;
 				$(this).find('.totamount').val(totamount);

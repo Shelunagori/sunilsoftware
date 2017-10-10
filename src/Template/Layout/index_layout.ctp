@@ -161,6 +161,9 @@ License: You must have a valid license purchased only from themeforest(the above
 
 		<!-- BEGIN PAGE LEVEL SCRIPTS -->
 		<?= $this->fetch('PAGE_LEVEL_SCRIPTS_JS')?>
+		
+		
+		
 		<!-- END PAGE LEVEL SCRIPTS -->
 		<script>
 		jQuery(document).ready(function() {  
@@ -168,6 +171,11 @@ License: You must have a valid license purchased only from themeforest(the above
 			Layout.init(); // init current layout
 		});
 		$(document).ready(function() {
+			
+			$('#transaction-date').datepicker({});
+			
+			
+			
 			$('a[role=button]').live('click',function(e) {
 				e.preventDefault();
 			});
