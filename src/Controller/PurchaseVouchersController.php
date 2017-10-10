@@ -206,7 +206,17 @@ class PurchaseVouchersController extends AppController
             'contain' => ['PurchaseVoucherRows'=>['Ledgers','ReferenceDetails']]
         ]);
 		$company_id=$this->Auth->User('session_company_id');
+		$originalPurchaseVoucher=$purchaseVoucher;
         if ($this->request->is(['patch', 'post', 'put'])) {
+			
+			//GET ORIGINAL DATA AND DELETE REFERENCE DATA//
+			$orignalPurchase_voucher_row_ids=[];
+			foreach($originalPurchaseVoucher->purchase_voucher_rows as $originalpurchase_voucher_rows){
+				$orignalPurchase_voucher_row_ids[]=$originalpurchase_voucher_rows->id;
+			}
+			$this->PurchaseVouchers->PurchaseVoucherRows->ReferenceDetails->deleteAll(['ReferenceDetails.purchase_voucher_row_id IN'=>$orignalPurchase_voucher_row_ids]);
+			//GET ORIGINAL DATA AND DELETE REFERENCE DATA//
+			
             $purchaseVoucher = $this->PurchaseVouchers->patchEntity($purchaseVoucher, $this->request->getData());
 			$purchaseVoucher = $this->PurchaseVouchers->patchEntity($purchaseVoucher, $this->request->getData(), [
 							'associated' => ['PurchaseVoucherRows','PurchaseVoucherRows.ReferenceDetails']

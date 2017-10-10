@@ -167,7 +167,16 @@ class JournalVouchersController extends AppController
         $journalVoucher = $this->JournalVouchers->get($id, [
             'contain' => ['JournalVoucherRows'=>['Ledgers','ReferenceDetails']]
         ]);
+		$originalJournalVoucher=$journalVoucher;
         if ($this->request->is(['patch', 'post', 'put'])) {
+			//GET ORIGINAL DATA AND DELETE REFERENCE DATA//
+			$orignalJournal_voucher_row_ids=[];
+			foreach($originalJournalVoucher->journal_voucher_rows as $originalJournal_voucher_rows){
+				$orignalJournal_voucher_row_ids[]=$originalJournal_voucher_rows->id;
+			}
+			$this->JournalVouchers->JournalVoucherRows->ReferenceDetails->deleteAll(['ReferenceDetails.journal_voucher_row_id IN'=>$orignalJournal_voucher_row_ids]);
+			//GET ORIGINAL DATA AND DELETE REFERENCE DATA//
+			
             $journalVoucher = $this->JournalVouchers->patchEntity($journalVoucher, $this->request->getData());
 			
 			$journalVoucher = $this->JournalVouchers->patchEntity($journalVoucher, $this->request->getData(), [

@@ -615,7 +615,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 						//console.log(total_credit);
 					}
 					
-					remaining=total_debit-total_credit;
+					/*remaining=total_debit-total_credit;
 					
 					if(remaining>0){
 						//console.log(remaining);
@@ -630,6 +630,18 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 					else{
 					$(this).closest('table').find(' tfoot td:nth-child(2) input.total').val('0');
 					$(this).closest('table').find(' tfoot td:nth-child(3) input.total_type').val('');	
+					}*/
+					if(total_debit>total_credit)
+					{
+					    remaining=total_debit-total_credit;
+						$(this).closest('table').find(' tfoot td:nth-child(2) input.total').val(round(remaining,2));
+						$(this).closest('table').find(' tfoot td:nth-child(3) input.total_type').val('Dr');
+					}
+					if(total_debit<total_credit)
+					{
+					    remaining= total_credit-total_debit;
+						$(this).closest('table').find(' tfoot td:nth-child(2) input.total').val(round(remaining,2));
+						$(this).closest('table').find(' tfoot td:nth-child(3) input.total_type').val('Cr');
 					}
 					
 				});
