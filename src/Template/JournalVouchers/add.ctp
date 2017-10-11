@@ -148,7 +148,7 @@ $option_ref[]= ['value'=>'On Account','text'=>'On Account'];
 			</td>
 			<td width="10%" style="padding-left:0px; vertical-align: top !important;">
 				<?php 
-				echo $this->Form->input('type_cr_dr', ['options'=>['Dr'=>'Dr','Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm  calculation refDrCr reload','value'=>'Cr']); ?>
+				echo $this->Form->input('type_cr_dr', ['options'=>['Dr'=>'Dr','Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm  calculation refDrCr reload','value'=>'Cr','style'=>'vertical-align: top !important;']); ?>
 			</td>
 			
 			<td align="center" style="vertical-align: top !important;">

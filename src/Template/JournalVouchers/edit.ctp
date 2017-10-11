@@ -160,7 +160,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 
 															echo $this->Form->input('journal_voucher_rows.'.$i.'.reference_details.'.$j.'.'.$name, ['label' => false,'class' => 'form-control input-sm calculation rightAligntextClass','placeholder'=>'Amount','required'=>'required','value'=>$value,'type'=>'text']); ?>
 														</td>
-														<td width="10%" style="padding-left:0px;">
+														<td width="10%" style="padding-left:0px;vertical-align: top !important;">
 															<?php 
 															echo $this->Form->input('type_cr_dr', ['options'=>['Dr'=>'Dr','Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm  calculation refDrCr reload','value'=>$cr_dr]); ?>
 														</td>
@@ -314,7 +314,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			</td>
 			<td width="10%" style="padding-left:0px;">
 				<?php 
-				echo $this->Form->input('type_cr_dr', ['options'=>['Dr'=>'Dr','Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm  calculation refDrCr reload','value'=>'Dr']); ?>
+				echo $this->Form->input('type_cr_dr', ['options'=>['Dr'=>'Dr','Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm  calculation refDrCr reload','value'=>'Dr','style'=>'vertical-align: top !important;']); ?>
 			</td>
 			
 			<td align="center">
