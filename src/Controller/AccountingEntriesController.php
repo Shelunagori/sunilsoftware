@@ -37,22 +37,34 @@ class AccountingEntriesController extends AppController
 		$to_date=$this->request->query('to_date');
 		$from_date = date("Y-m-d",strtotime($from_date));
 		$to_date= date("Y-m-d",strtotime($to_date));
-			$this->set(compact('from_date','to_date'));
+		$this->set(compact('from_date','to_date'));
 		
+		$expenseParentGroups = $this->AccountingEntries->Ledgers->AccountingGroups->find()
+						->where(['AccountingGroups.company_id'=>$company_id, 'AccountingGroups.nature_of_group_id'=>'4']);
+						
+		$expenseGroups=[];
 		
-	if($from_date){
+		foreach($expenseParentGroups as $expenseParentGroup)
+		{
+			$expenseChildGroups = $this->AccountingEntries->Ledgers->AccountingGroups
+			->find('children', ['for' => $expenseParentGroup->id])->toArray();
+			$expenseGroups[]=$expenseParentGroup->id;
+			foreach($expenseChildGroups as $expenseChildGroup){
+				$expenseGroups[]=$expenseChildGroup->id;
+			}
+		}
+		
 		$query=$this->AccountingEntries->find();
-		 
 		$Ledgers_Expense=$query->select(['total_debit' => $query->func()->sum('debit'),'total_credit' => $query->func()->sum('credit')])
 			->matching('Ledgers.AccountingGroups', function ($q) {
-				return $q->where(['AccountingGroups.nature_of_group_id' => 4]);
+				return $q->where(['AccountingGroups.id IN' => $incomeGroups ]);
 			})
 			->where(['AccountingEntries.company_id'=>$company_id])
 			->contain(['Ledgers'])
 			->group(['AccountingEntries.ledger_id'])
 			->autoFields(true);
-		//pr($Ledgers_Expense->toArray());
-		//exit;
+		pr($Ledgers_Expense->toArray());
+		exit;
 		$Expense_groups=[];
 			foreach($Ledgers_Expense as $Ledgers_Expense){
 				$Expense_groups[$Ledgers_Expense->_matchingData['AccountingGroups']->id]['group_id']
@@ -90,7 +102,7 @@ class AccountingEntriesController extends AppController
 			pr($Income_groups);
 		echo '</br>';
 		//exit;
-	}	
+		
 		
 		
         $this->set(compact('accountingEntries','Income_groups','Expense_groups'));
