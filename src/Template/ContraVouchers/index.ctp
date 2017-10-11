@@ -2,8 +2,7 @@
 /**
  * @Author: PHP Poets IT Solutions Pvt. Ltd.
  */
- 
-$this->set('title', 'Purchase Invoice List');
+$this->set('title', 'Contra Voucher List');
 ?>
 <div class="row">
 	<div class="col-md-12">
@@ -11,38 +10,36 @@ $this->set('title', 'Purchase Invoice List');
 			<div class="portlet-title">
 				<div class="caption">
 					<i class="icon-bar-chart font-green-sharp hide"></i>
-					<span class="caption-subject font-green-sharp bold ">Sales Invoice</span>
+					<span class="caption-subject font-green-sharp bold ">Contra Voucher</span>
 				</div>
 			</div>
 			<div class="portlet-body">
 				<div class="table-responsive">
-					<?php $page_no=$this->Paginator->current('SalesInvoices');
+					<?php $page_no=$this->Paginator->current('contraVouchers');
 					 $page_no=($page_no-1)*20; ?>
 					<table class="table table-bordered table-hover table-condensed">
 						<thead>
 							<tr>
 								<th scope="col"><?= __('Sr') ?></th>
 								<th scope="col"><?= $this->Paginator->sort('voucher_no') ?></th>
-								<th scope="col"><?= $this->Paginator->sort('supplier_ledger') ?></th>
 								<th scope="col"><?= $this->Paginator->sort('transaction_date') ?></th>
-								<th scope="col"><?= $this->Paginator->sort('amount_after_tax') ?></th>
+								<th scope="col"><?= $this->Paginator->sort('reference_no') ?></th>
 								<th scope="col" class="actions"><?= __('Actions') ?></th>
 							</tr>
 						</thead>
 						<tbody>
-							<?php foreach ($purchaseInvoices as $purchaseInvoice): ?>
-							<tr>
-								<td><?= h(++$page_no) ?></td>
-								<td><?= h('#'.str_pad($purchaseInvoice->voucher_no, 4, '0', STR_PAD_LEFT)) ?></td>
-								<td><?= h($purchaseInvoice->supplier_ledger->name) ?></td>
-								<td><?= h($purchaseInvoice->transaction_date) ?></td>
-								
-								<td class="actions">
-									
-									<?= $this->Html->link(__('Edit'), ['action' => 'edit', $purchaseInvoice->id]) ?>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-									<?= $this->Html->link(__('View Bill'), ['action' => 'sales_invoice_bill', $purchaseInvoice->id],['escape'=>false,'target'=>'_blank']) ?>
-								</td>
-							</tr>
+							<?php foreach ($contraVouchers as $contraVoucher): ?>
+								<tr>
+									<td><?= h(++$page_no) ?></td>
+									<td><?= h('#'.str_pad($contraVoucher->voucher_no, 4, '0', STR_PAD_LEFT)) ?></td>
+									<td><?= h(date("d-m-Y",strtotime($contraVoucher->transaction_date))) ?></td>
+									<td><?= h($contraVoucher->reference_no) ?></td>
+									<td class="actions">
+										<?= $this->Html->link(__('View'), ['action' => 'view', $contraVoucher->id]) ?>
+										<?= $this->Html->link(__('Edit'), ['action' => 'edit', $contraVoucher->id]) ?>
+										<?= $this->Form->postLink(__('Delete'), ['action' => 'delete', $contraVoucher->id], ['confirm' => __('Are you sure you want to delete # {0}?', $contraVoucher->id)]) ?>
+									</td>
+								</tr>
 							<?php endforeach; ?>
 						</tbody>
 					</table>
