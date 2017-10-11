@@ -590,6 +590,8 @@ $this->set('title', 'Receipt Voucher');
 			{
 			    $('#MainTable tbody#MainTbody tr.MainTr').each(function(){
 				var openWindow=$(this).find('td:nth-child(2) select.ledger option:selected').attr('open_window');
+				alert(openWindow);
+				
 				if(openWindow=='party'){
 				    var bankValue=1;
 					var SelectedTr=$(this).closest('tr.MainTr');
