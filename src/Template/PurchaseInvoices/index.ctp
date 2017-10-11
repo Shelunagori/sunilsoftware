@@ -2,7 +2,8 @@
 /**
  * @Author: PHP Poets IT Solutions Pvt. Ltd.
  */
-$this->set('title', 'Sales Invoice List');
+ 
+$this->set('title', 'Purchase Invoice List');
 ?>
 <div class="row">
 	<div class="col-md-12">
