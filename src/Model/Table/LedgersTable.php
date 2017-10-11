@@ -50,7 +50,7 @@ class LedgersTable extends Table
         ]);
         $this->belongsTo('Suppliers', [
             'foreignKey' => 'supplier_id',
-            'joinType' => 'INNER'
+            'joinType' => 'LEFT'
         ]);
         $this->belongsTo('Customers', [
             'foreignKey' => 'customer_id',

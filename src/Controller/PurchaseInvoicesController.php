@@ -81,20 +81,6 @@ class PurchaseInvoicesController extends AppController
 			$purchaseInvoice->grn_id = $Grns->id;
 			
             if ($this->PurchaseInvoices->save($purchaseInvoice)) { 
-				foreach($purchaseInvoice->purchase_invoice_rows as $purchase_invoice_row)
-				   {
-					$PurchaseInvoiceRow = $this->PurchaseInvoices->ItemLedgers->newEntity(); 
-					$PurchaseInvoiceRow->item_id=$purchase_invoice_row->item_id;
-					$PurchaseInvoiceRow->transaction_date=$purchaseInvoice->transaction_date;
-					$PurchaseInvoiceRow->quantity=$purchase_invoice_row->quantity;
-					$PurchaseInvoiceRow->rate=$purchase_invoice_row->rate;
-					$PurchaseInvoiceRow->amount=$purchase_invoice_row->quantity*$purchase_invoice_row->rate;
-					$PurchaseInvoiceRow->status="In";
-					$PurchaseInvoiceRow->company_id=$company_id;
-					$PurchaseInvoiceRow->purchase_invoice_id=$purchaseInvoice->id;
-					$PurchaseInvoiceRow->purchase_invoice_row_id=$purchase_invoice_row->id;
-					$this->PurchaseInvoices->ItemLedgers->save($PurchaseInvoiceRow);
-				   }
 				
 				//Accounting Entries for Purchase account//
 				$AccountingEntrie = $this->PurchaseInvoices->AccountingEntries->newEntity(); 
@@ -192,7 +178,7 @@ class PurchaseInvoicesController extends AppController
 		
 		$partyParentGroups = $this->PurchaseInvoices->Grns->GrnRows->Ledgers->AccountingGroups->find()
 						->where(['AccountingGroups.company_id'=>$company_id, 'AccountingGroups.
-						supplier'=>'1']);
+						purchase_invoice_party'=>'1']);
 		$partyGroups=[];
 		
 		foreach($partyParentGroups as $partyParentGroup)
@@ -210,6 +196,10 @@ class PurchaseInvoicesController extends AppController
 							->where(['SupplierLedgers.accounting_group_id IN' =>$partyGroups,'SupplierLedgers.company_id'=>$company_id])
 							->contain(['Suppliers']);
         }
+		$SupplierLedgersDetails = $this->PurchaseInvoices->Grns->SupplierLedgers->find()->where(['SupplierLedgers.id'=>$Grns->supplier_ledger->id])->contain(['Suppliers'])->first();
+		$supplier_state_id=$SupplierLedgersDetails->supplier->state_id;
+		
+		//$supplier_state_id=$supplier_ledger_detail->supplier->state_id;
 		
 		$partyOptions=[];
 		foreach($Partyledgers as $Partyledger){ 
@@ -238,7 +228,7 @@ class PurchaseInvoicesController extends AppController
 		//exit;
         $companies = $this->PurchaseInvoices->Companies->find('list', ['limit' => 200]);
         $supplierLedgers = $this->PurchaseInvoices->SupplierLedgers->find('list', ['limit' => 200]);
-        $this->set(compact('purchaseInvoice', 'companies', 'supplierLedgers','Grns','partyOptions','state_id','Accountledgers'));
+        $this->set(compact('purchaseInvoice', 'companies', 'supplierLedgers','Grns','partyOptions','state_id','Accountledgers','supplier_state_id'));
         $this->set('_serialize', ['purchaseInvoice']);
     }
 
@@ -267,23 +257,10 @@ class PurchaseInvoicesController extends AppController
 			
             if ($this->PurchaseInvoices->save($purchaseInvoice)) {
 				
-				$this->PurchaseInvoices->ItemLedgers->deleteAll(['ItemLedgers.purchase_invoice_id' => $purchaseInvoice->id]);
+				//$this->PurchaseInvoices->ItemLedgers->deleteAll(['ItemLedgers.purchase_invoice_id' => $purchaseInvoice->id]);
 				$this->PurchaseInvoices->AccountingEntries->deleteAll(['AccountingEntries.purchase_invoice_id' => $purchaseInvoice->id]);
 				
-				foreach($purchaseInvoice->purchase_invoice_rows as $purchase_invoice_row)
-				   {
-					$PurchaseInvoiceRow = $this->PurchaseInvoices->ItemLedgers->newEntity(); 
-					$PurchaseInvoiceRow->item_id=$purchase_invoice_row->item_id;
-					$PurchaseInvoiceRow->transaction_date=$purchaseInvoice->transaction_date;
-					$PurchaseInvoiceRow->quantity=$purchase_invoice_row->quantity;
-					$PurchaseInvoiceRow->rate=$purchase_invoice_row->rate;
-					$PurchaseInvoiceRow->amount=$purchase_invoice_row->quantity*$purchase_invoice_row->rate;
-					$PurchaseInvoiceRow->status="In";
-					$PurchaseInvoiceRow->company_id=$company_id;
-					$PurchaseInvoiceRow->purchase_invoice_id=$purchaseInvoice->id;
-					$PurchaseInvoiceRow->purchase_invoice_row_id=$purchase_invoice_row->id;
-					$this->PurchaseInvoices->ItemLedgers->save($PurchaseInvoiceRow);
-				   }
+				
 				
 				//Accounting Entries for Purchase account//
 				$AccountingEntrie = $this->PurchaseInvoices->AccountingEntries->newEntity(); 
@@ -380,7 +357,8 @@ class PurchaseInvoicesController extends AppController
 		
 		$partyParentGroups = $this->PurchaseInvoices->Grns->GrnRows->Ledgers->AccountingGroups->find()
 						->where(['AccountingGroups.company_id'=>$company_id, 'AccountingGroups.
-						supplier'=>'1']);
+						purchase_invoice_party'=>'1']);
+						//pr($partyParentGroups->toArray()); exit;
 		$partyGroups=[];
 		foreach($partyParentGroups as $partyParentGroup)
 		{
@@ -391,12 +369,14 @@ class PurchaseInvoicesController extends AppController
 				$partyGroups[]=$accountingGroup->id;
 			}
 		}
+		
 		if($partyGroups)
 		{  
 			$Partyledgers = $this->PurchaseInvoices->Grns->SupplierLedgers->find()
 							->where(['SupplierLedgers.accounting_group_id IN' =>$partyGroups,'SupplierLedgers.company_id'=>$company_id])
 							->contain(['Suppliers']);
         }
+		
 		
 		$partyOptions=[];
 		foreach($Partyledgers as $Partyledger){ 
@@ -410,6 +390,7 @@ class PurchaseInvoicesController extends AppController
 							->where(['SupplierLedgers.id'=>$purchaseInvoice->supplier_ledger_id])
 							->contain(['Suppliers'])
 							->first();
+						//pr($supplier_ledger_detail); exit;
 		$supplier_state_id=$supplier_ledger_detail->supplier->state_id;
 		$accountingGroups2 = $this->PurchaseInvoices->Grns->GrnRows->Ledgers->AccountingGroups
 		->find('children', ['for' => $accountLedgers->id])
