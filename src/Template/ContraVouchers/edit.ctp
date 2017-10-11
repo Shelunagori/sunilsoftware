@@ -3,6 +3,9 @@
  * @Author: PHP Poets IT Solutions Pvt. Ltd.
  */
 $this->set('title', 'Contra Voucher');
+
+$option_mode[]= ['value'=>'Cheque','text'=>'Cheque'];
+$option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 ?>
 <style>
 .noBorder{
@@ -174,8 +177,8 @@ $this->set('title', 'Contra Voucher');
 										<td colspan="2">	
 											<button type="button" class="AddMainRow btn btn-default input-sm"><i class="fa fa-plus"></i> Add row</button>
 										</td>
-										<td><input type="text" class="form-control input-sm rightAligntextClass total_debit" placeholder="Total Debit" id="totalMainDr" name="totalMainDr" value=""></td>
-										<td><input type="text" class="form-control input-sm rightAligntextClass total_credit" placeholder="Total Credit" id="totalMainCr" name="totalMainCr" value=""></td>
+										<td><input type="text" class="form-control input-sm rightAligntextClass total_debit" placeholder="Total Debit" id="totalMainDr" name="totalMainDr" value="<?php echo $contraVoucher->totalMainDr;?>"></td>
+										<td><input type="text" class="form-control input-sm rightAligntextClass total_credit" placeholder="Total Credit" id="totalMainCr" name="totalMainCr" value="<?php echo $contraVoucher->totalMainCr;?>"></td>
 									</tr>
 								</tfoot>
 							</table>
@@ -502,11 +505,11 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				var i=0;
 				$('#MainTable tbody#MainTbody tr.MainTr').each(function(){
 					$(this).attr('row_no',i);
-					$(this).find('td:nth-child(1) input.hidden').attr({name:'sales_voucher_rows['+i+'][id]',id:'sales_voucher_rows-'+i+'-id'});
-					$(this).find('td:nth-child(1) select.cr_dr').attr({name:'sales_voucher_rows['+i+'][cr_dr]',id:'sales_voucher_rows-'+i+'-cr_dr'});
-					$(this).find('td:nth-child(2) select.ledger').attr({name:'sales_voucher_rows['+i+'][ledger_id]',id:'sales_voucher_rows-'+i+'-ledger_id'}).select2();
-					$(this).find('td:nth-child(3) input.debitBox').attr({name:'sales_voucher_rows['+i+'][debit]',id:'sales_voucher_rows-'+i+'-debit'});
-					$(this).find('td:nth-child(4) input.creditBox').attr({name:'sales_voucher_rows['+i+'][credit]',id:'sales_voucher_rows-'+i+'-credit'});
+					$(this).find('td:nth-child(1) input.hidden').attr({name:'contra_voucher_rows['+i+'][id]',id:'contra_voucher_rows-'+i+'-id'});
+					$(this).find('td:nth-child(1) select.cr_dr').attr({name:'contra_voucher_rows['+i+'][cr_dr]',id:'contra_voucher_rows-'+i+'-cr_dr'});
+					$(this).find('td:nth-child(2) select.ledger').attr({name:'contra_voucher_rows['+i+'][ledger_id]',id:'contra_voucher_rows-'+i+'-ledger_id'}).select2();
+					$(this).find('td:nth-child(3) input.debitBox').attr({name:'contra_voucher_rows['+i+'][debit]',id:'contra_voucher_rows-'+i+'-debit'});
+					$(this).find('td:nth-child(4) input.creditBox').attr({name:'contra_voucher_rows['+i+'][credit]',id:'contra_voucher_rows-'+i+'-credit'});
 					i++;
 					var type=$(this).find('td:nth-child(2) option:selected').attr('open_window'); 
 					
@@ -536,9 +539,9 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			function renameBankRows(SelectedTr){
 				var row_no=SelectedTr.attr('row_no');
 				SelectedTr.find('td:nth-child(2) div.window table tbody tr').each(function(){
-					$(this).find('td:nth-child(1) select.paymentType').attr({name:'sales_voucher_rows['+row_no+'][mode_of_payment]',id:'sales_voucher_rows-'+row_no+'-mode_of_payment'});
-					$(this).find('td:nth-child(2) input.cheque_no').attr({name:'sales_voucher_rows['+row_no+'][cheque_no]',id:'sales_voucher_rows-'+row_no+'-cheque_no'});
-					$(this).find('td:nth-child(3) input.cheque_date').attr({name:'sales_voucher_rows['+row_no+'][cheque_date]',id:'sales_voucher_rows-'+row_no+'-cheque_date'}).datepicker();
+					$(this).find('td:nth-child(1) select.paymentType').attr({name:'contra_voucher_rows['+row_no+'][mode_of_payment]',id:'contra_voucher_rows-'+row_no+'-mode_of_payment'});
+					$(this).find('td:nth-child(2) input.cheque_no').attr({name:'contra_voucher_rows['+row_no+'][cheque_no]',id:'contra_voucher_rows-'+row_no+'-cheque_no'});
+					$(this).find('td:nth-child(3) input.cheque_date').attr({name:'contra_voucher_rows['+row_no+'][cheque_date]',id:'contra_voucher_rows-'+row_no+'-cheque_date'}).datepicker();
 				});
 				
 			}

@@ -160,8 +160,27 @@ class ContraVouchersController extends AppController
 		$company_id=$this->Auth->User('session_company_id');
         $this->request->data['company_id'] =$company_id;
         if ($this->request->is(['patch', 'post', 'put'])) {
+			$this->request->data['transaction_date'] = date("Y-m-d",strtotime($this->request->getData()['transaction_date']));
             $contraVoucher = $this->ContraVouchers->patchEntity($contraVoucher, $this->request->getData());
+			//pr($contraVoucher);exit;
             if ($this->ContraVouchers->save($contraVoucher)) {
+				$query_delete = $this->ContraVouchers->AccountingEntries->query();
+					$query_delete->delete()
+					->where(['contra_voucher_id' => $contraVoucher->id,'company_id'=>$company_id])
+					->execute();
+				foreach($contraVoucher->contra_voucher_rows as $contra_voucher_row)
+				{
+					$accountEntry = $this->ContraVouchers->AccountingEntries->newEntity();
+					$accountEntry->ledger_id                  = $contra_voucher_row->ledger_id;
+					$accountEntry->debit                      = round($contra_voucher_row->debit,2);
+					$accountEntry->credit                     = round($contra_voucher_row->credit,2);
+					$accountEntry->transaction_date           = $contraVoucher->transaction_date;
+					$accountEntry->company_id                 = $company_id;
+					$accountEntry->contra_voucher_id          = $contraVoucher->id;
+					$accountEntry->contra_voucher_row_id      = $contra_voucher_row->id;
+					
+					$this->ContraVouchers->AccountingEntries->save($accountEntry);
+				}
                 $this->Flash->success(__('The contra voucher has been saved.'));
 
                 return $this->redirect(['action' => 'index']);
