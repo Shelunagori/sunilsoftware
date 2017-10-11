@@ -97,7 +97,7 @@ class CreditNotesController extends AppController
 			$voucher_no=1;
 		}
 		
-		//bank group
+		//frst row options
 		$bankParentGroups = $this->CreditNotes->CreditNoteRows->Ledgers->AccountingGroups->find()
 						->where(['AccountingGroups.company_id'=>$company_id, 'AccountingGroups.bank'=>'1']);
 						
@@ -130,7 +130,74 @@ class CreditNotesController extends AppController
 		}
 		
 		$partyParentGroups = $this->CreditNotes->CreditNoteRows->Ledgers->AccountingGroups->find()
-							->where(['AccountingGroups.company_id'=>$company_id, 'AccountingGroups.credit_note_ledger'=>1]);
+							->where(['AccountingGroups.company_id'=>$company_id, 'AccountingGroups.credit_note_first_row'=>1]);
+
+		$partyGroups=[];
+		
+		foreach($partyParentGroups as $partyParentGroup)
+		{
+			
+			$partyChildGroups = $this->CreditNotes->CreditNoteRows->Ledgers->AccountingGroups->find('children', ['for' => $partyParentGroup->id]);
+			$partyGroups[]=$partyParentGroup->id;
+			foreach($partyChildGroups as $partyChildGroup){
+				$partyGroups[]=$partyChildGroup->id;
+			}
+		}
+	
+		$partyLedgers = $this->CreditNotes->CreditNoteRows->Ledgers->find()
+		->where(['Ledgers.accounting_group_id IN' =>$partyGroups,'Ledgers.company_id'=>$company_id]);
+		
+		//$ledgers = $this->Payments->PaymentRows->Ledgers->find()->where(['company_id'=>$company_id]);
+		foreach($partyLedgers as $ledger){
+			if(in_array($ledger->accounting_group_id,$bankGroups)){
+				$ledgerFirstOptions[]=['text' =>$ledger->name, 'value' => $ledger->id ,'open_window' => 'bank','bank_and_cash' => 'yes'];
+			}
+			else if($ledger->bill_to_bill_accounting == 'yes'){
+				$ledgerFirstOptions[]=['text' =>$ledger->name, 'value' => $ledger->id,'open_window' => 'party','bank_and_cash' => 'no'];
+			}
+			else if(in_array($ledger->accounting_group_id,$cashGroups)){
+				$ledgerFirstOptions[]=['text' =>$ledger->name, 'value' => $ledger->id ,'open_window' => 'no','bank_and_cash' => 'yes'];
+			}
+			else{
+				$ledgerFirstOptions[]=['text' =>$ledger->name, 'value' => $ledger->id,'open_window' => 'no','bank_and_cash' => 'no' ];
+			}
+		}
+		
+		
+		//2nd bank group
+		$bankParentGroups = $this->CreditNotes->CreditNoteRows->Ledgers->AccountingGroups->find()
+						->where(['AccountingGroups.company_id'=>$company_id, 'AccountingGroups.bank'=>'1']);
+						
+		$bankGroups=[];
+		
+		foreach($bankParentGroups as $bankParentGroup)
+		{
+			$accountingGroups = $this->CreditNotes->CreditNoteRows->Ledgers->AccountingGroups
+			->find('children', ['for' => $bankParentGroup->id])->toArray();
+			$bankGroups[]=$bankParentGroup->id;
+			foreach($accountingGroups as $accountingGroup){
+				$bankGroups[]=$accountingGroup->id;
+			}
+		}
+		
+		//cash-in-hand group
+		$cashParentGroups = $this->CreditNotes->CreditNoteRows->Ledgers->AccountingGroups->find()
+						->where(['AccountingGroups.company_id'=>$company_id, 'AccountingGroups.cash'=>'1']);
+						
+		$cashGroups=[];
+		
+		foreach($cashParentGroups as $cashParentGroup)
+		{
+			$cashChildGroups = $this->CreditNotes->CreditNoteRows->Ledgers->AccountingGroups
+			->find('children', ['for' => $cashParentGroup->id])->toArray();
+			$cashGroups[]=$cashParentGroup->id;
+			foreach($cashChildGroups as $cashChildGroup){
+				$cashGroups[]=$cashChildGroup->id;
+			}
+		}
+		
+		$partyParentGroups = $this->CreditNotes->CreditNoteRows->Ledgers->AccountingGroups->find()
+							->where(['AccountingGroups.company_id'=>$company_id, 'AccountingGroups.credit_note_all_row'=>1]);
 
 		$partyGroups=[];
 		
@@ -162,9 +229,11 @@ class CreditNotesController extends AppController
 				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id,'open_window' => 'no','bank_and_cash' => 'no' ];
 			}
 		}
+		
+		
 		$referenceDetails=$this->CreditNotes->CreditNoteRows->ReferenceDetails->find('list');
         $companies = $this->CreditNotes->Companies->find('list', ['limit' => 200]);
-        $this->set(compact('creditNote', 'companies','voucher_no','ledgerOptions','company_id','referenceDetails'));
+        $this->set(compact('creditNote', 'companies','voucher_no','ledgerOptions','company_id','referenceDetails','ledgerFirstOptions'));
         $this->set('_serialize', ['creditNote']);
     }
 
@@ -212,7 +281,8 @@ class CreditNotesController extends AppController
 						$bal=abs($remider).' Cr';
 					}
 					if($referenceDetail->total_debit!=$referenceDetail->total_credit){
-						$option[$referenceDetail->ref_name]=$referenceDetail->ref_name;
+						$option[] =['text' =>$referenceDetail->ref_name.' ('.$bal.')', 'value' => $referenceDetail->ref_name];
+						 
 					}
 				}
 				$refDropDown[$credit_note_row->id] = $option;
@@ -271,7 +341,7 @@ class CreditNotesController extends AppController
         }
 		
 		
-		//bank group
+		//frst row options
 		$bankParentGroups = $this->CreditNotes->CreditNoteRows->Ledgers->AccountingGroups->find()
 						->where(['AccountingGroups.company_id'=>$company_id, 'AccountingGroups.bank'=>'1']);
 						
@@ -304,7 +374,74 @@ class CreditNotesController extends AppController
 		}
 		
 		$partyParentGroups = $this->CreditNotes->CreditNoteRows->Ledgers->AccountingGroups->find()
-							->where(['AccountingGroups.company_id'=>$company_id, 'AccountingGroups.credit_note_ledger'=>1]);
+							->where(['AccountingGroups.company_id'=>$company_id, 'AccountingGroups.credit_note_first_row'=>1]);
+
+		$partyGroups=[];
+		
+		foreach($partyParentGroups as $partyParentGroup)
+		{
+			
+			$partyChildGroups = $this->CreditNotes->CreditNoteRows->Ledgers->AccountingGroups->find('children', ['for' => $partyParentGroup->id]);
+			$partyGroups[]=$partyParentGroup->id;
+			foreach($partyChildGroups as $partyChildGroup){
+				$partyGroups[]=$partyChildGroup->id;
+			}
+		}
+	
+		$partyLedgers = $this->CreditNotes->CreditNoteRows->Ledgers->find()
+		->where(['Ledgers.accounting_group_id IN' =>$partyGroups,'Ledgers.company_id'=>$company_id]);
+		
+		//$ledgers = $this->Payments->PaymentRows->Ledgers->find()->where(['company_id'=>$company_id]);
+		foreach($partyLedgers as $ledger){
+			if(in_array($ledger->accounting_group_id,$bankGroups)){
+				$ledgerFirstOptions[]=['text' =>$ledger->name, 'value' => $ledger->id ,'open_window' => 'bank','bank_and_cash' => 'yes'];
+			}
+			else if($ledger->bill_to_bill_accounting == 'yes'){
+				$ledgerFirstOptions[]=['text' =>$ledger->name, 'value' => $ledger->id,'open_window' => 'party','bank_and_cash' => 'no'];
+			}
+			else if(in_array($ledger->accounting_group_id,$cashGroups)){
+				$ledgerFirstOptions[]=['text' =>$ledger->name, 'value' => $ledger->id ,'open_window' => 'no','bank_and_cash' => 'yes'];
+			}
+			else{
+				$ledgerFirstOptions[]=['text' =>$ledger->name, 'value' => $ledger->id,'open_window' => 'no','bank_and_cash' => 'no' ];
+			}
+		}
+		
+		
+		//2nd bank group
+		$bankParentGroups = $this->CreditNotes->CreditNoteRows->Ledgers->AccountingGroups->find()
+						->where(['AccountingGroups.company_id'=>$company_id, 'AccountingGroups.bank'=>'1']);
+						
+		$bankGroups=[];
+		
+		foreach($bankParentGroups as $bankParentGroup)
+		{
+			$accountingGroups = $this->CreditNotes->CreditNoteRows->Ledgers->AccountingGroups
+			->find('children', ['for' => $bankParentGroup->id])->toArray();
+			$bankGroups[]=$bankParentGroup->id;
+			foreach($accountingGroups as $accountingGroup){
+				$bankGroups[]=$accountingGroup->id;
+			}
+		}
+		
+		//cash-in-hand group
+		$cashParentGroups = $this->CreditNotes->CreditNoteRows->Ledgers->AccountingGroups->find()
+						->where(['AccountingGroups.company_id'=>$company_id, 'AccountingGroups.cash'=>'1']);
+						
+		$cashGroups=[];
+		
+		foreach($cashParentGroups as $cashParentGroup)
+		{
+			$cashChildGroups = $this->CreditNotes->CreditNoteRows->Ledgers->AccountingGroups
+			->find('children', ['for' => $cashParentGroup->id])->toArray();
+			$cashGroups[]=$cashParentGroup->id;
+			foreach($cashChildGroups as $cashChildGroup){
+				$cashGroups[]=$cashChildGroup->id;
+			}
+		}
+		
+		$partyParentGroups = $this->CreditNotes->CreditNoteRows->Ledgers->AccountingGroups->find()
+							->where(['AccountingGroups.company_id'=>$company_id, 'AccountingGroups.credit_note_all_row'=>1]);
 
 		$partyGroups=[];
 		
@@ -340,7 +477,7 @@ class CreditNotesController extends AppController
 		
 		$referenceDetails=$this->CreditNotes->CreditNoteRows->ReferenceDetails->find('list');
         $companies = $this->CreditNotes->Companies->find('list', ['limit' => 200]);
-        $this->set(compact('creditNote', 'companies','voucher_no','ledgerOptions','company_id','referenceDetails','refDropDown'));
+        $this->set(compact('creditNote', 'companies','voucher_no','ledgerOptions','company_id','referenceDetails','refDropDown', 'ledgerFirstOptions'));
         $this->set('_serialize', ['creditNote']);
     }
 	

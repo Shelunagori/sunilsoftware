@@ -91,7 +91,7 @@ $this->set('title', 'Credit Note Voucher');
 										if($i==0)
 										{ 
 										?>
-											<?php echo $this->Form->input('credit_note_rows.'.$i.'.ledger_id', ['empty'=>'--Select--','options'=>@$ledgerOptions,'label' => false,'class' => 'form-control input-sm ledger','required'=>'required','value'=>$creditNoteRows->ledger_id]);
+											<?php echo $this->Form->input('credit_note_rows.'.$i.'.ledger_id', ['empty'=>'--Select--','options'=>@$ledgerFirstOptions,'label' => false,'class' => 'form-control input-sm ledger','required'=>'required','value'=>$creditNoteRows->ledger_id]);
 										}
 										else if($i==1)
 										{

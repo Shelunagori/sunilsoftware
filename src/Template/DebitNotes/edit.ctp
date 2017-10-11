@@ -91,7 +91,7 @@ $this->set('title', 'Debit Note Voucher');
 										if($i==0)
 										{ 
 										?>
-											<?php echo $this->Form->input('debit_note_rows.'.$i.'.ledger_id', ['empty'=>'--Select--','options'=>@$ledgerOptions,'label' => false,'class' => 'form-control input-sm ledger','required'=>'required','value'=>$debitNoteRows->ledger_id]);
+											<?php echo $this->Form->input('debit_note_rows.'.$i.'.ledger_id', ['empty'=>'--Select--','options'=>@$ledgerFirstOptions,'label' => false,'class' => 'form-control input-sm ledger','required'=>'required','value'=>$debitNoteRows->ledger_id]);
 										}
 										else if($i==1)
 										{

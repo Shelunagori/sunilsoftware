@@ -209,7 +209,8 @@ class ReceiptsController extends AppController
 						$bal=abs($remider).' Cr';
 					}
 					if($referenceDetail->total_debit!=$referenceDetail->total_credit){
-						$option[$referenceDetail->ref_name]=$referenceDetail->ref_name;
+						$option[] =['text' =>$referenceDetail->ref_name.' ('.$bal.')', 'value' => $referenceDetail->ref_name];
+						 
 					}
 				}
 				$refDropDown[$receipt_row->id] = $option;
