@@ -805,7 +805,7 @@ $this->set('title', 'Receipt Voucher');
 				var Dr_Cr=$(this).find('td:nth-child(4) select option:selected').val();
 				//console.log(Dr_Cr);
 				var amt= parseFloat($(this).find('td:nth-child(3) input').val());
-				
+				if(!amt){amt=0; }
 					if(Dr_Cr=='Dr'){
 						total_debit=round(total_debit+amt, 2);
 						
