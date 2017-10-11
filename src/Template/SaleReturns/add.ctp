@@ -174,7 +174,7 @@ foreach($partyOptions as $partyOption)
 									<?php  } ?>
 								</td>
 
-								<td >
+								<td>
 									<?php echo $this->Form->input('q', ['label' => false,'class' => 'form-control input-sm returnQty calculation rightAligntextClass numberOnly','placeholder'=>'Return Quantity',  'tabindex'=>'-1','type'=>'text','max'=>$salesInvoiceRow->quantity-@$sales_return_qty[$salesInvoiceRow->item->id]]);
 											echo "<br>";
 									?>	<span align="center">Max Quantity:- <?php echo $salesInvoiceRow->quantity-@$sales_return_qty[$salesInvoiceRow->item->id];?></span>

@@ -37,7 +37,7 @@ if($supplier_state_id== $state_id){
 						<div class="col-md-3">
 								<label>Supplier</label>
 								<?php
-									 echo $this->Form->control('supplier_ledger_id',['class'=>'form-control input-sm supplier_ledger_id ','label'=>false,'type'=>'hidden','value'=>$supplier_state_id]);
+									 echo $this->Form->control('q',['class'=>'form-control input-sm supplier_ledger_id ','label'=>false,'type'=>'hidden','value'=>$supplier_state_id]);
 									 
 									echo $this->Form->control('supplier_ledger_id',['class'=>'form-control input-sm supplier_ledger select2me','label'=>false, 'options' => $partyOptions,'required'=>'required','disabled']);
 								?>
@@ -121,7 +121,8 @@ if($supplier_state_id== $state_id){
 										<?php
 											echo $this->Form->input('q', ['label' => false,'class' => 'form-control input-sm item_gst_figure_id numberOnly','placeholder'=>'','type'=>'hidden','value'=>$grn_row->item->FirstGstFigures->id]);
 											
-											echo $this->Form->input('q', ['style'=>'text-align:right','label' => false,'class' => 'form-control input-sm gst_figure_id numberOnly','placeholder'=>'','type'=>'text','value'=>$grn_row->item->FirstGstFigures->tax_percentage,'tabindex'=>'-1']);
+											echo $this->Form->input('q', ['label' => false,'class' => 'form-control input-sm gst_figure_id numberOnly','style'=>'text-align:right','placeholder'=>'','type'=>'text','value'=>$grn_row->item->FirstGstFigures->tax_percentage]);
+											//echo $this->Form->input('q', ['style'=>'text-align:right','label' => false,'class' => 'form-control input-sm gst_figure_id numberOnly','placeholder'=>'','type'=>'text','value'=>$grn_row->item->FirstGstFigures->tax_percentage,'tabindex'=>'-1']);
 										?>	
 									</td>
 									<td  width="10%" align="center">
@@ -269,8 +270,10 @@ if($supplier_state_id== $state_id){
 			$(this).find('.pnf').attr({name:'purchase_invoice_rows['+i+'][pnf_percentage]',id:'purchase_invoice_rows['+i+'][pnf_percentage]'});
 			$(this).find('.pnfAmount').attr({name:'purchase_invoice_rows['+i+'][pnf_amount]',id:'purchase_invoice_rows['+i+'][pnf_amount]'});
 			$(this).find('.taxableValue').attr({name:'purchase_invoice_rows['+i+'][taxable_value]',id:'purchase_invoice_rows['+i+'][taxable_value]'}).attr('readonly', true);
-			$(this).find('.gst_figure_id').attr({name:'purchase_invoice_rows['+i+'][gst_figure_id]',id:'purchase_invoice_rows['+i+'][gst_figure_id]'}).attr('readonly', true);
+			
 			$(this).find('.item_gst_figure_id').attr({name:'purchase_invoice_rows['+i+'][item_gst_figure_id]',id:'purchase_invoice_rows['+i+'][item_gst_figure_id]'}).attr('readonly', true);
+			
+			$(this).find('.gst_figure_id').attr({name:'purchase_invoice_rows['+i+'][gst_percentage]',id:'purchase_invoice_rows['+i+'][gst_percentage]'}).attr('readonly', true);
 			$(this).find('.gstValue').attr({name:'purchase_invoice_rows['+i+'][gst_value]',id:'purchase_invoice_rows['+i+'][gst_value]'}).attr('readonly', true);
 			$(this).find('.roundOff').attr({name:'purchase_invoice_rows['+i+'][round_off]',id:'purchase_invoice_rows['+i+'][round_off]'});
 			$(this).find('.netAmount').attr({name:'purchase_invoice_rows['+i+'][net_amount]',id:'purchase_invoice_rows['+i+'][net_amount]'});

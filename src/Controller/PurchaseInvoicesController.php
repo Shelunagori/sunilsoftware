@@ -434,23 +434,23 @@ class PurchaseInvoicesController extends AppController
     }
 	
 	public function PurchaseInvoiceReturn()
-	{ exit;
+	{ 
 		$this->viewBuilder()->layout('index_layout');
 		$company_id=$this->Auth->User('session_company_id');
 		$stateDetails=$this->Auth->User('session_company');
-		@$grn_no=$this->request->query('grn_no');
-		$PurchaseInvoice="No";
-		if(!empty(@$grn_no)){ 
-		$Grns = $this->Grns->find()
-						->where(['Grns.voucher_no' =>$grn_no,'Grns.company_id'=>$company_id])
+		@$purchase_invoice_no=$this->request->query('purchase_invoice_no');
+		$PurchaseInvoiceStatus="No";
+		if(!empty(@$purchase_invoice_no)){ 
+		$PurchaseInvoice = $this->PurchaseInvoices->find()
+						->where(['PurchaseInvoices.voucher_no' =>$purchase_invoice_no,'PurchaseInvoices.company_id'=>$company_id])
 						->contain(['Companies', 'SupplierLedgers'])
 						->first();
-		//pr($SalesInvoice->party_ledger->name); 
+		//pr($PurchaseInvoices);  exit;
 		
-		$PurchaseInvoice="Yes";
+		$PurchaseInvoiceStatus="Yes";
 		}	
 
-		$this->set(compact('Grns','PurchaseInvoice'));
+		$this->set(compact('PurchaseInvoiceStatus','PurchaseInvoice'));
 		
 	}
 }

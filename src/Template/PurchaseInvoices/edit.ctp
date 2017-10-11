@@ -38,7 +38,7 @@ if($supplier_state_id== $state_id){
 						<input type="hidden" name="is_interstate" id="is_interstate" value="<?php echo $is_interstate;?>">
 						<div class="col-md-3">
 								<label>Supplier</label>
-								<?php echo $this->Form->control('supplier_ledger_id',['class'=>'form-control input-sm supplier_ledger_id ','label'=>false,'type'=>'hidden','value'=>$supplier_state_id]);
+								<?php echo $this->Form->control('q',['class'=>'form-control input-sm supplier_ledger_id ','label'=>false,'type'=>'hidden','value'=>$supplier_state_id]);
 									 
 									echo $this->Form->control('supplier_ledger_id',['class'=>'form-control input-sm supplier_ledger select2me','label'=>false, 'options' => $partyOptions,'required'=>'required','disabled']);
 								?>
@@ -278,8 +278,9 @@ if($supplier_state_id== $state_id){
 			$(this).find('.pnf').attr({name:'purchase_invoice_rows['+i+'][pnf_percentage]',id:'purchase_invoice_rows['+i+'][pnf_percentage]'});
 			$(this).find('.pnfAmount').attr({name:'purchase_invoice_rows['+i+'][pnf_amount]',id:'purchase_invoice_rows['+i+'][pnf_amount]'});
 			$(this).find('.taxableValue').attr({name:'purchase_invoice_rows['+i+'][taxable_value]',id:'purchase_invoice_rows['+i+'][taxable_value]'}).attr('readonly', true);
-			$(this).find('.gst_figure_id').attr({name:'purchase_invoice_rows['+i+'][gst_figure_id]',id:'purchase_invoice_rows['+i+'][gst_figure_id]'}).attr('readonly', true);
+			
 			$(this).find('.item_gst_figure_id').attr({name:'purchase_invoice_rows['+i+'][item_gst_figure_id]',id:'purchase_invoice_rows['+i+'][item_gst_figure_id]'}).attr('readonly', true);
+			$(this).find('.gst_figure_id').attr({name:'purchase_invoice_rows['+i+'][gst_percentage]',id:'purchase_invoice_rows['+i+'][gst_percentage]'}).attr('readonly', true);
 			$(this).find('.gstValue').attr({name:'purchase_invoice_rows['+i+'][gst_value]',id:'purchase_invoice_rows['+i+'][gst_value]'}).attr('readonly', true);
 			$(this).find('.roundOff').attr({name:'purchase_invoice_rows['+i+'][round_off]',id:'purchase_invoice_rows['+i+'][round_off]'});
 			$(this).find('.netAmount').attr({name:'purchase_invoice_rows['+i+'][net_amount]',id:'purchase_invoice_rows['+i+'][net_amount]'}).attr('readonly', true);
@@ -342,7 +343,7 @@ if($supplier_state_id== $state_id){
 					$(this).closest('tr').find('.pnfAmount').val(pnfAmt.toFixed(2));
 					$(this).closest('tr').find('.pnf').val(pnfAmt.toFixed(2));
 				}else{
-					var pnfAmt=(amountAfterDiscount*pnf)/100;
+					var pnfAmt=(amount*pnf)/100;
 					$(this).closest('tr').find('.pnfAmount').val(pnfAmt.toFixed(2));
 					total_pnf=total_pnf+pnfAmt;
 				}
@@ -450,7 +451,7 @@ if($supplier_state_id== $state_id){
 					$(this).closest('tr').find('.pnfAmount').val(pnfAmt.toFixed(2));
 					total_pnf=total_pnf+pnfAmt;
 				}else{
-					var pnfPer=(100*pnfAmt)/amountAfterDiscount;
+					var pnfPer=(100*pnfAmt)/amount;
 					//var pnfAmt=(amountAfterDiscount*pnf)/100;
 					$(this).closest('tr').find('.pnf').val(pnfPer.toFixed(2));
 					total_pnf=total_pnf+pnfAmt;
