@@ -57,7 +57,7 @@ $this->set('title', 'Credit Note Voucher');
 				echo $this->Form->input('cr_dr', ['options'=>['Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm cr_dr', 'readonly'=>'readonly','required'=>'required','value'=>'Cr']); ?>
 			</td>
 			<td width="65%" valign="top">
-				<?php echo $this->Form->input('ledger_id', ['empty'=>'--Select--','options'=>@$ledgerFirstOptions,'label' => false,'class' => 'form-control input-sm ledger','required'=>'required']); ?>
+				<?php echo $this->Form->input('ledger_id', ['empty'=>'--Select--','options'=>@$ledgerFirstOptions,'label' => false,'class' => 'form-control input-sm ledger select2me','required'=>'required']); ?>
 				<div class="window" style="margin:auto;"></div>
 			</td>
 			<td width="10%" valign="top">
@@ -76,7 +76,7 @@ $this->set('title', 'Credit Note Voucher');
 				echo $this->Form->input('cr_dr', ['options'=>['Dr'=>'Dr'],'label' => false,'class' => 'form-control input-sm cr_dr', 'readonly'=>'readonly','required'=>'required','value'=>'Dr']); ?>
 			</td>
 			<td width="65%" valign="top">
-				<?php echo $this->Form->input('ledger_id', ['empty'=>'--Select--','options'=>@$ledgerOptions,'label' => false,'class' => 'form-control input-sm ledger','required'=>'required']); ?>
+				<?php echo $this->Form->input('ledger_id', ['empty'=>'--Select--','options'=>@$ledgerOptions,'label' => false,'class' => 'form-control input-sm ledger select2me','required'=>'required']); ?>
 				<div class="window" style="margin:auto;"></div>
 			</td>
 			<td width="10%" valign="top">
@@ -96,7 +96,7 @@ $this->set('title', 'Credit Note Voucher');
 									<tr style="border-top:double;">
 										<td colspan="2" valign="top" >	
 											<button type="button" class="AddMainRow btn btn-default input-sm"><i class="fa fa-plus"></i> Add row</button>
-											<input type="text" id="totalBankCash">
+											<input type="hidden" id="totalBankCash">
 										</td>
 										<td valign="top"><input type="text" class="form-control input-sm rightAligntextClass noBorder " name="totalMainDr" id="totalMainDr" readonly></td>
 										<td valign="top"><input type="text" class="form-control input-sm rightAligntextClass noBorder" name="totalMainCr" id="totalMainCr" readonly></td>

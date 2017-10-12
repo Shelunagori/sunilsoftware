@@ -594,33 +594,26 @@ $this->set('title', 'Credit Note Voucher');
 			});
 			}
 			
+			
 			$(document).ready(ledgerShow);
 			function ledgerShow()
 			{
 			    $('#MainTable tbody#MainTbody tr.MainTr').each(function(){
 				var openWindow=$(this).find('td:nth-child(2) select.ledger option:selected').attr('open_window');
+				
 				if(openWindow=='party'){
-				    var bankValue=1;
 					var SelectedTr=$(this).closest('tr.MainTr');
-					SelectedTr.find('.BankValueDefine').val(bankValue);
-                    var windowContainer=$(this).closest('td').find('div.window');
-					windowContainer.html('');
+                    var windowContainer=SelectedTr.find('td:nth-child(2) select.ledger option:selected').closest('td').find('div.window');
+					//windowContainer.html('');
+					var isTblExist=windowContainer.find('table.refTbl').length;
+					if(isTblExist==0)
+					{
 					windowContainer.html('<table width=90% class=refTbl><tbody></tbody><tfoot><tr style=border-top:double#a5a1a1><td colspan=2><a role=button class=addRefRow>Add Row</a></td><td>$total_input</td><td>$total_type</td></tr></tfoot></table>');
-					AddRefRow(SelectedTr);
-				}
-				else if(openWindow=='bank'){
-				    var bankValue=2;
-					var SelectedTr=$(this).closest('tr.MainTr');
-					SelectedTr.find('.BankValueDefine').val(bankValue);
-					var windowContainer=$(this).closest('td').find('div.window');
-					windowContainer.html('');
-					windowContainer.html('<table width=90% ><tbody></tbody><tfoot><td colspan=4></td></tfoot></table>');
-					AddBankRow(SelectedTr);
+					  AddRefRow(SelectedTr);
+					}
 				}
 				else if(openWindow=='no'){
-				    var bankValue=0;
 					var SelectedTr=$(this).closest('tr.MainTr');
-					SelectedTr.find('.BankValueDefine').val(bankValue);
 					var windowContainer=SelectedTr.find('td:nth-child(2) select.ledger option:selected').closest('td').find('div.window');
 					windowContainer.html('');
 				}
