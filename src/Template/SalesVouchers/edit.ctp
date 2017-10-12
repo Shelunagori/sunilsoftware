@@ -115,7 +115,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 													{
 												?>
 													<tr>
-														<td width="20%">
+														<td width="20%" style="vertical-align: top !important;">
 														<input type="hidden" class="ledgerIdContainer" value="<?php echo $reference_detail->ledger_id;?>"/>
 															<input type="hidden" class="companyIdContainer" value="<?php echo $reference_detail->company_id;?>"/>
 															<?php 
@@ -125,7 +125,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 															 ?>
 														</td>
 														
-														<td width="">
+														<td width="" style="vertical-align: top !important;">
 														<?php if($reference_detail->type=='New Ref' || $reference_detail->type=='Advance'){ 
 														?>
 															<?php echo $this->Form->input('sales_voucher_rows.'.$i.'.reference_details.'.$j.'.ref_name', ['type'=>'text','label' => false,'class' => 'form-control input-sm ref_name','placeholder'=>'Reference Name','required'=>'required']); ?>
@@ -141,7 +141,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 															
 														</td>
 														
-														<td width="20%" style="padding-right:0px;">
+														<td width="20%" style="padding-right:0px;vertical-align: top !important;">
 															<?php
 															$value="";
 															$cr_dr="";
@@ -302,20 +302,20 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 <table id="sampleForRef" style="display:none;" width="100%">
 	<tbody>
 		<tr>
-			<td width="20%">
+			<td width="20%" style="vertical-align: top !important;">
 				<input type="hidden" class="ledgerIdContainer" />
 				<input type="hidden" class="companyIdContainer" />
 				<?php 
 				echo $this->Form->input('type', ['options'=>$option_ref,'label' => false,'class' => 'form-control input-sm refType','required'=>'required']); ?>
 			</td>
-			<td width="">
+			<td width="" style="vertical-align: top !important;">
 				<?php echo $this->Form->input('ref_name', ['type'=>'text','label' => false,'class' => 'form-control input-sm ref_name','placeholder'=>'Reference Name','required'=>'required']); ?>
 			</td>
 			
-			<td width="20%" style="padding-left:0px; vertical-align: top !important;">
+			<td width="20%" style="vertical-align: top !important;">
 				<?php echo $this->Form->input('amount', ['label' => false,'class' => 'form-control input-sm calculation rightAligntextClass','placeholder'=>'Amount','required'=>'required']); ?>
 			</td>
-			<td width="10%" style="padding-left:0px;">
+			<td width="10%" style="padding-left:0px;vertical-align: top !important;">
 				<?php 
 				echo $this->Form->input('type_cr_dr', ['options'=>['Dr'=>'Dr','Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm  calculation refDrCr reload','value'=>'Dr','style'=>'vertical-align: top !important;']); ?>
 			</td>
@@ -687,6 +687,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			
 			
 			renameMainRows();
+			renameMainRows();
 			function renameMainRows()
 			{
 				var i=0;
@@ -783,13 +784,15 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 					i++;
 				});
 				var total_type=SelectedTr.find('td:nth-child(2) div.window table.refTbl tfoot tr td:nth-child(3) input.total_type').val();
+				console.log(total_type);
 				if(total_type=='Dr'){
 					eqlClass=eqlClassDr;
 				}else{
 					eqlClass=eqlClassCr;
 				}
 				
-				
+				console.log('#'+eqlClass);
+				console.log('sales_voucher_rows-'+row_no+'-total');
 				SelectedTr.find('td:nth-child(2) div.window table.refTbl tfoot tr td:nth-child(2) input.total')
 						.attr({name:'sales_voucher_rows['+row_no+'][total]',id:'sales_voucher_rows-'+row_no+'-total'})
 						.rules('add', {
@@ -799,7 +802,6 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 							}
 						});
 				}
-				
 			}
 			
 			$('.calculation').die().live('keyup',function()
@@ -855,7 +857,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 					
 				});
 				
-					
+				renameRefRows(SelectedTr);	
 				i++;
 			}
 			ComponentsPickers.init();
