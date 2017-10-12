@@ -229,21 +229,24 @@ class ReceiptsController extends AppController
 				$orignalReceipt_ids[]=$originalReceipt_rows->id;
 			}
 			$this->Receipts->ReceiptRows->ReferenceDetails->deleteAll(['ReferenceDetails.receipt_row_id IN'=>$orignalReceipt_ids]);
-			$query_update = $this->Receipts->ReceiptRows->query();
+			
+			//GET ORIGINAL DATA AND DELETE REFERENCE DATA//
+			
+			/* $query_update = $this->Receipts->ReceiptRows->query();
 					$query_update->update()
 					->set(['mode_of_payment' => '', 'cheque_no' => '', 'cheque_date' => ''])
 					->where(['receipt_id' => $receipt->id])
-					->execute();
-			//GET ORIGINAL DATA AND DELETE REFERENCE DATA//
-			
+					->execute(); */
+					
 		
 		
 		 $receipt = $this->Receipts->patchEntity($receipt, $this->request->getData(),['associated' => ['ReceiptRows','ReceiptRows.ReferenceDetails']]);
 		 $tdate=$this->request->data('transaction_date');
 		 $receipt->transaction_date=date('Y-m-d',strtotime($tdate));
 		 
-		pr($receipt);
-		exit;
+		 
+		//pr($receipt);
+		//exit;
 		
 		
             if ($this->Receipts->save($receipt)) {

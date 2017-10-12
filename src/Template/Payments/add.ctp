@@ -55,7 +55,7 @@ $this->set('title', 'Payment Voucher');
 				echo $this->Form->input('cr_dr', ['options'=>['Dr'=>'Dr'],'label' => false,'class' => 'form-control input-sm cr_dr', 'readonly'=>'readonly', 'required'=>'required','value'=>'Dr']); ?>
 			</td>
 			<td width="65%" valign="top">
-				<?php echo $this->Form->input('ledger_id', ['empty'=>'--Select--','options'=>@$ledgerOptions,'label' => false,'class' => 'form-control input-sm ledger','required'=>'required']); ?>
+				<?php echo $this->Form->input('ledger_id', ['empty'=>'--Select--','options'=>@$ledgerOptions,'label' => false,'class' => 'form-control input-sm ledger select2me','required'=>'required']); ?>
 				<div class="window" style="margin:auto;"></div>
 			</td>
 			<td width="10%" valign="top">
@@ -338,15 +338,22 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			$('.paymentType').die().live('change',function(){
 				var type=$(this).val();	
 				var currentRefRow=$(this).closest('tr');
+				alert();
 				if(type=='NEFT/RTGS'){
+				    currentRefRow.find('td:nth-child(2) input').val('');
+					currentRefRow.find('td:nth-child(3) input').val('');
 					currentRefRow.find('td:nth-child(2)').hide();
 					currentRefRow.find('td:nth-child(3)').hide();
 				}
 				else{
 					currentRefRow.find('td:nth-child(2)').show();
 					currentRefRow.find('td:nth-child(3)').show();
+					currentRefRow.find('td:nth-child(2)').attr('required','required');
+					currentRefRow.find('td:nth-child(3)').attr('required','required');
 				}
 			});
+			
+			
 			
 			$('.refDrCr').die().live('change',function(){
 				var SelectedTr=$(this).closest('tr.MainTr');
@@ -542,6 +549,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				}else{
 					eqlClass=eqlClassCr;
 				}
+				
 				SelectedTr.find('td:nth-child(2) div.window table.refTbl tfoot tr td:nth-child(2) input.total')
 						.attr({name:'payment_rows['+row_no+'][total]',id:'payment_rows-'+row_no+'-total'})
 						.rules('add', {
@@ -558,7 +566,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				 renameMainRows();
 			});
 			
-			$('.calculation').die().live('keyup',function()
+			$('.calculation').die().live('keyup, change',function()
 			{ 
 				var SelectedTr=$(this).closest('tr.MainTr');
 				var total_debit=0;var total_credit=0; var remaining=0;
@@ -589,7 +597,6 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 						$(this).closest('table').find(' tfoot td:nth-child(3) input.total_type').val('');	
 					}
 				});
-				var SelectedTr=$(this).closest('tr.MainTr');
 				renameRefRows(SelectedTr);
 			});
 			

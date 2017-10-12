@@ -584,39 +584,31 @@ $this->set('title', 'Payment Voucher');
 			});
 			}
 			
+			
 			$(document).ready(ledgerShow);
 			function ledgerShow()
 			{
 			    $('#MainTable tbody#MainTbody tr.MainTr').each(function(){
 				var openWindow=$(this).find('td:nth-child(2) select.ledger option:selected').attr('open_window');
+				
 				if(openWindow=='party'){
-				    var bankValue=1;
 					var SelectedTr=$(this).closest('tr.MainTr');
-					SelectedTr.find('.BankValueDefine').val(bankValue);
-                    var windowContainer=$(this).closest('td').find('div.window');
-					windowContainer.html('');
+                    var windowContainer=SelectedTr.find('td:nth-child(2) select.ledger option:selected').closest('td').find('div.window');
+					//windowContainer.html('');
+					var isTblExist=windowContainer.find('table.refTbl').length;
+					if(isTblExist==0)
+					{
 					windowContainer.html('<table width=90% class=refTbl><tbody></tbody><tfoot><tr style=border-top:double#a5a1a1><td colspan=2><a role=button class=addRefRow>Add Row</a></td><td>$total_input</td><td>$total_type</td></tr></tfoot></table>');
-					AddRefRow(SelectedTr);
-				}
-				else if(openWindow=='bank'){
-				    var bankValue=2;
-					var SelectedTr=$(this).closest('tr.MainTr');
-					SelectedTr.find('.BankValueDefine').val(bankValue);
-					var windowContainer=$(this).closest('td').find('div.window');
-					windowContainer.html('');
-					windowContainer.html('<table width=90% ><tbody></tbody><tfoot><td colspan=4></td></tfoot></table>');
-					AddBankRow(SelectedTr);
+					  AddRefRow(SelectedTr);
+					}
 				}
 				else if(openWindow=='no'){
-				    var bankValue=0;
 					var SelectedTr=$(this).closest('tr.MainTr');
-					SelectedTr.find('.BankValueDefine').val(bankValue);
 					var windowContainer=SelectedTr.find('td:nth-child(2) select.ledger option:selected').closest('td').find('div.window');
 					windowContainer.html('');
 				}
 			  });
 			}
-			
 			$('.ledger').die().live('change',function(){
 				var openWindow=$(this).find('option:selected').attr('open_window');
 				
@@ -744,10 +736,10 @@ $this->set('title', 'Payment Voucher');
 				var ledger_id=SelectedTr.find('td:nth-child(2) select.ledger').val();
 				var cr_dr=SelectedTr.find('td:nth-child(1) select.cr_dr option:selected').val();
 				if(cr_dr=='Dr'){
-					var eqlClass=SelectedTr.find('td:nth-child(3) input.debitBox').attr('id');
+					var eqlClassDr=SelectedTr.find('td:nth-child(3) input.debitBox').attr('id');
 					var mainAmt=SelectedTr.find('td:nth-child(3) input.debitBox').val();
 				}else{
-					var eqlClass=SelectedTr.find('td:nth-child(4) input.creditBox').attr('id');
+					var eqlClassCr=SelectedTr.find('td:nth-child(4) input.creditBox').attr('id');
 					var mainAmt=SelectedTr.find('td:nth-child(4) input.creditBox').val();
 				}
 				
@@ -774,6 +766,12 @@ $this->set('title', 'Payment Voucher');
 					}
 					i++;
 				});
+				var total_type=SelectedTr.find('td:nth-child(2) div.window table.refTbl tfoot tr td:nth-child(3) input.total_type').val();
+					if(total_type=='Dr'){
+					 eqlClass=eqlClassDr;
+					}else{
+					 eqlClass=eqlClassCr;
+					}
 				SelectedTr.find('td:nth-child(2) div.window table.refTbl tfoot tr td:nth-child(2) input.total')
 						.attr({name:'payment_rows['+row_no+'][total]',id:'payment_rows-'+row_no+'-total'})
 						.rules('add', {
@@ -791,6 +789,12 @@ $this->set('title', 'Payment Voucher');
 				 renameMainRows();
 			});
 			$('.calculation').die().live('keyup',function()
+			{ 
+				var SelectedTr=$(this).closest('tr.MainTr');
+				calculation(SelectedTr);
+				
+			});
+			$('.calculation').die().live('change',function()
 			{ 
 				var SelectedTr=$(this).closest('tr.MainTr');
 				calculation(SelectedTr);
@@ -832,7 +836,7 @@ $this->set('title', 'Payment Voucher');
 					}
 					
 				});
-				
+				renameRefRows(SelectedTr);
 					
 				i++;
 			}

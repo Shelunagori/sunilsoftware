@@ -57,7 +57,7 @@ $this->set('title', 'Receipt Voucher');
 				echo $this->Form->input('cr_dr', ['options'=>['Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm cr_dr', 'readonly'=>'readonly','required'=>'required','value'=>'Cr']); ?>
 			</td>
 			<td width="65%" valign="top">
-				<?php echo $this->Form->input('ledger_id', ['empty'=>'--Select--','options'=>@$ledgerOptions,'label' => false,'class' => 'form-control input-sm ledger','required'=>'required']); ?>
+				<?php echo $this->Form->input('ledger_id', ['empty'=>'--Select--','options'=>@$ledgerOptions,'label' => false,'class' => 'form-control input-sm ledger select2me','required'=>'required']); ?>
 				<div class="window" style="margin:auto;"></div>
 			</td>
 			<td width="10%" valign="top">
@@ -76,7 +76,7 @@ $this->set('title', 'Receipt Voucher');
 									<tr style="border-top:double;">
 										<td colspan="2" valign="top" >	
 											<button type="button" class="AddMainRow btn btn-default input-sm"><i class="fa fa-plus"></i> Add row</button>
-											<input type="text" id="totalBankCash">
+											<input type="hidden" id="totalBankCash">
 										</td>
 										<td valign="top"><input type="text" class="form-control input-sm rightAligntextClass noBorder " name="totalMainDr" id="totalMainDr" readonly></td>
 										<td valign="top"><input type="text" class="form-control input-sm rightAligntextClass noBorder" name="totalMainCr" id="totalMainCr" readonly></td>
@@ -511,10 +511,10 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				var ledger_id=SelectedTr.find('td:nth-child(2) select.ledger').val();
 				var cr_dr=SelectedTr.find('td:nth-child(1) select.cr_dr option:selected').val();
 				if(cr_dr=='Dr'){
-					var eqlClass=SelectedTr.find('td:nth-child(3) input.debitBox').attr('id');
+					var eqlClassDr=SelectedTr.find('td:nth-child(3) input.debitBox').attr('id');
 					var mainAmt=SelectedTr.find('td:nth-child(3) input.debitBox').val();
 				}else{
-					var eqlClass=SelectedTr.find('td:nth-child(4) input.creditBox').attr('id');
+					var eqlClassCr=SelectedTr.find('td:nth-child(4) input.creditBox').attr('id');
 					var mainAmt=SelectedTr.find('td:nth-child(4) input.creditBox').val();
 				}
 				
@@ -541,8 +541,16 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 					}
 					i++;
 				});
+				var total_type=SelectedTr.find('td:nth-child(2) div.window table.refTbl tfoot tr td:nth-child(3) input.total_type').val();
+					if(total_type=='Dr'){
+					 eqlClass=eqlClassDr;
+					}else{
+					 eqlClass=eqlClassCr;
+					}
+
+				
 				SelectedTr.find('td:nth-child(2) div.window table.refTbl tfoot tr td:nth-child(2) input.total')
-						.attr({name:'receipt_rows['+row_no+'][total]',id:'receipt_rows-'+row_no+'-total'})
+				.attr({name:'receipt_rows['+row_no+'][total]',id:'receipt_rows-'+row_no+'-total'})
 						.rules('add', {
 							equalTo: '#'+eqlClass,
 							messages: {
@@ -557,7 +565,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				 renameMainRows();
 			});
 			
-			$('.calculation').die().live('keyup',function()
+			$('.calculation').die().live('keyup, change',function()
 			{ 
 				var SelectedTr=$(this).closest('tr.MainTr');
 				var total_debit=0;var total_credit=0; var remaining=0;
@@ -588,7 +596,6 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 						$(this).closest('table').find(' tfoot td:nth-child(3) input.total_type').val('');	
 					}
 				});
-				var SelectedTr=$(this).closest('tr.MainTr');
 				renameRefRows(SelectedTr);
 			});
 			
