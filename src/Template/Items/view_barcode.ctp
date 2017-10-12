@@ -31,11 +31,12 @@
 					</tr>
 					<tr>
 						<td>HSN Code : <?= $arData->hsn_code.' ' ?></td>
-						<td>Shade : <?= @$arData->shade->name.' ' ?></td>
+						<td>Rs : <?=$arData->sales_rate ?></td>
+						
 					</tr>
 					<tr>
-						<td>Size : <?= @$arData->size->name.' ' ?></td>
-						<td>Rs : <?=$arData->sales_rate ?></td>
+						<?php if(!empty($arData->size->name)){?><td>Size : <?= @$arData->size->name.' ' ?></td><?php }?>
+						<?php if(!empty($arData->shade->name)){?><td>Shade : <?= @$arData->shade->name.' ' ?></td><?php }?>
 					</tr>
 				</table>
 				<div align="center"><?= $this->Html->Image('barcode/'.$arData->id.'.png',['width'=>'130px;','height'=>'25px','style'=>'width:130px;height:25px;']) ?></div>

@@ -52,6 +52,10 @@ $this->set('title', 'Create Supplier');
 									<?php echo $this->Form->control('state_id',['class'=>'form-control input-sm select2me','label'=>false,'empty'=>'-State-', 'options' => $states,'required'=>'required']); ?>
 								</div>
 								<div class="form-group">
+									<label>City <span class="required">*</span></label>
+									<?php echo $this->Form->control('city_id',['class'=>'form-control input-sm select2me','label'=>false,'empty'=>'-City-', 'options' => $cities,'required'=>'required']); ?>
+								</div>
+								<div class="form-group">
 									<label>TAN</label>
 									<?php echo $this->Form->control('tan',['class'=>'form-control input-sm','label'=>false,'placeholder'=>'TAN']); ?>
 								</div>

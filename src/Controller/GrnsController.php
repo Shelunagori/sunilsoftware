@@ -57,7 +57,7 @@ class GrnsController extends AppController
 		$this->viewBuilder()->layout('');
 		$company_id=$this->Auth->User('session_company_id');
         $grn = $this->Grns->get($id, [
-            'contain' => ['Companies', 'GrnRows'=>['Items']]
+            'contain' => ['Companies', 'GrnRows'=>['Items'=>['Shades','Sizes']]]
         ]);
 		
         $this->set('grn', $grn);
