@@ -338,15 +338,22 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			$('.paymentType').die().live('change',function(){
 				var type=$(this).val();	
 				var currentRefRow=$(this).closest('tr');
+				alert();
 				if(type=='NEFT/RTGS'){
+				    currentRefRow.find('td:nth-child(2) input').val('');
+					currentRefRow.find('td:nth-child(3) input').val('');
 					currentRefRow.find('td:nth-child(2)').hide();
 					currentRefRow.find('td:nth-child(3)').hide();
 				}
 				else{
 					currentRefRow.find('td:nth-child(2)').show();
 					currentRefRow.find('td:nth-child(3)').show();
+					currentRefRow.find('td:nth-child(2)').attr('required','required');
+					currentRefRow.find('td:nth-child(3)').attr('required','required');
 				}
 			});
+			
+			
 			
 			$('.refDrCr').die().live('change',function(){
 				var SelectedTr=$(this).closest('tr.MainTr');
