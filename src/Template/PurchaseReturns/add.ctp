@@ -18,7 +18,7 @@ if($supplier_state_id== $state_id){
 		<div class="portlet light ">
 			
 			<div class="portlet-body">
-				<?= $this->Form->create($purchaseReturn,['onsubmit'=>'return checkValidation()']) ?>
+				<?= $this->Form->create($purchaseReturn,['id'=>'form_sample_2']) ?>
 					<div class="row">
 						<div class="col-md-6 caption-subject font-green-sharp bold " align="center" style="font-size:16px"><b>PURCHASE INVOICE</b></div>
 						<div class="col-md-6 caption-subject font-green-sharp bold " align="center" style="font-size:16px"><b>PURCHASE RETURN</b></div>
@@ -100,6 +100,9 @@ if($supplier_state_id== $state_id){
 							<tr class="main_tr" class="tab">
 								<td width="15%" align="center">
 										<?php echo $this->Form->input('q', ['type'=>'hidden','label' => false,'class' => 'form-control input-sm  attrGet rightAligntextClass','value'=>$purchase_invoice_row->item_id]); 
+										
+										 echo $this->Form->input('q', ['type'=>'hidden','label' => false,'class' => 'form-control input-sm  purchaseInvoiceRowId rightAligntextClass','value'=>$purchase_invoice_row->id]); 
+										
 										echo $purchase_invoice_row->item->name;
 										?>
 								</td>
@@ -149,33 +152,36 @@ if($supplier_state_id== $state_id){
 										?>
 								</td>	
 								<td width="5%" align="center">
-										<?php echo $this->Form->input('q', ['type'=>'hidden','label' => false,'class' => 'form-control input-sm  gstValue rightAligntextClass','value'=>$purchase_invoice_row->discount_percentage]); 
+										<?php echo $this->Form->input('q', ['type'=>'hidden','label' => false,'class' => 'form-control input-sm  gstValue rightAligntextClass','value'=>$purchase_invoice_row->gst_value]); 
 										echo $purchase_invoice_row->gst_value;
 										?>
 								</td>
 								<td width="5%" align="center">
-										<?php echo $this->Form->input('q', ['type'=>'hidden','label' => false,'class' => 'form-control input-sm  roundOff rightAligntextClass','value'=>$purchase_invoice_row->discount_percentage]); 
+										<?php echo $this->Form->input('q', ['type'=>'hidden','label' => false,'class' => 'form-control input-sm  roundOff rightAligntextClass','value'=>$purchase_invoice_row->round_off]); 
+
+										echo $this->Form->input('q', ['type'=>'hidden','label' => false,'class' => 'form-control input-sm  actroundOff rightAligntextClass','value'=>$purchase_invoice_row->round_off]); 
 										echo $purchase_invoice_row->round_off;
 										?>
 								</td>	
 								<td width="5%" align="center" style="border-left-width:2px; border-right-color:#4db3a2;">
-										<?php echo $this->Form->input('q', ['type'=>'hidden','label' => false,'class' => 'form-control input-sm  netAmount rightAligntextClass','value'=>$purchase_invoice_row->discount_percentage]); 
+										<?php echo $this->Form->input('q', ['type'=>'hidden','label' => false,'class' => 'form-control input-sm  netAmount rightAligntextClass','value'=>$purchase_invoice_row->net_amount]); 
 										echo $purchase_invoice_row->net_amount;
 										?>
 								</td>
 								<td valign="top" width="5%" align="center" style="border-left-width:2px; border-left-color:#4db3a2; margin-top:-10px">
-								<?php ?>
+								<?php if($purchase_invoice_row->quantity-@$purchase_return_qty[@$purchase_invoice_row->id] > 0) {?>
 									<label style="margin-top:-10px"><?php echo $this->Form->input('check', ['label' => false,'type'=>'checkbox','class'=>'rename_check','value' => @$purchase_invoice_row->item->id]); ?></label>
-									<?php   ?>
+								<?php }  ?>
 								</td>
 
 								<td width="8%" align="center">
-									<?php echo $this->Form->input('q', ['label' => false,'class' => 'form-control input-sm returnQty calculation rightAligntextClass numberOnly','placeholder'=>'Return Quantity',  'tabindex'=>'-1','type'=>'text','max'=>$purchase_invoice_row->quantity]);
+									<?php echo $this->Form->input('q', ['label' => false,'class' => 'form-control input-sm returnQty calculation rightAligntextClass numberOnly','placeholder'=>'Return Quantity',  'tabindex'=>'-1','type'=>'text','maxqt'=>$purchase_invoice_row->quantity-@$purchase_return_qty[@$purchase_invoice_row->id]]);
 											echo "<br>";
-									?>	<span align="center">Max Quantity:- <?php echo $purchase_invoice_row->quantity;?></span>
+											//echo @$purchase_return_qty[@$purchase_invoice_row->id];
+									?>	<span align="center">Max Quantity:- <?php echo $purchase_invoice_row->quantity-@$purchase_return_qty[@$purchase_invoice_row->id];?></span>
 								</td>
 								<td width="8%" align="center">
-								<?php echo $this->Form->input('q', ['label' => false,'class' => 'form-control input-sm discountAmount calculation rightAligntextClass','required'=>'required', 'readonly'=>'readonly','placeholder'=>'Taxable Value', 'value'=>0, 'tabindex'=>'-1']); ?>
+								<?php echo $this->Form->input('q', ['label' => false,'class' => 'form-control input-sm  calculation returnAmt','required'=>'required', 'readonly'=>'readonly','placeholder'=>'Taxable Value', 'value'=>0, 'tabindex'=>'-1']); ?>
 								</td>
 								
 							
@@ -212,6 +218,7 @@ if($supplier_state_id== $state_id){
 	<?php echo $this->Html->css('/assets/global/plugins/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css', ['block' => 'PAGE_LEVEL_CSS']); ?>
 	<!-- END COMPONENTS PICKERS -->
 
+	<?php echo $this->Html->script('/assets/global/plugins/jquery-validation/js/jquery.validate.min.js', ['block' => 'PAGE_LEVEL_PLUGINS_JS']); ?>
 	<!-- BEGIN COMPONENTS DROPDOWNS -->
 	<?php echo $this->Html->css('/assets/global/plugins/bootstrap-select/bootstrap-select.min.css', ['block' => 'PAGE_LEVEL_CSS']); ?>
 	<?php echo $this->Html->css('/assets/global/plugins/select2/select2.css', ['block' => 'PAGE_LEVEL_CSS']); ?>
@@ -254,18 +261,72 @@ if($supplier_state_id== $state_id){
 	$js="
 	$(document).ready(function() { 
 	
+			var form1 = $('#form_sample_2');
+            var error1 = $('.alert-danger', form1);
+            var success1 = $('.alert-success', form1);
+
+			form1.validate({
+                errorElement: 'span',
+                errorClass: 'help-block help-block-error',
+                focusInvalid: false,
+                ignore: '', 
+				rules: {
+					
+				},
+				messages: {
+					
+				},
+
+				invalidHandler: function (event, validator) { //display error alert on form submit              
+                    success1.hide();
+                    error1.show();
+                    Metronic.scrollTo(error1, -200);
+                },
+
+                highlight: function (element) { // hightlight error inputs
+                    $(element)
+                        .closest('.form-group').addClass('has-error'); // set error class to the control group
+                },
+
+                unhighlight: function (element) { // revert the change done by hightlight
+                    $(element)
+                        .closest('.form-group').removeClass('has-error'); // set error class to the control group
+                },
+
+                success: function (label) {
+                    label
+                        .closest('.form-group').removeClass('has-error'); // set success class to the control group
+                },
+
+                submitHandler: function (form) {
+					success1.show();
+					error1.hide();
+					form1[0].submit();
+					$('.submit').attr('disabled','disabled');
+					$('.submit').text('Submiting...');
+					return true;
+					
+
+                }
+			});
+	
 	$('.rename_check').die().live('click',function() {
 		rename_rows();
+		forward_total_amount();
     });
-	
-		function rename_rows()
+ rename_rows();
+function rename_rows()
 	{
 		var i=0;
 		$('#main_table tbody#main_tbody tr.main_tr').each(function(){ 
 			var val=$(this).find('input[type=checkbox]:checked').val();
+			
 		if(val){
+			
 			$(this).find('td:nth-child(1) input.attrGet').attr({name:'purchase_return_rows['+i+'][item_id]',id:'purchase_return_rows['+i+'][item_id]'});
-			$(this).find('.quantity').attr({name:'purchase_return_rows['+i+'][quantity]',id:'purchase_return_rows['+i+'][quantity]'});
+			
+			$(this).find('td:nth-child(1) input.purchaseInvoiceRowId').attr({name:'purchase_return_rows['+i+'][purchase_invoice_row_id]',id:'purchase_return_rows['+i+'][purchase_invoice_row_id]'});
+			
 			$(this).find('.rate').attr({name:'purchase_return_rows['+i+'][rate]',id:'purchase_return_rows['+i+'][rate]'});
 			$(this).find('.discount').attr({name:'purchase_return_rows['+i+'][discount_percentage]',id:'purchase_return_rows['+i+'][discount_percentage]'});
 			$(this).find('.discountAmount').attr({name:'purchase_return_rows['+i+'][discount_amount]',id:'purchase_return_rows['+i+'][discount_amount]'});
@@ -278,10 +339,23 @@ if($supplier_state_id== $state_id){
 			$(this).find('.gst_figure_id').attr({name:'purchase_return_rows['+i+'][gst_percentage]',id:'purchase_return_rows['+i+'][gst_percentage]'}).attr('readonly', true);
 			$(this).find('.gstValue').attr({name:'purchase_return_rows['+i+'][gst_value]',id:'purchase_return_rows['+i+'][gst_value]'}).attr('readonly', true);
 			$(this).find('.roundOff').attr({name:'purchase_return_rows['+i+'][round_off]',id:'purchase_return_rows['+i+'][round_off]'});
-			$(this).find('.netAmount').attr({name:'purchase_return_rows['+i+'][net_amount]',id:'purchase_return_rows['+i+'][net_amount]'});
+			
+			
+			var max_qty=$(this).find('.returnQty').attr('maxqt');
+		//alert(max_qty);
+			//$(this).find('.quantity').attr({name:'purchase_return_rows['+i+'][quantity]',id:'purchase_return_rows['+i+'][quantity]'});
+			
+			
+			$(this).find('.returnQty').attr({name:'purchase_return_rows['+i+'][quantity]',id:'purchase_return_rows['+i+'][quantity]'}).attr('max',max_qty).removeAttr('readonly').rules('add', {
+							maxlength: max_qty,
+							messages: {
+								maxlength: 'efefefefe efefefef'
+							}
+						});
+			$(this).find('.returnAmt').attr({name:'purchase_return_rows['+i+'][net_amount]',id:'purchase_return_rows['+i+'][net_amount]'});
 		i++;
 			$(this).css('background-color','#fffcda');
-		}else{
+		}else{ 
 			$(this).find('td:nth-child(1) input.attrGet').attr({name:'q',id:'q'});
 			$(this).find('.quantity').attr({name:'q',id:'q'});
 			$(this).find('.rate').attr({name:'q',id:'q'});
@@ -297,10 +371,11 @@ if($supplier_state_id== $state_id){
 			$(this).find('.gstValue').attr({name:'q',id:'q'});
 			$(this).find('.roundOff').attr({name:'q',id:'q'});
 			$(this).find('.netAmount').attr({name:'q',id:'q'});
+			$(this).find('.returnQty').attr({name:'q',id:'q', readonly:'readonly'}).val(0);
 			$(this).css('background-color','#FFF');
 		}
-
 		});
+		//forward_total_amount();
 	}
 	
 	$('.returnQty').die().live('blur',function()
@@ -347,7 +422,6 @@ if($supplier_state_id== $state_id){
 					$(this).closest('tr').find('.pnf').val(pnfAmt.toFixed(2));
 				}else{
 					var pnfAmt=(amount*pnf)/100;
-					alert(pnf);
 					$(this).closest('tr').find('.pnfAmount').val(pnfAmt.toFixed(2));
 					total_pnf=total_pnf+pnfAmt;
 				}
@@ -384,31 +458,36 @@ if($supplier_state_id== $state_id){
 				}
 				
 				var totalAmount=taxableAmt+amt2;
-				
-				 var round_of_amt=parseFloat($(this).closest('tr').find('.roundOff').val());
+				var Actualquantity=parseFloat($(this).closest('tr').find('.quantity').val());
+				//alert(Actualquantity);
+				 var round_of_amt=parseFloat($(this).closest('tr').find('.actroundOff').val());
 				 if(isNaN(round_of_amt)){
 					 var round_of=0;
 					  $(this).closest('tr').find('.round_of').val(round_of.toFixed(2));
 				 }else{
-					  var round_of=round_of_amt;
+					var round_of=(quantity/Actualquantity)*round_of_amt;
+					 // var round_of=round_of_amt;
 				 }
 				 
 				total_round=total_round+round_of;
 				$(this).closest('tr').find('.roundOff').val(round_of.toFixed(2));
 				var totalAmountAfterRound=totalAmount+round_of;
-				total_amt=total_amt+totalAmountAfterRound;
-				$(this).closest('tr').find('.netAmount').val(parseFloat(totalAmountAfterRound).toFixed(2));
+				
+				//$(this).closest('tr').find('.netAmount').val(parseFloat(totalAmountAfterRound).toFixed(2));
+				var netAmount =parseFloat($(this).closest('tr').find('.netAmount ').val());
+				
+				var totalAmountReturn=(quantity/Actualquantity)*netAmount;
+				total_amt=total_amt+totalAmountReturn;
+				$(this).closest('tr').find('.returnAmt').val(parseFloat(totalAmountReturn).toFixed(2));
 				}
 			});
-			$('.total_discount_amt').val(total_dis.toFixed(2));
-			$('.total_pnf_amt').val(total_pnf.toFixed(2));
-			$('.total_taxable_value').val(total_taxable.toFixed(2));
-			$('.total_gst_value').val(total_gst.toFixed(2));
-			$('.total_round_amount').val(total_round.toFixed(2));
-			$('.total_amount').val(parseFloat(total_amt).toFixed(2));
+			$('.amount_before_tax').val(parseFloat(total_amt).toFixed(2));
+			 
 			
 			rename_rows();
 		}
+		
+	
 	
 	
 	});
