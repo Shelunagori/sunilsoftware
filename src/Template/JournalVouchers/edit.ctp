@@ -613,6 +613,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 					calc();
 					$(this).closest('tr').find('.creditBox').hide();
 				}
+				renameMainRows();
 			});
 			
 			$('.ledger').die().live('change',function(){
@@ -683,12 +684,25 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				var i=0;
 				$('#MainTable tbody#MainTbody tr.MainTr').each(function(){
 					$(this).attr('row_no',i);
+					var cr_dr=$(this).find('td:nth-child(1) select.cr_dr option:selected').val();
 					$(this).find('td:nth-child(1) input.hidden').attr({name:'journal_voucher_rows['+i+'][id]',id:'journal_voucher_rows-'+i+'-id'});
 					$(this).find('td:nth-child(1) select.cr_dr').attr({name:'journal_voucher_rows['+i+'][cr_dr]',id:'journal_voucher_rows-'+i+'-cr_dr'});
 					$(this).find('td:nth-child(2) select.ledger').attr({name:'journal_voucher_rows['+i+'][ledger_id]',id:'journal_voucher_rows-'+i+'-ledger_id'}).select2();
 					$(this).find('td:nth-child(3) input.debitBox').attr({name:'journal_voucher_rows['+i+'][debit]',id:'journal_voucher_rows-'+i+'-debit'});
 					$(this).find('td:nth-child(4) input.creditBox').attr({name:'journal_voucher_rows['+i+'][credit]',id:'journal_voucher_rows-'+i+'-credit'});
 					i++;
+					
+					if(cr_dr=='Dr'){ 
+						$(this).find('td:nth-child(3) input.debitBox').rules('add', 'required');
+						$(this).find('td:nth-child(4) input.creditBox').rules('remove', 'required');
+						$(this).find('td:nth-child(4) span.help-block-error').remove();
+						
+					}else{
+						$(this).find('td:nth-child(3) input.debitBox').rules('remove', 'required');
+						$(this).find('td:nth-child(3) span.help-block-error').remove();
+						$(this).find('td:nth-child(4) input.creditBox').rules('add', 'required');
+					}
+					
 					var type=$(this).find('td:nth-child(2) option:selected').attr('open_window'); 
 					
 					var SelectedTr=$(this).closest('tr.MainTr');
