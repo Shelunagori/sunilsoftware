@@ -37,7 +37,6 @@ $this->set('title', 'Sales Voucher List');
 									<td class="actions">
 										<?= $this->Html->link(__('View'), ['action' => 'view', $salesVoucher->id]) ?>
 										<?= $this->Html->link(__('Edit'), ['action' => 'edit', $salesVoucher->id]) ?>
-										<?= $this->Form->postLink(__('Delete'), ['action' => 'delete', $salesVoucher->id], ['confirm' => __('Are you sure you want to delete # {0}?', $salesVoucher->id)]) ?>
 									</td>
 								</tr>
 							<?php endforeach; ?>
