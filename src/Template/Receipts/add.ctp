@@ -4,6 +4,7 @@
  */
 $this->set('title', 'Receipt Voucher');
 ?>
+
 <style>
 .noBorder{
 	border:none;
