@@ -217,11 +217,11 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 															echo $this->Form->input('journal_voucher_rows.'.$i.'.mode_of_payment', ['options'=>$option_mode,'label' => false,'class' => 'form-control input-sm paymentType','required'=>'required','value'=>$journal_voucher_row->mode_of_payment]); ?>
 														</td>
 														<td width="30%" style="<?php echo @$style;?>">
-															<?php echo $this->Form->input('journal_voucher_rows.'.$i.'.cheque_no', ['label' =>false,'class' => 'form-control input-sm cheque_no','placeholder'=>'Cheque No','value'=>$journal_voucher_row->cheque_no,'required'=>'required']); ?> 
+															<?php echo $this->Form->input('journal_voucher_rows.'.$i.'.cheque_no', ['label' =>false,'class' => 'form-control input-sm cheque_no','placeholder'=>'Cheque No','value'=>$journal_voucher_row->cheque_no]); ?> 
 														</td>
 														
 														<td width="30%" style="<?php echo @$style;?>">
-															<?php echo $this->Form->input('journal_voucher_rows.'.$i.'.cheque_date', ['label' =>false,'class' => 'form-control input-sm date-picker cheque_date ','data-date-format'=>'dd-mm-yyyy','placeholder'=>'Cheque Date','value'=>@$date,'type'=>'text','required'=>'required']); ?>
+															<?php echo $this->Form->input('journal_voucher_rows.'.$i.'.cheque_date', ['label' =>false,'class' => 'form-control input-sm date-picker cheque_date ','data-date-format'=>'dd-mm-yyyy','placeholder'=>'Cheque Date','value'=>@$date,'type'=>'text']); ?>
 														</td>
 													</tr>
 												</tbody>
@@ -332,11 +332,11 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				echo $this->Form->input('mode_of_payment', ['options'=>$option_mode,'label' => false,'class' => 'form-control input-sm paymentType','required'=>'required']); ?>
 			</td>
 			<td width="30%">
-				<?php echo $this->Form->input('cheque_no', ['label' =>false,'class' => 'form-control input-sm cheque_no','placeholder'=>'Cheque No','required'=>'required']); ?> 
+				<?php echo $this->Form->input('cheque_no', ['label' =>false,'class' => 'form-control input-sm cheque_no','placeholder'=>'Cheque No']); ?> 
 			</td>
 			
 			<td width="30%">
-				<?php echo $this->Form->input('cheque_date', ['label' =>false,'class' => 'form-control input-sm date-picker cheque_date ','data-date-format'=>'dd-mm-yyyy','placeholder'=>'Cheque Date','required'=>'required']); ?>
+				<?php echo $this->Form->input('cheque_date', ['label' =>false,'class' => 'form-control input-sm date-picker cheque_date ','data-date-format'=>'dd-mm-yyyy','placeholder'=>'Cheque Date']); ?>
 			</td>
 			
 			
@@ -532,6 +532,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				var currentRefRow=$(this).closest('tr');
 				var SelectedTr=$(this).closest('tr.MainTr');
 				if(type=='NEFT/RTGS'){
+					currentRefRow.find('span.help-block-error').remove();
 					currentRefRow.find('td:nth-child(2) input').val('');
 					currentRefRow.find('td:nth-child(3) input').val('');
 					currentRefRow.find('td:nth-child(2)').hide();
@@ -731,9 +732,20 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			function renameBankRows(SelectedTr){
 				var row_no=SelectedTr.attr('row_no');
 				SelectedTr.find('td:nth-child(2) div.window table tbody tr').each(function(){
+					var type = $(this).find('td:nth-child(1) select.paymentType option:selected').val();
 					$(this).find('td:nth-child(1) select.paymentType').attr({name:'journal_voucher_rows['+row_no+'][mode_of_payment]',id:'journal_voucher_rows-'+row_no+'-mode_of_payment'});
 					$(this).find('td:nth-child(2) input.cheque_no').attr({name:'journal_voucher_rows['+row_no+'][cheque_no]',id:'journal_voucher_rows-'+row_no+'-cheque_no'});
 					$(this).find('td:nth-child(3) input.cheque_date').attr({name:'journal_voucher_rows['+row_no+'][cheque_date]',id:'journal_voucher_rows-'+row_no+'-cheque_date'}).datepicker();
+					if(type=='Cheque')
+					{ 
+						$(this).find('td:nth-child(2) input.cheque_no').rules('add','required');
+						$(this).find('td:nth-child(3) input.cheque_date').rules('add','required');
+					}
+					else
+					{
+						$(this).find('td:nth-child(2) input.cheque_no').rules('remove','required');
+						$(this).find('td:nth-child(3) input.cheque_date').rules('remove','required');
+					}
 				});
 				
 			}
