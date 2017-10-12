@@ -542,6 +542,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				}else{
 					eqlClass=eqlClassCr;
 				}
+				
 				SelectedTr.find('td:nth-child(2) div.window table.refTbl tfoot tr td:nth-child(2) input.total')
 						.attr({name:'payment_rows['+row_no+'][total]',id:'payment_rows-'+row_no+'-total'})
 						.rules('add', {
@@ -558,7 +559,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				 renameMainRows();
 			});
 			
-			$('.calculation').die().live('keyup',function()
+			$('.calculation').die().live('keyup, change',function()
 			{ 
 				var SelectedTr=$(this).closest('tr.MainTr');
 				var total_debit=0;var total_credit=0; var remaining=0;
@@ -589,7 +590,6 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 						$(this).closest('table').find(' tfoot td:nth-child(3) input.total_type').val('');	
 					}
 				});
-				var SelectedTr=$(this).closest('tr.MainTr');
 				renameRefRows(SelectedTr);
 			});
 			

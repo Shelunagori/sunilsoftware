@@ -531,10 +531,10 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				var ledger_id=SelectedTr.find('td:nth-child(2) select.ledger').val();
 				var cr_dr=SelectedTr.find('td:nth-child(1) select.cr_dr option:selected').val();
 				if(cr_dr=='Dr'){
-					var eqlClass=SelectedTr.find('td:nth-child(3) input.debitBox').attr('id');
+					var eqlClassDr=SelectedTr.find('td:nth-child(3) input.debitBox').attr('id');
 					var mainAmt=SelectedTr.find('td:nth-child(3) input.debitBox').val();
 				}else{
-					var eqlClass=SelectedTr.find('td:nth-child(4) input.creditBox').attr('id');
+					var eqlClassCr=SelectedTr.find('td:nth-child(4) input.creditBox').attr('id');
 					var mainAmt=SelectedTr.find('td:nth-child(4) input.creditBox').val();
 				}
 				
@@ -561,6 +561,13 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 					}
 					i++;
 				});
+				var total_type=SelectedTr.find('td:nth-child(2) div.window table.refTbl tfoot tr td:nth-child(3) input.total_type').val();
+					if(total_type=='Dr'){
+					 eqlClass=eqlClassDr;
+					}else{
+					 eqlClass=eqlClassCr;
+					}
+				
 				SelectedTr.find('td:nth-child(2) div.window table.refTbl tfoot tr td:nth-child(2) input.total')
 						.attr({name:'credit_note_rows['+row_no+'][total]',id:'credit_note_rows-'+row_no+'-total'})
 						.rules('add', {
@@ -577,7 +584,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				 renameMainRows();
 			});
 			
-			$('.calculation').die().live('keyup',function()
+			$('.calculation').die().live('keyup, change',function()
 			{ 
 				var SelectedTr=$(this).closest('tr.MainTr');
 				var total_debit=0;var total_credit=0; var remaining=0;
@@ -608,7 +615,6 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 						$(this).closest('table').find(' tfoot td:nth-child(3) input.total_type').val('');	
 					}
 				});
-				var SelectedTr=$(this).closest('tr.MainTr');
 				renameRefRows(SelectedTr);
 			});
 			
