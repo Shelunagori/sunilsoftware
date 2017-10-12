@@ -81,7 +81,7 @@ $this->set('title', 'Receipt Voucher');
 											?>
 										</td>
 										<td width="65%">
-										<input type="text" class="BankValueDefine" name=" receipt_rows[<?php echo $i;?>][BankDefination]">
+										<input type="hidden" class="BankValueDefine" name=" receipt_rows[<?php echo $i;?>][BankDefination]">
 							
 										<?php
 										if($i==0)
@@ -598,13 +598,12 @@ $this->set('title', 'Receipt Voucher');
 					var isTblExist=windowContainer.find('table.refTbl').length;
 					if(isTblExist==0)
 					{
+					windowContainer.html('<table width=90% class=refTbl><tbody></tbody><tfoot><tr style=border-top:double#a5a1a1><td colspan=2><a role=button class=addRefRow>Add Row</a></td><td>$total_input</td><td>$total_type</td></tr></tfoot></table>');
 					  AddRefRow(SelectedTr);
 					}
 				}
 				else if(openWindow=='no'){
-				    var bankValue=0;
 					var SelectedTr=$(this).closest('tr.MainTr');
-					SelectedTr.find('.BankValueDefine').val(bankValue);
 					var windowContainer=SelectedTr.find('td:nth-child(2) select.ledger option:selected').closest('td').find('div.window');
 					windowContainer.html('');
 				}
