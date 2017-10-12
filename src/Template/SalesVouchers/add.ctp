@@ -66,7 +66,7 @@ $this->set('title', 'Sales Voucher');
 										<div class="window" style="margin:auto;"></div>
 									</td>
 									<td width="10%" style="vertical-align: top !important;">
-										<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm  debitBox rightAligntextClass totalCalculation','placeholder'=>'Debit','required'=>'required']); ?>
+										<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm  debitBox rightAligntextClass totalCalculation','placeholder'=>'Debit']); ?>
 									</td>
 									<td width="10%" style="vertical-align: top !important;">
 										<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm creditBox rightAligntextClass totalCalculation','placeholder'=>'Credit','style'=>'display:none;']); ?>	
@@ -89,7 +89,7 @@ $this->set('title', 'Sales Voucher');
 										<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm  debitBox rightAligntextClass totalCalculation','placeholder'=>'Debit','style'=>'display:none;']); ?>
 									</td>
 									<td width="10%" style="vertical-align: top !important;">
-										<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm creditBox rightAligntextClass totalCalculation','placeholder'=>'Credit','required'=>'required']); ?>	
+										<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm creditBox rightAligntextClass totalCalculation','placeholder'=>'Credit']); ?>	
 									</td>
 									<td align="center"  width="10%" style="vertical-align: top !important;">
 										
@@ -101,8 +101,8 @@ $this->set('title', 'Sales Voucher');
 										<td colspan="2">	
 											<button type="button" class="AddMainRow btn btn-default input-sm"><i class="fa fa-plus"></i> Add row</button>
 										</td>
-										<td><input type="text" class="form-control input-sm rightAligntextClass total_debit" placeholder="Total Debit" id="totalMainDr" name="totalMainDr"></td>
-										<td><input type="text" class="form-control input-sm rightAligntextClass total_credit" placeholder="Total Credit" id="totalMainCr" name="totalMainCr"></td>
+										<td><input type="text" class="form-control input-sm rightAligntextClass total_debit" placeholder="Total Debit" id="totalMainDr" name="totalMainDr" readonly></td>
+										<td><input type="text" class="form-control input-sm rightAligntextClass total_credit" placeholder="Total Credit" id="totalMainCr" name="totalMainCr" readonly></td>
 									</tr>
 								</tfoot>
 							</table>
@@ -171,11 +171,11 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				echo $this->Form->input('mode_of_payment', ['options'=>$option_mode,'label' => false,'class' => 'form-control input-sm paymentType','required'=>'required']); ?>
 			</td>
 			<td width="30%" style="vertical-align: top !important;">
-				<?php echo $this->Form->input('cheque_no', ['label' =>false,'class' => 'form-control input-sm cheque_no','placeholder'=>'Cheque No']); ?> 
+				<?php echo $this->Form->input('cheque_no', ['label' =>false,'class' => 'form-control input-sm cheque_no','placeholder'=>'Cheque No','required'=>'required']); ?> 
 			</td>
 			
 			<td width="30%" style="vertical-align: top !important;">
-				<?php echo $this->Form->input('cheque_date', ['label' =>false,'class' => 'form-control input-sm date-picker cheque_date ','data-date-format'=>'dd-mm-yyyy','placeholder'=>'Cheque Date']); ?>
+				<?php echo $this->Form->input('cheque_date', ['label' =>false,'class' => 'form-control input-sm date-picker cheque_date ','data-date-format'=>'dd-mm-yyyy','placeholder'=>'Cheque Date','required'=>'required']); ?>
 			</td>
 			
 			
@@ -195,7 +195,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				<div class="window" style="margin:auto;"></div>
 			</td>
 			<td width="10%" style="vertical-align: top !important;">
-				<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm  debitBox rightAligntextClass totalCalculation','placeholder'=>'Debit']); ?>
+				<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm  debitBox rightAligntextClass totalCalculation','placeholder'=>'Debit','required'=>'required']); ?>
 			</td>
 			<td width="10%" style="vertical-align: top !important;">
 				<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm creditBox rightAligntextClass totalCalculation','placeholder'=>'Credit','style'=>'display:none;']); ?>	
@@ -274,6 +274,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 	$kk='<input type="text" class="form-control input-sm ref_name " placeholder="Reference Name">';
 	$total_input='<input type="text" class="form-control input-sm rightAligntextClass total calculation noBorder" >';
 	$total_type='<input type="text" class="form-control input-sm total_type calculation noBorder" >';
+	$style ='style="vertical-align: top !important;"';
 	$js="
 		$(document).ready(function() {
 			renameMainRows()
@@ -332,7 +333,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			});
 			
 			$('.totalCalculation').die().live('keyup',function(){
-				 calc();
+				calc();
 			});
 			
 			function calc()
@@ -431,14 +432,21 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				if(cr_dr=='Cr'){
 					$(this).closest('tr').find('.debitBox').val('');
 					calc();
+					$(this).closest('tr').find('input.debitBox').prop('required',false);
+					$(this).closest('tr').find('.debitBox').rules('remove','required');
+					$(this).closest('tr').find('span.help-block-error').remove();
 					$(this).closest('tr').find('.debitBox').hide();
 					$(this).closest('tr').find('.creditBox').show();
+					$(this).closest('tr').find('.creditBox').rules('add', 'required');
 				}
 				else if(cr_dr=='Dr'){
 					
 					$(this).closest('tr').find('.debitBox').show();
+					$(this).closest('tr').find('.debitBox').rules('add', 'required');
 					$(this).closest('tr').find('.creditBox').val('');
 					calc();
+					$(this).closest('tr').find('.creditBox').rules('remove', 'required');
+					$(this).closest('tr').find('span.help-block-error').remove();
 					$(this).closest('tr').find('.creditBox').hide();
 				}
 				renameMainRows();
@@ -450,7 +458,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 					var SelectedTr=$(this).closest('tr.MainTr');
 					var windowContainer=$(this).closest('td').find('div.window');
 					windowContainer.html('');
-					windowContainer.html('<table width=90% class=refTbl><tbody></tbody><tfoot><tr style=border-top:double#a5a1a1><td colspan=2></td><td>$total_input</td><td style=vertical-align: top !important;>$total_type</td></tr></tfoot></table><a role=button class=addRefRow>Add Row</a>');
+					windowContainer.html('<table width=90% class=refTbl><tbody></tbody><tfoot><tr style=border-top:double#a5a1a1><td colspan=2></td><td>$total_input</td><td $style>$total_type</td></tr></tfoot></table><a role=button class=addRefRow>Add Row</a>');
 					AddRefRow(SelectedTr);
 				}
 				else if(openWindow=='bank'){
@@ -495,9 +503,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 						//$(this).find('td:nth-child(3) input.debitBox').rules('add', 'required');
 						//$(this).find('td:nth-child(4) input.creditBox').rules('remove', 'required');
 						//$(this).find('td:nth-child(4) span.help-block-error').remove();
-						
 					}else{
-						
 						//$(this).find('td:nth-child(3) input.debitBox').rules('remove', 'required');
 						//$(this).find('td:nth-child(3) span.help-block-error').remove();
 						//$(this).find('td:nth-child(4) input.creditBox').rules('add', 'required');
