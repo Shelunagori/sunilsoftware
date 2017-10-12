@@ -687,7 +687,6 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			
 			
 			renameMainRows();
-			renameMainRows();
 			function renameMainRows()
 			{
 				var i=0;
@@ -784,15 +783,14 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 					i++;
 				});
 				var total_type=SelectedTr.find('td:nth-child(2) div.window table.refTbl tfoot tr td:nth-child(3) input.total_type').val();
-				console.log(total_type);
+				
 				if(total_type=='Dr'){
 					eqlClass=eqlClassDr;
 				}else{
 					eqlClass=eqlClassCr;
 				}
 				
-				console.log('#'+eqlClass);
-				console.log('sales_voucher_rows-'+row_no+'-total');
+				
 				SelectedTr.find('td:nth-child(2) div.window table.refTbl tfoot tr td:nth-child(2) input.total')
 						.attr({name:'sales_voucher_rows['+row_no+'][total]',id:'sales_voucher_rows-'+row_no+'-total'})
 						.rules('add', {
