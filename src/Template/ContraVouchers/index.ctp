@@ -37,7 +37,6 @@ $this->set('title', 'Contra Voucher List');
 									<td class="actions">
 										<?= $this->Html->link(__('View'), ['action' => 'view', $contraVoucher->id]) ?>
 										<?= $this->Html->link(__('Edit'), ['action' => 'edit', $contraVoucher->id]) ?>
-										<?= $this->Form->postLink(__('Delete'), ['action' => 'delete', $contraVoucher->id], ['confirm' => __('Are you sure you want to delete # {0}?', $contraVoucher->id)]) ?>
 									</td>
 								</tr>
 							<?php endforeach; ?>

@@ -37,7 +37,6 @@ $this->set('title', 'Journal Vouchers List');
 									<td class="actions">
 										<?= $this->Html->link(__('View'), ['action' => 'view', $journalVoucher->id]) ?>
 										<?= $this->Html->link(__('Edit'), ['action' => 'edit', $journalVoucher->id]) ?>
-										<?= $this->Form->postLink(__('Delete'), ['action' => 'delete', $journalVoucher->id], ['confirm' => __('Are you sure you want to delete # {0}?', $journalVoucher->id)]) ?>
 									</td>
 								</tr>
 							<?php endforeach; ?>
