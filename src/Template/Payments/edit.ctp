@@ -508,8 +508,7 @@ $this->set('title', 'Payment Voucher');
 					currentRefRow.find('td:nth-child(3)').hide();
 				}
 				else{
-				    currentRefRow.find('td:nth-child(2)').removeAttr('style');
-					currentRefRow.find('td:nth-child(3)').removeAttr('style');
+				   
 					currentRefRow.find('td:nth-child(2)').show();
 					currentRefRow.find('td:nth-child(3)').show();
 				}

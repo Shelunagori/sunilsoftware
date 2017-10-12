@@ -8,7 +8,6 @@ $this->set('title', 'Receipt Voucher');
 .noBorder{
 	border:none;
 }
-
 </style>
 <div class="row">
 	<div class="col-md-12">
@@ -342,6 +341,8 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				var type=$(this).val();	
 				var currentRefRow=$(this).closest('tr');
 				if(type=='NEFT/RTGS'){
+				 currentRefRow.find('td:nth-child(2) input').val('');
+					currentRefRow.find('td:nth-child(3) input').val('');
 					currentRefRow.find('td:nth-child(2)').hide();
 					currentRefRow.find('td:nth-child(3)').hide();
 				}

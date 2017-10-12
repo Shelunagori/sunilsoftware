@@ -348,8 +348,6 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				else{
 					currentRefRow.find('td:nth-child(2)').show();
 					currentRefRow.find('td:nth-child(3)').show();
-					currentRefRow.find('td:nth-child(2)').attr('required','required');
-					currentRefRow.find('td:nth-child(3)').attr('required','required');
 				}
 			});
 			
