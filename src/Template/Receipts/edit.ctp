@@ -778,6 +778,7 @@ $this->set('title', 'Receipt Voucher');
 					}
 					i++;
 				});
+				
 				SelectedTr.find('td:nth-child(2) div.window table.refTbl tfoot tr td:nth-child(2) input.total')
 						.attr({name:'receipt_rows['+row_no+'][total]',id:'receipt_rows-'+row_no+'-total'})
 						.rules('add', {
