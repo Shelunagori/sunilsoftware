@@ -325,10 +325,10 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 						alert('Error: zero amount creditNote can not be generated.');
 						return false;
 					}
-					else if(totalBankCash<=0){
+					/* else if(totalBankCash<=0){
 						alert('Error: No Bank or Cash Debited.');
 						return false;
-					}
+					} */
 					else{
 						if(confirm('Are you sure you want to submit!'))
 							{

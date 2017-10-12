@@ -473,10 +473,10 @@ $this->set('title', 'Debit Note Voucher');
 						alert('Error: zero amount debitNote can not be generated.');
 						return false;
 					}
-					else if(totalBankCash<=0){
+					/* else if(totalBankCash<=0){
 						alert('Error: No Bank or Cash Debited.');
 						return false;
-					}
+					} */
 					else{
 						if(confirm('Are you sure you want to submit!'))
 						{
