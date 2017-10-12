@@ -47,7 +47,20 @@ class PurchaseReturnsTable extends Table
             'joinType' => 'INNER'
         ]);
         $this->hasMany('PurchaseReturnRows', [
-            'foreignKey' => 'purchase_return_id'
+            'foreignKey' => 'purchase_return_id',
+			'saveStrategy'=>'replace'
+        ]);
+		
+		$this->belongsTo('ItemLedgers');
+		$this->belongsTo('Grns');
+		$this->hasMany('AccountingEntries', [
+            'foreignKey' => 'purchase_invoice_id',
+            'joinType' => 'INNER'
+        ]);
+		
+		$this->hasMany('AccountingEntries', [
+            'foreignKey' => 'purchase_invoice_id',
+            'joinType' => 'INNER'
         ]);
     }
 

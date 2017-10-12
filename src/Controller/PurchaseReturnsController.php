@@ -20,11 +20,13 @@ class PurchaseReturnsController extends AppController
      */
     public function index()
     {
-        $this->paginate = [
-            'contain' => ['PurchaseInvoices', 'Companies']
-        ];
-        $purchaseReturns = $this->paginate($this->PurchaseReturns);
-
+		$this->viewBuilder()->layout('index_layout');
+		$company_id=$this->Auth->User('session_company_id');
+		$location_id=$this->Auth->User('session_location_id');
+		$stateDetails=$this->Auth->User('session_company');
+        
+        $purchaseReturns = $this->paginate($this->PurchaseReturns->find()->where(['PurchaseReturns.company_id'=>$company_id]));
+		//pr( $purchaseReturns); exit;
         $this->set(compact('purchaseReturns'));
         $this->set('_serialize', ['purchaseReturns']);
     }
@@ -37,9 +39,10 @@ class PurchaseReturnsController extends AppController
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
     public function view($id = null)
-    {
+    {	
+		
         $purchaseReturn = $this->PurchaseReturns->get($id, [
-            'contain' => ['PurchaseInvoices', 'Companies', 'PurchaseReturnRows']
+            'contain' => [ 'Companies', 'PurchaseReturnRows']
         ]);
 
         $this->set('purchaseReturn', $purchaseReturn);
@@ -59,10 +62,21 @@ class PurchaseReturnsController extends AppController
 		$stateDetails=$this->Auth->User('session_company');
 		$state_id=$stateDetails->state_id;
         $PurchaseInvoice = $this->PurchaseReturns->PurchaseInvoices->get($id, [
-            'contain' => (['PurchaseInvoiceRows'=>['Items'=>['FirstGstFigures']],'SupplierLedgers'=>['Suppliers']])
+            'contain' => (['PurchaseInvoiceRows'=>['Items'=>['FirstGstFigures']],'SupplierLedgers'=>['Suppliers'],'PurchaseReturns'=>['PurchaseReturnRows' => function($q) {
+				return $q->select(['purchase_return_id','purchase_invoice_row_id','item_id','total' => $q->func()->sum('PurchaseReturnRows.quantity')])->group('PurchaseReturnRows.item_id');
+			}]])
         ]);
+		
+		 $purchase_return_qty=[];
+		foreach($PurchaseInvoice->purchase_returns as $purchase_return){
+			foreach($purchase_return->purchase_return_rows as $purchase_return_row){
+				//pr($purchase_return_row); exit;
+				$purchase_return_qty[@$purchase_return_row->purchase_invoice_row_id]=@$purchase_return_qty[$purchase_return_row->purchase_invoice_row_id]+$purchase_return_row->total;
+			}
+		} 
+		
 		$supplier_state_id=$PurchaseInvoice->supplier_ledger->supplier->state_id;
-		//pr($PurchaseInvoice->supplier->state_id); exit;
+		//pr($purchase_return_qty); exit;
         $purchaseReturn = $this->PurchaseReturns->newEntity();
         if ($this->request->is('post')) {
             $purchaseReturn = $this->PurchaseReturns->patchEntity($purchaseReturn, $this->request->getData());
@@ -77,9 +91,123 @@ class PurchaseReturnsController extends AppController
 				$purchaseReturn->voucher_no = 1;
 			} 
 			$purchaseReturn->company_id = $company_id;
-			pr($purchaseReturn); exit;
-            if ($this->PurchaseReturns->save($purchaseReturn)) {
+			$purchaseReturn->purchase_invoice_id = $PurchaseInvoice->id;
+			//pr($PurchaseInvoice); exit;
+			//pr($purchaseReturn); exit;
+            if ($this->PurchaseReturns->save($purchaseReturn)) { 
+				//pr($purchaseReturn); exit;
+				$roundOfAmt=0;
+				$total_taxable_value=0;
+				$total_amount=0;
+				foreach($purchaseReturn->purchase_return_rows as $purchase_return_row)
+				{ 
+					$roundOfAmt+=$purchase_return_row->round_off;
+					$total_taxable_value+=$purchase_return_row->taxable_value;
+					$total_amount+=$purchase_return_row->net_amount;
+					$item_id=$purchase_return_row['item_id'];
+					$Grns = $this->PurchaseReturns->Grns->GrnRows->find()->where(['GrnRows.item_id'=>$item_id])->first();
+					$ItemLedger = $this->PurchaseReturns->ItemLedgers->newEntity(); 
+					$ItemLedger->item_id=$purchase_return_row->item_id;
+					$ItemLedger->transaction_date=$purchaseReturn->transaction_date;
+					$ItemLedger->quantity=$purchase_return_row->quantity;
+					$ItemLedger->rate=$Grns->purchase_rate;
+					$ItemLedger->amount=$Grns->purchase_rate*$purchase_return_row->quantity;
+					$ItemLedger->status='out';
+					$ItemLedger->company_id=$company_id;
+					$ItemLedger->purchase_return_id=$purchaseReturn->id;
+					$ItemLedger->purchase_return_row_id=$purchase_return_row->id;
+					$this->PurchaseReturns->ItemLedgers->save($ItemLedger);
+				}
+				
+				//Accounting Entries for Purchase account//
+				$AccountingEntrie = $this->PurchaseReturns->AccountingEntries->newEntity(); 
+				$AccountingEntrie->ledger_id=$PurchaseInvoice->purchase_ledger_id;
+				$AccountingEntrie->credit=$total_taxable_value;
+				$AccountingEntrie->debit=0;
+				$AccountingEntrie->transaction_date=$purchaseReturn->transaction_date;
+				$AccountingEntrie->company_id=$company_id;
+				$AccountingEntrie->purchase_return_id=$purchaseReturn->id;
+				$this->PurchaseReturns->AccountingEntries->save($AccountingEntrie);
+			  
+			  
+			  //Accounting Entries for Supplier account//
+				$AccountingEntrie = $this->PurchaseReturns->AccountingEntries->newEntity(); 
+				$AccountingEntrie->ledger_id=$PurchaseInvoice->supplier_ledger_id;
+				$AccountingEntrie->debit=$total_amount;
+				$AccountingEntrie->credit=0;
+				$AccountingEntrie->transaction_date=$purchaseReturn->transaction_date;
+				$AccountingEntrie->company_id=$company_id;
+				$AccountingEntrie->purchase_return_id=$purchaseReturn->id;
+				$this->PurchaseReturns->AccountingEntries->save($AccountingEntrie);
                 $this->Flash->success(__('The purchase return has been saved.'));
+				
+				//Accounting Entries for Round of Amount//
+				$AccountingEntrie = $this->PurchaseReturns->AccountingEntries->newEntity(); 
+				$AccountingEntrie->ledger_id=$PurchaseInvoice->supplier_ledger_id;
+				$AccountingEntrie->transaction_date=$purchaseReturn->transaction_date;
+				$AccountingEntrie->company_id=$company_id;
+				$AccountingEntrie->purchase_return_id=$purchaseReturn->id;
+				
+				if($roundOfAmt > 0){
+					$AccountingEntrie->credit=abs($roundOfAmt);
+					$AccountingEntrie->debit=0;
+				}else{
+					$AccountingEntrie->debit=abs($roundOfAmt);
+					$AccountingEntrie->credit=0;
+					
+				}
+				//pr(abs($roundOfAmt)); exit;
+				if($roundOfAmt != 0){
+					$this->PurchaseReturns->AccountingEntries->save($AccountingEntrie);
+				}
+				
+				if($purchaseReturn->is_interstate=='0'){
+					foreach($purchaseReturn->purchase_return_rows as $purchase_return_row)
+					{ 
+					   $gstAmtdata=$purchase_return_row->gst_value/2;
+					   $gstAmtInsert=round($gstAmtdata,2);
+					   
+					   //Accounting Entries for GST//
+					  $AccountingEntrieCGST = $this->PurchaseReturns->AccountingEntries->newEntity(); 
+					  
+						$gstLedgerCGST = $this->PurchaseReturns->PurchaseInvoices->PurchaseInvoiceRows->Ledgers->find()
+							->where(['Ledgers.gst_figure_id' =>$purchase_return_row->item_gst_figure_id,'Ledgers.company_id'=>$company_id, 'Ledgers.input_output'=>'input', 'Ledgers.gst_type'=>'CGST'])->first();
+							
+						$AccountingEntrieCGST->ledger_id=$gstLedgerCGST->id;
+						$AccountingEntrieCGST->credit=$gstAmtInsert;
+						$AccountingEntrieCGST->debit=0;
+						$AccountingEntrieCGST->transaction_date=$purchaseReturn->transaction_date;
+						$AccountingEntrieCGST->company_id=$company_id;
+						$AccountingEntrieCGST->purchase_return_id=$purchaseReturn->id;
+						$this->PurchaseReturns->AccountingEntries->save($AccountingEntrieCGST);
+						
+						$AccountingEntrieSGST = $this->PurchaseReturns->AccountingEntries->newEntity(); 
+						$gstLedgerSGST = $this->PurchaseReturns->PurchaseInvoices->PurchaseInvoiceRows->Ledgers->find()
+							->where(['Ledgers.gst_figure_id' =>$purchase_return_row->item_gst_figure_id,'Ledgers.company_id'=>$company_id, 'Ledgers.input_output'=>'input', 'Ledgers.gst_type'=>'SGST'])->first();
+						$AccountingEntrieSGST->ledger_id=$gstLedgerSGST->id;
+						$AccountingEntrieCGST->credit=$gstAmtInsert;
+						$AccountingEntrieCGST->debit=0;
+						$AccountingEntrieSGST->transaction_date=$purchaseReturn->transaction_date;
+						$AccountingEntrieSGST->company_id=$company_id;
+						$AccountingEntrieSGST->purchase_return_id=$purchaseReturn->id;
+						$this->PurchaseReturns->AccountingEntries->save($AccountingEntrieSGST);
+					   }
+				}else{
+					foreach($purchaseReturn->purchase_return_rows as $purchase_return_row)
+						{ 
+						   //Accounting Entries for IGST//
+						$AccountingEntrieIGST = $this->PurchaseReturns->AccountingEntries->newEntity(); 
+						$gstLedgerSGST = $this->PurchaseReturns->PurchaseInvoices->PurchaseInvoiceRows->Ledgers->find()
+							->where(['Ledgers.gst_figure_id' =>$purchase_return_row->item_gst_figure_id,'Ledgers.company_id'=>$company_id, 'Ledgers.input_output'=>'input', 'Ledgers.gst_type'=>'IGST'])->first();
+						$AccountingEntrieIGST->ledger_id=$gstLedgerSGST->id;
+						$AccountingEntrieIGST->credit=$purchase_return_row->gst_value;
+						$AccountingEntrieIGST->debit=0;
+						$AccountingEntrieIGST->transaction_date=$purchaseReturn->transaction_date;
+						$AccountingEntrieIGST->company_id=$company_id;
+						$AccountingEntrieIGST->purchase_return_id=$purchaseReturn->id;
+						$this->PurchaseReturns->AccountingEntries->save($AccountingEntrieIGST);
+					   }
+				}
 
                 return $this->redirect(['action' => 'index']);
             }
@@ -87,7 +215,7 @@ class PurchaseReturnsController extends AppController
         }
         $purchaseInvoices = $this->PurchaseReturns->PurchaseInvoices->find('list', ['limit' => 200]);
         $companies = $this->PurchaseReturns->Companies->find('list', ['limit' => 200]);
-        $this->set(compact('purchaseReturn', 'purchaseInvoices', 'companies','PurchaseInvoice','state_id','supplier_state_id'));
+        $this->set(compact('purchaseReturn', 'purchaseInvoices', 'companies','PurchaseInvoice','state_id','supplier_state_id','purchase_return_qty'));
         $this->set('_serialize', ['purchaseReturn']);
     }
 

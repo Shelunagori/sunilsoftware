@@ -98,8 +98,8 @@ foreach($partyOptions as $partyOption)
 										}else if(@$party_state_id==$state_id) { echo 'GST';}
 										?>
 									<label></td>
-									<td><label>Net Amount<label></td>
-									<td style="border-left-width:2px; border-left-color:#4db3a2;">is Return</td>
+									<td style="border-left-width:2px; border-right-color:#4db3a2;"><label>Net Amount<label></td>
+									<td >is Return</td>
 									<td ><label>Return Quantity<label></td>
 									<td ><label>Return Amount<label></td>
 									
@@ -162,12 +162,12 @@ foreach($partyOptions as $partyOption)
 									echo $salesInvoiceRow->gst_figure->name;
 										?>	
 								</td>
-								<td width="9%" align="center">
+								<td width="9%" align="center" style="border-right-width:2px; border-right-color:#4db3a2;">
 									<?php
 									echo $salesInvoiceRow->net_amount;
 									?>	
 								</td>
-								<td valign="top" width="10%" align="center" style="border-left-width:2px; border-left-color:#4db3a2; margin-top:-10px">
+								<td valign="top" width="10%" align="center" style="border-right-width:2px; border-left-color:#4db3a2; margin-top:-10px">
 								<?php if($salesInvoiceRow->quantity-@$sales_return_qty
 									[@$salesInvoiceRow->item->id] > 0){ ?>
 									<label style="margin-top:-10px"><?php echo $this->Form->input('check', ['label' => false,'type'=>'checkbox','class'=>'rename_check','value' => @$salesInvoiceRow->item->id]); ?></label>

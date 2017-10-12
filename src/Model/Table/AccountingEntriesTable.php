@@ -59,6 +59,14 @@ class AccountingEntriesTable extends Table
             'foreignKey' => 'sale_return_id',
             'joinType' => 'LEFT'
         ]);
+		$this->belongsTo('PurchaseReturns', [
+            'foreignKey' => 'purchase_return_id',
+            'joinType' => 'LEFT'
+        ]);
+		$this->belongsTo('PurchaseInvoices', [
+            'foreignKey' => 'purchase_invoice_id',
+            'joinType' => 'LEFT'
+        ]);
 		
 		$this->belongsTo('SalesVouchers', [
             'foreignKey' => 'sales_voucher_id',

@@ -400,6 +400,18 @@ class LedgersController extends AppController
 					$voucher_no[$AccountingLedgers1->id]=$url_link->voucher_no;
 					
 				}
+				if(!empty($AccountingLedgers1->purchase_invoice_id)){
+					@$voucher_type[$AccountingLedgers1->id]='Purchase Invoices';
+					@$url_link=$this->Ledgers->AccountingEntries->PurchaseInvoices->find()->where(['PurchaseInvoices.id'=>$AccountingLedgers1->purchase_invoice_id])->first();
+					$voucher_no[$AccountingLedgers1->id]=$url_link->voucher_no;
+					
+				}
+				if(!empty($AccountingLedgers1->purchase_return_id)){ 
+					@$voucher_type[$AccountingLedgers1->id]='Purchase Returns';
+					@$url_link=$this->Ledgers->AccountingEntries->PurchaseReturns->find()->where(['PurchaseReturns.id'=>$AccountingLedgers1->purchase_return_id])->first();
+					$voucher_no[$AccountingLedgers1->id]=$url_link->voucher_no;
+					
+				}
 				if($AccountingLedgers1->is_opening_balance!='yes')
 				{
 					$credit += $AccountingLedgers1->credit; 

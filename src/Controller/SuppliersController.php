@@ -121,7 +121,22 @@ class SuppliersController extends AppController
 															return $row['state_code'].'-'. $row['name'] ;
 														}
 												}]);
-        $this->set(compact('supplier', 'states','accountingGroups'));
+		$cities = $this->Suppliers->Cities->  find('list',
+													['keyField' => function ($row) {
+														return $row['id'];
+													},
+													'valueField' => function ($row) 
+													{
+														if($row['city_code']<=9)
+														{
+															return str_pad($this->_properties['city_code'], 1, '0', STR_PAD_LEFT).$row['city_code'].'-'. $row['name'] ;
+														}
+														else
+														{
+															return $row['city_code'].'-'. $row['name'] ;
+														}
+													}]);
+        $this->set(compact('supplier', 'states','cities','accountingGroups'));
         $this->set('_serialize', ['supplier']);
     }
 
@@ -204,7 +219,22 @@ class SuppliersController extends AppController
 															return $row['state_code'].'-'. $row['name'] ;
 														}
 													}]);
-        $this->set(compact('supplier', 'states', 'accountingGroups','account_entry'));
+		$cities = $this->Suppliers->Cities->  find('list',
+													['keyField' => function ($row) {
+														return $row['id'];
+													},
+													'valueField' => function ($row) 
+													{
+														if($row['city_code']<=9)
+														{
+															return str_pad($this->_properties['city_code'], 1, '0', STR_PAD_LEFT).$row['city_code'].'-'. $row['name'] ;
+														}
+														else
+														{
+															return $row['city_code'].'-'. $row['name'] ;
+														}
+													}]);
+        $this->set(compact('supplier', 'states','cities' ,'accountingGroups','account_entry'));
         $this->set('_serialize', ['supplier']);
     }
 

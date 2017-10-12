@@ -42,7 +42,7 @@
 						<td>Rs : <?=$arData->item->sales_rate ?></td>
 					</tr>
 					<tr>
-						<?php if(!empty($arData->item->shade->name)){?><td>Size : <?= @$arData->item->size->name.' ' ?></td><?php }?>
+						<?php if(!empty($arData->item->size->name)){?><td>Size : <?= @$arData->item->size->name.' ' ?></td><?php }?>
 						<?php if(!empty($arData->item->shade->name)){?><td>Shade : <?= @$arData->item->shade->name.' ' ?></td><?php }?>
 					</tr>
 				</table>

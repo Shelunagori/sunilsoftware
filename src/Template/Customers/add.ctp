@@ -53,7 +53,7 @@ $this->set('title', 'Create Customer');
 								</div>
 								<div class="form-group">
 									<label>City <span class="required">*</span></label>
-									<?php echo $this->Form->control('city_id',['class'=>'form-control input-sm select2me','label'=>false,'empty'=>'-City-', 'options' => $cities]); ?>
+									<?php echo $this->Form->control('city_id',['class'=>'form-control input-sm select2me','label'=>false,'empty'=>'-City-', 'options' => $cities,'required'=>'required']); ?>
 								</div>
 								<div class="form-group">
 									<label>TAN</label>
