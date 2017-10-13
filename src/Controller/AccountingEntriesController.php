@@ -38,6 +38,12 @@ class AccountingEntriesController extends AppController
 		$from_date = date("Y-m-d",strtotime($from_date));
 		$to_date= date("Y-m-d",strtotime($to_date));
 		
+		$AccountingGroups=$this->AccountingEntries->Ledgers->AccountingGroups->find()->where(['AccountingGroups.nature_of_group_id'=>3]);
+		foreach($AccountingGroups as $AccountingGroup){
+			$accountingGroups = $this->AccountingEntries->Ledgers->AccountingGroups->find('children', ['for' => $AccountingGroup->id]);
+		}
+		
+		pr($AccountingGroups->toArray()); exit;
 		$query=$this->AccountingEntries->find();
 		$query->select(['ledger_id','totalDebit' => $query->func()->sum('AccountingEntries.debit')])
 				->group('AccountingEntries.ledger_id')
