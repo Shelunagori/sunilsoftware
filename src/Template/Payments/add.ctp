@@ -466,7 +466,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 						}
 						main_credit=round(main_credit+credit_amt, 2);
 						if(is_cash_bank=='yes'){
-						 count_bank_cash++;
+							count_bank_cash++;
 						}
 					}
 					i++;

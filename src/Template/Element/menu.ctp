@@ -8,42 +8,6 @@ if(!isset($active_menu))
 <?php 
 echo '<li>'.$this->Html->link($this->Html->tag('i', '', ['class' => 'icon-home']).'Dashboard', '/Users/Dashboard',['escape' => false]).'</li>';
 ?>
-
-<li class="start ">
-	<a href="javascript:;">
-	<i class="fa fa-tasks"></i>
-	<span class="title">GRN</span>
-	<span class="arrow "></span>
-	</a>
-	<ul class="sub-menu">
-		<li><?php echo $this->Html->link($this->Html->tag('i', '', ['class' => 'fa fa-plus-square']).' Create', '/Grns/Add',['escape' => false]); ?></li>
-		<li><?php echo $this->Html->link($this->Html->tag('i', '', ['class' => 'fa fa-list-ul']).' List', '/Grns',['escape' => false]); ?></li>
-	</ul>
-</li>
-
-<li class="start ">
-	<a href="javascript:;">
-	<i class="fa  fa-database"></i>
-	<span class="title">Stock Journals</span>
-	<span class="arrow "></span>
-	</a>
-	<ul class="sub-menu">
-		<li><?php echo $this->Html->link($this->Html->tag('i', '', ['class' => 'fa fa-plus-square']).' Create', '/StockJournals/Add',['escape' => false]); ?></li>
-		<li><?php echo $this->Html->link($this->Html->tag('i', '', ['class' => 'fa fa-list-ul']).' List', '/StockJournals',['escape' => false]); ?></li>
-	</ul>
-</li>
-
-<li class="start ">
-	<a href="javascript:;">
-	<i class="fa fa-file-powerpoint-o"></i>
-	<span class="title">Purchase Voucher</span>
-	<span class="arrow "></span>
-	</a>
-	<ul class="sub-menu">
-		<li><?php echo $this->Html->link($this->Html->tag('i', '', ['class' => 'fa fa-plus-square']).' Create', '/PurchaseVouchers/Add',['escape' => false]); ?></li>
-		<li><?php echo $this->Html->link($this->Html->tag('i', '', ['class' => 'fa fa-list-ul']).' List', '/PurchaseVouchers',['escape' => false]); ?></li>
-	</ul>
-</li>
 <li class="start ">
 	<a href="javascript:;">
 	<i class="fa fa-info-circle"></i>
@@ -67,7 +31,17 @@ echo '<li>'.$this->Html->link($this->Html->tag('i', '', ['class' => 'icon-home']
 		<li><?php echo $this->Html->link($this->Html->tag('i', '', ['class' => 'fa fa-list-ul']).' List', '/SaleReturns',['escape' => false]); ?></li>
 	</ul>
 </li>
-
+<li class="start ">
+	<a href="javascript:;">
+	<i class="fa fa-tasks"></i>
+	<span class="title">GRN</span>
+	<span class="arrow "></span>
+	</a>
+	<ul class="sub-menu">
+		<li><?php echo $this->Html->link($this->Html->tag('i', '', ['class' => 'fa fa-plus-square']).' Create', '/Grns/Add',['escape' => false]); ?></li>
+		<li><?php echo $this->Html->link($this->Html->tag('i', '', ['class' => 'fa fa-list-ul']).' List', '/Grns',['escape' => false]); ?></li>
+	</ul>
+</li>
 <li class="start ">
 	<a href="javascript:;">
 
@@ -80,8 +54,6 @@ echo '<li>'.$this->Html->link($this->Html->tag('i', '', ['class' => 'icon-home']
 		<li><?php echo $this->Html->link($this->Html->tag('i', '', ['class' => 'fa fa-list-ul']).' List', '/PurchaseInvoices',['escape' => false]); ?></li>
 	</ul>
 </li>
-
-
 <li class="start ">
 	<a href="javascript:;">
 
@@ -94,6 +66,11 @@ echo '<li>'.$this->Html->link($this->Html->tag('i', '', ['class' => 'icon-home']
 		<li><?php echo $this->Html->link($this->Html->tag('i', '', ['class' => 'fa fa-list-ul']).' List', '/PurchaseReturns',['escape' => false]); ?></li>
 	</ul>
 </li>
+
+
+
+
+
 
 <li class="start ">
 	<a href="javascript:;">
@@ -109,13 +86,13 @@ echo '<li>'.$this->Html->link($this->Html->tag('i', '', ['class' => 'icon-home']
 </li>
 <li class="start ">
 	<a href="javascript:;">
-	<i class="fa fa-cab"></i>
-	<span class="title">Stock Transfer</span>
+	<i class="fa fa-file-powerpoint-o"></i>
+	<span class="title">Purchase Voucher</span>
 	<span class="arrow "></span>
 	</a>
 	<ul class="sub-menu">
-		<li><?php echo $this->Html->link($this->Html->tag('i', '', ['class' => 'fa fa-plus-square']).' Create', '/IntraLocationStockTransferVouchers/Add',['escape' => false]); ?></li>
-		<li><?php echo $this->Html->link($this->Html->tag('i', '', ['class' => 'fa fa-list-ul']).' List', '/IntraLocationStockTransferVouchers',['escape' => false]); ?></li>
+		<li><?php echo $this->Html->link($this->Html->tag('i', '', ['class' => 'fa fa-plus-square']).' Create', '/PurchaseVouchers/Add',['escape' => false]); ?></li>
+		<li><?php echo $this->Html->link($this->Html->tag('i', '', ['class' => 'fa fa-list-ul']).' List', '/PurchaseVouchers',['escape' => false]); ?></li>
 	</ul>
 </li>
 <li class="start ">
@@ -142,7 +119,6 @@ echo '<li>'.$this->Html->link($this->Html->tag('i', '', ['class' => 'icon-home']
 		<li><?php echo $this->Html->link($this->Html->tag('i', '', ['class' => 'fa fa-list-ul']).' List', '/DebitNotes',['escape' => false]); ?></li>
 	</ul>
 </li>
-
 <li class="start ">
 	<a href="javascript:;">
 	<i class="fa fa-cab"></i>
@@ -187,6 +163,31 @@ echo '<li>'.$this->Html->link($this->Html->tag('i', '', ['class' => 'icon-home']
 		<li><?php echo $this->Html->link($this->Html->tag('i', '', ['class' => 'fa fa-list-ul']).' List', '/ContraVouchers',['escape' => false]); ?></li>
 	</ul>
 </li>
+
+<li class="start ">
+	<a href="javascript:;">
+	<i class="fa fa-cab"></i>
+	<span class="title">Stock Transfer</span>
+	<span class="arrow "></span>
+	</a>
+	<ul class="sub-menu">
+		<li><?php echo $this->Html->link($this->Html->tag('i', '', ['class' => 'fa fa-plus-square']).' Create', '/IntraLocationStockTransferVouchers/Add',['escape' => false]); ?></li>
+		<li><?php echo $this->Html->link($this->Html->tag('i', '', ['class' => 'fa fa-list-ul']).' List', '/IntraLocationStockTransferVouchers',['escape' => false]); ?></li>
+	</ul>
+</li>
+<li class="start ">
+	<a href="javascript:;">
+	<i class="fa  fa-database"></i>
+	<span class="title">Stock Journals</span>
+	<span class="arrow "></span>
+	</a>
+	<ul class="sub-menu">
+		<li><?php echo $this->Html->link($this->Html->tag('i', '', ['class' => 'fa fa-plus-square']).' Create', '/StockJournals/Add',['escape' => false]); ?></li>
+		<li><?php echo $this->Html->link($this->Html->tag('i', '', ['class' => 'fa fa-list-ul']).' List', '/StockJournals',['escape' => false]); ?></li>
+	</ul>
+</li>
+
+
 <?php 
 echo '<li>'.$this->Html->link($this->Html->tag('i', '', ['class' => 'fa fa-barcode']).'Generate Barcode', '/Items/generateBarcode',['escape' => false]).'</li>';
 ?>
