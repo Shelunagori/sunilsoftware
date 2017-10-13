@@ -22,7 +22,7 @@ echo '<li>'.$this->Html->link($this->Html->tag('i', '', ['class' => 'icon-home']
 <li class="start ">
 	<a href="javascript:;">
 
-	<i class="fa fa-square"></i>
+	<i class="fa fa-retweet"></i>
 	<span class="title">Sales Return</span>
 	<span class="arrow "></span>
 	</a>
@@ -45,7 +45,7 @@ echo '<li>'.$this->Html->link($this->Html->tag('i', '', ['class' => 'icon-home']
 <li class="start ">
 	<a href="javascript:;">
 
-	<i class="fa fa-square"></i>
+	<i class="fa fa-paragraph"></i>
 	<span class="title">Purchase Invoice</span>
 	<span class="arrow "></span>
 	</a>
@@ -57,7 +57,7 @@ echo '<li>'.$this->Html->link($this->Html->tag('i', '', ['class' => 'icon-home']
 <li class="start ">
 	<a href="javascript:;">
 
-	<i class="fa fa-square"></i>
+	<i class="fa fa-pied-piper"></i>
 	<span class="title">Purchase Return</span>
 	<span class="arrow "></span>
 	</a>
@@ -74,7 +74,7 @@ echo '<li>'.$this->Html->link($this->Html->tag('i', '', ['class' => 'icon-home']
 
 <li class="start ">
 	<a href="javascript:;">
-	<i class="fa fa-shopping-cart"></i>
+	<i class="fa fa-skype"></i>
 	<span class="title">Sales Voucher</span>
 	<span class="arrow "></span>
 	</a>
@@ -97,7 +97,7 @@ echo '<li>'.$this->Html->link($this->Html->tag('i', '', ['class' => 'icon-home']
 </li>
 <li class="start ">
 	<a href="javascript:;">
-	<i class="fa fa-pencil-square"></i>
+	<i class="fa fa-arrows"></i>
 
 	<span class="title">Credit Note</span>
 	<span class="arrow "></span>
@@ -109,7 +109,7 @@ echo '<li>'.$this->Html->link($this->Html->tag('i', '', ['class' => 'icon-home']
 </li>
 <li class="start ">
 	<a href="javascript:;">
-	<i class="fa fa-pencil-square"></i>
+	<i class="fa fa-arrows-alt"></i>
 
 	<span class="title">Debit Note</span>
 	<span class="arrow "></span>
@@ -121,7 +121,7 @@ echo '<li>'.$this->Html->link($this->Html->tag('i', '', ['class' => 'icon-home']
 </li>
 <li class="start ">
 	<a href="javascript:;">
-	<i class="fa fa-cab"></i>
+	<i class="fa fa-vimeo-square"></i>
 	<span class="title">Receipt Voucher</span>
 	<span class="arrow "></span>
 	</a>
@@ -132,7 +132,7 @@ echo '<li>'.$this->Html->link($this->Html->tag('i', '', ['class' => 'icon-home']
 </li>
 <li class="start ">
 	<a href="javascript:;">
-	<i class="fa fa-cab"></i>
+	<i class="fa fa-pinterest-square"></i>
 	<span class="title">Payment Voucher</span>
 	<span class="arrow "></span>
 	</a>
@@ -143,7 +143,7 @@ echo '<li>'.$this->Html->link($this->Html->tag('i', '', ['class' => 'icon-home']
 </li>
 <li class="start ">
 	<a href="javascript:;">
-	<i class="fa fa-cab"></i>
+	<i class="fa fa-openid"></i>
 	<span class="title">Journal Voucher</span>
 	<span class="arrow "></span>
 	</a>
