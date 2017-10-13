@@ -302,7 +302,6 @@ if($supplier_state_id== $state_id){
 					success1.show();
 					error1.hide();
 					var amount_before_tax  = parseFloat($('.amount_before_tax').val());
-					alert(amount_before_tax); 
 					if(!amount_before_tax || amount_before_tax==0){
 						alert('Error: zero amount invoice can not be generated.');
 						return false;
