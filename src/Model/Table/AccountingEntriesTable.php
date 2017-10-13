@@ -67,6 +67,7 @@ class AccountingEntriesTable extends Table
             'joinType' => 'LEFT'
         ]);
 		
+		
 		$this->belongsTo('SalesVouchers', [
             'foreignKey' => 'sales_voucher_id',
             'joinType' => 'LEFT'

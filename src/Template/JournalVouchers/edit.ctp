@@ -41,7 +41,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 					<div class="col-md-3">
 						<div class="form-group">
 							<label>Transaction Date <span class="required">*</span></label>
-							<?php echo $this->Form->control('transaction_date',['class'=>'form-control input-sm date-picker','data-date-format'=>'dd-mm-yyyy', 'label'=>false,'placeholder'=>'DD-MM-YYYY','type'=>'text','data-date-start-date'=>@$coreVariable[fyValidFrom],'data-date-end-date'=>@$coreVariable[fyValidTo],'required'=>'required']); ?>
+							<?php echo $this->Form->control('transaction_date',['class'=>'form-control input-sm date-picker','data-date-format'=>'dd-mm-yyyy', 'label'=>false,'placeholder'=>'DD-MM-YYYY','type'=>'text','data-date-start-date'=>@$coreVariable[fyValidFrom],'data-date-end-date'=>@$coreVariable[fyValidTo],'required'=>'required','value'=>date('d-m-Y',strtotime($journalVoucher->transaction_date))]); ?>
 						</div>
 					</div>
 					<div class="col-md-3">
@@ -272,8 +272,8 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 										<td colspan="2" >	
 											<button type="button" class="AddMainRow btn btn-default input-sm"><i class="fa fa-plus"></i> Add row</button>
 										</td>
-										<td><input type="text" class="form-control input-sm rightAligntextClass total_debit" placeholder="Total Debit" id="total_debit_amount" name="total_debit_amount" value="<?php echo $journalVoucher->total_debit_amount;?>"></td>
-										<td><input type="text" class="form-control input-sm rightAligntextClass total_credit" placeholder="Total Credit" id="total_credit_amount" name="total_credit_amount" value="<?php echo $journalVoucher->total_credit_amount;?>"></td>
+										<td><input type="text" class="form-control input-sm rightAligntextClass total_debit" placeholder="Total Debit" id="total_debit_amount" name="total_debit_amount" value="<?php echo $journalVoucher->total_debit_amount;?>" readonly></td>
+										<td><input type="text" class="form-control input-sm rightAligntextClass total_credit" placeholder="Total Credit" id="total_credit_amount" name="total_credit_amount" value="<?php echo $journalVoucher->total_credit_amount;?>" readonly></td>
 									</tr>
 								</tfoot>
 							</table>
@@ -532,6 +532,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				var currentRefRow=$(this).closest('tr');
 				var SelectedTr=$(this).closest('tr.MainTr');
 				if(type=='NEFT/RTGS'){
+					currentRefRow.find('span.help-block-error').remove();
 					currentRefRow.find('td:nth-child(2) input').val('');
 					currentRefRow.find('td:nth-child(3) input').val('');
 					currentRefRow.find('td:nth-child(2)').hide();
@@ -731,9 +732,20 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			function renameBankRows(SelectedTr){
 				var row_no=SelectedTr.attr('row_no');
 				SelectedTr.find('td:nth-child(2) div.window table tbody tr').each(function(){
+					var type = $(this).find('td:nth-child(1) select.paymentType option:selected').val();
 					$(this).find('td:nth-child(1) select.paymentType').attr({name:'journal_voucher_rows['+row_no+'][mode_of_payment]',id:'journal_voucher_rows-'+row_no+'-mode_of_payment'});
 					$(this).find('td:nth-child(2) input.cheque_no').attr({name:'journal_voucher_rows['+row_no+'][cheque_no]',id:'journal_voucher_rows-'+row_no+'-cheque_no'});
 					$(this).find('td:nth-child(3) input.cheque_date').attr({name:'journal_voucher_rows['+row_no+'][cheque_date]',id:'journal_voucher_rows-'+row_no+'-cheque_date'}).datepicker();
+					if(type=='Cheque')
+					{ 
+						$(this).find('td:nth-child(2) input.cheque_no').rules('add','required');
+						$(this).find('td:nth-child(3) input.cheque_date').rules('add','required');
+					}
+					else
+					{
+						$(this).find('td:nth-child(2) input.cheque_no').rules('remove','required');
+						$(this).find('td:nth-child(3) input.cheque_date').rules('remove','required');
+					}
 				});
 				
 			}

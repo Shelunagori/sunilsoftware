@@ -370,6 +370,7 @@ class LedgersController extends AppController
 		{
 			$where['AccountingEntries.ledger_id']=$ledger_id;
 		}
+
 		
 		$query = $this->Ledgers->AccountingEntries->find();
 		$CaseCreditOpeningBalance = $query->newExpr()
@@ -392,8 +393,6 @@ class LedgersController extends AppController
 			->where(['AccountingEntries.company_id'=>$company_id,'AccountingEntries.transaction_date <'=>$from_date,'AccountingEntries.ledger_id'=>$ledger_id])
 			->group('ledger_id')
 			->autoFields(true);
-			
-		
 		$AccountLedgersOpeningBalance=($query);
 		$total_debit=0;
 		$total_credit=0;

@@ -101,8 +101,8 @@ $this->set('title', 'Sales Voucher');
 										<td colspan="2">	
 											<button type="button" class="AddMainRow btn btn-default input-sm"><i class="fa fa-plus"></i> Add row</button>
 										</td>
-										<td><input type="text" class="form-control input-sm rightAligntextClass total_debit" placeholder="Total Debit" id="totalMainDr" name="totalMainDr"></td>
-										<td><input type="text" class="form-control input-sm rightAligntextClass total_credit" placeholder="Total Credit" id="totalMainCr" name="totalMainCr"></td>
+										<td><input type="text" class="form-control input-sm rightAligntextClass total_debit" placeholder="Total Debit" id="totalMainDr" name="totalMainDr" readonly></td>
+										<td><input type="text" class="form-control input-sm rightAligntextClass total_credit" placeholder="Total Credit" id="totalMainCr" name="totalMainCr" readonly></td>
 									</tr>
 								</tfoot>
 							</table>
@@ -195,7 +195,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				<div class="window" style="margin:auto;"></div>
 			</td>
 			<td width="10%" style="vertical-align: top !important;">
-				<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm  debitBox rightAligntextClass totalCalculation','placeholder'=>'Debit']); ?>
+				<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm  debitBox rightAligntextClass totalCalculation','placeholder'=>'Debit','required'=>'required']); ?>
 			</td>
 			<td width="10%" style="vertical-align: top !important;">
 				<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm creditBox rightAligntextClass totalCalculation','placeholder'=>'Credit','style'=>'display:none;']); ?>	
@@ -274,6 +274,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 	$kk='<input type="text" class="form-control input-sm ref_name " placeholder="Reference Name">';
 	$total_input='<input type="text" class="form-control input-sm rightAligntextClass total calculation noBorder" >';
 	$total_type='<input type="text" class="form-control input-sm total_type calculation noBorder" >';
+	$style ='style="vertical-align: top !important;"';
 	$js="
 		$(document).ready(function() {
 			renameMainRows()
@@ -332,7 +333,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			});
 			
 			$('.totalCalculation').die().live('keyup',function(){
-				 calc();
+				calc();
 			});
 			
 			function calc()
@@ -362,15 +363,19 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			$('.paymentType').die().live('change',function(){
 				var type=$(this).val();	
 				var currentRefRow=$(this).closest('tr');
+				var SelectedTr=$(this).closest('tr.MainTr');
 				if(type=='NEFT/RTGS'){
 					currentRefRow.find('td:nth-child(2) input').val('');
 					currentRefRow.find('td:nth-child(3) input').val('');
+					currentRefRow.find('span.help-block-error').remove();
 					currentRefRow.find('td:nth-child(2)').hide();
 					currentRefRow.find('td:nth-child(3)').hide();
+					renameBankRows(SelectedTr);
 				}
 				else{
 					currentRefRow.find('td:nth-child(2)').show();
 					currentRefRow.find('td:nth-child(3)').show();
+					renameBankRows(SelectedTr);
 				}
 			});
 			
@@ -431,14 +436,21 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				if(cr_dr=='Cr'){
 					$(this).closest('tr').find('.debitBox').val('');
 					calc();
+					$(this).closest('tr').find('input.debitBox').prop('required',false);
+					$(this).closest('tr').find('.debitBox').rules('remove','required');
+					$(this).closest('tr').find('span.help-block-error').remove();
 					$(this).closest('tr').find('.debitBox').hide();
 					$(this).closest('tr').find('.creditBox').show();
+					$(this).closest('tr').find('.creditBox').rules('add', 'required');
 				}
 				else if(cr_dr=='Dr'){
 					
 					$(this).closest('tr').find('.debitBox').show();
+					$(this).closest('tr').find('.debitBox').rules('add', 'required');
 					$(this).closest('tr').find('.creditBox').val('');
 					calc();
+					$(this).closest('tr').find('.creditBox').rules('remove', 'required');
+					$(this).closest('tr').find('span.help-block-error').remove();
 					$(this).closest('tr').find('.creditBox').hide();
 				}
 				renameMainRows();
@@ -450,7 +462,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 					var SelectedTr=$(this).closest('tr.MainTr');
 					var windowContainer=$(this).closest('td').find('div.window');
 					windowContainer.html('');
-					windowContainer.html('<table width=90% class=refTbl><tbody></tbody><tfoot><tr style=border-top:double#a5a1a1><td colspan=2></td><td>$total_input</td><td style=vertical-align: top !important;>$total_type</td></tr></tfoot></table><a role=button class=addRefRow>Add Row</a>');
+					windowContainer.html('<table width=90% class=refTbl><tbody></tbody><tfoot><tr style=border-top:double#a5a1a1><td colspan=2></td><td>$total_input</td><td $style>$total_type</td></tr></tfoot></table><a role=button class=addRefRow>Add Row</a>');
 					AddRefRow(SelectedTr);
 				}
 				else if(openWindow=='bank'){
@@ -495,9 +507,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 						//$(this).find('td:nth-child(3) input.debitBox').rules('add', 'required');
 						//$(this).find('td:nth-child(4) input.creditBox').rules('remove', 'required');
 						//$(this).find('td:nth-child(4) span.help-block-error').remove();
-						
 					}else{
-						
 						//$(this).find('td:nth-child(3) input.debitBox').rules('remove', 'required');
 						//$(this).find('td:nth-child(3) span.help-block-error').remove();
 						//$(this).find('td:nth-child(4) input.creditBox').rules('add', 'required');
@@ -520,9 +530,20 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			function renameBankRows(SelectedTr){
 				var row_no=SelectedTr.attr('row_no');
 				SelectedTr.find('td:nth-child(2) div.window table tbody tr').each(function(){
+					var type = $(this).find('td:nth-child(1) select.paymentType option:selected').val(); 
 					$(this).find('td:nth-child(1) select.paymentType').attr({name:'sales_voucher_rows['+row_no+'][mode_of_payment]',id:'sales_voucher_rows-'+row_no+'-mode_of_payment'});
 					$(this).find('td:nth-child(2) input.cheque_no').attr({name:'sales_voucher_rows['+row_no+'][cheque_no]',id:'sales_voucher_rows-'+row_no+'-cheque_no'});
 					$(this).find('td:nth-child(3) input.cheque_date').attr({name:'sales_voucher_rows['+row_no+'][cheque_date]',id:'sales_voucher_rows-'+row_no+'-cheque_date'}).datepicker();
+					if(type=='Cheque')
+					{ 
+						$(this).find('td:nth-child(2) input.cheque_no').rules('add','required');
+						$(this).find('td:nth-child(3) input.cheque_date').rules('add','required');
+					}
+					else
+					{
+						$(this).find('td:nth-child(2) input.cheque_no').rules('remove','required');
+						$(this).find('td:nth-child(3) input.cheque_date').rules('remove','required');
+					}
 				});
 				
 			}
