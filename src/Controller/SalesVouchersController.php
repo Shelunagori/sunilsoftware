@@ -267,7 +267,7 @@ class SalesVouchersController extends AppController
 					$this->SalesVouchers->AccountingEntries->save($accountEntry);
 				}
                 $this->Flash->success(__('The sales voucher has been saved.'));
-
+				$this->repairRef();
                 return $this->redirect(['action' => 'index']);
             }
 			

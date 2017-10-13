@@ -90,14 +90,111 @@ class CompaniesController extends AppController
 					$accountingGroup->name=$StatutoryInfo['name'];
 					$accountingGroup->parent_id=$StatutoryInfo['parent_id'];
 					$accountingGroup->company_id=$company->id;
+					if($accountingGroup->name=='Suspense A/c')
+					{
+						$accountingGroup->credit_note_all_row=1;
+						$accountingGroup->receipt_ledger=1;
+						$accountingGroup->debit_note_all_row=1;
+					}
+					if($accountingGroup->name=='Loans (Liability)')
+					{
+						$accountingGroup->credit_note_all_row=1;
+						$accountingGroup->receipt_ledger=1;
+						$accountingGroup->debit_note_all_row=1;
+					}
+					if($accountingGroup->name=='Investments')
+					{
+						$accountingGroup->credit_note_all_row=1;
+						$accountingGroup->receipt_ledger=1;
+						$accountingGroup->debit_note_all_row=1;
+					}
+					if($accountingGroup->name=='Capital Account')
+					{
+						$accountingGroup->credit_note_all_row=1;
+						$accountingGroup->receipt_ledger=1;
+						$accountingGroup->debit_note_all_row=1;
+					}
+					if($accountingGroup->name=='Current Assets')
+					{
+						$accountingGroup->purchase_voucher_all_ledger=1;
+						$accountingGroup->credit_note_all_row=1;
+						$accountingGroup->receipt_ledger=1;
+						$accountingGroup->debit_note_all_row=1;
+						$accountingGroup->sales_voucher_all_ledger=1;
+					}
+					if($accountingGroup->name=='Current Liabilities')
+					{
+						$accountingGroup->purchase_voucher_all_ledger=1;
+						$accountingGroup->credit_note_all_row=1;
+						$accountingGroup->receipt_ledger=1;
+						$accountingGroup->debit_note_all_row=1;
+						$accountingGroup->sales_voucher_all_ledger=1;
+					}
+					if($accountingGroup->name=='Direct Incomes')
+					{
+						$accountingGroup->purchase_voucher_all_ledger=1;
+						$accountingGroup->credit_note_all_row=1;
+						$accountingGroup->receipt_ledger=1;
+						$accountingGroup->debit_note_all_row=1;
+						$accountingGroup->sales_voucher_all_ledger=1;
+					}
+					if($accountingGroup->name=='Direct Expenses')
+					{
+						$accountingGroup->purchase_voucher_all_ledger=1;
+						$accountingGroup->credit_note_all_row=1;
+						$accountingGroup->receipt_ledger=1;
+						$accountingGroup->debit_note_all_row=1;
+						$accountingGroup->sales_voucher_all_ledger=1;
+					}
+					if($accountingGroup->name=='Indirect Incomes')
+					{
+						$accountingGroup->purchase_voucher_all_ledger=1;
+						$accountingGroup->credit_note_all_row=1;
+						$accountingGroup->receipt_ledger=1;
+						$accountingGroup->debit_note_all_row=1;
+						$accountingGroup->sales_voucher_all_ledger=1;
+					}
+					if($accountingGroup->name=='Indirect Expenses')
+					{
+						$accountingGroup->purchase_voucher_all_ledger=1;
+						$accountingGroup->credit_note_all_row=1;
+						$accountingGroup->receipt_ledger=1;
+						$accountingGroup->debit_note_all_row=1;
+						$accountingGroup->sales_voucher_all_ledger=1;
+					}
+					if($accountingGroup->name=='Misc. Expenses (ASSET)')
+					{
+						$accountingGroup->purchase_voucher_all_ledger=1;
+						$accountingGroup->credit_note_all_row=1;
+						$accountingGroup->receipt_ledger=1;
+						$accountingGroup->debit_note_all_row=1;
+					}
+					if($accountingGroup->name=='Branch / Divisions')
+					{
+						$accountingGroup->purchase_voucher_purchase_ledger=1;
+						$accountingGroup->credit_note_all_row=1;
+						$accountingGroup->credit_note_first_row=1;
+						$accountingGroup->receipt_ledger=1;
+						$accountingGroup->debit_note_first_row=1;
+						$accountingGroup->debit_note_all_row=1;
+						$accountingGroup->sales_voucher_first_ledger=1;
+					}
 					if($accountingGroup->name=='Purchase Accounts')
 					{
-						$accountingGroup->purchase_voucher_purchase_account=1;
+						$accountingGroup->purchase_voucher_all_ledger=1;
+						$accountingGroup->purchase_voucher_purchase_ledger=1;
+						$accountingGroup->credit_note_all_row=1;
+						$accountingGroup->receipt_ledger=1;
+						$accountingGroup->debit_note_all_row=1;
 					}
 					if($accountingGroup->name=='Sales Accounts')
 					{
 						$accountingGroup->sale_invoice_sales_account=1;
-						$accountingGroup->credit_note_sales_account=1;
+						$accountingGroup->credit_note_all_row=1;
+						$accountingGroup->receipt_ledger=1;
+						$accountingGroup->debit_note_all_row=1;
+						$accountingGroup->sales_voucher_all_ledger=1;
+						$accountingGroup->sales_voucher_sales_ledger=1;
 					}
 					$this->Companies->AccountingGroups->save($accountingGroup);
 				}
@@ -108,6 +205,9 @@ class CompaniesController extends AppController
 				$accountingGroup->name='Reserves & Surplus';
 				$accountingGroup->parent_id=$accountingParentGroup->id;
 				$accountingGroup->company_id=$company->id;
+				$accountingGroup->credit_note_all_row=1;
+				$accountingGroup->receipt_ledger=1;
+				$accountingGroup->debit_note_all_row=1;
 				$this->Companies->AccountingGroups->save($accountingGroup);
 				
 				$accountingParentGroup=$this->Companies->AccountingGroups->find()->where(['name'=>'Current Assets','company_id'=>$company->id])->first();
@@ -116,6 +216,11 @@ class CompaniesController extends AppController
 				$accountingGroup->name='Bank Accounts';
 				$accountingGroup->parent_id=$accountingParentGroup->id;
 				$accountingGroup->company_id=$company->id;
+				$accountingGroup->purchase_voucher_first_ledger=1;
+				$accountingGroup->credit_note_first_row=1;
+				$accountingGroup->receipt_ledger=1;
+				$accountingGroup->debit_note_first_row=1;
+				$accountingGroup->sales_voucher_first_ledger=1;
 				$this->Companies->AccountingGroups->save($accountingGroup);
 				
 				$accountingGroup = $this->Companies->AccountingGroups->newEntity();
@@ -125,7 +230,11 @@ class CompaniesController extends AppController
 				$accountingGroup->company_id=$company->id;
 				$accountingGroup->purchase_voucher_party=1;
 				$accountingGroup->sale_invoice_party=1;
-				$accountingGroup->credit_note_party=1;
+				$accountingGroup->credit_note_first_row=1;
+				$accountingGroup->receipt_ledger=1;
+				$accountingGroup->purchase_voucher_first_ledger=1;
+				$accountingGroup->debit_note_first_row=1;
+				$accountingGroup->sales_voucher_first_ledger=1;
 				$this->Companies->AccountingGroups->save($accountingGroup);
 				
 				$accountingGroup = $this->Companies->AccountingGroups->newEntity();
@@ -133,6 +242,9 @@ class CompaniesController extends AppController
 				$accountingGroup->name='Deposits (Asset)';
 				$accountingGroup->parent_id=$accountingParentGroup->id;
 				$accountingGroup->company_id=$company->id;
+				$accountingGroup->credit_note_all_row=1;
+				$accountingGroup->receipt_ledger=1;
+				$accountingGroup->debit_note_all_row=1;
 				$this->Companies->AccountingGroups->save($accountingGroup);
 				
 				$accountingGroup = $this->Companies->AccountingGroups->newEntity();
@@ -140,6 +252,9 @@ class CompaniesController extends AppController
 				$accountingGroup->name='Loans & Advances (Asset)';
 				$accountingGroup->parent_id=$accountingParentGroup->id;
 				$accountingGroup->company_id=$company->id;
+				$accountingGroup->credit_note_all_row=1;
+				$accountingGroup->receipt_ledger=1;
+				$accountingGroup->debit_note_all_row=1;
 				$this->Companies->AccountingGroups->save($accountingGroup);
 				
 				$accountingGroup = $this->Companies->AccountingGroups->newEntity();
@@ -157,6 +272,13 @@ class CompaniesController extends AppController
 				$accountingGroup->sale_invoice_party=1;
 				$accountingGroup->credit_note_party=1;
 				$accountingGroup->company_id=$company->id;
+				$accountingGroup->purchase_voucher_first_ledger=1;
+				$accountingGroup->credit_note_all_row=1;
+				$accountingGroup->credit_note_first_row=1;
+				$accountingGroup->receipt_ledger=1;
+				$accountingGroup->debit_note_first_row=1;
+				$accountingGroup->debit_note_all_row=1;
+				$accountingGroup->sales_voucher_first_ledger=1;
 				$this->Companies->AccountingGroups->save($accountingGroup);
 				
 				$accountingParentGroup=$this->Companies->AccountingGroups->find()->where(['name'=>'Current Liabilities','company_id'=>$company->id])->first();
@@ -165,6 +287,11 @@ class CompaniesController extends AppController
 				$accountingGroup->name='Duties & Taxes';
 				$accountingGroup->parent_id=$accountingParentGroup->id;
 				$accountingGroup->company_id=$company->id;
+				$accountingGroup->purchase_voucher_all_ledger=1;
+				$accountingGroup->credit_note_all_row=1;
+				$accountingGroup->receipt_ledger=1;
+				$accountingGroup->debit_note_all_row=1;
+				$accountingGroup->sales_voucher_all_ledger=1;
 				$this->Companies->AccountingGroups->save($accountingGroup);
 				
 				$accountingGroup = $this->Companies->AccountingGroups->newEntity();
@@ -172,6 +299,9 @@ class CompaniesController extends AppController
 				$accountingGroup->name='Provisions';
 				$accountingGroup->parent_id=$accountingParentGroup->id;
 				$accountingGroup->company_id=$company->id;
+				$accountingGroup->credit_note_all_row=1;
+				$accountingGroup->receipt_ledger=1;
+				$accountingGroup->debit_note_all_row=1;
 				$this->Companies->AccountingGroups->save($accountingGroup);
 				
 				$accountingGroup = $this->Companies->AccountingGroups->newEntity();
@@ -181,6 +311,13 @@ class CompaniesController extends AppController
 				$accountingGroup->supplier=1;
 				$accountingGroup->company_id=$company->id;
 				$accountingGroup->purchase_voucher_party=1;
+				$accountingGroup->purchase_voucher_first_ledger=1;
+				$accountingGroup->credit_note_all_row=1;
+				$accountingGroup->credit_note_first_row=1;
+				$accountingGroup->receipt_ledger=1;
+				$accountingGroup->debit_note_first_row=1;
+				$accountingGroup->debit_note_all_row=1;
+				$accountingGroup->sales_voucher_first_ledger=1;
 				$this->Companies->AccountingGroups->save($accountingGroup);
 				
 				$accountingParentGroup=$this->Companies->AccountingGroups->find()->where(['name'=>'Loans (Liability)','company_id'=>$company->id])->first();
@@ -189,6 +326,11 @@ class CompaniesController extends AppController
 				$accountingGroup->name='Bank OD A/c';
 				$accountingGroup->parent_id=$accountingParentGroup->id;
 				$accountingGroup->company_id=$company->id;
+				$accountingGroup->purchase_voucher_first_ledger=1;
+				$accountingGroup->credit_note_first_row=1;
+				$accountingGroup->receipt_ledger=1;
+				$accountingGroup->debit_note_first_row=1;
+				$accountingGroup->sales_voucher_first_ledger=1;
 				$this->Companies->AccountingGroups->save($accountingGroup);
 				
 				$accountingGroup = $this->Companies->AccountingGroups->newEntity();
@@ -196,6 +338,9 @@ class CompaniesController extends AppController
 				$accountingGroup->name='Secured Loans';
 				$accountingGroup->parent_id=$accountingParentGroup->id;
 				$accountingGroup->company_id=$company->id;
+				$accountingGroup->credit_note_all_row=1;
+				$accountingGroup->receipt_ledger=1;
+				$accountingGroup->debit_note_all_row=1;
 				$this->Companies->AccountingGroups->save($accountingGroup);
 				
 				$accountingGroup = $this->Companies->AccountingGroups->newEntity();
@@ -203,6 +348,9 @@ class CompaniesController extends AppController
 				$accountingGroup->name='Unsecured Loans';
 				$accountingGroup->parent_id=$accountingParentGroup->id;
 				$accountingGroup->company_id=$company->id;
+				$accountingGroup->credit_note_all_row=1;
+				$accountingGroup->receipt_ledger=1;
+				$accountingGroup->debit_note_all_row=1;
 				$this->Companies->AccountingGroups->save($accountingGroup);
 				
 				$accountingParentGroup=$this->Companies->AccountingGroups->find()->where(['name'=>'Duties & Taxes','company_id'=>$company->id])->first();

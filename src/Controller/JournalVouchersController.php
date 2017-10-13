@@ -153,6 +153,7 @@ class JournalVouchersController extends AppController
         $this->set('_serialize', ['journalVoucher']);
     }
 
+	
     /**
      * Edit method
      *
@@ -203,7 +204,7 @@ class JournalVouchersController extends AppController
 					$this->JournalVouchers->AccountingEntries->save($accountEntry);
 				}
                 $this->Flash->success(__('The journal voucher has been saved.'));
-
+				$this->repairRef();
                 return $this->redirect(['action' => 'index']);
             }
             $this->Flash->error(__('The journal voucher could not be saved. Please, try again.'));
