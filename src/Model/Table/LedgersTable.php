@@ -59,6 +59,10 @@ class LedgersTable extends Table
         $this->hasMany('AccountingEntries', [
             'foreignKey' => 'ledger_id'
         ]);
+		$this->hasMany('ReferenceDetails', [
+            'foreignKey' => 'ledger_id',
+			'joinType' => 'LEFT'
+        ]);
 		
     }
 
