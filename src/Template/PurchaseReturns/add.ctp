@@ -488,7 +488,7 @@ function rename_rows()
 				var netAmount =parseFloat($(this).closest('tr').find('.netAmount ').val());
 				
 				if(isNaN(quantity)){
-					var totalAmountReturn=0; alert(totalAmountReturn);
+					var totalAmountReturn=0; 
 					total_amt=total_amt+totalAmountReturn;
 					$(this).closest('tr').find('.returnQty').val(parseFloat(0).toFixed(2));
 					$(this).closest('tr').find('.returnAmt').val(parseFloat(totalAmountReturn).toFixed(2));
