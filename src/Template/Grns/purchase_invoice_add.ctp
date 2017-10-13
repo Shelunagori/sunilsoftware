@@ -35,7 +35,6 @@ $this->set('title', 'Create Sales Invoice');
 								<th scope="col"><?= __('Sr') ?></th>
 								<th scope="col"><?= $this->Paginator->sort('voucher_no') ?></th>
 								<th scope="col"><?= $this->Paginator->sort('transaction_date') ?></th>
-								<th scope="col"><?= $this->Paginator->sort('amount_after_tax') ?></th>
 								<th scope="col" class="actions"><?= __('Actions') ?></th>
 							</tr>
 						</thead>
@@ -44,10 +43,12 @@ $this->set('title', 'Create Sales Invoice');
 								<td><?= h(++$page_no) ?></td>
 								<td><?= h('#'.str_pad($Grns->voucher_no, 4, '0', STR_PAD_LEFT)) ?></td>
 								<td><?= h($Grns->transaction_date) ?></td>
-								<td class="rightAligntextClass"><?= h($Grns->amount_after_tax) ?></td>
 								<td class="actions">
-									
+									<?php  if($Grns->status=="Pending"){ ?>
 									<?= $this->Html->link(__('Create Purchase Invoice'), ['controller'=>'PurchaseInvoices','action' => 'add', $Grns->id]) ?>
+									<?php }else{ ?>
+										<?php  echo $Grns->status; ?>
+									<?php } ?>
 									
 								</td>
 							</tr>
