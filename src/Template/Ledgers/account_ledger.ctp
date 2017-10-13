@@ -116,58 +116,71 @@ $this->set('title', 'Account Ledger report');
 								if(!empty($AccountingLedger->is_opening_balance=='yes')){
 									echo 'Opening Balance';
 									@$voucher_no='-';
+									@$url_link='-';
 								}
 								else if(!empty($AccountingLedger->purchase_voucher_id)){
-									echo 'Purchase Vouchers';
 									@$voucher_no=$AccountingLedger->purchase_voucher->voucher_no;
+									@$url_link=$this->Html->link($voucher_no,['controller'=>'PurchaseVouchers','action' => 'view', $AccountingLedger->purchase_voucher_id],['target'=>'_blank']); 
+									echo 'Purchase Vouchers';
 								}
 								else if(!empty($AccountingLedger->purchase_invoice_id)){
 									echo 'Purchase Invoices';
 									@$voucher_no=$AccountingLedger->purchase_invoice->voucher_no;
+									@$url_link=$this->Html->link($voucher_no,['controller'=>'PurchaseInvoices','action' => 'view', $AccountingLedger->purchase_invoice_id],['target'=>'_blank']);
 								}
 								else if(!empty($AccountingLedger->purchase_return_id)){
 									echo 'Purchase Returns';
 									@$voucher_no=$AccountingLedger->purchase_return->voucher_no;
+									@$url_link=$this->Html->link($voucher_no,['controller'=>'PurchaseReturns','action' => 'view', $AccountingLedger->purchase_return_id],['target'=>'_blank']);
 								}
 								else if(!empty($AccountingLedger->sales_invoice_id)){
 									echo 'Sales Invoices';
 									@$voucher_no=$AccountingLedger->sales_invoice->voucher_no;
+									@$url_link=$this->Html->link($voucher_no,['controller'=>'SalesInvoices','action' => 'view', $AccountingLedger->sales_invoice_id],['target'=>'_blank']);
 								}
 								else if(!empty($AccountingLedger->sale_return_id)){
 									echo 'Sales Returns';
 									@$voucher_no=$AccountingLedger->sale_return->voucher_no;
+									@$url_link=$this->Html->link($voucher_no,['controller'=>'SaleReturns','action' => 'view', $AccountingLedger->sale_return_id],['target'=>'_blank']);
 								}
 								else if(!empty($AccountingLedger->sales_voucher_id)){
 									echo 'Sales Vouchers';
 									@$voucher_no=$AccountingLedger->sales_voucher->voucher_no;
+									@$url_link=$this->Html->link($voucher_no,['controller'=>'SalesVouchers','action' => 'view', $AccountingLedger->sales_voucher_id],['target'=>'_blank']);
 								}
 								else if(!empty($AccountingLedger->journal_voucher_id)){
 									echo 'Journal Vouchers';
 									@$voucher_no=$AccountingLedger->journal_voucher->voucher_no;
+									@$url_link=$this->Html->link($voucher_no,['controller'=>'JournalVouchers','action' => 'view', $AccountingLedger->journal_voucher_id],['target'=>'_blank']);
 								}
 								else if(!empty($AccountingLedger->contra_voucher_id)){
 									echo 'Contra Vouchers';
 									@$voucher_no=$AccountingLedger->contra_voucher->voucher_no;
+									@$url_link=$this->Html->link($voucher_no,['controller'=>'ContraVouchers','action' => 'view', $AccountingLedger->contra_voucher_id],['target'=>'_blank']);
 								}
 								else if(!empty($AccountingLedger->receipt_id)){
 									echo 'Receipt Vouchers';
 									@$voucher_no=$AccountingLedger->receipt->voucher_no;
+									@$url_link=$this->Html->link($voucher_no,['controller'=>'Receipts','action' => 'view', $AccountingLedger->receipt_id],['target'=>'_blank']);
 								}
 								else if(!empty($AccountingLedger->payment_id)){
 									echo 'Payment Vouchers';
 									@$voucher_no=$AccountingLedger->payment->voucher_no;
+									@$url_link=$this->Html->link($voucher_no,['controller'=>'Payments','action' => 'view', $AccountingLedger->payment_id],['target'=>'_blank']);
 								}
 								else if(!empty($AccountingLedger->credit_note_id)){
 									echo 'Credit Note Vouchers';
 									@$voucher_no=$AccountingLedger->credit_note->voucher_no;
+									@$url_link=$this->Html->link($voucher_no,['controller'=>'CreditNotes','action' => 'view', $AccountingLedger->credit_note_id],['target'=>'_blank']);
 								}
 								else if(!empty($AccountingLedger->debit_note_id)){
 									echo 'Debit Note Vouchers';
 									@$voucher_no=$AccountingLedger->debit_note->voucher_no;
+									@$url_link=$this->Html->link($voucher_no,['controller'=>'DebitNotes','action' => 'view', $AccountingLedger->debit_note_id],['target'=>'_blank']);
 								}
 								?>
 								</td>
-								<td class="rightAligntextClass"><?php echo $voucher_no ?></td>
+								<td class="rightAligntextClass"><?php echo $url_link; ?></td>
 								<td style="text-align:right";>
 								<?php 
 									if(!empty($AccountingLedger->debit))
