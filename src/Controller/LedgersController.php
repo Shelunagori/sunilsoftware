@@ -355,115 +355,69 @@ class LedgersController extends AppController
 		$ledger_id         = $this->request->query('ledger_id');
 		$from_date         = $this->request->query('from_date');
 		$to_date           = $this->request->query('to_date');
-		
-		$where['AccountingEntries.company_id']  = $company_id;
-		$where1['AccountingEntries.company_id'] = $company_id;
-		
-		if(!empty($ledger_id)){
-			$where['AccountingEntries.ledger_id']=$ledger_id;
-			$where1['AccountingEntries.ledger_id']=$ledger_id;
-		} 
-		if(!empty($from_date)){
-		    $From=date("Y-m-d",strtotime($from_date));
-            $where['AccountingEntries.transaction_date >=']=$From;
-			$where1['AccountingEntries.transaction_date <=']=$From;
-        }
-		if(!empty($to_date)){
-			$To=date("Y-m-d",strtotime($to_date));
-            $where['AccountingEntries.transaction_date <=']=$To;
-			
-		}
-		if(!empty($ledger_id) || !empty($from_date) || !empty($to_date))
-		$AccountingLedgers = $this->Ledgers->AccountingEntries->find()->where($where)->contain(['Ledgers','SalesInvoices','SaleReturns'])->order(['AccountingEntries.transaction_date'=>'ASC']);
-
-		if(!empty($AccountingLedgers))
-		{ 
-	
-			$credit=0;$debit=0;$opening_balance_yes_credit_total=0;$opening_balance_yes_debit_total=0;
-			$openingBalance_debit=0;$openingBalance_credit=0;
-			foreach($AccountingLedgers as $AccountingLedgers1)
-			{    
-				if(!empty($AccountingLedgers1->purchase_voucher_id)){
-					@$voucher_type[$AccountingLedgers1->id]='Purchase Vouchers';
-					@$url_link=$this->Ledgers->AccountingEntries->PurchaseVouchers->find()->where(['PurchaseVouchers.id'=>$AccountingLedgers1->purchase_voucher_id])->first();
-					$voucher_no[$AccountingLedgers1->id]=$url_link->voucher_no;
-				}
-				if(!empty($AccountingLedgers1->sales_invoice_id)){
-					@$voucher_type[$AccountingLedgers1->id]='Sales Invoices';
-					@$url_link=$this->Ledgers->AccountingEntries->SalesInvoices->find()->where(['SalesInvoices.id'=>$AccountingLedgers1->sales_invoice_id])->first();
-					$voucher_no[$AccountingLedgers1->id]=$url_link->voucher_no;
-					
-				}
-				if(!empty($AccountingLedgers1->sale_return_id)){ 
-					@$voucher_type[$AccountingLedgers1->id]='Sales Returns';
-					@$url_link=$this->Ledgers->AccountingEntries->SaleReturns->find()->where(['SaleReturns.id'=>$AccountingLedgers1->sale_return_id])->first();
-					$voucher_no[$AccountingLedgers1->id]=$url_link->voucher_no;
-					
-				}
-				if($AccountingLedgers1->is_opening_balance!='yes')
-				{
-					$credit += $AccountingLedgers1->credit; 
-					$debit  += $AccountingLedgers1->debit; 
-				}
-			}
-			
-			$total_credit = $credit+$opening_balance_yes_credit_total;  
-			$total_debit  = $debit+$opening_balance_yes_debit_total; 
-			
-			if($total_credit>$total_debit)
-			{
-				$openingBalance_debit = $total_credit-$total_debit;
-			}
-			
-			if($total_credit<$total_debit)
-			{
-				$openingBalance_credit = $total_debit-$total_credit;
-			}
-			
-		}
-		
-		$AccountingLedgersBeforeFromDate = $this->Ledgers->AccountingEntries->find()
-											->where($where1)
-											->contain(['Ledgers'])
-											->order(['ledger_id'=>'ASC']);
-		//pr($AccountingLedgersBeforeFromDate->toArray());
-		$closingBalance_credit1 = 0;
-		$closingBalance_debit1  = 0;
-		if(!empty($AccountingLedgersBeforeFromDate))
+		$where =[];
+		if(!empty($from_date))
 		{
-			$credit1=0;$debit1=0;$opening_balance_yes_credit_total1=0;$opening_balance_yes_debit_total1=0;
-			foreach($AccountingLedgersBeforeFromDate as $AccountingLedgersBeforeFromDate1)
-			{
-				if($AccountingLedgersBeforeFromDate1->is_opening_balance!='yes')
-				{
-					$credit1 += $AccountingLedgersBeforeFromDate1->credit; 
-					$debit1  += $AccountingLedgersBeforeFromDate1->debit; 
-				}
-				else
-				{
-					$opening_balance_yes_credit_total1 += $AccountingLedgersBeforeFromDate1->credit; 
-					$opening_balance_yes_debit_total1  += $AccountingLedgersBeforeFromDate1->debit; 
-				}
-			}
-			$total_credit1 = $credit1+$opening_balance_yes_credit_total1;  
-			$total_debit1  = $debit1+$opening_balance_yes_debit_total1; 
-			if($total_credit1 > $total_debit1)
-			{ 
-				$openingBalance_credit1 = $total_credit1-$total_debit1; 
-				 
-			}
-			
-			if($total_credit1 < $total_debit1)
-			{ 
-				$openingBalance_debit1 = $total_debit1-$total_credit1; 
-			}
-			$closingBalance_credit1 = @$openingBalance_credit1+@$openingBalance_credit;
-			$closingBalance_debit1  = @$openingBalance_debit1+@$openingBalance_debit;
-			//exit;
+			$from_date = date("Y-m-d",strtotime($from_date));
+			$where['AccountingEntries.transaction_date >=']=$from_date;
 		}
+		if(!empty($to_date))
+		{
+			$to_date   = date("Y-m-d",strtotime($to_date));
+			$where['AccountingEntries.transaction_date <=']=$to_date;
+		}
+		if(!empty($ledger_id))
+		{
+			$where['AccountingEntries.ledger_id']=$ledger_id;
+		}
+		
+		$query = $this->Ledgers->AccountingEntries->find();
+		$CaseCreditOpeningBalance = $query->newExpr()
+					->addCase(
+						$query->newExpr()->add(['ledger_id']),
+						$query->newExpr()->add(['credit']),
+						'decimal'
+					);
+		$CaseDebitOpeningBalance = $query->newExpr()
+					->addCase(
+						$query->newExpr()->add(['ledger_id']),
+						$query->newExpr()->add(['debit']),
+						'decimal'
+					);
+		$query->select([
+				'debit_opening_balance' => $query->func()->sum($CaseDebitOpeningBalance),
+				'credit_opening_balance' => $query->func()->sum($CaseCreditOpeningBalance),
+				'id','ledger_id'
+			])
+			->where(['AccountingEntries.company_id'=>$company_id,'AccountingEntries.transaction_date <'=>$from_date,'AccountingEntries.ledger_id'=>$ledger_id])
+			->group('ledger_id')
+			->autoFields(true);
+			
+		
+		$AccountLedgersOpeningBalance=($query);
+		$total_debit=0;
+		$total_credit=0;
+		foreach($AccountLedgersOpeningBalance as $AccountLedgersOpeningBalance){
+			$total_debit=$AccountLedgersOpeningBalance->debit_opening_balance;
+			$total_credit=$AccountLedgersOpeningBalance->credit_opening_balance;
+		}
+		@$opening_balance=$total_debit-$total_credit;
+			if($opening_balance>0){
+			@$opening_balance_type='Dr';	
+			}
+			else if($opening_balance<0){
+			$opening_balance=abs($opening_balance);
+			@$opening_balance_type='Cr';	
+			}
+			else{
+			@$opening_balance_type='';	
+			}
+		$opening_balance=round($opening_balance,2);
+		$AccountingLedgers=$this->Ledgers->AccountingEntries->find()->where(['AccountingEntries.company_id'=>$company_id])->contain(['Ledgers','PurchaseVouchers','SalesInvoices','SaleReturns','Payments','SalesVouchers','Receipts','JournalVouchers','ContraVouchers','CreditNotes','DebitNotes','JournalVouchers','PurchaseInvoices'])->where($where)
+		->autoFields(true);
 		//pr($AccountingLedgers->toArray());exit;
 		$ledgers = $this->Ledgers->find('list')->where(['company_id'=>$company_id]);
-		$this->set(compact('accountLedger','ledgers','openingBalance_debit1','closingBalance_debit1','openingBalance_credit1','closingBalance_credit1','AccountingLedgers','from_date','to_date','voucher_type','voucher_no','ledger_id'));
+		$this->set(compact('accountLedger','ledgers','opening_balance_type','opening_balance','openingBalance_credit1','closingBalance_credit1','AccountingLedgers','from_date','to_date','voucher_type','voucher_no','ledger_id'));
         $this->set('_serialize', ['ledger']);
     }
 	public function dayBook($id = null)
