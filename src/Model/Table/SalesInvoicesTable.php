@@ -82,6 +82,9 @@ class SalesInvoicesTable extends Table
             'foreignKey' => 'sales_invoice_id',
             'joinType' => 'INNER'
         ]);
+		 $this->hasMany('Receipts', [
+            'foreignKey' => 'sales_invoice_id'
+        ]);
     }
 
     /**

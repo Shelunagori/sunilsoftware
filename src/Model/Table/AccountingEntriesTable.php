@@ -74,6 +74,23 @@ class AccountingEntriesTable extends Table
             'foreignKey' => 'contra_voucher_id',
             'joinType' => 'INNER'
         ]);
+		$this->belongsTo('Receipts', [
+            'foreignKey' => 'receipt_id',
+            'joinType' => 'INNER'
+        ]);
+		$this->belongsTo('Payments', [
+            'foreignKey' => 'payment_id',
+            'joinType' => 'INNER'
+        ]);
+		$this->belongsTo('CreditNotes', [
+            'foreignKey' => 'credit_note_id',
+            'joinType' => 'INNER'
+        ]);
+		$this->belongsTo('DebitNotes', [
+            'foreignKey' => 'debit_note_id',
+            'joinType' => 'INNER'
+        ]);
+		
     }
 
     /**

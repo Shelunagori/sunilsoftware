@@ -256,7 +256,20 @@ $this->set('title', 'Trial balance report');
 								} 
 								?>
 							</th>
-							<th style="text-align:right";></th>
+							<th style="text-align:right";>
+								<?php 
+								  if(@$coreVariable[fyValidFrom]>$from_date && @$coreVariable[fyValidFrom]<$to_date || @$coreVariable[fyValidFrom]==$from_date || @$coreVariable[fyValidFrom]==$to_date)
+								  { 
+									if($totalDebit>0)
+									{
+										echo @$totalDebit;
+										//$transactionDebitTotal +=round($totalDebit,2);
+										@$total5 +=$totalDebit;
+									}
+									
+								  } 
+								?>
+							</th>
 							<th style="text-align:right";></th>
 						</tr>
 						<tr style="color:red;">
@@ -309,7 +322,14 @@ $this->set('title', 'Trial balance report');
 								}
 							?>
 							</th>
-							<th scope="col" colspan="2"></th>
+							<th></th>
+							<th scope="col" style="text-align:right";>
+							<?php 
+								if(@$coreVariable[fyValidFrom]>$from_date && @$coreVariable[fyValidFrom]<$to_date || @$coreVariable[fyValidFrom]==$from_date || @$coreVariable[fyValidFrom]==$to_date)
+								{
+									echo @$cedit_diff1;
+								}
+							?></th>
 						</tr>
 						<tr>
 							<th scope="col">Total</th>
@@ -340,7 +360,7 @@ $this->set('title', 'Trial balance report');
 							</th>
 							<th scope="col" style="text-align:right";>
 							<?php 
-								echo @$total6;
+								echo @$total6+@$cedit_diff1;
 							?>
 							</th>
 						</tr>
