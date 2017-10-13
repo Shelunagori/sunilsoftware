@@ -104,19 +104,19 @@ class AccountingEntriesTable extends Table
         ]);
 		$this->belongsTo('Receipts', [
             'foreignKey' => 'receipt_id',
-            'joinType' => 'INNER'
+            'joinType' => 'LEFT'
         ]);
 		$this->belongsTo('Payments', [
             'foreignKey' => 'payment_id',
-            'joinType' => 'INNER'
+            'joinType' => 'LEFT'
         ]);
 		$this->belongsTo('CreditNotes', [
             'foreignKey' => 'credit_note_id',
-            'joinType' => 'INNER'
+            'joinType' => 'LEFT'
         ]);
 		$this->belongsTo('DebitNotes', [
             'foreignKey' => 'debit_note_id',
-            'joinType' => 'INNER'
+            'joinType' => 'LEFT'
         ]);
 		
     }
