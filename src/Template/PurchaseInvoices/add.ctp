@@ -25,20 +25,29 @@ if($supplier_state_id== $state_id){
 					</div><br><br>
 					
 					<div class="row">
-						<div class="col-md-2">
+						<div class="col-md-3">
 							<div class="form-group">
-								<label><b>Voucher No :</b></label>&nbsp;&nbsp;<br>
+								<label><b>GRN Voucher No :</b></label>&nbsp;&nbsp;<br>
 								<?= h('#'.str_pad($Grns->voucher_no, 4, '0', STR_PAD_LEFT)) ?>
 							</div>
 						</div>
-						<div class="col-md-2">
+						<div class="col-md-3">
 							<div class="form-group">
-								<label>Transaction Date <span class="required">*</span></label>
-								<input type="text" name="transaction_date" class="form-control input-sm date-picker" data-date-format="dd-mm-yyyy" placeholder="DD-MM-YYYY" data-date-start-date="01-04-2017" data-date-end-date="31-03-2018" required="required" id="transaction-date" value="09-10-2017">
+								<label>GRN Transaction Date <span class="required">*</span></label><br/>
+								<?php echo $Grns->transaction_date; ?>
 							</div>
 						</div>
+					</div>
 						<input type="hidden" name="state_id" class="state_id" value="<?php echo $state_id;?>">
 						<input type="hidden" name="is_interstate" id="is_interstate" value="<?php echo $is_interstate;?>">
+						
+					<div class="row">
+						<div class="col-md-3">
+							<div class="form-group">
+								<label><b>Purchase Invoice Voucher No :</b></label>&nbsp;&nbsp;<br>
+								<?= h('#'.str_pad($Voucher_no_last->voucher_no+1, 4, '0', STR_PAD_LEFT)) ?>
+							</div>
+						</div>
 						<div class="col-md-3">
 								<label>Supplier</label>
 								<?php
@@ -53,8 +62,15 @@ if($supplier_state_id== $state_id){
 								<?php echo $this->Form->control('purchase_ledger_id',['class'=>'form-control input-sm supplier_ledger_id select2me','label'=>false, 'options' => $Accountledgers,'required'=>'required']);
 								?>
 						</div>
-					</div>
+						<div class="col-md-2">
+							<div class="form-group">
+								<label>Transaction Date <span class="required">*</span></label>
+								<input type="text" name="transaction_date" class="form-control input-sm date-picker" data-date-format="dd-mm-yyyy" placeholder="DD-MM-YYYY" data-date-start-date="01-04-2017" data-date-end-date="31-03-2018" required="required" id="transaction-date" value="09-10-2017">
+							</div>
+						</div>
+					</div><BR/><BR/>
 					
+				   
 				   <div class="row">
 				  <div class="table-responsive">
 								<table id="main_table" class="table table-condensed table-bordered" style="margin-bottom: 4px;" width="100%">

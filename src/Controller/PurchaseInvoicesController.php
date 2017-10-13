@@ -63,7 +63,10 @@ class PurchaseInvoicesController extends AppController
         $Grns = $this->PurchaseInvoices->Grns->get($id, [
             'contain' => (['GrnRows'=>['Items'=>['FirstGstFigures']],'SupplierLedgers'])
         ]);
-		//pr($Grns->supplier_ledger_id); exit;
+		
+		
+			$Voucher_no_last = $this->PurchaseInvoices->find()->select(['voucher_no'])->where(['company_id'=>$company_id])->order(['voucher_no' => 'DESC'])->first();
+		//pr($Voucher_no_last->voucher_no); exit;
         $purchaseInvoice = $this->PurchaseInvoices->newEntity();
         if ($this->request->is('post')) {
             $purchaseInvoice = $this->PurchaseInvoices->patchEntity($purchaseInvoice, $this->request->getData());
@@ -239,7 +242,7 @@ class PurchaseInvoicesController extends AppController
 		//exit;
         $companies = $this->PurchaseInvoices->Companies->find('list', ['limit' => 200]);
         $supplierLedgers = $this->PurchaseInvoices->SupplierLedgers->find('list', ['limit' => 200]);
-        $this->set(compact('purchaseInvoice', 'companies', 'supplierLedgers','Grns','partyOptions','state_id','Accountledgers','supplier_state_id'));
+        $this->set(compact('purchaseInvoice', 'companies', 'supplierLedgers','Grns','partyOptions','state_id','Accountledgers','supplier_state_id','Voucher_no_last'));
         $this->set('_serialize', ['purchaseInvoice']);
     }
 

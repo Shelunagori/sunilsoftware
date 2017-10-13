@@ -20,11 +20,15 @@ if($supplier_state_id== $state_id){
 			
 			<div class="portlet-body">
 				<?= $this->Form->create($purchaseInvoice,['onsubmit'=>'return checkValidation()']) ?>
+					<div class="row">
+						<div class="col-md-12 caption-subject font-green-sharp bold " align="center" style="font-size:16px"><b>PURCHASE INVOICE EDIT</b></div>
+						
+					</div><br><br>
 					
 					<div class="row">
 						<div class="col-md-2">
 							<div class="form-group">
-								<label><b>Voucher No :</b></label>&nbsp;&nbsp;<br>
+								<label><b> Voucher No :</b></label>&nbsp;&nbsp;<br>
 								<?= h('#'.str_pad($purchaseInvoice->voucher_no, 4, '0', STR_PAD_LEFT)) ?>
 							</div>
 						</div>
