@@ -20,6 +20,11 @@ if($supplier_state_id== $state_id){
 				<?= $this->Form->create($purchaseInvoice,['onsubmit'=>'return checkValidation()']) ?>
 					
 					<div class="row">
+						<div class="col-md-12 caption-subject font-green-sharp bold " align="center" style="font-size:16px"><b>PURCHASE INVOICE</b></div>
+						
+					</div><br><br>
+					
+					<div class="row">
 						<div class="col-md-2">
 							<div class="form-group">
 								<label><b>Voucher No :</b></label>&nbsp;&nbsp;<br>
@@ -45,7 +50,7 @@ if($supplier_state_id== $state_id){
 						
 						<div class="col-md-3">
 								<label>Purchase Account</label>
-								<?php echo $this->Form->control('purchase_ledger_id',['empty'=>'-Select Supplier-', 'class'=>'form-control input-sm supplier_ledger_id select2me','label'=>false, 'options' => $Accountledgers,'required'=>'required']);
+								<?php echo $this->Form->control('purchase_ledger_id',['class'=>'form-control input-sm supplier_ledger_id select2me','label'=>false, 'options' => $Accountledgers,'required'=>'required']);
 								?>
 						</div>
 					</div>
@@ -399,26 +404,28 @@ if($supplier_state_id== $state_id){
 	
 	$('.pnfAmount').die().live('blur',function()
 	{
-		reverse_calculation();
+				var quantity=parseFloat($(this).closest('tr').find('.quantity').val());
+			    var rate=parseFloat($(this).closest('tr').find('.rate').val());
+				var amount=quantity*rate;
+			   var pnfAmt=parseFloat($(this).closest('tr').find('.pnfAmount').val());
+				if(isNaN(pnfAmt)){ 
+					var pnfPer=0;
+					var pnfAmt=0;
+					$(this).closest('tr').find('.pnf').val(pnfPer.toFixed(2));
+					$(this).closest('tr').find('.pnfAmount').val(pnfAmt.toFixed(2));
+					//total_pnf=total_pnf+pnfAmt;
+				}else{
+					var pnfPer=(100*pnfAmt)/amount;
+					pnfPer=round(pnfPer,3);
+					//var pnfAmt=(amount*pnf)/100;
+					$(this).closest('tr').find('.pnf').val(pnfPer);
+					//total_pnf=total_pnf+pnfAmt;
+				}
 	});
+	
 	$('.discountAmount').die().live('blur',function()
 	{	
-		reverse_calculation();
-	});
-		
-	
-	function reverse_calculation() 
-	{ 
-		
-			var total_dis=0;
-			var total_pnf=0;
-			var total_taxable=0;
-			var total_gst=0;
-			var total_round=0;
-			var total_amt=0;
-		$('#main_table tbody#main_tbody tr.main_tr').each(function()
-			{ 
-			    var quantity=parseFloat($(this).closest('tr').find('.quantity').val());
+			var quantity=parseFloat($(this).closest('tr').find('.quantity').val());
 			    var rate=parseFloat($(this).closest('tr').find('.rate').val());
 				var amount=quantity*rate;
 			    var discountAmt=parseFloat($(this).closest('tr').find('.discountAmount').val());
@@ -430,79 +437,13 @@ if($supplier_state_id== $state_id){
 					total_dis=total_dis+discountAmt;
 				}else{
 					var dis=(100*discountAmt)/amount;
-					$(this).closest('tr').find('.discount').val(dis.toFixed(2));
+					dis=round(dis,3);
+					$(this).closest('tr').find('.discount').val(dis);
 					total_dis=total_dis+discountAmt;
 				}
-				
-				amountAfterDiscount=amount-discountAmt;
-				
-				var pnfAmt=parseFloat($(this).closest('tr').find('.pnfAmount').val());
-				if(isNaN(pnfAmt)){ 
-					var pnfPer=0;
-					var pnfAmt=0;
-					$(this).closest('tr').find('.pnf').val(pnfPer.toFixed(2));
-					$(this).closest('tr').find('.pnfAmount').val(pnfAmt.toFixed(2));
-					total_pnf=total_pnf+pnfAmt;
-				}else{
-					var pnfPer=(100*pnfAmt)/amount;
-					//var pnfAmt=(amount*pnf)/100;
-					$(this).closest('tr').find('.pnf').val(pnfPer.toFixed(2));
-					total_pnf=total_pnf+pnfAmt;
-				}
-				taxableAmt=amountAfterDiscount+pnfAmt;
-				$(this).closest('tr').find('.taxableValue').val(taxableAmt.toFixed(2));
-				total_taxable=total_taxable+taxableAmt;
-				var gstTax=parseFloat($(this).closest('tr').find('.gst_figure_id').val());
-				if(!gstTax){ 
-					var gstAmt=0;
-					$(this).closest('tr').find('.gstValue').val(gstAmt.toFixed(2));
-				}else{
-					var supplier_state_id =($('.supplier_ledger_id ').find('option:selected').attr('state_id'));
-					var state_id=$('.state_id').val();
-					if(supplier_state_id!=state_id)
-					{
-						var amt2=(taxableAmt*gstTax)/100;
-						$(this).closest('tr').find('.gstValue').val(amt2.toFixed(2));
-						var gstamt1=parseFloat($(this).closest('tr').find('.gstValue').val());
-						total_gst=total_gst+gstamt1;
-					}else{ 
-						var gstAmt=(taxableAmt*gstTax)/100;
-						var gstAmt=gstAmt.toFixed(2);
-						var amt=gstAmt/2;
-						var amt1=amt.toFixed(2);
-						var amt2=amt1*2;
-						$(this).closest('tr').find('.gstValue').val(amt2.toFixed(2));
-						var gstamt1=parseFloat($(this).closest('tr').find('.gstValue').val());
-						total_gst=total_gst+gstamt1;
-					}
-				}
-				
-				var totalAmount=taxableAmt+amt2;
-				
-				 var round_of_amt=parseFloat($(this).closest('tr').find('.roundOff').val());
-				 if(isNaN(round_of_amt)){
-					 var round_of=0;
-					  $(this).closest('tr').find('.round_of').val(round_of.toFixed(2));
-				 }else{
-					  var round_of=round_of_amt;
-				 }
-				 
-				total_round=total_round+round_of;
-				$(this).closest('tr').find('.roundOff').val(round_of.toFixed(2));
-				var totalAmountAfterRound=totalAmount+round_of;
-				
-				total_amt=total_amt+totalAmountAfterRound;
-				$(this).closest('tr').find('.netAmount').val(parseFloat(totalAmountAfterRound.toFixed(2)));
-				
-			});
-			$('.total_discount_amt').val(total_dis.toFixed(2));
-			$('.total_pnf_amt').val(total_pnf.toFixed(2));
-			$('.total_taxable_value').val(total_taxable.toFixed(2));
-			$('.total_gst_value').val(total_gst.toFixed(2));
-			$('.total_round_amount').val(total_round.toFixed(2));
-			$('.total_amount').val(parseFloat(total_amt.toFixed(2)));
-			rename_rows();
-	}
+	});
+		
+
 		
 		
 

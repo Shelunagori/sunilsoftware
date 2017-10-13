@@ -175,7 +175,7 @@ if($supplier_state_id== $state_id){
 								</td>
 
 								<td width="8%" align="center">
-									<?php echo $this->Form->input('q', ['label' => false,'class' => 'form-control input-sm returnQty calculation rightAligntextClass numberOnly','placeholder'=>'Return Quantity',  'tabindex'=>'-1','type'=>'text','maxqt'=>$purchase_invoice_row->quantity-@$purchase_return_qty[@$purchase_invoice_row->id]]);
+									<?php echo $this->Form->input('q', ['label' => false,'class' => 'form-control input-sm returnQty calculation rightAligntextClass numberOnly','placeholder'=>'Return Quantity',  'tabindex'=>'-1','type'=>'text','maxqt'=>$purchase_invoice_row->quantity-@$purchase_return_qty[@$purchase_invoice_row->id],'minqt'=>0.01]);
 											echo "<br>";
 											//echo @$purchase_return_qty[@$purchase_invoice_row->id];
 									?>	<span align="center">Max Quantity:- <?php echo $purchase_invoice_row->quantity-@$purchase_return_qty[@$purchase_invoice_row->id];?></span>
@@ -301,7 +301,17 @@ if($supplier_state_id== $state_id){
                 submitHandler: function (form) {
 					success1.show();
 					error1.hide();
+					var amount_before_tax  = parseFloat($('.amount_before_tax').val());
+					alert(amount_before_tax); 
+					if(!amount_before_tax || amount_before_tax==0){
+						alert('Error: zero amount invoice can not be generated.');
+						return false;
+					}else if(amount_before_tax < 0){
+						alert('Error: Minus amount invoice can not be generated.');
+						return false;
+					}
 					form1[0].submit();
+					
 					$('.submit').attr('disabled','disabled');
 					$('.submit').text('Submiting...');
 					return true;
@@ -345,11 +355,13 @@ function rename_rows()
 		//alert(max_qty);
 			//$(this).find('.quantity').attr({name:'purchase_return_rows['+i+'][quantity]',id:'purchase_return_rows['+i+'][quantity]'});
 			
-			
-			$(this).find('.returnQty').attr({name:'purchase_return_rows['+i+'][quantity]',id:'purchase_return_rows['+i+'][quantity]'}).attr('max',max_qty).removeAttr('readonly').rules('add', {
+			var min_qty=0.01;
+			$(this).find('.returnQty').attr({name:'purchase_return_rows['+i+'][quantity]',id:'purchase_return_rows['+i+'][quantity]'}).attr('max',max_qty).attr('min',min_qty).removeAttr('readonly').rules('add', {
 							maxlength: max_qty,
+							minlength: min_qty,
 							messages: {
-								maxlength: 'efefefefe efefefef'
+								maxlength: 'efefefefe efefefef',
+								minlength: 'efefefefe efefefef'
 							}
 						});
 			$(this).find('.returnAmt').attr({name:'purchase_return_rows['+i+'][net_amount]',id:'purchase_return_rows['+i+'][net_amount]'});
@@ -371,7 +383,7 @@ function rename_rows()
 			$(this).find('.gstValue').attr({name:'q',id:'q'});
 			$(this).find('.roundOff').attr({name:'q',id:'q'});
 			$(this).find('.netAmount').attr({name:'q',id:'q'});
-			$(this).find('.returnQty').attr({name:'q',id:'q', readonly:'readonly'}).val(0);
+			$(this).find('.returnQty').attr({name:'q',id:'q', readonly:'readonly'}).rules('remove', rules ).val(0);
 			$(this).css('background-color','#FFF');
 		}
 		});
@@ -382,7 +394,7 @@ function rename_rows()
 	{ 
 		forward_total_amount();
 	});
-	
+	forward_total_amount();
 	
 	function forward_total_amount() 
 		{   	
@@ -476,9 +488,17 @@ function rename_rows()
 				//$(this).closest('tr').find('.netAmount').val(parseFloat(totalAmountAfterRound).toFixed(2));
 				var netAmount =parseFloat($(this).closest('tr').find('.netAmount ').val());
 				
-				var totalAmountReturn=(quantity/Actualquantity)*netAmount;
-				total_amt=total_amt+totalAmountReturn;
-				$(this).closest('tr').find('.returnAmt').val(parseFloat(totalAmountReturn).toFixed(2));
+				if(isNaN(quantity)){
+					var totalAmountReturn=0; alert(totalAmountReturn);
+					total_amt=total_amt+totalAmountReturn;
+					$(this).closest('tr').find('.returnQty').val(parseFloat(0).toFixed(2));
+					$(this).closest('tr').find('.returnAmt').val(parseFloat(totalAmountReturn).toFixed(2));
+				 }else{
+					var totalAmountReturn=(quantity/Actualquantity)*netAmount;
+					total_amt=total_amt+totalAmountReturn;
+					$(this).closest('tr').find('.returnAmt').val(parseFloat(totalAmountReturn).toFixed(2));
+				 }
+				
 				}
 			});
 			$('.amount_before_tax').val(parseFloat(total_amt).toFixed(2));
@@ -486,6 +506,8 @@ function rename_rows()
 			
 			rename_rows();
 		}
+		
+
 		
 	
 	
