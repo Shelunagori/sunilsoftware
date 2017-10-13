@@ -19,7 +19,7 @@ class ContraVouchersController extends AppController
      * @return \Cake\Http\Response|void
      */
     public function index()
-    {
+    { 
 		$this->viewBuilder()->layout('index_layout');
         $this->paginate = [
             'contain' => ['ContraVoucherRows']
@@ -229,7 +229,8 @@ class ContraVouchersController extends AppController
         $this->set(compact('contraVoucher', 'ledgers'));
         $this->set('_serialize', ['contraVoucher']);
     }
-
+     
+	
     /**
      * Delete method
      *

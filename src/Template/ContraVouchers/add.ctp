@@ -101,8 +101,8 @@ $this->set('title', 'Contra Voucher');
 										<td colspan="2">	
 											<button type="button" class="AddMainRow btn btn-default input-sm"><i class="fa fa-plus"></i> Add row</button>
 										</td>
-										<td><input type="text" class="form-control input-sm rightAligntextClass total_debit" placeholder="Total Debit" id="totalMainDr" name="totalMainDr"></td>
-										<td><input type="text" class="form-control input-sm rightAligntextClass total_credit" placeholder="Total Credit" id="totalMainCr" name="totalMainCr"></td>
+										<td><input type="text" class="form-control input-sm rightAligntextClass total_debit" placeholder="Total Debit" id="totalMainDr" name="totalMainDr" readonly></td>
+										<td><input type="text" class="form-control input-sm rightAligntextClass total_credit" placeholder="Total Credit" id="totalMainCr" name="totalMainCr" readonly></td>
 									</tr>
 								</tfoot>
 							</table>
@@ -159,7 +159,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				<div class="window" style="margin:auto;"></div>
 			</td>
 			<td width="10%" style="vertical-align: top !important;">
-				<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm  debitBox rightAligntextClass totalCalculation','placeholder'=>'Debit']); ?>
+				<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm  debitBox rightAligntextClass totalCalculation','placeholder'=>'Debit','required'=>'required']); ?>
 			</td>
 			<td width="10%" style="vertical-align: top !important;">
 				<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm creditBox rightAligntextClass totalCalculation','placeholder'=>'Credit','style'=>'display:none;']); ?>	
@@ -325,6 +325,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				var type=$(this).val();	
 				var currentRefRow=$(this).closest('tr');
 				if(type=='NEFT/RTGS'){
+					currentRefRow.find('span.help-block-error').remove();
 					currentRefRow.find('td:nth-child(2) input').val('');
 					currentRefRow.find('td:nth-child(3) input').val('');
 					currentRefRow.find('td:nth-child(2)').hide();
@@ -386,16 +387,21 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				if(cr_dr=='Cr'){
 					$(this).closest('tr').find('.debitBox').val('');
 					calc();
+					$(this).closest('tr').find('input.debitBox').prop('required',false);
+					$(this).closest('tr').find('.debitBox').rules('remove','required');
+					$(this).closest('tr').find('span.help-block-error').remove();
 					$(this).closest('tr').find('.debitBox').hide();
-					//$(this).closest('tr').find('.creditBox').attr('required', true);
 					$(this).closest('tr').find('.creditBox').show();
+					$(this).closest('tr').find('.creditBox').rules('add', 'required');
 				}
 				else if(cr_dr=='Dr'){
 					
-					//$(this).closest('tr').find('.debitBox').attr('required', false);
 					$(this).closest('tr').find('.debitBox').show();
+					$(this).closest('tr').find('.debitBox').rules('add', 'required');
 					$(this).closest('tr').find('.creditBox').val('');
 					calc();
+					$(this).closest('tr').find('.creditBox').rules('remove', 'required');
+					$(this).closest('tr').find('span.help-block-error').remove();
 					$(this).closest('tr').find('.creditBox').hide();
 				}
 			});
@@ -456,9 +462,20 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			function renameBankRows(SelectedTr){
 				var row_no=SelectedTr.attr('row_no');
 				SelectedTr.find('td:nth-child(2) div.window table tbody tr').each(function(){
+					var type = $(this).find('td:nth-child(1) select.paymentType option:selected').val();
 					$(this).find('td:nth-child(1) select.paymentType').attr({name:'contra_voucher_rows['+row_no+'][mode_of_payment]',id:'contra_voucher_rows-'+row_no+'-mode_of_payment'});
 					$(this).find('td:nth-child(2) input.cheque_no').attr({name:'contra_voucher_rows['+row_no+'][cheque_no]',id:'contra_voucher_rows-'+row_no+'-cheque_no'});
 					$(this).find('td:nth-child(3) input.cheque_date').attr({name:'contra_voucher_rows['+row_no+'][cheque_date]',id:'contra_voucher_rows-'+row_no+'-cheque_date'}).datepicker();
+					if(type=='Cheque')
+					{ 
+						$(this).find('td:nth-child(2) input.cheque_no').rules('add','required');
+						$(this).find('td:nth-child(3) input.cheque_date').rules('add','required');
+					}
+					else
+					{
+						$(this).find('td:nth-child(2) input.cheque_no').rules('remove','required');
+						$(this).find('td:nth-child(3) input.cheque_date').rules('remove','required');
+					}
 				});
 				
 			}

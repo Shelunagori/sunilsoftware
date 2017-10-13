@@ -41,6 +41,10 @@ class SuppliersTable extends Table
             'foreignKey' => 'state_id',
             'joinType' => 'INNER'
         ]);
+		$this->belongsTo('Cities', [
+            'foreignKey' => 'city_id',
+            'joinType' => 'INNER'
+        ]);
         $this->hasOne('Ledgers', [
             'foreignKey' => 'supplier_id'
         ]);

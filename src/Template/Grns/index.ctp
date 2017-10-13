@@ -43,7 +43,16 @@ $this->set('title', 'GRNS');
 									<?= $this->Html->link(__('View'), ['action' => 'view', $grn->id]) ?>
 									<?= $this->Html->link(__('Edit'), ['action' => 'edit', $grn->id]) ?>
 									<?= $this->Html->link(__('Print-Barcodes'), ['action' => 'printBarcode', $grn->id]) ?>
+									
+									<?php  if($grn->status=="Pending"){ ?>
 									<?= $this->Html->link(__('Create Purchase Invoice'), ['controller'=>'PurchaseInvoices','action' => 'add', $grn->id]) ?>
+									<?php }else{ ?>
+										<?php  echo $grn->status; ?>
+									<?php } ?>
+									
+									
+									
+									
 								</td>
 							</tr>
 							<?php endforeach; ?>

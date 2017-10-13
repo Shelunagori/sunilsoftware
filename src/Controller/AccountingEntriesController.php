@@ -37,76 +37,18 @@ class AccountingEntriesController extends AppController
 		$to_date=$this->request->query('to_date');
 		$from_date = date("Y-m-d",strtotime($from_date));
 		$to_date= date("Y-m-d",strtotime($to_date));
-		$this->set(compact('from_date','to_date'));
-		
-		$expenseParentGroups = $this->AccountingEntries->Ledgers->AccountingGroups->find()
-						->where(['AccountingGroups.company_id'=>$company_id, 'AccountingGroups.nature_of_group_id'=>'4']);
-						
-		$expenseGroups=[];
-		
-		foreach($expenseParentGroups as $expenseParentGroup)
-		{
-			$expenseChildGroups = $this->AccountingEntries->Ledgers->AccountingGroups
-			->find('children', ['for' => $expenseParentGroup->id])->toArray();
-			$expenseGroups[]=$expenseParentGroup->id;
-			foreach($expenseChildGroups as $expenseChildGroup){
-				$expenseGroups[]=$expenseChildGroup->id;
-			}
-		}
 		
 		$query=$this->AccountingEntries->find();
-		$Ledgers_Expense=$query->select(['total_debit' => $query->func()->sum('debit'),'total_credit' => $query->func()->sum('credit')])
-			->matching('Ledgers.AccountingGroups', function ($q) {
-				return $q->where(['AccountingGroups.id IN' => $incomeGroups ]);
-			})
-			->where(['AccountingEntries.company_id'=>$company_id])
-			->contain(['Ledgers'])
-			->group(['AccountingEntries.ledger_id'])
-			->autoFields(true);
-		pr($Ledgers_Expense->toArray());
-		exit;
-		$Expense_groups=[];
-			foreach($Ledgers_Expense as $Ledgers_Expense){
-				$Expense_groups[$Ledgers_Expense->_matchingData['AccountingGroups']->id]['group_id']
-					=$Ledgers_Expense->_matchingData['AccountingGroups']->id;
-				$Expense_groups[$Ledgers_Expense->_matchingData['AccountingGroups']->id]['debit']
-					=@$Expense_groups[$Ledgers_Expense->_matchingData['AccountingGroups']->id]['debit']+($Ledgers_Expense->total_debit);
-				$Expense_groups[$Ledgers_Expense->_matchingData['AccountingGroups']->id]['credit']
-					=@$Expense_groups[$Ledgers_Expense->_matchingData['AccountingGroups']->id]['credit']+($Ledgers_Expense->total_credit);
-				$Expense_groups[$Ledgers_Expense->_matchingData['AccountingGroups']->id]['name']
-					=$Ledgers_Expense->_matchingData['AccountingGroups']->name;
-				}
-		pr($Expense_groups);
-		echo '</br>';
-		$query2=$this->AccountingEntries->find();
-			$Ledgers_Income=$query2->select(['total_debit' => $query2->func()->sum('debit'),'total_credit' => $query2->func()->sum('credit')])
-			->matching('Ledgers.AccountingGroups', function ($q) {
-				return $q->where(['AccountingGroups.nature_of_group_id' => 3]);
-			})
-			->where(['AccountingEntries.company_id'=>$company_id])
-			->contain(['Ledgers'])
-			->group(['AccountingEntries.ledger_id'])
-			->autoFields(true);
-			
-			$Income_groups=[];
-			foreach($Ledgers_Income as $Ledgers_Income){ //pr($Ledgers_Liablitie->total_credit);
-				$Income_groups[$Ledgers_Income->_matchingData['AccountingGroups']->id]['group_id']
-					=$Ledgers_Income->_matchingData['AccountingGroups']->id;
-				$Income_groups[$Ledgers_Income->_matchingData['AccountingGroups']->id]['debit']
-					=@$Income_groups[$Ledgers_Income->_matchingData['AccountingGroups']->id]['debit']+($Ledgers_Income->total_debit);
-				$Income_groups[$Ledgers_Income->_matchingData['AccountingGroups']->id]['credit']
-					=@$Income_groups[$Ledgers_Income->_matchingData['AccountingGroups']->id]['credit']+($Ledgers_Income->total_credit);
-				$Income_groups[$Ledgers_Income->_matchingData['AccountingGroups']->id]['name']
-					=$Ledgers_Income->_matchingData['AccountingGroups']->name;
-			}
-			pr($Income_groups);
-		echo '</br>';
-		//exit;
+		$query->select(['ledger_id','totalDebit' => $query->func()->sum('AccountingEntries.debit')])
+				->group('AccountingEntries.ledger_id')
+				->where(['AccountingEntries.company_id'=>$company_id]);
+		$query->matching('Ledgers', function ($q) {
+			return $q->where(['Tags.name' => 'CakePHP']);
+		});
+		pr($query->toArray()); exit;
 		
+		$this->set(compact('from_date','to_date'));
 		
-		
-        $this->set(compact('accountingEntries','Income_groups','Expense_groups'));
-        $this->set('_serialize', ['accountingEntries']);
     }
     /**
      * View method

@@ -47,9 +47,16 @@ class AccountingEntriesTable extends Table
         ]);
 		$this->belongsTo('PurchaseVouchers', [
             'foreignKey' => 'purchase_voucher_id',
-            'joinType' => 'INNER'
+            'joinType' => 'LEFT'
         ]);
-		
+		$this->belongsTo('PurchaseInvoices', [
+            'foreignKey' => 'purchase_invoice_id',
+            'joinType' => 'LEFT'
+        ]);
+		$this->belongsTo('PurchaseReturns', [
+            'foreignKey' => 'purchase_return_id',
+            'joinType' => 'LEFT'
+        ]);
 		$this->belongsTo('SalesInvoices', [
             'foreignKey' => 'sales_invoice_id',
             'joinType' => 'LEFT'
@@ -60,19 +67,40 @@ class AccountingEntriesTable extends Table
             'joinType' => 'LEFT'
         ]);
 		
+		
 		$this->belongsTo('SalesVouchers', [
             'foreignKey' => 'sales_voucher_id',
-            'joinType' => 'INNER'
+            'joinType' => 'LEFT'
         ]);
 		
 		$this->belongsTo('JournalVouchers', [
             'foreignKey' => 'journal_voucher_id',
-            'joinType' => 'INNER'
+            'joinType' => 'LEFT'
         ]);
 		
 		$this->belongsTo('ContraVouchers', [
             'foreignKey' => 'contra_voucher_id',
-            'joinType' => 'INNER'
+            'joinType' => 'LEFT'
+        ]);
+		
+		$this->belongsTo('Receipts', [
+            'foreignKey' => 'receipt_id',
+            'joinType' => 'LEFT'
+        ]);
+		
+		$this->belongsTo('Payments', [
+            'foreignKey' => 'payment_id',
+            'joinType' => 'LEFT'
+        ]);
+		
+		$this->belongsTo('CreditNotes', [
+            'foreignKey' => 'credit_note_id',
+            'joinType' => 'LEFT'
+        ]);
+		
+		$this->belongsTo('DebitNotes', [
+            'foreignKey' => 'debit_note_id',
+            'joinType' => 'LEFT'
         ]);
 		$this->belongsTo('Receipts', [
             'foreignKey' => 'receipt_id',

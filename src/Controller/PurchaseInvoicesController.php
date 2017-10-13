@@ -25,8 +25,8 @@ class PurchaseInvoicesController extends AppController
         $this->paginate = [
             'contain' => ['Companies', 'SupplierLedgers']
         ];
-        $purchaseInvoices = $this->paginate($this->PurchaseInvoices->find()->where(['purchaseInvoices.company_id'=>$company_id]));
-		//pr($purchaseInvoices->supplier_ledger->name); exit;
+        $purchaseInvoices = $this->paginate($this->PurchaseInvoices->find()->where(['PurchaseInvoices.company_id'=>$company_id]));
+		//pr($purchaseInvoices); exit;
         $this->set(compact('purchaseInvoices'));
         $this->set('_serialize', ['purchaseInvoices']);
     }
@@ -63,7 +63,10 @@ class PurchaseInvoicesController extends AppController
         $Grns = $this->PurchaseInvoices->Grns->get($id, [
             'contain' => (['GrnRows'=>['Items'=>['FirstGstFigures']],'SupplierLedgers'])
         ]);
-		//pr($Grns); exit;
+		
+		
+			$Voucher_no_last = $this->PurchaseInvoices->find()->select(['voucher_no'])->where(['company_id'=>$company_id])->order(['voucher_no' => 'DESC'])->first();
+		//pr($Voucher_no_last->voucher_no); exit;
         $purchaseInvoice = $this->PurchaseInvoices->newEntity();
         if ($this->request->is('post')) {
             $purchaseInvoice = $this->PurchaseInvoices->patchEntity($purchaseInvoice, $this->request->getData());
@@ -79,8 +82,16 @@ class PurchaseInvoicesController extends AppController
 			} 
 			$purchaseInvoice->company_id = $company_id;
 			$purchaseInvoice->grn_id = $Grns->id;
-			
+                        $purchaseInvoice->purchase_ledger_id=$purchaseInvoice->purchase_ledger_id;
+                        $purchaseInvoice->supplier_ledger_id=$Grns->supplier_ledger_id;
+			//pr($purchaseInvoice->purchase_ledger_id); exit;
             if ($this->PurchaseInvoices->save($purchaseInvoice)) { 
+				
+				$query = $this->PurchaseInvoices->Grns->query();
+				$query->update()
+					->set(['status'=>'Invoice Booked'])
+					->where(['id' => $Grns->id])
+					->execute();
 				
 				//Accounting Entries for Purchase account//
 				$AccountingEntrie = $this->PurchaseInvoices->AccountingEntries->newEntity(); 
@@ -105,7 +116,8 @@ class PurchaseInvoicesController extends AppController
 				
 			//Accounting Entries for Round of Amount//
 				$AccountingEntrie = $this->PurchaseInvoices->AccountingEntries->newEntity(); 
-				$AccountingEntrie->ledger_id=$purchaseInvoice->supplier_ledger_id;
+				$RoundofLedgers = $this->PurchaseInvoices->PurchaseInvoiceRows->Ledgers->find()->where(['Ledgers.round_off'=>1,'Ledgers.company_id'=>$company_id])->first(); 
+				$AccountingEntrie->ledger_id=$RoundofLedgers->id;
 				$AccountingEntrie->transaction_date=$purchaseInvoice->transaction_date;
 				$AccountingEntrie->company_id=$company_id;
 				$AccountingEntrie->purchase_invoice_id=$purchaseInvoice->id;
@@ -181,6 +193,7 @@ class PurchaseInvoicesController extends AppController
 						purchase_invoice_party'=>'1']);
 		$partyGroups=[];
 		
+
 		foreach($partyParentGroups as $partyParentGroup)
 		{
 			$accountingGroups = $this->PurchaseInvoices->Grns->GrnRows->Ledgers->AccountingGroups
@@ -196,6 +209,7 @@ class PurchaseInvoicesController extends AppController
 							->where(['SupplierLedgers.accounting_group_id IN' =>$partyGroups,'SupplierLedgers.company_id'=>$company_id])
 							->contain(['Suppliers']);
         }
+
 		$SupplierLedgersDetails = $this->PurchaseInvoices->Grns->SupplierLedgers->find()->where(['SupplierLedgers.id'=>$Grns->supplier_ledger->id])->contain(['Suppliers'])->first();
 		$supplier_state_id=$SupplierLedgersDetails->supplier->state_id;
 		
@@ -228,7 +242,7 @@ class PurchaseInvoicesController extends AppController
 		//exit;
         $companies = $this->PurchaseInvoices->Companies->find('list', ['limit' => 200]);
         $supplierLedgers = $this->PurchaseInvoices->SupplierLedgers->find('list', ['limit' => 200]);
-        $this->set(compact('purchaseInvoice', 'companies', 'supplierLedgers','Grns','partyOptions','state_id','Accountledgers','supplier_state_id'));
+        $this->set(compact('purchaseInvoice', 'companies', 'supplierLedgers','Grns','partyOptions','state_id','Accountledgers','supplier_state_id','Voucher_no_last'));
         $this->set('_serialize', ['purchaseInvoice']);
     }
 
@@ -285,7 +299,8 @@ class PurchaseInvoicesController extends AppController
 				
 			//Accounting Entries for Round of Amount//
 				$AccountingEntrie = $this->PurchaseInvoices->AccountingEntries->newEntity(); 
-				$AccountingEntrie->ledger_id=$purchaseInvoice->supplier_ledger_id;
+				$RoundofLedgers = $this->PurchaseInvoices->PurchaseInvoiceRows->Ledgers->find()->where(['Ledgers.round_off'=>1,'Ledgers.company_id'=>$company_id])->first(); 
+				$AccountingEntrie->ledger_id=$RoundofLedgers->id;
 				$AccountingEntrie->transaction_date=$purchaseInvoice->transaction_date;
 				$AccountingEntrie->company_id=$company_id;
 				$AccountingEntrie->purchase_invoice_id=$purchaseInvoice->id;
@@ -347,6 +362,7 @@ class PurchaseInvoicesController extends AppController
 						$this->PurchaseInvoices->AccountingEntries->save($AccountingEntrieIGST);
 					   }
 				}
+				
 				  
                 $this->Flash->success(__('The purchase invoice has been saved.'));
 

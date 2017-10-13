@@ -75,6 +75,8 @@ class AppController extends Controller
 			$this->set(compact('coreVariable'));
 		}
 		
+		
+		
         /*
          * Enable the following components for recommended CakePHP security settings.
          * see http://book.cakephp.org/3.0/en/controllers/components/security.html
@@ -82,6 +84,29 @@ class AppController extends Controller
         //$this->loadComponent('Security');
         //$this->loadComponent('Csrf');
     }
+	
+	public function repairRef(){    
+		$this->loadModel('ReferenceDetails');
+		$company_id=$this->Auth->User('session_company_id');
+		$contraVouchers = $this->ReferenceDetails->find()
+							->where(['ReferenceDetails.type'=>'Against','company_id'=>$company_id])
+							->group(['ReferenceDetails.ref_name']);
+							
+		foreach($contraVouchers as $contraVoucher)
+		{   
+			 $totalRef = $this->ReferenceDetails->find()
+			                 ->where(['ReferenceDetails.ref_name'=>$contraVoucher->ref_name,'company_id'=>$company_id,'ReferenceDetails.type'=>'New Ref'])->count(); 
+			if($totalRef<1)
+			{
+				$query = $this->ReferenceDetails->query();
+				$query->update()
+					->set(['type' => 'New Ref'])
+					->where(['id' => $contraVoucher->id])
+					->execute();
+			}
+			
+		}
+	}
 
     /**
      * Before render callback.
@@ -98,4 +123,7 @@ class AppController extends Controller
             $this->set('_serialize', true);
         }
     }
+	
+	
+	
 }

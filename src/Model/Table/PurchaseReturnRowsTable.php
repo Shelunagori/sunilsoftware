@@ -46,10 +46,7 @@ class PurchaseReturnRowsTable extends Table
             'foreignKey' => 'item_id',
             'joinType' => 'INNER'
         ]);
-        $this->belongsTo('ItemGstFigures', [
-            'foreignKey' => 'item_gst_figure_id',
-            'joinType' => 'INNER'
-        ]);
+        
     }
 
     /**
@@ -123,7 +120,7 @@ class PurchaseReturnRowsTable extends Table
     {
         $rules->add($rules->existsIn(['purchase_return_id'], 'PurchaseReturns'));
         $rules->add($rules->existsIn(['item_id'], 'Items'));
-        $rules->add($rules->existsIn(['item_gst_figure_id'], 'ItemGstFigures'));
+      //  $rules->add($rules->existsIn(['item_gst_figure_id'], 'ItemGstFigures'));
 
         return $rules;
     }

@@ -20,7 +20,7 @@ $this->set('title', 'Account Ledger report');
 							<div class="form-group">
 								<label>Ledgers</label>
 								<?php 
-								echo $this->Form->input('ledger_id', ['options'=>$ledgers,'label' => false,'class' => 'form-control input-sm select2me' ,'value'=>$ledger_id]); 
+								echo $this->Form->input('ledger_id', ['options'=>$ledgers,'label' => false,'class' => 'form-control input-sm select2me' ,'value'=>$ledger_id, 'required'=>'required']); 
 								?>
 							</div>
 						</div>
@@ -39,7 +39,7 @@ $this->set('title', 'Account Ledger report');
 								else{
 									$from_date = @$coreVariable[fyValidFrom];
 								}
-								echo $this->Form->control('from_date',['class'=>'form-control input-sm date-picker','data-date-format'=>'dd-mm-yyyy','label'=>false,'placeholder'=>'DD-MM-YYYY','type'=>'text','value'=>@$from_date,'data-date-start-date'=>@$coreVariable[fyValidFrom],'data-date-end-date'=>@$coreVariable[fyValidTo]]); ?>
+								echo $this->Form->control('from_date',['class'=>'form-control input-sm date-picker','data-date-format'=>'dd-mm-yyyy','label'=>false,'placeholder'=>'DD-MM-YYYY','type'=>'text','value'=>@$from_date,'data-date-start-date'=>@$coreVariable[fyValidFrom],'data-date-end-date'=>@$coreVariable[fyValidTo],'required'=>'required']); ?>
 							</div>
 						</div>
 						<div class="col-md-2">
@@ -57,7 +57,7 @@ $this->set('title', 'Account Ledger report');
 								else{
 									$to_date = @$coreVariable[fyValidTo];
 								}
-								echo $this->Form->control('to_date',['class'=>'form-control input-sm date-picker','data-date-format'=>'dd-mm-yyyy','label'=>false,'placeholder'=>'DD-MM-YYYY','type'=>'text','value'=>@$to_date,'data-date-start-date'=>@$coreVariable[fyValidFrom],'data-date-end-date'=>@$coreVariable[fyValidTo]]); ?>
+								echo $this->Form->control('to_date',['class'=>'form-control input-sm date-picker','data-date-format'=>'dd-mm-yyyy','label'=>false,'placeholder'=>'DD-MM-YYYY','type'=>'text','value'=>@$to_date,'data-date-start-date'=>@$coreVariable[fyValidFrom],'data-date-end-date'=>@$coreVariable[fyValidTo],'required'=>'required']); ?>
 							</div>
 						</div>
 						<div class="col-md-2" >
@@ -68,71 +68,106 @@ $this->set('title', 'Account Ledger report');
 					</form>
 				</div>
 				<?php
-					if(!empty($AccountingLedgers))
-					{
+				if(!empty($AccountingLedgers))
+				{
 				?>
 					<table class="table table-bordered table-hover table-condensed" width="100%">
 						<thead>
 							<tr>
-								<th colspan="3">
+								<th colspan="4">
 								<span style="float:left";>
-								<?php 
-								foreach($AccountingLedgers as $AccountingLedger)
-									{   
-						            ?>
-							        <?php }?>
-									<?php if(@$AccountingLedger->ledger->name){?>
-		<?php echo 'Account Ledger of '; echo @$id= $AccountingLedger->ledger->name; echo ' '; echo 'Date from '; echo $from_date; echo ' to '; echo $to_date;?>
-<?php }?>		</span>
+								<?php if(@$AccountingLedger->ledger->name){?>
+									<?php echo 'Account Ledger of '; echo @$id= $AccountingLedger->ledger->name; echo ' '; echo 'Date from '; echo $from_date; echo ' to '; echo $to_date;?>
+									<?php } ?>		</span>
 								<span style="float:right";><b>Opening Balance</b></span></th>
 								<th style="text-align:right";>
 								<?php
-									if(!empty($openingBalance_debit1))
+									if(!empty($opening_balance))
 									{
-										echo $openingBalance_debit1;
-									}
+										echo $opening_balance.' '. $opening_balance_type;
+									} 
 								?>
 								</th>
-								<th style="text-align:right";>
-								<?php
-									if(!empty($openingBalance_credit1))
-									{
-										echo $openingBalance_credit1;
-									}
-								?>
-								</th>
+								
 							</tr>
 							<tr>
-								<th scope="col">Date</th>
-								<th scope="col" style="text-align:center";>Voucher Type</th>
-								<th scope="col" style="text-align:center";>Voucher No</th>
-								<th scope="col" style="text-align:center";>Debit</th>
-								<th scope="col" style="text-align:center";>Credit</th>
+								<th width="10%" scope="col">Date</th>
+								<th width="20%" scope="col" style="text-align:center";>Voucher Type</th>
+								<th width="20%" scope="col" style="text-align:center";>Voucher No</th>
+								<th width="25%" scope="col" style="text-align:center";>Debit</th>
+								<th width="25%" scope="col" style="text-align:center";>Credit</th>
 							</tr>
 						</thead>
 						<tbody>
 						<?php
-								if(!empty($AccountingLedgers))
-								{
-									$total_credit=0;
-									$total_debit=0;
-									//pr($AccountingLedgers->toArray());     exit;
-									foreach($AccountingLedgers as $AccountingLedger)
-									{   
-										$id= $AccountingLedger->id
+						if(!empty($AccountingLedgers))
+						{
+							$total_credit=0;
+							$total_debit=0;
+							//pr($AccountingLedgers->toArray());     exit;
+						foreach($AccountingLedgers as $AccountingLedger)
+						{   
+							$id= $AccountingLedger->id;
 						?>
 							<tr>
 								<td><?php echo date("d-m-Y",strtotime($AccountingLedger->transaction_date)); ?></td>
 								<td>
-								<?php if($voucher_type[$id]=='Purchase Vouchers'){?>
-								<?= $this->Html->link(__($voucher_type[$id]), array('controller' => 'PurchaseVouchers', 'action' => 'index', $AccountingLedger->purchase_vouches_id))?>
-								<?php }else if($voucher_type[$id]=='Sales Invoices') {?>
-								<?= $this->Html->link(__($voucher_type[$id]), array('controller' => 'SalesInvoices', 'action' => 'salesInvoiceBill', $AccountingLedger->sales_invoice_id))?>
-								<?php } else{?>
-								<?= $voucher_type[$id] ?>
-								<?php }?>
+								<?php 
+								if(!empty($AccountingLedger->is_opening_balance=='yes')){
+									echo 'Opening Balance';
+									@$voucher_no='-';
+								}
+								else if(!empty($AccountingLedger->purchase_voucher_id)){
+									echo 'Purchase Vouchers';
+									@$voucher_no=$AccountingLedger->purchase_voucher->voucher_no;
+								}
+								else if(!empty($AccountingLedger->purchase_invoice_id)){
+									echo 'Purchase Invoices';
+									@$voucher_no=$AccountingLedger->purchase_invoice->voucher_no;
+								}
+								else if(!empty($AccountingLedger->purchase_return_id)){
+									echo 'Purchase Returns';
+									@$voucher_no=$AccountingLedger->purchase_return->voucher_no;
+								}
+								else if(!empty($AccountingLedger->sales_invoice_id)){
+									echo 'Sales Invoices';
+									@$voucher_no=$AccountingLedger->sales_invoice->voucher_no;
+								}
+								else if(!empty($AccountingLedger->sale_return_id)){
+									echo 'Sales Returns';
+									@$voucher_no=$AccountingLedger->sale_return->voucher_no;
+								}
+								else if(!empty($AccountingLedger->sales_voucher_id)){
+									echo 'Sales Vouchers';
+									@$voucher_no=$AccountingLedger->sales_voucher->voucher_no;
+								}
+								else if(!empty($AccountingLedger->journal_voucher_id)){
+									echo 'Journal Vouchers';
+									@$voucher_no=$AccountingLedger->journal_voucher->voucher_no;
+								}
+								else if(!empty($AccountingLedger->contra_voucher_id)){
+									echo 'Contra Vouchers';
+									@$voucher_no=$AccountingLedger->contra_voucher->voucher_no;
+								}
+								else if(!empty($AccountingLedger->receipt_id)){
+									echo 'Receipt Vouchers';
+									@$voucher_no=$AccountingLedger->receipt->voucher_no;
+								}
+								else if(!empty($AccountingLedger->payment_id)){
+									echo 'Payment Vouchers';
+									@$voucher_no=$AccountingLedger->payment->voucher_no;
+								}
+								else if(!empty($AccountingLedger->credit_note_id)){
+									echo 'Credit Note Vouchers';
+									@$voucher_no=$AccountingLedger->credit_note->voucher_no;
+								}
+								else if(!empty($AccountingLedger->debit_note_id)){
+									echo 'Debit Note Vouchers';
+									@$voucher_no=$AccountingLedger->debit_note->voucher_no;
+								}
+								?>
 								</td>
-								<td class="rightAligntextClass"><?php echo $voucher_no[$id]; ?></td>
+								<td class="rightAligntextClass"><?php echo $voucher_no ?></td>
 								<td style="text-align:right";>
 								<?php 
 									if(!empty($AccountingLedger->debit))
@@ -168,23 +203,29 @@ $this->set('title', 'Account Ledger report');
 								<td scope="col" style="text-align:right";><?php echo @$total_credit;?></td>
 							</tr>
 							<tr>
-								<td scope="col" colspan="3" style="text-align:right";><b>Closing Balance</b></td>
-								<td scope="col" style="text-align:right";>
+								<td scope="col" colspan="4" style="text-align:right";><b>Closing Balance</b></td>
+								<td scope="col" style="text-align:right";><b>
 								<?php
-									if(!empty($closingBalance_debit1))
-									{
-										echo $closingBalance_debit1;
+									if($opening_balance_type='Dr'){
+									@$closingBalance= $opening_balance+$total_debit-$total_credit;
 									}
-								?>
-								</td>
-								<td scope="col" style="text-align:right";>
-								<?php
-									if(!empty($closingBalance_credit1))
-									{
-										echo $closingBalance_credit1;
+									else{
+									@$closingBalance= $opening_balance+$total_credit-$total_debit;
 									}
+									if($closingBalance>0)
+									{
+									@$closing_bal_type='Dr';
+									}
+									else if($closingBalance<0){
+									@$closing_bal_type='Cr';	
+									}
+									else{
+									@$closing_bal_type='';	
+									}
+									echo abs($closingBalance); echo ' '.$closing_bal_type;
 								?>
-								</td>
+								</b></td>
+								
 							</tr>
 						</tfoot>
 					</table>

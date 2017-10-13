@@ -11,7 +11,7 @@ $this->set('title', 'Purchase Invoice List');
 			<div class="portlet-title">
 				<div class="caption">
 					<i class="icon-bar-chart font-green-sharp hide"></i>
-					<span class="caption-subject font-green-sharp bold ">Sales Invoice</span>
+					<span class="caption-subject font-green-sharp bold ">Purchase Invoice</span>
 				</div>
 			</div>
 			<div class="portlet-body">
@@ -25,7 +25,6 @@ $this->set('title', 'Purchase Invoice List');
 								<th scope="col"><?= $this->Paginator->sort('voucher_no') ?></th>
 								<th scope="col"><?= $this->Paginator->sort('supplier_ledger') ?></th>
 								<th scope="col"><?= $this->Paginator->sort('transaction_date') ?></th>
-								<th scope="col"><?= $this->Paginator->sort('amount_after_tax') ?></th>
 								<th scope="col" class="actions"><?= __('Actions') ?></th>
 							</tr>
 						</thead>
@@ -40,7 +39,6 @@ $this->set('title', 'Purchase Invoice List');
 								<td class="actions">
 									
 									<?= $this->Html->link(__('Edit'), ['action' => 'edit', $purchaseInvoice->id]) ?>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-									<?= $this->Html->link(__('View Bill'), ['action' => 'sales_invoice_bill', $purchaseInvoice->id],['escape'=>false,'target'=>'_blank']) ?>
 								</td>
 							</tr>
 							<?php endforeach; ?>
