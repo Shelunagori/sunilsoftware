@@ -334,6 +334,7 @@ class CreditNotesController extends AppController
 				}
 
                 $this->Flash->success(__('The Credit Note has been Update.'));
+				$this->repairRef();
 
                 return $this->redirect(['action' => 'index']);
             }

@@ -266,7 +266,8 @@ class PaymentsController extends AppController
 				}
 				
 				
-                $this->Flash->success(__('The payment has been saved.'));
+                $this->Flash->success(__('The payment has been updated.'));
+				$this->repairRef();
 
                 return $this->redirect(['action' => 'index']);
             }

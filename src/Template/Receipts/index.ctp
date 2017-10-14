@@ -35,11 +35,15 @@ $this->set('title', 'Receipt List');
 							?>
 							<tr>
 								<td><?= h(++$page_no) ?></td>
-								<td><?= h('#'.str_pad($receipt->voucher_no, 4, '0', STR_PAD_LEFT)) ?></td>
+								<td><?= h(str_pad($receipt->voucher_no, 4, '0', STR_PAD_LEFT)) ?></td>
 								<td><?= h($transaction_date) ?></td>
 								<td class=""><?= h($receipt->narration) ?></td>
 								<td class="actions">
+								
+								<?php if($receipt->sales_invoice_id>0){?>
 									<?= $this->Html->link(__('Edit'), ['action' => 'edit', $receipt->id]) ?>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+									<?php }?>
+									
 									<?= $this->Html->link(__('View'), ['action' => 'view', $receipt->id]) ?>
 								</td>
 							</tr>

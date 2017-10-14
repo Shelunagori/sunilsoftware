@@ -269,6 +269,7 @@ class ReceiptsController extends AppController
 				}
 
                 $this->Flash->success(__('The receipt has been saved.'));
+				$this->repairRef();
 
                 return $this->redirect(['action' => 'index']);
             }

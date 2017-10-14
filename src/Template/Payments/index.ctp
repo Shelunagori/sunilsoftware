@@ -30,7 +30,7 @@ $this->set('title', 'Payment Voucher List');
 							<?php foreach ($payments as $payment): ?>
 								<tr>
 									<td><?= h(++$page_no) ?></td>
-									<td><?= h('#'.str_pad($payment->voucher_no, 4, '0', STR_PAD_LEFT)) ?></td>
+									<td><?= h(str_pad($payment->voucher_no, 4, '0', STR_PAD_LEFT)) ?></td>
 									<td><?= h(date("d-m-Y",strtotime($payment->transaction_date))) ?></td>
 									<td class="actions">
 										<?= $this->Html->link(__('View'), ['action' => 'view', $payment->id]) ?>

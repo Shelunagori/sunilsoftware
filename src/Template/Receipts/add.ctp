@@ -26,7 +26,7 @@ $this->set('title', 'Receipt Voucher');
 					<div class="col-md-3">
 						<div class="form-group">
 							<label>Voucher No :</label>&nbsp;&nbsp;
-							<?= h('#'.str_pad($voucher_no, 4, '0', STR_PAD_LEFT)) ?>
+							<?= h(str_pad($voucher_no, 4, '0', STR_PAD_LEFT)) ?>
 						<input type="hidden" name="voucher_no" value="<?php echo $voucher_no;?>" >
 						<input type="hidden" name="company_id" value="<?php echo $company_id;?>" >
 						</div>
@@ -338,17 +338,21 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			});
 			
 			$('.paymentType').die().live('change',function(){
+				
 				var type=$(this).val();	
 				var currentRefRow=$(this).closest('tr');
+				var SelectedTr=$(this).closest('tr.MainTr');
 				if(type=='NEFT/RTGS'){
 				 currentRefRow.find('td:nth-child(2) input').val('');
 					currentRefRow.find('td:nth-child(3) input').val('');
 					currentRefRow.find('td:nth-child(2)').hide();
 					currentRefRow.find('td:nth-child(3)').hide();
+					renameBankRows(SelectedTr);
 				}
 				else{
 					currentRefRow.find('td:nth-child(2)').show();
 					currentRefRow.find('td:nth-child(3)').show();
+				    renameBankRows(SelectedTr);
 				}
 				
 			});
@@ -382,39 +386,6 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				renameRefRows(SelectedTr);
 			});
 			
-			$('.cr_dr').die().live('change',function(){
-				var cr_dr=$(this).val();
-				
-				if(cr_dr=='Cr'){
-					//$(this).closest('tr').find('.debitBox').val('');
-					//$(this).closest('tr').find('.debitBox').hide();
-					//$(this).closest('tr').find('.creditBox').show();
-					
-					$(this).closest('tr').find('input.debitBox').prop('required',false);
-					$(this).closest('tr').find('.debitBox').rules('remove','required');
-					$(this).closest('tr').find('span.help-block-error').remove();
-					$(this).closest('tr').find('.debitBox').hide();
-					$(this).closest('tr').find('.creditBox').show();
-					$(this).closest('tr').find('.creditBox').rules('add', 'required');
-					
-				}else{
-					//$(this).closest('tr').find('.debitBox').show();
-					//$(this).closest('tr').find('.creditBox').hide();
-					
-					$(this).closest('tr').find('.debitBox').show();
-					$(this).closest('tr').find('.debitBox').rules('add', 'required');
-					$(this).closest('tr').find('.creditBox').val('');
-					$(this).closest('tr').find('.creditBox').rules('remove', 'required');
-					$(this).closest('tr').find('span.help-block-error').remove();
-					$(this).closest('tr').find('.creditBox').hide();
-				}
-				renameMainRows();
-				
-				var SelectedTr=$(this).closest('tr.MainTr');
-				renameRefRows(SelectedTr);
-			});
-			
-			
 			
 			$('.ledger').die().live('change',function(){
 				var openWindow=$(this).find('option:selected').attr('open_window');
@@ -423,7 +394,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 					var SelectedTr=$(this).closest('tr.MainTr');
 					var windowContainer=$(this).closest('td').find('div.window');
 					windowContainer.html('');
-					windowContainer.html('<table width=90% class=refTbl><tbody></tbody><tfoot><tr style=border-top:double#a5a1a1><td colspan=2><a role=button class=addRefRow>Add Row</a></td><td>$total_input</td><td>$total_type</td></tr></tfoot></table>');
+					windowContainer.html('<table width=90% class=refTbl><tbody></tbody><tfoot><tr style=border-top:double#a5a1a1><td colspan=2><a role=button class=addRefRow>Add Row</a></td><td>$total_input</td><td valign=top>$total_type</td></tr></tfoot></table>');
 					AddRefRow(SelectedTr);
 				}
 				else if(openWindow=='bank'){
@@ -437,6 +408,24 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 					var windowContainer=$(this).closest('td').find('div.window');
 					windowContainer.html('');
 				}
+				renameMainRows();
+			});
+			$('.cr_dr').die().live('change',function(){
+				var cr_dr=$(this).val();
+				
+				if(cr_dr=='Cr'){
+					$(this).closest('tr').find('.debitBox').val('');
+					$(this).closest('tr').find('.debitBox').hide();
+					$(this).closest('tr').find('.creditBox').show();
+				}else{
+					$(this).closest('tr').find('.creditBox').val('');
+					$(this).closest('tr').find('.debitBox').show();
+					$(this).closest('tr').find('.creditBox').hide();
+				}
+				renameMainRows();
+				
+				var SelectedTr=$(this).closest('tr.MainTr');
+				renameRefRows(SelectedTr);
 			});
 			
 			$('.AddMainRow').die().live('click',function(){ 
@@ -454,7 +443,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				var i=0; var main_debit=0; var main_credit=0; var count_bank_cash=0;
 				$('#MainTable tbody#MainTbody tr.MainTr').each(function(){
 					$(this).attr('row_no',i);
-					var cr_dr=$(this).find('td:nth-child(1) select.cr_dr option:selected').val()
+					var cr_dr=$(this).find('td:nth-child(1) select.cr_dr option:selected').val();
 					var is_cash_bank=$(this).find('td:nth-child(2) option:selected').attr('bank_and_cash');
 					$(this).find('td:nth-child(1) select.cr_dr').attr({name:'receipt_rows['+i+'][cr_dr]',id:'receipt_rows-'+i+'-cr_dr'});
 					$(this).find('td:nth-child(2) select.ledger').attr({name:'receipt_rows['+i+'][ledger_id]',id:'receipt_rows-'+i+'-ledger_id'}).select2();
@@ -486,19 +475,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 						
 					}
 					i++;
-					
-					if(cr_dr=='Dr'){ 
-						$(this).find('td:nth-child(3) input.debitBox').rules('add', 'required');
-						$(this).find('td:nth-child(4) input.creditBox').rules('remove', 'required');
-						$(this).find('td:nth-child(4) span.help-block-error').remove();
-						
-					}else{
-						$(this).find('td:nth-child(3) input.debitBox').rules('remove', 'required');
-						$(this).find('td:nth-child(3) span.help-block-error').remove();
-						$(this).find('td:nth-child(4) input.creditBox').rules('add', 'required');
-					}
-					
-					
+
 				});
 				$('#MainTable tfoot tr td:nth-child(2) input#totalMainDr').val(main_debit);
 				$('#MainTable tfoot tr td:nth-child(3) input#totalMainCr').val(main_credit);
@@ -508,6 +485,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			$('.addBankRow').die().live('click',function(){
 				var SelectedTr=$(this).closest('tr.MainTr');
 				AddBankRow(SelectedTr);
+				
 			});
 		
 			
@@ -522,22 +500,22 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			function renameBankRows(SelectedTr){
 				var row_no=SelectedTr.attr('row_no');
 				SelectedTr.find('td:nth-child(2) div.window table tbody tr').each(function(){
-				var type = SelectedTr.find('td:nth-child(1) select.paymentType option:selected').val(); 
+					var type = SelectedTr.find('td:nth-child(1) select.paymentType option:selected').val(); 
+					alert(type);
 					$(this).find('td:nth-child(1) select.paymentType').attr({name:'receipt_rows['+row_no+'][mode_of_payment]',id:'receipt_rows-'+row_no+'-mode_of_payment'});
 					$(this).find('td:nth-child(2) input.cheque_no').attr({name:'receipt_rows['+row_no+'][cheque_no]',id:'receipt_rows-'+row_no+'-cheque_no'});
 					$(this).find('td:nth-child(3) input.cheque_date').attr({name:'receipt_rows['+row_no+'][cheque_date]',id:'receipt_rows-'+row_no+'-cheque_date'}).datepicker();
 				
-				if(type=='Cheque')
+					if(type=='Cheque')
 					{ 
 						$(this).find('td:nth-child(2) input.cheque_no').rules('add','required');
 						$(this).find('td:nth-child(3) input.cheque_date').rules('add','required');
 					}
 					else if(type=='NEFT/RTGS')
 					{
-						$(this).find('td:nth-child(2) input.cheque_no').rules('remove','required');
-						$(this).find('td:nth-child(3) input.cheque_date').rules('remove','required');
+						$(this).find('td:nth-child(2) input').rules('remove','required');
+						$(this).find('td:nth-child(3) input').rules('remove','required');
 					}
-				
 				});
 			}
 			

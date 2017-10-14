@@ -334,6 +334,7 @@ class DebitNotesController extends AppController
 				}
 
                 $this->Flash->success(__('The Debit Note has been Update.'));
+				$this->repairRef();
 
                 return $this->redirect(['action' => 'index']);
             }

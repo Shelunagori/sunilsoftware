@@ -27,7 +27,7 @@ $this->set('title', 'Receipt Voucher');
 					<div class="col-md-3">
 						<div class="form-group">
 							<label>Voucher No :</label>&nbsp;&nbsp;
-							<?= h('#'.str_pad($receipt->voucher_no, 4, '0', STR_PAD_LEFT)) ?>
+							<?= h(str_pad($receipt->voucher_no, 4, '0', STR_PAD_LEFT)) ?>
 						
 						<input type="hidden" name="voucher_no" value="<?php echo $receipt->voucher_no;?>" >
 						<input type="hidden" name="company_id" value="<?php echo $receipt->company_id;?>" >
@@ -500,17 +500,21 @@ $this->set('title', 'Receipt Voucher');
 			$('.paymentType').die().live('change',function(){
 				var type=$(this).val();	
 				var currentRefRow=$(this).closest('tr');
+				var SelectedTr=$(this).closest('tr.MainTr');
 				if(type=='NEFT/RTGS'){
 				    currentRefRow.find('td:nth-child(2) input').val('');
 					currentRefRow.find('td:nth-child(3) input').val('');
 					currentRefRow.find('td:nth-child(2)').hide();
 					currentRefRow.find('td:nth-child(3)').hide();
+					renameBankRows(SelectedTr);
 				}
 				else{
 				    currentRefRow.find('td:nth-child(2)').removeAttr('style');
 					currentRefRow.find('td:nth-child(3)').removeAttr('style');
 					currentRefRow.find('td:nth-child(2)').show();
 					currentRefRow.find('td:nth-child(3)').show();
+					renameBankRows(SelectedTr);
+					
 				}
 			});
 			
@@ -598,7 +602,7 @@ $this->set('title', 'Receipt Voucher');
 					var isTblExist=windowContainer.find('table.refTbl').length;
 					if(isTblExist==0)
 					{
-					windowContainer.html('<table width=90% class=refTbl><tbody></tbody><tfoot><tr style=border-top:double#a5a1a1><td colspan=2><a role=button class=addRefRow>Add Row</a></td><td>$total_input</td><td>$total_type</td></tr></tfoot></table>');
+					windowContainer.html('<table width=90% class=refTbl><tbody></tbody><tfoot><tr style=border-top:double#a5a1a1><td colspan=2><a role=button class=addRefRow>Add Row</a></td><td>$total_input</td><td valign=top>$total_type</td></tr></tfoot></table>');
 					  AddRefRow(SelectedTr);
 					}
 				}
@@ -607,6 +611,7 @@ $this->set('title', 'Receipt Voucher');
 					var windowContainer=SelectedTr.find('td:nth-child(2) select.ledger option:selected').closest('td').find('div.window');
 					windowContainer.html('');
 				}
+				
 			  });
 			}
 			
@@ -638,7 +643,9 @@ $this->set('title', 'Receipt Voucher');
 					var windowContainer=$(this).closest('td').find('div.window');
 					windowContainer.html('');
 				}
+				renameMainRows();
 			});
+
 			
 			$('.AddMainRow').die().live('click',function(){ 
 				addMainRow();
@@ -713,9 +720,22 @@ $this->set('title', 'Receipt Voucher');
 			function renameBankRows(SelectedTr){
 				var row_no=SelectedTr.attr('row_no');
 				SelectedTr.find('td:nth-child(2) div.window table tbody tr').each(function(){
+					var type = SelectedTr.find('td:nth-child(1) select.paymentType option:selected').val(); 
 					$(this).find('td:nth-child(1) select.paymentType').attr({name:'receipt_rows['+row_no+'][mode_of_payment]',id:'receipt_rows-'+row_no+'-mode_of_payment'});
 					$(this).find('td:nth-child(2) input.cheque_no').attr({name:'receipt_rows['+row_no+'][cheque_no]',id:'receipt_rows-'+row_no+'-cheque_no'});
 					$(this).find('td:nth-child(3) input.cheque_date').attr({name:'receipt_rows['+row_no+'][cheque_date]',id:'receipt_rows-'+row_no+'-cheque_date'}).datepicker();
+				 
+				 if(type=='Cheque')
+					{ 
+						$(this).find('td:nth-child(2) input.cheque_no').rules('add','required');
+						$(this).find('td:nth-child(3) input.cheque_date').rules('add','required');
+					}
+					else if(type=='NEFT/RTGS')
+					{
+						$(this).find('td:nth-child(2) input').rules('remove','required');
+						$(this).find('td:nth-child(3) input').rules('remove','required');
+					}
+				
 				});
 			}
 			

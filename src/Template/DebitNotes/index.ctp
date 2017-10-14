@@ -30,7 +30,7 @@ $this->set('title', 'Debit Note Voucher');
 							<?php foreach ($debitNotes as $debit_note): ?>
 								<tr>
 									<td><?= h(++$page_no) ?></td>
-									<td><?= h('#'.str_pad($debit_note->voucher_no, 4, '0', STR_PAD_LEFT)) ?></td>
+									<td><?= h(str_pad($debit_note->voucher_no, 4, '0', STR_PAD_LEFT)) ?></td>
 									<td><?= h(date("d-m-Y",strtotime($debit_note->transaction_date))) ?></td>
 									<td class="actions">
 										<?= $this->Html->link(__('View'), ['action' => 'view', $debit_note->id]) ?>
