@@ -31,7 +31,7 @@ $this->set('title', 'Sales Voucher List');
 							<?php foreach ($salesVouchers as $salesVoucher): ?>
 								<tr>
 									<td><?= h(++$page_no) ?></td>
-									<td><?= h('#'.str_pad($salesVoucher->voucher_no, 4, '0', STR_PAD_LEFT)) ?></td>
+									<td><?= h(str_pad($salesVoucher->voucher_no, 4, '0', STR_PAD_LEFT)) ?></td>
 									<td><?= h(date("d-m-Y",strtotime($salesVoucher->transaction_date))) ?></td>
 									<td><?= h($salesVoucher->reference_no) ?></td>
 									<td class="actions">

@@ -28,8 +28,8 @@ if($supplier_state_id== $state_id){
 					<div class="row">
 						<div class="col-md-2">
 							<div class="form-group">
-								<label><b>Purchase Voucher No :</b></label>&nbsp;&nbsp;<br>
-								<?= h('#'.str_pad($PurchaseInvoice->voucher_no, 4, '0', STR_PAD_LEFT)) ?>
+								<label><b>Purchase Invoice Voucher No : </b><?= h('#'.str_pad($PurchaseInvoice->voucher_no, 4, '0', STR_PAD_LEFT)) ?></label>&nbsp;&nbsp;
+								
 							</div>
 						</div>
 						<div class="col-md-2">
@@ -54,16 +54,18 @@ if($supplier_state_id== $state_id){
 						</div>
 						
 						<div class="col-md-2">
-								<label><b>Voucher No :</b></label><br/>
-								
-								<?= h('#'.str_pad($NewVoucherNo+1, 4, '0', STR_PAD_LEFT)) ?>
-								
+								<?php if($NewVoucherNo==0){ ?>
+									<label><b>Purchase Return Voucher No : </b><?= h('#'.str_pad($NewVoucherNo+1, 4, '0', STR_PAD_LEFT)) ?></label>
+								<?php } else { ?>
+									<label><b>Purchase Return Voucher No : </b><?= h('#'.str_pad($NewVoucherNo+1, 4, '0', STR_PAD_LEFT)) ?></label>
+								<?php } ?>
+						
 						</div>
 						
 						<div class="col-md-2">
 							<div class="form-group">
 								<label>Transaction Date <span class="required">*</span></label>
-								<input type="text" name="transaction_date" class="form-control input-sm date-picker" data-date-format="dd-mm-yyyy" placeholder="DD-MM-YYYY" data-date-start-date="01-04-2017" data-date-end-date="31-03-2018" required="required" id="transaction-date" value="09-10-2017">
+									<?php echo $this->Form->input('transaction_date', ['type' => 'text','label' => false,'class' => 'form-control input-sm date-picker','data-date-format' => 'dd-mm-yyyy','value' => date("d-m-Y"),'data-date-start-date'=>@$coreVariable[fyValidFrom],'data-date-end-date'=>@$coreVariable[fyValidTo]]); ?>
 								
 								
 							</div>
@@ -83,9 +85,9 @@ if($supplier_state_id== $state_id){
 									<th rowspan="2" style="text-align:center;"><label  style="text-align:center; font-size:12px">Taxable Value</label></td>
 									<?php if($supplier_state_id== $state_id){ ?>
 											<th colspan="2" style="text-align:center;"><label  style="text-align:center; font-size:12px" id="gstDisplay">GST</label></th>
-										<?php } else { ?>
+									<?php } else { ?>
 												<th colspan="2" style="text-align:center;"><label  style="text-align:center; font-size:12px" id="gstDisplay">IGST</label></th>
-										<?php } ?>
+									<?php } ?>
 									
 									<th rowspan="2" style="text-align:center;"><label  style="text-align:center; font-size:12px">Round Of</label></th>
 									<th rowspan="2" style="border-right-width:2px; border-right-color:#4db3a2;"><label>Total</label></th>
@@ -383,7 +385,7 @@ function rename_rows()
 			$(this).find('.gstValue').attr({name:'q',id:'q'});
 			$(this).find('.roundOff').attr({name:'q',id:'q'});
 			$(this).find('.netAmount').attr({name:'q',id:'q'});
-			$(this).find('.returnQty').attr({name:'q',id:'q', readonly:'readonly'}).val(1);
+			$(this).find('.returnQty').attr({name:'q',id:'q', readonly:'readonly'}).val('');
 			$(this).css('background-color','#FFF');
 		}
 		});
@@ -514,21 +516,40 @@ function rename_rows()
 					total_amt=total_amt+totalAmountReturn;
 					$(this).closest('tr').find('.returnAmt').val(parseFloat(totalAmountReturn).toFixed(2));
 				 }
-				
-			
-				
-				
 				}
-				
-				
-				
-				
 			});
 			$('.amount_before_tax').val(parseFloat(total_amt).toFixed(2));
 			 
 			
 			//rename_rows();
 		}
+		
+	function checkValidation() 
+	{  
+		var total_amount  = parseFloat($('.total_amount').val());
+		if(!total_amount || total_amount==0){
+			alert('Error: zero amount invoice can not be generated.');
+			return false;
+		}
+		
+		if(!total_amount || total_amount < 0){
+			alert('Error: Minus amount invoice can not be generated.');
+			return false;
+		}
+		
+		if(confirm('Are you sure you want to submit!'))
+		{
+			$('.submit').attr('disabled','disabled');
+			$('.submit').text('Submiting...');
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+		
+	
+	}
 		
 
 		

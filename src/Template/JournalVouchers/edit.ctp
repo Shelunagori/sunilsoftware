@@ -35,7 +35,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 					<div class="col-md-3">
 						<div class="form-group">
 							<label>Voucher No :</label>&nbsp;&nbsp;
-							<?= h('#'.str_pad($journalVoucher->voucher_no, 4, '0', STR_PAD_LEFT)) ?>
+							<?= h(str_pad($journalVoucher->voucher_no, 4, '0', STR_PAD_LEFT)) ?>
 						</div>
 					</div>
 					<div class="col-md-3">
@@ -212,15 +212,15 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 											<table width='90%'>
 												<tbody>
 													<tr>
-														<td width="30%" >
+														<td width="30%" style="vertical-align: top !important;">
 															<?php 
 															echo $this->Form->input('journal_voucher_rows.'.$i.'.mode_of_payment', ['options'=>$option_mode,'label' => false,'class' => 'form-control input-sm paymentType','required'=>'required','value'=>$journal_voucher_row->mode_of_payment]); ?>
 														</td>
-														<td width="30%" style="<?php echo @$style;?>">
+														<td width="30%" style="<?php echo @$style;?>" style="vertical-align: top !important;">
 															<?php echo $this->Form->input('journal_voucher_rows.'.$i.'.cheque_no', ['label' =>false,'class' => 'form-control input-sm cheque_no','placeholder'=>'Cheque No','value'=>$journal_voucher_row->cheque_no]); ?> 
 														</td>
 														
-														<td width="30%" style="<?php echo @$style;?>">
+														<td width="30%" style="<?php echo @$style;?>" style="vertical-align: top !important;">
 															<?php echo $this->Form->input('journal_voucher_rows.'.$i.'.cheque_date', ['label' =>false,'class' => 'form-control input-sm date-picker cheque_date ','data-date-format'=>'dd-mm-yyyy','placeholder'=>'Cheque Date','value'=>@$date,'type'=>'text']); ?>
 														</td>
 													</tr>
@@ -327,15 +327,15 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 <table id="sampleForBank" style="display:none;" width="100%">
 	<tbody>
 		<tr>
-			<td width="30%">
+			<td width="30%" style="vertical-align: top !important;">
 				<?php 
 				echo $this->Form->input('mode_of_payment', ['options'=>$option_mode,'label' => false,'class' => 'form-control input-sm paymentType','required'=>'required']); ?>
 			</td>
-			<td width="30%">
+			<td width="30%" style="vertical-align: top !important;">
 				<?php echo $this->Form->input('cheque_no', ['label' =>false,'class' => 'form-control input-sm cheque_no','placeholder'=>'Cheque No']); ?> 
 			</td>
 			
-			<td width="30%">
+			<td width="30%" style="vertical-align: top !important;">
 				<?php echo $this->Form->input('cheque_date', ['label' =>false,'class' => 'form-control input-sm date-picker cheque_date ','data-date-format'=>'dd-mm-yyyy','placeholder'=>'Cheque Date']); ?>
 			</td>
 			

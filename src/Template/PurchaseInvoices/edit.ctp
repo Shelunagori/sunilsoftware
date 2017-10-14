@@ -37,7 +37,7 @@ if($supplier_state_id== $state_id){
 						<input type="hidden" name="is_interstate" id="is_interstate" value="<?php echo $is_interstate;?>">
 						<div class="col-md-3">
 								<label>Supplier</label>
-								<?php echo $this->Form->control('q',['class'=>'form-control input-sm supplier_ledger_id ','label'=>false,'type'=>'hidden','value'=>$supplier_state_id]);
+								<?php echo $this->Form->control('q',['class'=>'form-control input-sm supplier_state_id ','label'=>false,'type'=>'hidden','value'=>$supplier_state_id]);
 									 
 									echo $this->Form->control('supplier_ledger_id',['class'=>'form-control input-sm supplier_ledger select2me','label'=>false, 'options' => $partyOptions,'required'=>'required','disabled']);
 								?>
@@ -51,14 +51,14 @@ if($supplier_state_id== $state_id){
 						<div class="col-md-2">
 							<div class="form-group">
 								<label>Transaction Date <span class="required">*</span></label>
-								<input type="text" name="transaction_date" class="form-control input-sm date-picker" data-date-format="dd-mm-yyyy" placeholder="DD-MM-YYYY" data-date-start-date="01-04-2017" data-date-end-date="31-03-2018" required="required" id="transaction-date" value="09-10-2017">
+								<?php echo $this->Form->input('transaction_date', ['type' => 'text','label' => false,'class' => 'form-control input-sm date-picker','data-date-format' => 'dd-mm-yyyy','value' => $purchaseInvoice->transaction_date,'data-date-start-date'=>@$coreVariable[fyValidFrom],'data-date-end-date'=>@$coreVariable[fyValidTo]]); ?>
 							</div>
 						</div>
 					</div>
 					
 				   <div class="row">
 				  <div class="table-responsive">
-								<table id="main_table" class="table table-condensed table-bordered" style="margin-bottom: 4px;" width="100%">
+								<table id="main_table" class="table table-condensed table-bordered" style="height: 24px; padding: 0px 0px;font-size: 12px;" width="100%">
 								<thead>
 								<tr align="center">
 									<th rowspan="2" style="text-align:center;"><label>Item<label></td>
@@ -238,7 +238,7 @@ if($supplier_state_id== $state_id){
 <?php
 	$js="
 	
-			var supplier_state_id=$('.supplier_ledger_id').val();
+			var supplier_state_id=$('.supplier_state_id').val();
 			var state_id=$('.state_id').val();
 			if(supplier_state_id!=state_id)
 			{
@@ -361,25 +361,29 @@ if($supplier_state_id== $state_id){
 					var gstAmt=0;
 					$(this).closest('tr').find('.gstValue').val(gstAmt.toFixed(2));
 				}else{
-					var supplier_state_id =($('.supplier_ledger_id ').find('option:selected').attr('state_id'));
+					//var supplier_state_id =($('.supplier_ledger_id ').find('option:selected').attr('state_id'));
+					var supplier_state_id=$('.supplier_state_id').val();
 					var state_id=$('.state_id').val();
 					if(supplier_state_id!=state_id)
-					{
+					{ 
 						var amt2=(taxableAmt*gstTax)/100;
 						amt2=round(amt2,2);
 						$(this).closest('tr').find('.gstValue').val(amt2);
 						var gstamt1=parseFloat($(this).closest('tr').find('.gstValue').val());
 						total_gst=total_gst+gstamt1;
 					}else{ 
-						var gstAmt=(taxableAmt*gstTax)/100;
-						var gstAmt=gstAmt.toFixed(2);
-						var amt=gstAmt/2;
-						var amt1=amt.toFixed(2);
-						var amt2=amt1*2;
+						gstTax=gstTax/2;
+						var gstAmt1=(taxableAmt*gstTax)/100;
+						var gstAmt2=(taxableAmt*gstTax)/100;
+						
+						gstAmt1=round(gstAmt1,2);
+						gstAmt2=round(gstAmt2,2);
+						
+						amt2=gstAmt1+gstAmt2;
 						amt2=round(amt2,2);
-						$(this).closest('tr').find('.gstValue').val(amt2.toFixed(2));
-						var gstamt1=parseFloat($(this).closest('tr').find('.gstValue').val());
-						total_gst=total_gst+gstamt1;
+						$(this).closest('tr').find('.gstValue').val(amt2);
+						var gstamt11=parseFloat($(this).closest('tr').find('.gstValue').val());
+						total_gst=total_gst+gstamt11;
 					}
 					
 					
@@ -455,6 +459,34 @@ if($supplier_state_id== $state_id){
 		forward_total_amount();
 		
 	});
+	
+	
+		function checkValidation() 
+	{  
+		var total_amount  = parseFloat($('.total_amount').val());
+		if(!total_amount || total_amount==0){
+			alert('Error: zero amount invoice can not be generated.');
+			return false;
+		}
+		
+		if(!total_amount || total_amount < 0){
+			alert('Error: Minus amount invoice can not be generated.');
+			return false;
+		}
+		
+		if(confirm('Are you sure you want to submit!'))
+		{
+			$('.submit').attr('disabled','disabled');
+			$('.submit').text('Submiting...');
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+		
+	
+	}
 		
 	
 	";

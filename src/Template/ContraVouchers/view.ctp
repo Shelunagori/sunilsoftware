@@ -25,7 +25,7 @@ $this->set('title', 'Contra Voucher');
 					<div class="col-md-3">
 						<div class="form-group">
 							<label><b>Voucher No</b> :</label>&nbsp;&nbsp;
-							<?= h('#'.str_pad($contraVoucher->voucher_no, 4, '0', STR_PAD_LEFT)) ?>
+							<?= h(str_pad($contraVoucher->voucher_no, 4, '0', STR_PAD_LEFT)) ?>
 						</div>
 					</div>
 					<div class="col-md-3">

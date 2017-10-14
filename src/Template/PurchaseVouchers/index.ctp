@@ -31,7 +31,7 @@ $this->set('title', 'Purchase Vouchers');
 							<?php foreach ($purchaseVouchers as $purchaseVoucher): ?>
 							<tr>
 								<td><?= h(++$page_no) ?></td>
-								<td><?= h('#'.str_pad($purchaseVoucher->voucher_no, 4, '0', STR_PAD_LEFT)) ?></td>
+								<td><?= h(str_pad($purchaseVoucher->voucher_no, 4, '0', STR_PAD_LEFT)) ?></td>
 								<td><?= h($purchaseVoucher->transaction_date) ?></td>
 								<td><?= h($purchaseVoucher->supplier_invoice_no) ?></td>
 								<td><?php  if(!empty($purchaseVoucher->supplier_invoice_date))

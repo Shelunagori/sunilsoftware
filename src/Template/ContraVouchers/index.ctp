@@ -31,7 +31,7 @@ $this->set('title', 'Contra Voucher List');
 							<?php foreach ($contraVouchers as $contraVoucher): ?>
 								<tr>
 									<td><?= h(++$page_no) ?></td>
-									<td><?= h('#'.str_pad($contraVoucher->voucher_no, 4, '0', STR_PAD_LEFT)) ?></td>
+									<td><?= h(str_pad($contraVoucher->voucher_no, 4, '0', STR_PAD_LEFT)) ?></td>
 									<td><?= h(date("d-m-Y",strtotime($contraVoucher->transaction_date))) ?></td>
 									<td><?= h($contraVoucher->reference_no) ?></td>
 									<td class="actions">
