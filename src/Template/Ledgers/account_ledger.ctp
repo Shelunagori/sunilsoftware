@@ -102,8 +102,7 @@ $this->set('title', 'Account Ledger report');
 						<?php
 						if(!empty($AccountingLedgers))
 						{
-							$total_credit=0;
-							$total_debit=0;
+							$total_credit=0;$total_debit=0;
 							//pr($AccountingLedgers->toArray());     exit;
 						foreach($AccountingLedgers as $AccountingLedger)
 						{   
@@ -136,7 +135,7 @@ $this->set('title', 'Account Ledger report');
 								else if(!empty($AccountingLedger->sales_invoice_id)){
 									echo 'Sales Invoices';
 									@$voucher_no=$AccountingLedger->sales_invoice->voucher_no;
-									@$url_link=$this->Html->link($voucher_no,['controller'=>'SalesInvoices','action' => 'view', $AccountingLedger->sales_invoice_id],['target'=>'_blank']);
+									@$url_link=$this->Html->link($voucher_no,['controller'=>'SalesInvoices','action' => 'sales-invoice-bill', $AccountingLedger->sales_invoice_id],['target'=>'_blank']);
 								}
 								else if(!empty($AccountingLedger->sale_return_id)){
 									echo 'Sales Returns';
@@ -207,7 +206,8 @@ $this->set('title', 'Account Ledger report');
 								?>
 								</td>
 							</tr>
-						<?php   }   } ?>
+						<?php  } 
+						} ?>
 						</tbody>
 						<tfoot>
 							<tr>
@@ -235,7 +235,7 @@ $this->set('title', 'Account Ledger report');
 									else{
 									@$closing_bal_type='';	
 									}
-									echo abs($closingBalance); echo ' '.$closing_bal_type;
+									echo round(abs($closingBalance),2); echo ' '.$closing_bal_type;
 								?>
 								</b></td>
 								

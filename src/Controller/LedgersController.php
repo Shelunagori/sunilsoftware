@@ -371,7 +371,7 @@ class LedgersController extends AppController
 			$where['AccountingEntries.ledger_id']=$ledger_id;
 		}
 
-		
+		if(!empty($ledger_id)){
 		$query = $this->Ledgers->AccountingEntries->find();
 		$CaseCreditOpeningBalance = $query->newExpr()
 					->addCase(
@@ -412,8 +412,9 @@ class LedgersController extends AppController
 			@$opening_balance_type='';	
 			}
 		$opening_balance=round($opening_balance,2);
-		$AccountingLedgers=$this->Ledgers->AccountingEntries->find()->where(['AccountingEntries.company_id'=>$company_id])->contain(['Ledgers','PurchaseVouchers','SalesInvoices','SaleReturns','Payments','SalesVouchers','Receipts','JournalVouchers','ContraVouchers','CreditNotes','DebitNotes','JournalVouchers','PurchaseInvoices'])->where($where)
+		$AccountingLedgers=$this->Ledgers->AccountingEntries->find()->where(['AccountingEntries.company_id'=>$company_id])->contain(['Ledgers','PurchaseVouchers','SalesInvoices','SaleReturns','Payments','SalesVouchers','Receipts','JournalVouchers','ContraVouchers','CreditNotes','DebitNotes','JournalVouchers','PurchaseInvoices','PurchaseReturns'])->where($where)
 		->autoFields(true);
+		}
 		//pr($AccountingLedgers->toArray());exit;
 		$ledgers = $this->Ledgers->find('list')->where(['company_id'=>$company_id]);
 		$this->set(compact('accountLedger','ledgers','opening_balance_type','opening_balance','openingBalance_credit1','closingBalance_credit1','AccountingLedgers','from_date','to_date','voucher_type','voucher_no','ledger_id'));
