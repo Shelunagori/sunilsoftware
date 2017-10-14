@@ -324,6 +324,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			$('.paymentType').die().live('change',function(){
 				var type=$(this).val();	
 				var currentRefRow=$(this).closest('tr');
+				var SelectedTr=$(this).closest('tr.MainTr');
 				if(type=='NEFT/RTGS'){
 					currentRefRow.find('span.help-block-error').remove();
 					currentRefRow.find('td:nth-child(2) input').val('');
