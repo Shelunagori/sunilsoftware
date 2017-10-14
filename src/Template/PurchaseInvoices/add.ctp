@@ -51,7 +51,7 @@ if($supplier_state_id== $state_id){
 						<div class="col-md-3">
 								<label>Supplier</label>
 								<?php
-									 echo $this->Form->control('q',['class'=>'form-control input-sm supplier_ledger_id ','label'=>false,'type'=>'hidden','value'=>$supplier_state_id]);
+									 echo $this->Form->control('q',['class'=>'form-control input-sm supplier_state_id ','label'=>false,'type'=>'hidden','value'=>$supplier_state_id]);
 									 
 									echo $this->Form->control('supplier_ledger_id',['class'=>'form-control input-sm supplier_ledger select2me','label'=>false, 'options' => $partyOptions,'required'=>'required','disabled']);
 								?>
@@ -59,7 +59,7 @@ if($supplier_state_id== $state_id){
 						
 						<div class="col-md-3">
 								<label>Purchase Account</label>
-								<?php echo $this->Form->control('purchase_ledger_id',['class'=>'form-control input-sm supplier_ledger_id select2me','label'=>false, 'options' => $Accountledgers,'required'=>'required']);
+								<?php echo $this->Form->control('purchase_ledger_id',['class'=>'form-control input-sm  select2me','label'=>false, 'options' => $Accountledgers,'required'=>'required']);
 								?>
 						</div>
 						<div class="col-md-2">
@@ -83,7 +83,7 @@ if($supplier_state_id== $state_id){
 									<th  colspan="2" style="text-align:center;"><label align="center">PNF (%)</label></th>
 									<th rowspan="2" style="text-align:center;"><label>Taxable Value<label></td>
 									<th colspan="2" style="text-align:center;"><label id="gstDisplay">GST<label></th>
-									<th rowspan="2" style="text-align:center;"><label>Round Off<label></td>
+									<th rowspan="2" style="text-align:center;"><label>Round off<label></td>
 									<th rowspan="2" style="text-align:center;"><label>Total<label></td>
 								</tr>
 								<tr>
@@ -142,7 +142,7 @@ if($supplier_state_id== $state_id){
 										<?php
 											echo $this->Form->input('q', ['label' => false,'class' => 'form-control input-sm item_gst_figure_id numberOnly','placeholder'=>'','type'=>'hidden','value'=>$grn_row->item->FirstGstFigures->id]);
 											
-											echo $this->Form->input('q', ['label' => false,'class' => 'form-control input-sm gst_figure_id numberOnly','style'=>'text-align:right','placeholder'=>'','type'=>'text','value'=>$grn_row->item->FirstGstFigures->tax_percentage]);
+											echo $this->Form->input('q', ['label' => false,'class' => 'form-control input-sm gst_figure_id numberOnly','style'=>'text-align:right','placeholder'=>'','type'=>'text','value'=>$grn_row->item->FirstGstFigures->tax_percentage,'tabindex'=>'-1']);
 											//echo $this->Form->input('q', ['style'=>'text-align:right','label' => false,'class' => 'form-control input-sm gst_figure_id numberOnly','placeholder'=>'','type'=>'text','value'=>$grn_row->item->FirstGstFigures->tax_percentage,'tabindex'=>'-1']);
 										?>	
 									</td>
@@ -151,7 +151,7 @@ if($supplier_state_id== $state_id){
 										?>	
 									</td>
 									<td  width="7%" align="center">
-										<?php echo $this->Form->input('q', ['style'=>'text-align:right','label' => false,'class' => 'form-control input-sm roundOff','placeholder'=>'','type'=>'text','tabindex'=>'-1']);
+										<?php echo $this->Form->input('q', ['style'=>'text-align:right','label' => false,'class' => 'form-control input-sm roundOff','placeholder'=>'','type'=>'text']);
 										?>	
 									</td>
 									<td  width="10%" align="center">
@@ -249,7 +249,7 @@ if($supplier_state_id== $state_id){
 	$js="
 	
 		
-			var supplier_state_id=$('.supplier_ledger_id').val();
+			var supplier_state_id=$('.supplier_state_id').val();
 			var state_id=$('.state_id').val();
 			if(supplier_state_id!=state_id)
 			{
@@ -368,22 +368,23 @@ if($supplier_state_id== $state_id){
 					$(this).closest('tr').find('.gstValue').val(gstAmt.toFixed(2));
 				}else{
 					//var supplier_state_id=$('option:selected', '.supplier_state_id').attr('state_id');
-					var supplier_state_id =($('.supplier_ledger_id ').find('option:selected').attr('state_id'));
+					var supplier_state_id=$('.supplier_state_id').val();
 					var state_id=$('.state_id').val();
 					
 					if(supplier_state_id!=state_id)
-					{
+					{  
 						var amt2=(taxableAmt*gstTax)/100;
-						$(this).closest('tr').find('.gstValue').val(amt2.toFixed(2));
+						amt2=round(amt2,2);
+						$(this).closest('tr').find('.gstValue').val(amt2);
 						var gstamt1=parseFloat($(this).closest('tr').find('.gstValue').val());
 						total_gst=total_gst+gstamt1;
-					}else{ 
+					}else{  
 						var gstAmt=(taxableAmt*gstTax)/100;
-						var gstAmt=gstAmt.toFixed(2);
+						var gstAmt=gstAmt.toFixed(2); 	
 						var amt=gstAmt/2;
-						var amt1=amt.toFixed(2);
-						var amt2=amt1*2;
-						$(this).closest('tr').find('.gstValue').val(amt2.toFixed(2));
+						var amt2=amt*2;  
+						amt2=round(amt2,2);  
+						$(this).closest('tr').find('.gstValue').val(amt2);
 						var gstamt1=parseFloat($(this).closest('tr').find('.gstValue').val());
 						total_gst=total_gst+gstamt1;
 					}
@@ -437,6 +438,7 @@ if($supplier_state_id== $state_id){
 					$(this).closest('tr').find('.pnf').val(pnfPer);
 					//total_pnf=total_pnf+pnfAmt;
 				}
+				forward_total_amount();
 	});
 	
 	$('.discountAmount').die().live('blur',function()
@@ -450,16 +452,31 @@ if($supplier_state_id== $state_id){
 					var discountAmt=0;
 					$(this).closest('tr').find('.discount').val(dis.toFixed(2));
 					$(this).closest('tr').find('.discountAmount').val(discountAmt.toFixed(2));
-					total_dis=total_dis+discountAmt;
+					//total_dis=total_dis+discountAmt;
 				}else{
 					var dis=(100*discountAmt)/amount;
 					dis=round(dis,3);
 					$(this).closest('tr').find('.discount').val(dis);
-					total_dis=total_dis+discountAmt;
+					//total_dis=total_dis+discountAmt;
 				}
+				forward_total_amount();
 	});
 		
-
+	function checkValidation() 
+	{  
+		var total_amount  = parseFloat($('.total_amount').val());
+		if(!total_amount || total_amount==0){
+			alert('Error: zero amount invoice can not be generated.');
+			return false;
+		}
+		
+		if(!total_amount || total_amount < 0){
+			alert('Error: Minus amount invoice can not be generated.');
+			return false;
+		}
+		
+	
+	}
 		
 		
 

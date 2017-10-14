@@ -49,6 +49,12 @@ class PurchaseInvoicesTable extends Table
             'joinType' => 'LEFT'
         ]);
 		
+		 $this->belongsTo('PurchaseLedgers', [
+			'className' => 'Ledgers',
+            'foreignKey' => 'purchase_ledger_id',
+            'joinType' => 'LEFT'
+        ]);
+		
         $this->hasMany('PurchaseInvoiceRows', [
             'foreignKey' => 'purchase_invoice_id',
 			'saveStrategy'=>'replace'

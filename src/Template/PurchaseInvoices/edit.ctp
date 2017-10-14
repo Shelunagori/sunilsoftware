@@ -32,12 +32,7 @@ if($supplier_state_id== $state_id){
 								<?= h('#'.str_pad($purchaseInvoice->voucher_no, 4, '0', STR_PAD_LEFT)) ?>
 							</div>
 						</div>
-						<div class="col-md-2">
-							<div class="form-group">
-								<label>Transaction Date <span class="required">*</span></label>
-								<input type="text" name="transaction_date" class="form-control input-sm date-picker" data-date-format="dd-mm-yyyy" placeholder="DD-MM-YYYY" data-date-start-date="01-04-2017" data-date-end-date="31-03-2018" required="required" id="transaction-date" value="09-10-2017">
-							</div>
-						</div>
+						
 						<input type="hidden" name="state_id" class="state_id" value="<?php echo $state_id;?>">
 						<input type="hidden" name="is_interstate" id="is_interstate" value="<?php echo $is_interstate;?>">
 						<div class="col-md-3">
@@ -50,8 +45,14 @@ if($supplier_state_id== $state_id){
 						
 						<div class="col-md-3">
 								<label>Purchase Account</label>
-								<?php echo $this->Form->control('purchase_ledger_id',['empty'=>'-Select Purchase-', 'class'=>'form-control input-sm supplier_ledger_id select2me','label'=>false, 'options' => $Accountledgers,'required'=>'required']);
+								<?php echo $this->Form->control('purchase_ledger_id',['empty'=>'-Select Purchase-', 'class'=>'form-control input-sm supplier_ledger_id select2me','label'=>false, 'options' => $Accountledgers,'required'=>'required','value'=>$purchaseInvoice->purchase_ledger_id]);
 								?>
+						</div>
+						<div class="col-md-2">
+							<div class="form-group">
+								<label>Transaction Date <span class="required">*</span></label>
+								<input type="text" name="transaction_date" class="form-control input-sm date-picker" data-date-format="dd-mm-yyyy" placeholder="DD-MM-YYYY" data-date-start-date="01-04-2017" data-date-end-date="31-03-2018" required="required" id="transaction-date" value="09-10-2017">
+							</div>
 						</div>
 					</div>
 					
@@ -67,7 +68,7 @@ if($supplier_state_id== $state_id){
 									<th  colspan="2" style="text-align:center;"><label align="center">PNF (%)</label></th>
 									<th rowspan="2" style="text-align:center;"><label>Taxable Value<label></td>
 									<th colspan="2" style="text-align:center;"><label id="gstDisplay">GST<label></th>
-									<th rowspan="2" style="text-align:center;"><label>Round Off<label></td>
+									<th rowspan="2" style="text-align:center;"><label>Round off<label></td>
 									<th rowspan="2" style="text-align:center;"><label>Total<label></td>
 								</tr>
 								<tr>
@@ -93,20 +94,20 @@ if($supplier_state_id== $state_id){
 									<input type="hidden" name="q" class="attrGet calculation" value="<?php echo $purchase_invoice_row->item_id; ?>">
 									<?php echo $purchase_invoice_row->item->name; ?></td>
 									<td width="5%" align="center">
-										<?php echo $this->Form->input('q', ['type'=>'text','label' => false,'class' => 'form-control input-sm calculation quantity rightAligntextClass','required'=>'required','placeholder'=>'Quantity', 'value'=>$purchase_invoice_row->quantity]); 
-										//echo $grn_row->quantity;
+										<?php echo $this->Form->input('q', ['type'=>'hidden','label' => false,'class' => 'form-control input-sm calculation quantity rightAligntextClass','required'=>'required','placeholder'=>'Quantity', 'value'=>$purchase_invoice_row->quantity]); 
+										echo $purchase_invoice_row->quantity;
 										?>
 									</td>
-									<td width="5%" align="center">
-										<?php echo $this->Form->input('q', ['type'=>'hidden','label' => false,'class' => 'form-control input-sm  rate rightAligntextClass','value'=>$purchase_invoice_row->rate]); 
-										echo $purchase_invoice_row->rate;
+									<td width="8%" align="center">
+										<?php echo $this->Form->input('q', ['type'=>'text','label' => false,'class' => 'form-control input-sm  rate rightAligntextClass','value'=>$purchase_invoice_row->rate]); 
+										//echo $purchase_invoice_row->rate;
 										?>
 									</td>
 									<td  width="6%" align="center">
 										<?php echo $this->Form->input('q', ['label' => false,'class' => 'form-control input-sm discount numberOnly','placeholder'=>'Discount','style'=>'text-align:right','type'=>'text','value'=>$purchase_invoice_row->discount_percentage]);
 										?>	
 									</td>
-									<td  width="10%" align="center">
+									<td  width="8%" align="center">
 										<?php echo $this->Form->input('q', ['label' => false,'class' => 'form-control input-sm discountAmount','type'=>'text','style'=>'text-align:right','value'=>$purchase_invoice_row->discount_amount]);
 										?>	
 									</td>
@@ -114,7 +115,7 @@ if($supplier_state_id== $state_id){
 										<?php echo $this->Form->input('q', ['label' => false,'class' => 'form-control input-sm pnf numberOnly','placeholder'=>'PNF','style'=>'text-align:right','type'=>'text','value'=>$purchase_invoice_row->pnf_percentage]);
 										?>	
 									</td>
-									<td  width="10%" align="center">
+									<td  width="8%" align="center">
 										<?php echo $this->Form->input('q', ['label' => false,'class' => 'form-control input-sm pnfAmount','type'=>'text','style'=>'text-align:right','value'=>$purchase_invoice_row->pnf_amount]);
 										?>	
 									</td>
@@ -131,7 +132,7 @@ if($supplier_state_id== $state_id){
 											echo $this->Form->input('q', ['label' => false,'class' => 'form-control input-sm gst_figure_id numberOnly','style'=>'text-align:right','placeholder'=>'','type'=>'text','value'=>$purchase_invoice_row->item->FirstGstFigures->tax_percentage]);
 										?>	
 									</td>
-									<td  width="10%" align="center">
+									<td  width="8%" align="center">
 										<?php echo $this->Form->input('q', ['label' => false,'class' => 'form-control input-sm gstValue','type'=>'text','style'=>'text-align:right','value'=>$purchase_invoice_row->gst_value]);
 										?>	
 									</td>
@@ -292,7 +293,7 @@ if($supplier_state_id== $state_id){
 		});
 	}
 	
-	$('.quantity').die().live('blur',function()
+	$('.rate').die().live('blur',function()
 	{
 		forward_total_amount();
 	});
@@ -365,7 +366,8 @@ if($supplier_state_id== $state_id){
 					if(supplier_state_id!=state_id)
 					{
 						var amt2=(taxableAmt*gstTax)/100;
-						$(this).closest('tr').find('.gstValue').val(amt2.toFixed(2));
+						amt2=round(amt2,2);
+						$(this).closest('tr').find('.gstValue').val(amt2);
 						var gstamt1=parseFloat($(this).closest('tr').find('.gstValue').val());
 						total_gst=total_gst+gstamt1;
 					}else{ 
@@ -374,6 +376,7 @@ if($supplier_state_id== $state_id){
 						var amt=gstAmt/2;
 						var amt1=amt.toFixed(2);
 						var amt2=amt1*2;
+						amt2=round(amt2,2);
 						$(this).closest('tr').find('.gstValue').val(amt2.toFixed(2));
 						var gstamt1=parseFloat($(this).closest('tr').find('.gstValue').val());
 						total_gst=total_gst+gstamt1;
