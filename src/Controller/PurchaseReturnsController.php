@@ -68,7 +68,11 @@ class PurchaseReturnsController extends AppController
         ]);
 		
 		$Voucher_no = $this->PurchaseReturns->find()->select(['voucher_no'])->where(['company_id'=>$company_id])->order(['voucher_no' => 'DESC'])->first();
-		$NewVoucherNo=$Voucher_no->voucher_no;
+		
+		$NewVoucherNo=0;
+		if(empty($Voucher_no)){
+		$NewVoucherNo=@$Voucher_no->voucher_no;
+		}
 		 $purchase_return_qty=[];
 		foreach($PurchaseInvoice->purchase_returns as $purchase_return){
 			foreach($purchase_return->purchase_return_rows as $purchase_return_row){
