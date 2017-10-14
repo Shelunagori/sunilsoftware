@@ -29,7 +29,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 					<div class="col-md-3">
 						<div class="form-group">
 							<label>Voucher No :</label>&nbsp;&nbsp;
-							<?= h('#'.str_pad($contraVoucher->voucher_no, 4, '0', STR_PAD_LEFT)) ?>
+							<?= h(str_pad($contraVoucher->voucher_no, 4, '0', STR_PAD_LEFT)) ?>
 						</div>
 					</div>
 					<div class="col-md-3">
@@ -427,10 +427,11 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			{
 				$(this).closest('tr').remove();
 				renameMainRows();
+				calc();
 				var SelectedTr=$(this).closest('tr.MainTr');
 				renameBankRows(SelectedTr);
 				renameRefRows(SelectedTr);
-				calc();
+				
 			});
 			
 			
