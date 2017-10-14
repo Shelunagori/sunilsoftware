@@ -387,6 +387,7 @@ if($supplier_state_id== $state_id){
 						total_gst=total_gst+gstamt1;
 					}else{  
 						gstTax=gstTax/2;
+						
 						var gstAmt1=(taxableAmt*gstTax)/100;
 						var gstAmt2=(taxableAmt*gstTax)/100;
 						

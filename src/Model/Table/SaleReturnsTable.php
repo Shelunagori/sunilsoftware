@@ -78,6 +78,7 @@ class SaleReturnsTable extends Table
             'foreignKey' => 'sales_ledger_id',
             'joinType' => 'INNER'
         ]);
+		$this->belongsTo('Grns');
 		 $this->hasMany('SaleReturnRows', [
             'foreignKey' => 'sale_return_id',
 			'saveStrategy'=>'replace'

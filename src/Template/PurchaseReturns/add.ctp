@@ -412,6 +412,7 @@ function rename_rows()
 				var chkquanity1=$(this).find('.returnQty').attr('maxqt');
 				var chkquanity2=parseFloat($(this).closest('tr').find('.returnQty').val());
 			
+			if(chkquanity2 != 0){
 				if(chkquanity2>chkquanity1)
 				{
 					alert('Please enter a value less than or equal to quantity '+chkquanity1);
@@ -423,6 +424,7 @@ function rename_rows()
 					alert('Please enter a value greater than or equal to quantity');
 					$(this).closest('tr').find('.returnQty').val(''); 
 				}
+			}
 			
 			
 			var val=$(this).find('input[type=checkbox]:checked').val();

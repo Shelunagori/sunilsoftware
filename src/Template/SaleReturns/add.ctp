@@ -74,7 +74,7 @@ foreach($partyOptions as $partyOption)
 						<div class="col-md-2">
 							<div class="form-group">
 								<label>Transaction Date <span class="required">*</span></label>
-								<input type="text" name="transaction_date" class="form-control input-sm date-picker" data-date-format="dd-mm-yyyy" placeholder="DD-MM-YYYY" data-date-start-date="01-04-2017" data-date-end-date="31-03-2018" required="required" id="transaction-date" value="09-10-2017">
+								<?php echo $this->Form->input('transaction_date', ['type' => 'text','label' => false,'class' => 'form-control input-sm date-picker','data-date-format' => 'dd-mm-yyyy','value' => date("d-m-Y"),'data-date-start-date'=>@$coreVariable[fyValidFrom],'data-date-end-date'=>@$coreVariable[fyValidTo]]); ?>
 								
 								
 							</div>
@@ -99,7 +99,7 @@ foreach($partyOptions as $partyOption)
 										?>
 									<label></td>
 									<td style="border-left-width:2px; border-right-color:#4db3a2;"><label>Net Amount<label></td>
-									<td >is Return</td>
+									<td >is Return ?</td>
 									<td ><label>Return Quantity<label></td>
 									<td ><label>Return Amount<label></td>
 									
@@ -176,7 +176,7 @@ foreach($partyOptions as $partyOption)
 
 								<td>
 									<?php echo $this->Form->input('q', ['label' => false,'class' => 'form-control input-sm returnQty calculation rightAligntextClass numberOnly','placeholder'=>'Return Quantity',  'tabindex'=>'-1','type'=>'text','max'=>$salesInvoiceRow->quantity-@$sales_return_qty[$salesInvoiceRow->item->id]]);
-											echo "<br>";
+										
 									?>	<span align="center">Max Quantity:- <?php echo $salesInvoiceRow->quantity-@$sales_return_qty[$salesInvoiceRow->item->id];?></span>
 								</td>
 								<td>
@@ -528,7 +528,23 @@ foreach($partyOptions as $partyOption)
 			var exactgstvalue=0;		
 			$('#main_table tbody#main_tbody tr.main_tr').each(function()
 			{
-			
+				var chkquanity1=$(this).find('.returnQty').attr('max');
+				var chkquanity2=parseFloat($(this).closest('tr').find('.returnQty').val());
+
+				if(chkquanity2 != 0){
+					if(chkquanity2>chkquanity1)
+					{
+						alert('Please enter a value less than or equal to quantity '+chkquanity1);
+						$(this).closest('tr').find('.returnQty').val(''); 
+					}
+
+					if(chkquanity2==0)
+					{
+						alert('Please enter a value greater than or equal to quantity');
+						$(this).closest('tr').find('.returnQty').val(''); 
+					}
+				}
+				
 			    var outdata=$(this).closest('tr').find('.outStock').val();
 				if(!outdata){outdata=0;}
 				outOfStockValue=parseFloat(outOfStockValue)+parseFloat(outdata);
@@ -543,7 +559,7 @@ foreach($partyOptions as $partyOption)
 				if(!rate){rate=0;}
 				var totamount = quantity*rate;
 				$(this).find('.totamount').val(totamount);
-				   
+				  
 				var discount  = parseFloat($(this).find('.discount').val());
 				if(!discount){discount=0;}
 				var discountValue=(discount*totamount)/100;
@@ -555,7 +571,7 @@ foreach($partyOptions as $partyOption)
 				var item_gst_amount=discountAmount/quantity;
 				//console.log(item_gst_amount);
 				
-				
+				discountValue=round(discountValue,2);
 				
 				$(this).find('.discountvalue').val(discountValue.toFixed(2));
 				
@@ -577,10 +593,14 @@ foreach($partyOptions as $partyOption)
 				var is_interstate  = parseFloat($('#is_interstate').val());
 				if(is_interstate=='0')
 				{
+					alert(gstValue);
+					alert(gstAmount);
 					 exactgstvalue=round(gstValue/2,2);
+					 
 					 $(this).find('.exactgst_value').val(exactgstvalue);
 					var add_cgst  = $(this).find('.exactgst_value').val();
 					if(!add_cgst){add_cgst=0;}
+					//alert(add_cgst);
 					//alert(add_cgst);
 					newsgst=round(parseFloat(newsgst)+parseFloat(add_cgst), 2);
 					gst_amount=parseFloat(gst_amount.toFixed(2))+parseFloat(gstAmount.toFixed(2));
@@ -588,6 +608,7 @@ foreach($partyOptions as $partyOption)
 					roundOff1=Math.round(total);
 				}else{
 					 exactgstvalue=round(gstValue,2);
+					
 					 $(this).find('.exactgst_value').val(exactgstvalue);
 					var add_igst  = parseFloat($(this).find('.exactgst_value').val());
 					if(!add_igst){add_igst=0;}
