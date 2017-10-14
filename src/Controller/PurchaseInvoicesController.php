@@ -84,7 +84,7 @@ class PurchaseInvoicesController extends AppController
 			$purchaseInvoice->grn_id = $Grns->id;
                         $purchaseInvoice->purchase_ledger_id=$purchaseInvoice->purchase_ledger_id;
                         $purchaseInvoice->supplier_ledger_id=$Grns->supplier_ledger_id;
-			//pr($purchaseInvoice->purchase_ledger_id); exit;
+			//pr($purchaseInvoice); exit;
             if ($this->PurchaseInvoices->save($purchaseInvoice)) { 
 				
 				$query = $this->PurchaseInvoices->Grns->query();

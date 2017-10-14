@@ -16,10 +16,10 @@ $this->set('title', 'Profit & Loss Statement');
 				<form method="get">
 						<div class="row">
 							<div class="col-md-3">
-								<?php echo $this->Form->control('from_date',['class'=>'form-control input-sm date-picker','data-date-format'=>'dd-mm-yyyy', 'label'=>false,'placeholder'=>'DD-MM-YYYY','type'=>'text','data-date-start-date'=>@$coreVariable[fyValidFrom],'data-date-end-date'=>@$coreVariable[fyValidTo],'value'=>date('d-m-Y'),'required'=>'required']); ?>
+								<?php echo $this->Form->control('from_date',['class'=>'form-control input-sm date-picker','data-date-format'=>'dd-mm-yyyy', 'label'=>false,'placeholder'=>'DD-MM-YYYY','type'=>'text','data-date-start-date'=>@$coreVariable[fyValidFrom],'data-date-end-date'=>@$coreVariable[fyValidTo],'value'=>date('d-m-Y',strtotime($from_date)),'required'=>'required']); ?>
 							</div>
 							<div class="col-md-3">
-								<?php echo $this->Form->control('to_date',['class'=>'form-control input-sm date-picker','data-date-format'=>'dd-mm-yyyy', 'label'=>false,'placeholder'=>'DD-MM-YYYY','type'=>'text','data-date-start-date'=>@$coreVariable[fyValidFrom],'data-date-end-date'=>@$coreVariable[fyValidTo],'value'=>date('d-m-Y'),'required'=>'required']); ?>
+								<?php echo $this->Form->control('to_date',['class'=>'form-control input-sm date-picker','data-date-format'=>'dd-mm-yyyy', 'label'=>false,'placeholder'=>'DD-MM-YYYY','type'=>'text','data-date-start-date'=>@$coreVariable[fyValidFrom],'data-date-end-date'=>@$coreVariable[fyValidTo],'value'=>date('d-m-Y',strtotime($to_date)),'required'=>'required']); ?>
 							</div>
 							<div class="col-md-3">
 								<span class="input-group-btn">
@@ -30,7 +30,108 @@ $this->set('title', 'Profit & Loss Statement');
 				</form>
 				<?php if($from_date){ ?>
 				<div class="row">
-					hello
+					<table class="table table-bordered">
+						<thead>
+							<tr style="background-color: #c4ffbd;">
+								<td>
+									<table width="100%">
+										<tbody>
+											<tr>
+												<td><b>Particulars</b></td>
+												<td align="right"><b>Balance</b></td>
+											</tr>
+										</tbody>
+									</table>
+								</td>
+								<td>
+									<table width="100%">
+										<tbody>
+											<tr>
+												<td><b>Particulars</b></td>
+												<td align="right"><b>Balance</b></td>
+											</tr>
+										</tbody>
+									</table>
+								</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>
+									<table width="100%">
+										<tbody>
+												<tr>
+													<td>Opening Stock</td>
+													<td align="right">
+														<?php echo $openingValue; ?>
+													</td>
+												</tr>
+											<?php foreach($groupForPrint as $groupForPrintRow){ 
+												if(($groupForPrintRow['balance']>0) or ($groupForPrintRow['balance']==0 && $groupForPrintRow['nature']==4)){ ?>
+												<tr>
+													<td><?php echo $groupForPrintRow['name']; ?></td>
+													<td align="right">
+														<?php if($groupForPrintRow['balance']!=0){
+															echo abs($groupForPrintRow['balance']); 
+														} ?>
+													</td>
+												</tr>
+												<?php } ?>
+											<?php } ?>
+										</tbody>
+									</table>
+								</td>
+								<td>
+									<table width="100%">
+										<tbody>
+											<?php foreach($groupForPrint as $groupForPrintRow){ 
+												if(($groupForPrintRow['balance']<0) or ($groupForPrintRow['balance']==0 && $groupForPrintRow['nature']==3)){ ?>
+												<tr>
+													<td><?php echo $groupForPrintRow['name']; ?></td>
+													<td align="right">
+														<?php if($groupForPrintRow['balance']!=0){
+															echo abs($groupForPrintRow['balance']); 
+														} ?>
+													</td>
+												</tr>
+												<?php } ?>
+											<?php } ?>
+												<tr>
+													<td>Closing Stock</td>
+													<td align="right">
+														<?php echo $closingValue; ?>
+													</td>
+												</tr>
+										</tbody>
+									</table>
+								</td>
+							</tr>
+						</tbody>
+						<tfoot>
+							<tr>
+								<td>
+									<table width="100%">
+										<tbody>
+											<tr>
+												<td>Total</td>
+												<td align="right">Balance</td>
+											</tr>
+										</tbody>
+									</table>
+								</td>
+								<td>
+									<table width="100%">
+										<tbody>
+											<tr>
+												<td>Total</td>
+												<td align="right">Balance</td>
+											</tr>
+										</tbody>
+									</table>
+								</td>
+							</tr>
+						</tfoot>
+					</table>
 				</div>
 				<?php } ?>
 				</ul>

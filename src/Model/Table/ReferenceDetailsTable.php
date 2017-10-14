@@ -85,6 +85,10 @@ class ReferenceDetailsTable extends Table
             'foreignKey' => 'journal_voucher_row_id',
 			'joinType' => 'INNER'
         ]);
+		$this->belongsTo('SalesInvoices', [
+            'foreignKey' => 'sales_invoice_id',
+			'joinType' => 'LEFT'
+        ]);
     }
 
     /**

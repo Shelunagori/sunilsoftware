@@ -62,11 +62,13 @@ class PurchaseReturnsController extends AppController
 		$stateDetails=$this->Auth->User('session_company');
 		$state_id=$stateDetails->state_id;
         $PurchaseInvoice = $this->PurchaseReturns->PurchaseInvoices->get($id, [
-            'contain' => (['PurchaseInvoiceRows'=>['Items'=>['FirstGstFigures']],'SupplierLedgers'=>['Suppliers'],'PurchaseReturns'=>['PurchaseReturnRows' => function($q) {
+            'contain' => (['PurchaseInvoiceRows'=>['Items'=>['FirstGstFigures']],'PurchaseLedgers','SupplierLedgers'=>['Suppliers'],'PurchaseReturns'=>['PurchaseReturnRows' => function($q) {
 				return $q->select(['purchase_return_id','purchase_invoice_row_id','item_id','total' => $q->func()->sum('PurchaseReturnRows.quantity')])->group('PurchaseReturnRows.item_id');
 			}]])
         ]);
 		
+		$Voucher_no = $this->PurchaseReturns->find()->select(['voucher_no'])->where(['company_id'=>$company_id])->order(['voucher_no' => 'DESC'])->first();
+		$NewVoucherNo=$Voucher_no->voucher_no;
 		 $purchase_return_qty=[];
 		foreach($PurchaseInvoice->purchase_returns as $purchase_return){
 			foreach($purchase_return->purchase_return_rows as $purchase_return_row){
@@ -76,7 +78,7 @@ class PurchaseReturnsController extends AppController
 		} 
 		
 		$supplier_state_id=$PurchaseInvoice->supplier_ledger->supplier->state_id;
-		//pr($purchase_return_qty); exit;
+		//pr($PurchaseInvoice); exit;
         $purchaseReturn = $this->PurchaseReturns->newEntity();
         if ($this->request->is('post')) {
             $purchaseReturn = $this->PurchaseReturns->patchEntity($purchaseReturn, $this->request->getData());
@@ -92,7 +94,7 @@ class PurchaseReturnsController extends AppController
 			} 
 			$purchaseReturn->company_id = $company_id;
 			$purchaseReturn->purchase_invoice_id = $PurchaseInvoice->id;
-			//pr($PurchaseInvoice); exit;
+			//pr($PurchaseInvoice); 
 			//pr($purchaseReturn); exit;
             if ($this->PurchaseReturns->save($purchaseReturn)) { 
 				//pr($purchaseReturn); exit;
@@ -143,7 +145,8 @@ class PurchaseReturnsController extends AppController
 				
 				//Accounting Entries for Round of Amount//
 				$AccountingEntrie = $this->PurchaseReturns->AccountingEntries->newEntity(); 
-				$AccountingEntrie->ledger_id=$PurchaseInvoice->supplier_ledger_id;
+				$RoundofLedgers = $this->PurchaseReturns->PurchaseInvoices->PurchaseInvoiceRows->Ledgers->find()->where(['Ledgers.round_off'=>1,'Ledgers.company_id'=>$company_id])->first(); 
+				$AccountingEntrie->ledger_id=$RoundofLedgers->id;
 				$AccountingEntrie->transaction_date=$purchaseReturn->transaction_date;
 				$AccountingEntrie->company_id=$company_id;
 				$AccountingEntrie->purchase_return_id=$purchaseReturn->id;
@@ -185,8 +188,8 @@ class PurchaseReturnsController extends AppController
 						$gstLedgerSGST = $this->PurchaseReturns->PurchaseInvoices->PurchaseInvoiceRows->Ledgers->find()
 							->where(['Ledgers.gst_figure_id' =>$purchase_return_row->item_gst_figure_id,'Ledgers.company_id'=>$company_id, 'Ledgers.input_output'=>'input', 'Ledgers.gst_type'=>'SGST'])->first();
 						$AccountingEntrieSGST->ledger_id=$gstLedgerSGST->id;
-						$AccountingEntrieCGST->credit=$gstAmtInsert;
-						$AccountingEntrieCGST->debit=0;
+						$AccountingEntrieSGST->credit=$gstAmtInsert;
+						$AccountingEntrieSGST->debit=0;
 						$AccountingEntrieSGST->transaction_date=$purchaseReturn->transaction_date;
 						$AccountingEntrieSGST->company_id=$company_id;
 						$AccountingEntrieSGST->purchase_return_id=$purchaseReturn->id;
@@ -215,7 +218,7 @@ class PurchaseReturnsController extends AppController
         }
         $purchaseInvoices = $this->PurchaseReturns->PurchaseInvoices->find('list', ['limit' => 200]);
         $companies = $this->PurchaseReturns->Companies->find('list', ['limit' => 200]);
-        $this->set(compact('purchaseReturn', 'purchaseInvoices', 'companies','PurchaseInvoice','state_id','supplier_state_id','purchase_return_qty'));
+        $this->set(compact('purchaseReturn', 'purchaseInvoices', 'companies','PurchaseInvoice','state_id','supplier_state_id','purchase_return_qty','NewVoucherNo'));
         $this->set('_serialize', ['purchaseReturn']);
     }
 
