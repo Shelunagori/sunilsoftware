@@ -350,6 +350,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 					currentRefRow.find('td:nth-child(2)').show();
 					currentRefRow.find('td:nth-child(3)').show();
 				}
+				
 			});
 			
 			$('.refDrCr').die().live('change',function(){
@@ -385,12 +386,26 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				var cr_dr=$(this).val();
 				
 				if(cr_dr=='Cr'){
-					$(this).closest('tr').find('.debitBox').val('');
+					//$(this).closest('tr').find('.debitBox').val('');
+					//$(this).closest('tr').find('.debitBox').hide();
+					//$(this).closest('tr').find('.creditBox').show();
+					
+					$(this).closest('tr').find('input.debitBox').prop('required',false);
+					$(this).closest('tr').find('.debitBox').rules('remove','required');
+					$(this).closest('tr').find('span.help-block-error').remove();
 					$(this).closest('tr').find('.debitBox').hide();
 					$(this).closest('tr').find('.creditBox').show();
+					$(this).closest('tr').find('.creditBox').rules('add', 'required');
+					
 				}else{
-					$(this).closest('tr').find('.creditBox').val('');
+					//$(this).closest('tr').find('.debitBox').show();
+					//$(this).closest('tr').find('.creditBox').hide();
+					
 					$(this).closest('tr').find('.debitBox').show();
+					$(this).closest('tr').find('.debitBox').rules('add', 'required');
+					$(this).closest('tr').find('.creditBox').val('');
+					$(this).closest('tr').find('.creditBox').rules('remove', 'required');
+					$(this).closest('tr').find('span.help-block-error').remove();
 					$(this).closest('tr').find('.creditBox').hide();
 				}
 				renameMainRows();
@@ -398,6 +413,8 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				var SelectedTr=$(this).closest('tr.MainTr');
 				renameRefRows(SelectedTr);
 			});
+			
+			
 			
 			$('.ledger').die().live('change',function(){
 				var openWindow=$(this).find('option:selected').attr('open_window');
@@ -469,6 +486,19 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 						
 					}
 					i++;
+					
+					if(cr_dr=='Dr'){ 
+						$(this).find('td:nth-child(3) input.debitBox').rules('add', 'required');
+						$(this).find('td:nth-child(4) input.creditBox').rules('remove', 'required');
+						$(this).find('td:nth-child(4) span.help-block-error').remove();
+						
+					}else{
+						$(this).find('td:nth-child(3) input.debitBox').rules('remove', 'required');
+						$(this).find('td:nth-child(3) span.help-block-error').remove();
+						$(this).find('td:nth-child(4) input.creditBox').rules('add', 'required');
+					}
+					
+					
 				});
 				$('#MainTable tfoot tr td:nth-child(2) input#totalMainDr').val(main_debit);
 				$('#MainTable tfoot tr td:nth-child(3) input#totalMainCr').val(main_credit);
@@ -479,6 +509,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				var SelectedTr=$(this).closest('tr.MainTr');
 				AddBankRow(SelectedTr);
 			});
+		
 			
 			function AddBankRow(SelectedTr){
 				var bankTr=$('#sampleForBank tbody tr').clone();
@@ -487,12 +518,26 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				renameBankRows(SelectedTr);
 			}
 			
+			
 			function renameBankRows(SelectedTr){
 				var row_no=SelectedTr.attr('row_no');
 				SelectedTr.find('td:nth-child(2) div.window table tbody tr').each(function(){
+				var type = SelectedTr.find('td:nth-child(1) select.paymentType option:selected').val(); 
 					$(this).find('td:nth-child(1) select.paymentType').attr({name:'receipt_rows['+row_no+'][mode_of_payment]',id:'receipt_rows-'+row_no+'-mode_of_payment'});
 					$(this).find('td:nth-child(2) input.cheque_no').attr({name:'receipt_rows['+row_no+'][cheque_no]',id:'receipt_rows-'+row_no+'-cheque_no'});
 					$(this).find('td:nth-child(3) input.cheque_date').attr({name:'receipt_rows['+row_no+'][cheque_date]',id:'receipt_rows-'+row_no+'-cheque_date'}).datepicker();
+				
+				if(type=='Cheque')
+					{ 
+						$(this).find('td:nth-child(2) input.cheque_no').rules('add','required');
+						$(this).find('td:nth-child(3) input.cheque_date').rules('add','required');
+					}
+					else if(type=='NEFT/RTGS')
+					{
+						$(this).find('td:nth-child(2) input.cheque_no').rules('remove','required');
+						$(this).find('td:nth-child(3) input.cheque_date').rules('remove','required');
+					}
+				
 				});
 			}
 			
