@@ -476,14 +476,20 @@ function rename_rows()
 						var gstamt1=parseFloat($(this).closest('tr').find('.gstValue').val());
 						total_gst=total_gst+gstamt1;
 					}else{ 
-						var gstAmt=(taxableAmt*gstTax)/100;
-						var gstAmt=gstAmt.toFixed(2);
-						var amt=gstAmt/2;
-						var amt1=amt.toFixed(2);
-						var amt2=amt1*2;
+						gstTax=gstTax/2;
+						
+						var gstAmt1=(taxableAmt*gstTax)/100;
+						var gstAmt2=(taxableAmt*gstTax)/100;
+						
+						gstAmt1=round(gstAmt1,2);
+						gstAmt2=round(gstAmt2,2);
+						
+						amt2=gstAmt1+gstAmt2;
+						amt2=round(amt2,2);
+						
 						$(this).closest('tr').find('.gstValue').val(amt2.toFixed(2));
-						var gstamt1=parseFloat($(this).closest('tr').find('.gstValue').val());
-						total_gst=total_gst+gstamt1;
+						var gstamt11=parseFloat($(this).closest('tr').find('.gstValue').val());
+						total_gst=total_gst+gstamt11;
 					}
 					
 					

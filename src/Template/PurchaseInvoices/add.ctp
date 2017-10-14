@@ -401,8 +401,6 @@ if($supplier_state_id== $state_id){
 						total_gst=total_gst+gstamt11;
 						
 					}
-					
-					
 				}
 				
 				var totalAmount=taxableAmt+amt2;
