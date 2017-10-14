@@ -95,15 +95,17 @@ class SaleReturnsController extends AppController
 				$gstVal=0;
 				$gVal=0;
 				foreach($saleReturn->sale_return_rows as $sale_return_row){ 
-					$exactRate=$sale_return_row['taxable_value']/$sale_return_row['return_quantity'];
+					//pr($sale_return_row->item_id); exit;
+					$Grns = $this->SaleReturns->Grns->GrnRows->find()->where(['GrnRows.item_id'=>$sale_return_row->item_id])->first();
+					$exactAmt=$sale_return_row['return_quantity']*$Grns->purchase_rate;
 					$stockData = $this->SaleReturns->SalesInvoices->ItemLedgers->query();
 					$stockData->insert(['item_id', 'transaction_date','quantity', 'rate', 'amount', 'status', 'company_id', 'sale_return_id', 'sale_return_row_id', 'location_id'])
 							->values([
 							'item_id' => $sale_return_row['item_id'],
 							'transaction_date' => $saleReturn->transaction_date,
 							'quantity' => $sale_return_row['return_quantity'],
-							'rate' => $exactRate,
-							'amount' => $sale_return_row['taxable_value'],
+							'rate' => $Grns->purchase_rate,
+							'amount' => $exactAmt,
 							'status' => 'in',
 							'company_id' => $saleReturn->company_id,
 							'sale_return_id' => $saleReturn->id,
@@ -137,11 +139,11 @@ class SaleReturnsController extends AppController
 					if(str_replace('-',' ',$saleReturn->round_off)>0){
 						$roundData = $this->SaleReturns->SalesInvoices->AccountingEntries->query();
 						if($saleReturn->isRoundofType=='0'){
-							$debit=0;
-							$credit=str_replace('-',' ',$saleReturn->round_off);
-						}else if($saleReturn->isRoundofType=='1'){
 							$credit=0;
 							$debit=str_replace('-',' ',$saleReturn->round_off);
+						}else if($saleReturn->isRoundofType=='1'){
+							$debit=0;
+							$credit=str_replace('-',' ',$saleReturn->round_off);
 						}
 						$roundData->insert(['ledger_id', 'debit','credit', 'transaction_date', 'company_id', 'sale_return_id'])
 								->values([

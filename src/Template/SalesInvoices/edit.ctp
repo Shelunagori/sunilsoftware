@@ -114,6 +114,7 @@ foreach($partyOptions as $partyOption)
 									<td><label>Qty<label></td>
 									<td><label>Rate<label></td>
 									<td><label>Discount(%)<label></td>
+									<td><label>Discount Amount<label></td>
 									<td><label>Taxable Value<label></td>
 									
 									<td><label id="gstDisplay">
