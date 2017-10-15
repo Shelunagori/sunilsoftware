@@ -125,12 +125,12 @@ $this->set('title', 'Account Ledger report');
 								else if(!empty($AccountingLedger->purchase_invoice_id)){
 									echo 'Purchase Invoices';
 									@$voucher_no=$AccountingLedger->purchase_invoice->voucher_no;
-									@$url_link=$this->Html->link($voucher_no,['controller'=>'PurchaseInvoices','action' => 'view', $AccountingLedger->purchase_invoice_id],['target'=>'_blank']);
+									@$url_link=$this->Html->link($voucher_no,['controller'=>'PurchaseInvoices','action' => 'edit', $AccountingLedger->purchase_invoice_id],['target'=>'_blank']);
 								}
 								else if(!empty($AccountingLedger->purchase_return_id)){
 									echo 'Purchase Returns';
 									@$voucher_no=$AccountingLedger->purchase_return->voucher_no;
-									@$url_link=$this->Html->link($voucher_no,['controller'=>'PurchaseReturns','action' => 'view', $AccountingLedger->purchase_return_id],['target'=>'_blank']);
+									@$url_link=$this->Html->link($voucher_no,['controller'=>'PurchaseReturns','action' => 'edit', $AccountingLedger->purchase_return_id],['target'=>'_blank']);
 								}
 								else if(!empty($AccountingLedger->sales_invoice_id)){
 									echo 'Sales Invoices';

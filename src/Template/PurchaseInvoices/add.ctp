@@ -344,29 +344,43 @@ if($supplier_state_id== $state_id){
 			    var rate=parseFloat($(this).closest('tr').find('.rate').val());
 				var amount=quantity*rate;
 			    var discount=parseFloat($(this).closest('tr').find('.discount').val());
+				if(!discount){discount=0;}
+				quantity=round(quantity,2);
+				rate=round(rate,2);
+				amount=round(amount,2);
+				discount=round(discount,2);
 				var disAmt=0;
 				
 				if(isNaN(discount)){ 
-					$(this).closest('tr').find('.discountAmount').val(disAmt.toFixed(2));
-					$(this).closest('tr').find('.discount').val(disAmt.toFixed(2));
+					disAmt=round(disAmt,2);
+					$(this).closest('tr').find('.discountAmount').val(disAmt);
+					$(this).closest('tr').find('.discount').val(disAmt);
 				}else{
 					var disAmt=(amount*discount)/100;
-					$(this).closest('tr').find('.discountAmount').val(disAmt.toFixed(2));
+					disAmt=round(disAmt,2);
+					$(this).closest('tr').find('.discountAmount').val(disAmt);
 					total_dis=total_dis+disAmt;
 					
 				}
 				amountAfterDiscount=amount-disAmt;
 				var pnf=parseFloat($(this).closest('tr').find('.pnf').val());
+				if(!pnf){pnf=0;}
 				if(isNaN(pnf)){ 
 					var pnfAmt=0;
-					$(this).closest('tr').find('.pnfAmount').val(pnfAmt.toFixed(2));
-					$(this).closest('tr').find('.pnf').val(pnfAmt.toFixed(2));
+					pnfAmt=round(pnfAmt,2);
+					$(this).closest('tr').find('.pnfAmount').val(pnfAmt);
+					$(this).closest('tr').find('.pnf').val(pnfAmt);
 				}else{
+					pnf=round(pnf,2);
 					var pnfAmt=(amount*pnf)/100;
-					$(this).closest('tr').find('.pnfAmount').val(pnfAmt.toFixed(2));
+					pnfAmt=round(pnfAmt,2);
+					$(this).closest('tr').find('.pnfAmount').val(pnfAmt);
 					total_pnf=total_pnf+pnfAmt;
 				}
+				amount=round(amount,2);
+				disAmt=round(disAmt,2);
 				taxableAmt=(amount-disAmt)+pnfAmt;
+				//taxableAmt=round(taxableAmt,2);
 				$(this).closest('tr').find('.taxableValue').val(taxableAmt.toFixed(2));
 				total_taxable=total_taxable+taxableAmt;
 				var gstTax=parseFloat($(this).closest('tr').find('.gst_figure_id').val());
@@ -390,7 +404,8 @@ if($supplier_state_id== $state_id){
 						
 						var gstAmt1=(taxableAmt*gstTax)/100;
 						var gstAmt2=(taxableAmt*gstTax)/100;
-						
+						alert(gstAmt1); 
+						alert(gstAmt2); 
 						gstAmt1=round(gstAmt1,2);
 						gstAmt2=round(gstAmt2,2);
 						

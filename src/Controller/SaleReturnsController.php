@@ -97,14 +97,25 @@ class SaleReturnsController extends AppController
 				foreach($saleReturn->sale_return_rows as $sale_return_row){ 
 					//pr($sale_return_row->item_id); exit;
 					$Grns = $this->SaleReturns->Grns->GrnRows->find()->where(['GrnRows.item_id'=>$sale_return_row->item_id])->first();
-					$exactAmt=$sale_return_row['return_quantity']*$Grns->purchase_rate;
+					
+					$exactAmt=0;
+					$purchase_rate=0;
+					if(empty($Grns)){
+						$ItemLedgers = $this->SaleReturns->SalesInvoices->ItemLedgers->find()->where(['ItemLedgers.item_id'=>$sale_return_row->item_id,'ItemLedgers.is_opening_balance'=>'yes'])->first();
+						$purchase_rate=$ItemLedgers->rate;
+						$exactAmt=$sale_return_row['return_quantity']*$ItemLedgers->rate;
+					}else{
+						$exactAmt=$sale_return_row['return_quantity']*$Grns->purchase_rate;
+						$purchase_rate=$Grns->purchase_rate;
+					}
+					
 					$stockData = $this->SaleReturns->SalesInvoices->ItemLedgers->query();
 					$stockData->insert(['item_id', 'transaction_date','quantity', 'rate', 'amount', 'status', 'company_id', 'sale_return_id', 'sale_return_row_id', 'location_id'])
 							->values([
 							'item_id' => $sale_return_row['item_id'],
 							'transaction_date' => $saleReturn->transaction_date,
 							'quantity' => $sale_return_row['return_quantity'],
-							'rate' => $Grns->purchase_rate,
+							'rate' => $purchase_rate,
 							'amount' => $exactAmt,
 							'status' => 'in',
 							'company_id' => $saleReturn->company_id,
