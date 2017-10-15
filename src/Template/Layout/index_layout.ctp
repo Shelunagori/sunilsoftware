@@ -185,7 +185,7 @@ License: You must have a valid license purchased only from themeforest(the above
 			    var evt=$(this).val();
 				if(evt<0)
 				{
-				 $(this).val('');
+					$(this).val('');
 				}
 			});
 		});

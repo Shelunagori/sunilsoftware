@@ -227,7 +227,7 @@ margin-bottom: 0;
 			<td>Discount </td>
 			<td></td>
 			<td></td>
-			<td style="text-align:right;"><?php echo number_format($totalAmount-$data->amount_after_tax, 2);  ?></td>
+			<td style="text-align:right;"><?php echo $data->discount_amount;  ?></td>
 		</tr>
 		<tr>
 			<td>Net Total</td>
