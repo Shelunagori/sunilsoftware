@@ -169,15 +169,17 @@ foreach($partyOptions as $partyOption)
 								</td>
 								<td valign="top" width="10%" align="center" style="border-right-width:2px; border-left-color:#4db3a2; margin-top:-10px">
 								<?php if($salesInvoiceRow->quantity-@$sales_return_qty
-									[@$salesInvoiceRow->item->id] > 0){ ?>
+									[@$salesInvoiceRow->id] > 0){ ?>
 									<label style="margin-top:-10px"><?php echo $this->Form->input('check', ['label' => false,'type'=>'checkbox','class'=>'rename_check','value' => @$salesInvoiceRow->item->id]); ?></label>
 									<?php  } ?>
 								</td>
 
 								<td>
-									<?php echo $this->Form->input('q', ['label' => false,'class' => 'form-control input-sm returnQty calculation rightAligntextClass numberOnly','placeholder'=>'Return Quantity',  'tabindex'=>'-1','type'=>'text','max'=>$salesInvoiceRow->quantity-@$sales_return_qty[$salesInvoiceRow->item->id]]);
+									<?php echo $this->Form->input('q', ['label' => false,'class' => 'form-control input-sm returnQty calculation rightAligntextClass numberOnly','placeholder'=>'Return Quantity',  'tabindex'=>'-1','type'=>'text','max'=>$salesInvoiceRow->quantity-@$sales_return_qty[$salesInvoiceRow->id]]);
 										
-									?>	<span align="center">Max Quantity:- <?php echo $salesInvoiceRow->quantity-@$sales_return_qty[$salesInvoiceRow->item->id];?></span>
+									?>	<span align="center">Max Quantity:- <?php echo $salesInvoiceRow->quantity-@$sales_return_qty[$salesInvoiceRow->id];
+									//echo $sales_return_qty[$salesInvoiceRow->id];
+									?></span>
 								</td>
 								<td>
 								<?php echo $this->Form->input('q', ['label' => false,'class' => 'form-control input-sm discountAmount calculation rightAligntextClass','required'=>'required', 'readonly'=>'readonly','placeholder'=>'Taxable Value', 'value'=>$salesInvoiceRow->net_amount, 'tabindex'=>'-1']); ?>

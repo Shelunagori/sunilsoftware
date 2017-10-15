@@ -63,7 +63,7 @@ class PurchaseReturnsController extends AppController
 		$state_id=$stateDetails->state_id;
         $PurchaseInvoice = $this->PurchaseReturns->PurchaseInvoices->get($id, [
             'contain' => (['PurchaseInvoiceRows'=>['Items'=>['FirstGstFigures']],'PurchaseLedgers','SupplierLedgers'=>['Suppliers'],'PurchaseReturns'=>['PurchaseReturnRows' => function($q) {
-				return $q->select(['purchase_return_id','purchase_invoice_row_id','item_id','total' => $q->func()->sum('PurchaseReturnRows.quantity')])->group('PurchaseReturnRows.item_id');
+				return $q->select(['purchase_return_id','purchase_invoice_row_id','item_id','total' => $q->func()->sum('PurchaseReturnRows.quantity')])->group('PurchaseReturnRows.purchase_invoice_row_id');
 			}]])
         ]);
 		

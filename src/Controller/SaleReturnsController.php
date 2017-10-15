@@ -58,16 +58,18 @@ class SaleReturnsController extends AppController
 		$this->viewBuilder()->layout('index_layout');
         $salesInvoice = $this->SaleReturns->SalesInvoices->get($id, [
             'contain' => (['PartyLedgers','SaleReturns'=>['SaleReturnRows' => function($q) {
-				return $q->select(['sale_return_id','item_id','total' => $q->func()->sum('SaleReturnRows.return_quantity')])->group('SaleReturnRows.item_id');
+				return $q->select(['sale_return_id','item_id','sales_invoice_row_id','total' => $q->func()->sum('SaleReturnRows.return_quantity')])->group('SaleReturnRows.sales_invoice_row_id');
 			}],'SalesInvoiceRows'=>['Items', 'GstFigures']])
         ]);
 		
+		//pr($salesInvoice->toArray()); exit;
 		$sales_return_qty=[];
 		foreach($salesInvoice->sale_returns as $sale_returns){
-			foreach($sale_returns->sale_return_rows as $sale_return_row){
-				$sales_return_qty[@$sale_return_row->item_id]=@$sales_return_qty[$sale_return_row->item_id]+$sale_return_row->total;
+			foreach($sale_returns->sale_return_rows as $sale_return_row){ //pr($sale_return_row); exit;
+				$sales_return_qty[@$sale_return_row->sales_invoice_row_id]=@$sales_return_qty[$sale_return_row->sales_invoice_row_id]+$sale_return_row->total;
 			}
 		}
+		//pr($sales_return_qty); exit;
 		$company_id=$this->Auth->User('session_company_id');
 		$stateDetails=$this->Auth->User('session_company');
 		$location_id=$this->Auth->User('session_location_id');

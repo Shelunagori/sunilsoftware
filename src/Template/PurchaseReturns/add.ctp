@@ -534,13 +534,13 @@ function rename_rows()
 		
 	function checkValidation() 
 	{  
-		var total_amount  = parseFloat($('.total_amount').val());
-		if(!total_amount || total_amount==0){
+		var total_amt  = parseFloat($('.total_amt').val());
+		if(!total_amt || total_amt==0){
 			alert('Error: zero amount invoice can not be generated.');
 			return false;
 		}
 		
-		if(!total_amount || total_amount < 0){
+		if(!total_amt || total_amt < 0){
 			alert('Error: Minus amount invoice can not be generated.');
 			return false;
 		}

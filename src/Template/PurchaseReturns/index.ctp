@@ -22,6 +22,8 @@ $this->set('title', 'Purchase Return List');
 							<tr>
 								<th scope="col"><?= __('Sr') ?></th>
 								<th scope="col"><?= $this->Paginator->sort('voucher_no') ?></th>
+								<th scope="col"><?= $this->Paginator->sort('transaction_date') ?></th>
+								<th scope="col"><?= $this->Paginator->sort('Amount') ?></th>
 								<th scope="col" class="actions"><?= __('Actions') ?></th>
 							</tr>
 						</thead>
@@ -30,6 +32,8 @@ $this->set('title', 'Purchase Return List');
 							<tr>
 								<td><?= h(++$page_no) ?></td>
 								<td><?= h('#'.str_pad($purchaseReturn->voucher_no, 4, '0', STR_PAD_LEFT)) ?></td>
+								<td><?= h($purchaseReturn->transaction_date) ?></td>
+								<td><?= h($purchaseReturn->transaction_date) ?></td>
 								<td class="actions">
 									<?= $this->Html->link(__('View '), ['action' => 'view', $purchaseReturn->id],['escape'=>false,'target'=>'_blank']) ?>
 								</td>

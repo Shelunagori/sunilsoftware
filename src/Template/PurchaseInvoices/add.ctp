@@ -407,7 +407,8 @@ if($supplier_state_id== $state_id){
 						
 						gstAmt1=round(gstAmt1,2);
 						gstAmt2=round(gstAmt2,2);
-						
+						alert(gstAmt1); 
+						alert(gstAmt2); 
 						amt2=gstAmt1+gstAmt2;
 						amt2=round(amt2,2);
 						$(this).closest('tr').find('.gstValue').val(amt2);

@@ -101,18 +101,22 @@ class SalesInvoicesController extends AppController
 		    $transaction_date=date('Y-m-d', strtotime($this->request->data['transaction_date']));
             $salesInvoice = $this->SalesInvoices->patchEntity($salesInvoice, $this->request->getData());
             $salesInvoice->transaction_date=$transaction_date;
-			if($salesInvoice->cash_or_credit=='cash')
-			{
+			$Voucher_no = $this->SalesInvoices->find()->select(['voucher_no'])->where(['SalesInvoices.company_id'=>$company_id])->order(['voucher_no' => 'DESC'])->first();
+			if($Voucher_no){
+				$voucher_no=$Voucher_no->voucher_no+1;
+			}else{
+				$voucher_no=1;
+			} 		
+			$salesInvoice->voucher_no=$voucher_no;
+			if($salesInvoice->cash_or_credit=='cash'){
 				$salesInvoice->customer_id=0;
 			}
-			
-			if($salesInvoice->invoice_receipt_type=='cash' && $salesInvoice->invoiceReceiptTd==1)
-				{
+		
+			if($salesInvoice->invoice_receipt_type=='cash' && $salesInvoice->invoiceReceiptTd==1){
 					$salesInvoice->receipt_amount=$salesInvoice->amount_after_tax;
-				}
-				else{
+			}else{
 				$salesInvoice->receipt_amount=0;
-				}
+			}
 			
 		   if ($this->SalesInvoices->save($salesInvoice)) {
 				
