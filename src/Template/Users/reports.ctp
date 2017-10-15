@@ -32,6 +32,11 @@ $this->set('title', 'Report Setup');
 							<?php echo $this->Html->link('Sales Report', '/SalesInvoices/reportFilter',['escape' => false, 'class'=>'list-group-item']); ?>
 							</div>
 					</div>
+					<div class="col-md-6">
+						<div class="list-group">
+							<?php echo $this->Html->link('Profit & Loss Statement', '/accounting-entries/profit-loss-statement?from_date='.@$coreVariable["fyValidFrom"].'&to_date='.@$coreVariable["fyValidTo"],['escape' => false, 'class'=>'list-group-item']); ?>
+							</div>
+					</div>
 				</div>
 			</div>
 		</div>
