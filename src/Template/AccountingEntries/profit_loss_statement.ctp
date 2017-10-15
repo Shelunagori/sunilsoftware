@@ -28,7 +28,8 @@ $this->set('title', 'Profit & Loss Statement');
 							</div>	
 						</div>
 				</form>
-				<?php if($from_date){ ?>
+				<?php if($from_date){ 
+				$LeftTotal=0; $RightTotal=0; ?>
 				<div class="row">
 					<table class="table table-bordered">
 						<thead>
@@ -60,19 +61,25 @@ $this->set('title', 'Profit & Loss Statement');
 								<td>
 									<table width="100%">
 										<tbody>
+											<?php if($openingValue>=0) { ?>
 												<tr>
 													<td>Opening Stock</td>
 													<td align="right">
-														<?php echo $openingValue; ?>
+														<?php 
+														echo $openingValue;
+														$LeftTotal+=$openingValue;
+														?>
 													</td>
 												</tr>
+											<?php } ?>
 											<?php foreach($groupForPrint as $groupForPrintRow){ 
 												if(($groupForPrintRow['balance']>0) or ($groupForPrintRow['balance']==0 && $groupForPrintRow['nature']==4)){ ?>
 												<tr>
 													<td><?php echo $groupForPrintRow['name']; ?></td>
 													<td align="right">
 														<?php if($groupForPrintRow['balance']!=0){
-															echo abs($groupForPrintRow['balance']); 
+															echo abs($groupForPrintRow['balance']);
+															$LeftTotal+=abs($groupForPrintRow['balance']);
 														} ?>
 													</td>
 												</tr>
@@ -84,6 +91,17 @@ $this->set('title', 'Profit & Loss Statement');
 								<td>
 									<table width="100%">
 										<tbody>
+											<?php if($openingValue<0) { ?>
+												<tr>
+													<td>Opening Stock</td>
+													<td align="right">
+														<?php 
+														echo $openingValue;
+														$RightTotal+=$openingValue;
+														?>
+													</td>
+												</tr>
+											<?php } ?>
 											<?php foreach($groupForPrint as $groupForPrintRow){ 
 												if(($groupForPrintRow['balance']<0) or ($groupForPrintRow['balance']==0 && $groupForPrintRow['nature']==3)){ ?>
 												<tr>
@@ -91,6 +109,7 @@ $this->set('title', 'Profit & Loss Statement');
 													<td align="right">
 														<?php if($groupForPrintRow['balance']!=0){
 															echo abs($groupForPrintRow['balance']); 
+															$RightTotal+=abs($groupForPrintRow['balance']); 
 														} ?>
 													</td>
 												</tr>
@@ -99,11 +118,46 @@ $this->set('title', 'Profit & Loss Statement');
 												<tr>
 													<td>Closing Stock</td>
 													<td align="right">
-														<?php echo $closingValue; ?>
+														<?php 
+														echo $closingValue; 
+														$RightTotal+=$closingValue; 
+														?>
 													</td>
 												</tr>
 										</tbody>
 									</table>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<?php 
+									$totalDiff=$RightTotal-$LeftTotal;
+									if($totalDiff>=0){ ?>
+									<table width="100%">
+										<tbody>
+											<tr>
+												<td>Gross Profit</td>
+												<td align="right">
+													<?php echo $totalDiff; $LeftTotal+=$totalDiff; ?>
+												</td>
+											</tr>
+										</tbody>
+									</table>
+									<?php } ?>
+								</td>
+								<td>
+									<?php if($totalDiff<0){ ?>
+									<table width="100%">
+										<tbody>
+											<tr>
+												<td>Gross Loss</td>
+												<td align="right">
+													<?php echo abs($totalDiff); $RightTotal+=abs($totalDiff); ?>
+												</td>
+											</tr>
+										</tbody>
+									</table>
+									<?php } ?>
 								</td>
 							</tr>
 						</tbody>
@@ -113,8 +167,8 @@ $this->set('title', 'Profit & Loss Statement');
 									<table width="100%">
 										<tbody>
 											<tr>
-												<td>Total</td>
-												<td align="right">Balance</td>
+												<td><b>Total</b></td>
+												<td align="right"><b><?php echo $LeftTotal; ?></b></td>
 											</tr>
 										</tbody>
 									</table>
@@ -123,8 +177,8 @@ $this->set('title', 'Profit & Loss Statement');
 									<table width="100%">
 										<tbody>
 											<tr>
-												<td>Total</td>
-												<td align="right">Balance</td>
+												<td><b>Total</b></td>
+												<td align="right"><b><?php echo $RightTotal; ?></b></td>
 											</tr>
 										</tbody>
 									</table>
