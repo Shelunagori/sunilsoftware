@@ -168,7 +168,7 @@ $this->set('title', 'Create Sales Invoice');
 											[
 												['value' => 'cash', 'text' => 'Cash','class' => ''],
 												['value' => 'credit', 'text' => 'Credit','class' => '']
-											]
+											],['value'=>'cash']
 											); ?>
 										</div>
                                     </div>
