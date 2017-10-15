@@ -70,7 +70,7 @@ if($supplier_state_id== $state_id){
 							<div class="form-group">
 								<label>Transaction Date <span class="required">*</span></label>
 								
-								<?php echo $this->Form->input('transaction_date', ['type' => 'text','label' => false,'class' => 'form-control input-sm date-picker','data-date-format' => 'dd-mm-yyyy','value' => date("d-m-Y"),'data-date-start-date'=>@$coreVariable[fyValidFrom],'data-date-end-date'=>@$coreVariable[fyValidTo]]); ?>
+								<?php echo $this->Form->input('transaction_date', ['type' => 'text','label' => false,'class' => 'form-control input-sm date-picker','data-date-format' => 'dd-mm-yyyy','value' => date("d-m-Y"),'data-date-start-date'=>$coreVariable['fyValidFrom'],'data-date-end-date'=>$coreVariable['fyValidTo']]); ?>
 								
 							</div>
 						</div>
@@ -407,8 +407,7 @@ if($supplier_state_id== $state_id){
 						
 						gstAmt1=round(gstAmt1,2);
 						gstAmt2=round(gstAmt2,2);
-						alert(gstAmt1); 
-						alert(gstAmt2); 
+						
 						amt2=gstAmt1+gstAmt2;
 						amt2=round(amt2,2);
 						$(this).closest('tr').find('.gstValue').val(amt2);

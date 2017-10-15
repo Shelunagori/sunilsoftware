@@ -99,7 +99,7 @@ class PurchaseReturnsController extends AppController
 			$purchaseReturn->company_id = $company_id;
 			$purchaseReturn->purchase_invoice_id = $PurchaseInvoice->id;
 			//pr($PurchaseInvoice); 
-			//pr($purchaseReturn); exit;
+		//	pr($purchaseReturn); exit;
             if ($this->PurchaseReturns->save($purchaseReturn)) { 
 				//pr($purchaseReturn); exit;
 				$roundOfAmt=0;

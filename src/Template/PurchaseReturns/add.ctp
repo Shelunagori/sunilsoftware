@@ -65,7 +65,7 @@ if($supplier_state_id== $state_id){
 						<div class="col-md-2">
 							<div class="form-group">
 								<label>Transaction Date <span class="required">*</span></label>
-									<?php echo $this->Form->input('transaction_date', ['type' => 'text','label' => false,'class' => 'form-control input-sm date-picker','data-date-format' => 'dd-mm-yyyy','value' => date("d-m-Y"),'data-date-start-date'=>@$coreVariable[fyValidFrom],'data-date-end-date'=>@$coreVariable[fyValidTo]]); ?>
+									<?php echo $this->Form->input('transaction_date', ['type' => 'text','label' => false,'class' => 'form-control input-sm date-picker','data-date-format' => 'dd-mm-yyyy','value' => date("d-m-Y"),'data-date-start-date'=>$coreVariable['fyValidFrom'],'data-date-end-date'=>$coreVariable['fyValidTo']]); ?>
 								
 								
 							</div>
@@ -324,7 +324,19 @@ if($supplier_state_id== $state_id){
 						alert('Error: Minus amount invoice can not be generated.');
 						return false;
 					}
-					form1[0].submit();
+					
+					if(confirm('Are you sure you want to submit!'))
+							{
+								form1[0].submit();
+								$('.submit').attr('disabled','disabled');
+								$('.submit').text('Submiting...');
+								return true;
+							}
+							else
+							{
+								return false;
+							}
+					
 					
 					$('.submit').attr('disabled','disabled');
 					$('.submit').text('Submiting...');
@@ -373,6 +385,7 @@ function rename_rows()
 			$(this).css('background-color','#fffcda');
 		}else{ 
 			$(this).find('td:nth-child(1) input.attrGet').attr({name:'q',id:'q'});
+			$(this).find('.purchaseInvoiceRowId').attr({name:'q',id:'q'});
 			$(this).find('.quantity').attr({name:'q',id:'q'});
 			$(this).find('.rate').attr({name:'q',id:'q'});
 			$(this).find('.discount').attr({name:'q',id:'q'});
@@ -384,7 +397,7 @@ function rename_rows()
 			$(this).find('.gst_figure_id').attr({name:'q',id:'q'});
 			$(this).find('.gstValue').attr({name:'q',id:'q'});
 			$(this).find('.roundOff').attr({name:'q',id:'q'});
-			$(this).find('.netAmount').attr({name:'q',id:'q'});
+			$(this).find('.returnAmt').attr({name:'q',id:'q'});
 			$(this).find('.returnQty').attr({name:'q',id:'q', readonly:'readonly'}).val('');
 			$(this).css('background-color','#FFF');
 		}
@@ -533,7 +546,7 @@ function rename_rows()
 		}
 		
 	function checkValidation() 
-	{  
+	{  alert();
 		var total_amt  = parseFloat($('.total_amt').val());
 		if(!total_amt || total_amt==0){
 			alert('Error: zero amount invoice can not be generated.');
