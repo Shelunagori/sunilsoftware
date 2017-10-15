@@ -283,6 +283,7 @@ class SalesInvoicesController extends AppController
 			 return $this->redirect(['action' => 'salesInvoiceBill1/'.$salesInvoice->id]);
 			  return $this->redirect(['action' => 'salesInvoiceBill2/'.$salesInvoice->id]);
 		 }
+		 pr($salesInvoice); exit;
 		 $this->Flash->error(__('The sales invoice could not be saved. Please, try again.'));
 		}
 		$customers = $this->SalesInvoices->Customers->find()

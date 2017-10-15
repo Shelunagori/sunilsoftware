@@ -98,11 +98,7 @@ class SalesInvoiceRowsTable extends Table
             ->requirePresence('rate', 'create')
             ->notEmpty('rate');
 
-        $validator
-            ->decimal('discount_percentage')
-            ->requirePresence('discount_percentage', 'create')
-            ->notEmpty('discount_percentage');
-
+        
         $validator
             ->decimal('taxable_value')
             ->requirePresence('taxable_value', 'create')
