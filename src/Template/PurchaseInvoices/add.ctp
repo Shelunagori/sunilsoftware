@@ -404,7 +404,8 @@ if($supplier_state_id== $state_id){
 						
 						var gstAmt1=(taxableAmt*gstTax)/100;
 						var gstAmt2=(taxableAmt*gstTax)/100;
-						
+						alert(gstAmt1); 
+						alert(gstAmt2); 
 						gstAmt1=round(gstAmt1,2);
 						gstAmt2=round(gstAmt2,2);
 						
