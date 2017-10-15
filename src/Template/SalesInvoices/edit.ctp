@@ -161,7 +161,8 @@ foreach($partyOptions as $partyOption)
 										<span class="itemQty" style="color:red"></span>
 								</td>
 								<td>
-									<?php echo $this->Form->input('salesInvoiceRow.'.$i.'.quantity', ['type'=>'text','label' => false,'class' => 'form-control input-medium calculation quantity rightAligntextClass','id'=>'check','required'=>'required','placeholder'=>'Quantity', 'value'=>$salesInvoiceRow->quantity,'min'=>@$sales_return_qty[$salesInvoiceRow->item->id]]); ?>
+									<?php echo $this->Form->input('salesInvoiceRow.'.$i.'.quantity', ['type'=>'text','label' => false,'class' => 'form-control input-medium  quantity rightAligntextClass','id'=>'check','required'=>'required','placeholder'=>'Quantity', 'value'=>$salesInvoiceRow->quantity,'min'=>@$sales_return_qty[$salesInvoiceRow->item->id]]); 
+									?>
 								</td>
 								<td>
 									<?php echo $this->Form->input('salesInvoiceRow.'.$i.'.rate', ['label' => false,'class' => 'form-control input-sm calculation rate rightAligntextClass','required'=>'required','placeholder'=>'Rate','value'=>$salesInvoiceRow->rate, 'readonly'=>'readonly', 'tabindex'=>'-1']); ?>
@@ -183,7 +184,12 @@ foreach($partyOptions as $partyOption)
 								</td>
 															
 								<td align="center">
-									<a class="btn btn-danger delete-tr btn-xs" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
+								<?php 
+									
+										if(@$sales_return_qty[$salesInvoiceRow->item->id]==0) { ?>
+											<a class="btn btn-danger delete-tr btn-xs" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
+									<?php } ?>
+								
 								</td>
 							</tr>
 								<?php $i++; } ?>
@@ -489,10 +495,7 @@ foreach($partyOptions as $partyOption)
 		ComponentsPickers.init();
 	});
 	
-	/* $('.quantity').die().live('keyup',function(){
-			var quantity=$(this).val();
-			$(this).closest('tr').find('.exactQty').val(quantity);
-	}); */
+	
 	
 	$('.add_row').click(function(){
 		add_row();
@@ -565,6 +568,7 @@ foreach($partyOptions as $partyOption)
 		});
 	}
 	
+
 	$('.calculation').die().live('keyup',function()
 	{
 		forward_total_amount();
@@ -572,6 +576,11 @@ foreach($partyOptions as $partyOption)
 	$('.discalculation').die().live('keyup',function()
 	{
 		reverse_total_amount();
+	});
+	
+	$('.quantity').die().live('blur',function()
+	{ 
+		forward_total_amount();
 	});
 	
 	$( document ).ready( forward_total_amount );
@@ -636,6 +645,17 @@ foreach($partyOptions as $partyOption)
             var convertDiscount=0;			
 			$('#main_table tbody#main_tbody tr.main_tr').each(function()
 			{
+				var chkquanity1=$(this).find('.quantity').attr('min');
+				var chkquanity2=parseFloat($(this).find('.quantity').val());
+			
+				if(chkquanity2 != 0){
+					if(chkquanity2 < chkquanity1)
+					{
+						alert('Please enter a value greater than or equal to quantity '+chkquanity1);
+						$(this).closest('tr').find('.quantity').val(chkquanity1); 
+					}
+					
+				}
 			
 			    var outdata=$(this).closest('tr').find('.outStock').val();
 				if(!outdata){outdata=0;}

@@ -413,8 +413,8 @@ foreach($partyOptions as $partyOption)
 	}
 	//rename_rows();
 	$('.rename_check').die().live('click',function() {
-		
-		rename_rows();   
+		rename_rows(); 
+		forward_total_amount();		
     });	
 	
 	function rename_rows()
@@ -446,7 +446,7 @@ foreach($partyOptions as $partyOption)
 		}else{
 			$(this).find('td:nth-child(1) input.id').attr({name:'q'});
 
-			$(this).find('td:nth-child(1) select.attrGet').attr({name:'q'});
+			$(this).find('td:nth-child(1) input.attrGet').attr({name:'q'});
 			$(this).find('.quantity').attr({name:'q'});
 		  $(this).find('.rate').attr({name:'q'});
 		  $(this).find('.discount').attr({name:'q'});
@@ -593,8 +593,7 @@ foreach($partyOptions as $partyOption)
 				var is_interstate  = parseFloat($('#is_interstate').val());
 				if(is_interstate=='0')
 				{
-					alert(gstValue);
-					alert(gstAmount);
+					
 					 exactgstvalue=round(gstValue/2,2);
 					 
 					 $(this).find('.exactgst_value').val(exactgstvalue);
