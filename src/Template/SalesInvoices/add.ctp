@@ -283,7 +283,7 @@ $this->set('title', 'Create Sales Invoice');
 <?php
 	$js="
 	$(document).ready(function() {
-		$('.attrGet').die().live('change',function(){
+		$('.attrGet').die().live('change',function(){ 
 		var itemQ=$(this).closest('tr');
 			var gst_amount=$('option:selected', this).attr('gst_amount');
 			var sales_rate=$('option:selected', this).attr('sales_rate');

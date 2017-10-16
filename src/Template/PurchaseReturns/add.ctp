@@ -6,6 +6,7 @@
  
 $this->set('title', 'Purchase Return');
 $is_interstate=0;
+
 if($supplier_state_id== $state_id){
 		$is_interstate=0;
 }else{
@@ -24,6 +25,7 @@ if($supplier_state_id== $state_id){
 						<div class="col-md-6 caption-subject font-green-sharp bold " align="center" style="font-size:16px"><b>PURCHASE RETURN</b></div>
 					</div><br><br>
 					<input type="hidden" name="state_id" class="state_id" value="<?php echo $state_id;?>">
+					<input type="hidden" name="supplier_state_id" class="supplier_state_id" value="<?php echo $supplier_state_id;?>">
 					<input type="hidden" name="is_interstate" id="is_interstate" value="<?php echo $is_interstate;?>">
 					<div class="row">
 						<div class="col-md-2">
@@ -443,10 +445,11 @@ function rename_rows()
 			var val=$(this).find('input[type=checkbox]:checked').val();
 			if(val){
 			    var quantity=parseFloat($(this).closest('tr').find('.returnQty').val());
-				
 			    var rate=parseFloat($(this).closest('tr').find('.rate').val());
+				quantity=round(quantity,2);
+				rate=round(rate,2);
 				var amount=quantity*rate;
-				
+				amount=round(amount,2);
 			    var discount=parseFloat($(this).closest('tr').find('.discount').val());
 				var disAmt=0;
 				
@@ -454,8 +457,10 @@ function rename_rows()
 					$(this).closest('tr').find('.discountAmount').val(disAmt.toFixed(2));
 					$(this).closest('tr').find('.discount').val(disAmt.toFixed(2));
 				}else{
+					discount=round(discount,2);
 					var disAmt=(amount*discount)/100;
-					$(this).closest('tr').find('.discountAmount').val(disAmt.toFixed(2));
+					disAmt=round(disAmt,2);
+					$(this).closest('tr').find('.discountAmount').val(disAmt);
 					total_dis=total_dis+disAmt;
 					
 				}
@@ -466,11 +471,14 @@ function rename_rows()
 					$(this).closest('tr').find('.pnfAmount').val(pnfAmt.toFixed(2));
 					$(this).closest('tr').find('.pnf').val(pnfAmt.toFixed(2));
 				}else{
+					pnf=round(pnf,2);
 					var pnfAmt=(amount*pnf)/100;
+					pnfAmt=round(pnfAmt,2);
 					$(this).closest('tr').find('.pnfAmount').val(pnfAmt.toFixed(2));
 					total_pnf=total_pnf+pnfAmt;
 				}
 				taxableAmt=(amount-disAmt)+pnfAmt;
+				taxableAmt=round(taxableAmt,2);
 				$(this).closest('tr').find('.taxableValue').val(taxableAmt.toFixed(2));
 				total_taxable=total_taxable+taxableAmt;
 				var gstTax=parseFloat($(this).closest('tr').find('.gst_figure_id').val());
@@ -478,19 +486,22 @@ function rename_rows()
 					var gstAmt=0;
 					$(this).closest('tr').find('.gstValue').val(gstAmt.toFixed(2));
 				}else{
-					//var supplier_state_id=$('option:selected', '.supplier_state_id').attr('state_id');
-					var supplier_state_id =($('.supplier_ledger_id ').find('option:selected').attr('state_id'));
+					var supplier_state_id=$('.supplier_state_id').val();
 					var state_id=$('.state_id').val();
 					
 					if(supplier_state_id!=state_id)
-					{
+					{ 
+						gstTax=round(gstTax,2);
+						alert(supplier_state_id);
+						alert(state_id);
 						var amt2=(taxableAmt*gstTax)/100;
 						$(this).closest('tr').find('.gstValue').val(amt2.toFixed(2));
 						var gstamt1=parseFloat($(this).closest('tr').find('.gstValue').val());
 						total_gst=total_gst+gstamt1;
-					}else{ 
+					}else{
+						gstTax=round(gstTax,2);
 						gstTax=gstTax/2;
-						
+						gstTax=round(gstTax,2);
 						var gstAmt1=(taxableAmt*gstTax)/100;
 						var gstAmt2=(taxableAmt*gstTax)/100;
 						

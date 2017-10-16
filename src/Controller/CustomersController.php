@@ -212,7 +212,7 @@ class CustomersController extends AppController
 							->find('List')->toArray();
 		$accountingGroups[$SundryDebtor->id]=$SundryDebtor->name;
 		ksort($accountingGroups);
-		$account_entry  = $this->Customers->Ledgers->AccountingEntries->find()->where(['ledger_id'=>$customer->ledger->id,'company_id'=>$company_id])->first();
+		$account_entry  = $this->Customers->Ledgers->AccountingEntries->find()->where(['ledger_id'=>$customer->ledger->id,'company_id'=>$company_id,'is_opening_balance'=>'yes'])->first();
 		//pr($account_entry->toArray());exit;
         $states = $this->Customers->States->find('list',
 												['keyField' => function ($row) {

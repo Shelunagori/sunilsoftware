@@ -203,7 +203,7 @@ class SuppliersController extends AppController
 		$accountingGroups[$SundryDebtor->id]=$SundryDebtor->name;
 		ksort($accountingGroups);
 		
-		$account_entry  = $this->Suppliers->Ledgers->AccountingEntries->find()->where(['ledger_id'=>$supplier->ledger->id,'company_id'=>$company_id])->first();
+		$account_entry  = $this->Suppliers->Ledgers->AccountingEntries->find()->where(['ledger_id'=>$supplier->ledger->id,'company_id'=>$company_id,'is_opening_balance'=>'yes'])->first();
 		$states = $this->Suppliers->States->find('list',
 													['keyField' => function ($row) {
 														return $row['id'];

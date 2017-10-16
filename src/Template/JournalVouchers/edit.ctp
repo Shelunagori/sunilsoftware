@@ -112,7 +112,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 													{
 												?>
 													<tr>
-														<td width="20%">
+														<td width="20%" style="vertical-align: top !important;">
 														<input type="hidden" class="ledgerIdContainer" value="<?php echo $reference_detail->ledger_id;?>"/>
 															<input type="hidden" class="companyIdContainer" value="<?php echo $reference_detail->company_id;?>"/>
 															<?php 
@@ -122,7 +122,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 															 ?>
 														</td>
 														
-														<td width="">
+														<td width="" style="vertical-align: top !important;">
 														<?php if($reference_detail->type=='New Ref' || $reference_detail->type=='Advance'){ 
 														?>
 															<?php echo $this->Form->input('journal_voucher_rows.'.$i.'.reference_details.'.$j.'.ref_name', ['type'=>'text','label' => false,'class' => 'form-control input-sm ref_name','placeholder'=>'Reference Name','required'=>'required']); ?>
@@ -138,7 +138,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 															
 														</td>
 														
-														<td width="20%" style="padding-right:0px;">
+														<td width="20%" style="padding-right:0px;vertical-align: top !important;">
 															<?php
 															$value="";
 															$cr_dr="";
@@ -299,20 +299,20 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 <table id="sampleForRef" style="display:none;" width="100%">
 	<tbody>
 		<tr>
-			<td width="20%">
+			<td width="20%" style="padding-left:0px; vertical-align: top !important;">
 				<input type="hidden" class="ledgerIdContainer" />
 				<input type="hidden" class="companyIdContainer" />
 				<?php 
 				echo $this->Form->input('type', ['options'=>$option_ref,'label' => false,'class' => 'form-control input-sm refType','required'=>'required']); ?>
 			</td>
-			<td width="">
+			<td width="" style="padding-left:0px; vertical-align: top !important;">
 				<?php echo $this->Form->input('ref_name', ['type'=>'text','label' => false,'class' => 'form-control input-sm ref_name','placeholder'=>'Reference Name','required'=>'required']); ?>
 			</td>
 			
 			<td width="20%" style="padding-left:0px; vertical-align: top !important;">
 				<?php echo $this->Form->input('amount', ['label' => false,'class' => 'form-control input-sm calculation rightAligntextClass','placeholder'=>'Amount','required'=>'required']); ?>
 			</td>
-			<td width="10%" style="padding-left:0px;">
+			<td width="10%" style="padding-left:0px;vertical-align: top !important;">
 				<?php 
 				echo $this->Form->input('type_cr_dr', ['options'=>['Dr'=>'Dr','Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm  calculation refDrCr reload','value'=>'Dr','style'=>'vertical-align: top !important;']); ?>
 			</td>
@@ -787,9 +787,9 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 					var is_select=$(this).find('td:nth-child(2) select.refList').length;
 					var is_input=$(this).find('td:nth-child(2) input.ref_name').length;
 					if(is_select){
-						$(this).find('td:nth-child(2) select.refList').attr({name:'journal_voucher_rows['+row_no+'][reference_details]['+i+'][ref_name]',id:'journal_voucher_rows-'+row_no+'-reference_details-'+i+'-ref_name'});
+						$(this).find('td:nth-child(2) select.refList').attr({name:'journal_voucher_rows['+row_no+'][reference_details]['+i+'][ref_name]',id:'journal_voucher_rows-'+row_no+'-reference_details-'+i+'-ref_name'}).rules('add','required');
 					}else if(is_input){
-						$(this).find('td:nth-child(2) input.ref_name').attr({name:'journal_voucher_rows['+row_no+'][reference_details]['+i+'][ref_name]',id:'journal_voucher_rows-'+row_no+'-reference_details-'+i+'-ref_name'});
+						$(this).find('td:nth-child(2) input.ref_name').attr({name:'journal_voucher_rows['+row_no+'][reference_details]['+i+'][ref_name]',id:'journal_voucher_rows-'+row_no+'-reference_details-'+i+'-ref_name'}).rules('add','required');
 					}
 					var Dr_Cr=$(this).find('td:nth-child(4) select option:selected').val();
 					if(Dr_Cr=='Dr'){
