@@ -163,6 +163,52 @@ class AppController extends Controller
 		}
 		return $closingValue;
 	}
+	
+	public function GrossProfit($from_date,$to_date){
+		$company_id=$this->Auth->User('session_company_id');
+		$AccountingGroups=$this->AccountingEntries->Ledgers->AccountingGroups->find()->where(['AccountingGroups.nature_of_group_id IN'=>[3,4],'AccountingGroups.company_id'=>$company_id]);
+		$Groups=[];
+		foreach($AccountingGroups as $AccountingGroup){
+			$Groups[$AccountingGroup->id]['ids'][]=$AccountingGroup->id;
+			$Groups[$AccountingGroup->id]['name']=$AccountingGroup->name;
+			$Groups[$AccountingGroup->id]['nature']=$AccountingGroup->nature_of_group_id;
+			$accountingChildGroups = $this->AccountingEntries->Ledgers->AccountingGroups->find('children', ['for' => $AccountingGroup->id]);
+			foreach($accountingChildGroups as $accountingChildGroup){
+				$Groups[$AccountingGroup->id]['ids'][]=$accountingChildGroup->id;
+			}
+		}
+		$AllGroups=[];
+		foreach($Groups as $mainGroups){
+			foreach($mainGroups['ids'] as $subGroup){
+				$AllGroups[]=$subGroup;
+			}
+		}
+		
+		$query=$this->AccountingEntries->find();
+		$query->select(['ledger_id','totalDebit' => $query->func()->sum('AccountingEntries.debit'),'totalCredit' => $query->func()->sum('AccountingEntries.credit')])
+				->group('AccountingEntries.ledger_id')
+				->where(['AccountingEntries.company_id'=>$company_id])
+				->contain(['Ledgers'=>function($q){
+					return $q->select(['Ledgers.accounting_group_id','Ledgers.id']);
+				}]);
+		$query->matching('Ledgers', function ($q) use($AllGroups){
+			return $q->where(['Ledgers.accounting_group_id IN' => $AllGroups]);
+		});
+		$balanceOfLedgers=$query;
+		
+		$totalDr=0; $totalCr=0;
+		foreach($balanceOfLedgers as $balanceOfLedger){
+			$totalDr+=$balanceOfLedger->totalDebit;
+			$totalCr+=$balanceOfLedger->totalCredit;
+		}
+		
+		$openingValue= $this->StockValuationWithDate($from_date);
+		$closingValue= $this->StockValuation();
+		
+		$totalDr+=$openingValue;
+		$totalCr+=$closingValue;
+		return $totalCr-$totalDr;
+	}
 
     /**
      * Before render callback.
