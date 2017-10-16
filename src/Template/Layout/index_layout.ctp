@@ -188,6 +188,7 @@ License: You must have a valid license purchased only from themeforest(the above
 					$(this).val('');
 				}
 			});
+			
 		});
 		function round(value, exp) {
 		  if (typeof exp === 'undefined' || +exp === 0)

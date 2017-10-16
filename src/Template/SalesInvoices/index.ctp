@@ -16,7 +16,9 @@ $this->set('title', 'Sales Invoice List');
 			<div class="portlet-body">
 				<div class="table-responsive">
 					<?php $page_no=$this->Paginator->current('SalesInvoices');
-					 $page_no=($page_no-1)*20; ?>
+					 $page_no=($page_no-1)*20; 
+									?>						
+					 
 					<table class="table table-bordered table-hover table-condensed">
 						<thead>
 							<tr>
@@ -32,7 +34,31 @@ $this->set('title', 'Sales Invoice List');
 							<?php foreach ($salesInvoices as $salesInvoice): ?>
 							<tr>
 								<td><?= h(++$page_no) ?></td>
-								<td><?= h('#'.str_pad($salesInvoice->voucher_no, 4, '0', STR_PAD_LEFT)) ?></td>
+								<td>
+								<?php $date=date('Y-m-d',strtotime($salesInvoice->transaction_date));
+								    $d = date_parse_from_format('Y-m-d',$date);
+									$yr=$d["year"];$year= substr($yr, -2);
+									if($d["month"]=='01' || $d["month"]=='02' || $d["month"]=='03')
+									{
+									  $startYear=$year-1;
+									  $endYear=$year;
+									  $financialyear=$startYear.'-'.$endYear;
+									}
+									else
+									{
+									  $startYear=$year;
+									  $endYear=$year+1;
+									  $financialyear=$startYear.'-'.$endYear;
+									}
+								$words = explode(" ", $coreVariable['company_name']);
+								$acronym = "";
+								foreach ($words as $w) {
+								$acronym .= $w[0];
+								}
+								?>
+								<?= $acronym.'/'.$financialyear.'/'. h(str_pad($salesInvoice->voucher_no, 3, '0', STR_PAD_LEFT))
+								?>
+		                        </td>
 								<td><?= h($salesInvoice->party_ledger->name) ?></td>
 								<td><?= h($salesInvoice->transaction_date) ?></td>
 								<td class="rightAligntextClass"><?= h($salesInvoice->amount_after_tax) ?></td>

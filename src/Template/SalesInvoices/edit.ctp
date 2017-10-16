@@ -57,20 +57,13 @@ foreach($partyOptions as $partyOption)
 									  $endYear=$year+1;
 									  $financialyear=$startYear.'-'.$endYear;
 									}
-								if($coreVariable['company_name']=='DANGI SAREES')
-								{
-									$field='DS';
-								}
-								else if($coreVariable['company_name']=='SUNIL TEXTILES')
-								{
-									$field='ST';
-								}
-								else if($coreVariable['company_name']=='SUNIL GARMENTS')
-								{
-									$field='SG';
-								}
+									$words = explode(" ", $coreVariable['company_name']);
+									$acronym = "";
+									foreach ($words as $w) {
+									$acronym .= $w[0];
+									}
 								?>
-								<?= $field.'/'.$financialyear.'/'. h(str_pad($salesInvoice->voucher_no, 3, '0', STR_PAD_LEFT))?>
+								<?= $acronym.'/'.$financialyear.'/'. h(str_pad($salesInvoice->voucher_no, 3, '0', STR_PAD_LEFT))?>
 							</div>
 						</div>
 						<div class="col-md-3">
@@ -902,6 +895,11 @@ foreach($partyOptions as $partyOption)
 			return false;
 		}
 		
+		if(!amount_before_tax || amount_before_tax < 0){
+			alert('Error: Minus amount invoice can not be generated.');
+			return false;
+		}
+		
 		var StockDB=[]; var StockInput = {};
 		$('#main_table tbody#main_tbody tr.main_tr').each(function()
 		{
@@ -966,6 +964,13 @@ foreach($partyOptions as $partyOption)
 		}
 
 	} */";
+	$js.="
+	$(document).ready(function() {
+	$('.quantity,.discount,.dis_amount,.receipt_amount').keypress(function(event) {
+			if ( event.which == 45 || event.which == 189 ) {
+			event.preventDefault();
+		}
+		}); });";
 
 echo $this->Html->scriptBlock($js, array('block' => 'scriptBottom')); 
 ?>

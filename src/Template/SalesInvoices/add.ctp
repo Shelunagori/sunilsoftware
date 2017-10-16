@@ -49,20 +49,13 @@ $this->set('title', 'Create Sales Invoice');
 									  $endYear=$year+1;
 									  $financialyear=$startYear.'-'.$endYear;
 									}
-								if($coreVariable['company_name']=='DANGI SAREES')
-								{
-									$field='DS';
-								}
-								else if($coreVariable['company_name']=='SUNIL TEXTILES')
-								{
-									$field='ST';
-								}
-								else if($coreVariable['company_name']=='SUNIL GARMENTS')
-								{
-									$field='SG';
+								$words = explode(" ", $coreVariable['company_name']);
+								$acronym = "";
+								foreach ($words as $w) {
+								$acronym .= $w[0];
 								}
 								?>
-								<?= $field.'/'.$financialyear.'/'. h(str_pad($voucher_no, 3, '0', STR_PAD_LEFT))?>
+								<?= $acronym.'/'.$financialyear.'/'. h(str_pad($voucher_no, 3, '0', STR_PAD_LEFT))?>
 							</div>
 						</div>
 						<div class="col-md-3">
@@ -363,9 +356,10 @@ $this->set('title', 'Create Sales Invoice');
 							$('#main_table tbody#main_tbody tr:last select.attrGet').val(item_id).trigger('change').select2();
 							$('.itembarcode').val('');
 						}
-						console.log(l);
+						//console.log(l);
 					}else{
 						alert('Not found any item of this barcode.');
+						$('.itembarcode').val('');
 					}
 				}
 			}
@@ -445,6 +439,7 @@ $this->set('title', 'Create Sales Invoice');
 			forward_total_amount();
 		});
 		ComponentsPickers.init();
+		
 	});
 	
 	$('.add_row').click(function(){
@@ -783,7 +778,12 @@ $this->set('title', 'Create Sales Invoice');
 	{  
 		var amount_before_tax  = parseFloat($('.amount_before_tax').val());
 		if(!amount_before_tax || amount_before_tax==0){
-			alert('Error: zero amount invoice can not be generated.');
+			alert('Error: Zero amount invoice can not be generated.');
+			return false;
+		}
+		
+		if(!amount_before_tax || amount_before_tax < 0){
+			alert('Error: Minus amount invoice can not be generated.');
 			return false;
 		}
 		
@@ -821,7 +821,14 @@ $this->set('title', 'Create Sales Invoice');
 		{
 			return false;
 		}
-	}
-	";
+	}";
+	
+	$js.="
+	$(document).ready(function() {
+	$('.quantity,.discount,.dis_amount').keypress(function(event) {
+			if ( event.which == 45 || event.which == 189 ) {
+			event.preventDefault();
+		}
+		}); });";
 echo $this->Html->scriptBlock($js, array('block' => 'scriptBottom')); 
 ?>
