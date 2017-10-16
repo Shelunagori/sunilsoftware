@@ -223,18 +223,22 @@ class SaleReturnsController extends AppController
 					}
 			   }
 			   
-			   
-			   //Refrence Details For Party//
-				$ReferenceDetail = $this->SaleReturns->ReferenceDetails->newEntity(); 
-				$ReferenceDetail->ledger_id=$saleReturn->party_ledger_id;
-				$ReferenceDetail->credit=$saleReturn->amount_after_tax;
-				$ReferenceDetail->debit=0;
-				$ReferenceDetail->transaction_date=$saleReturn->transaction_date;
-				$ReferenceDetail->company_id=$company_id;
-				$ReferenceDetail->type='New Ref';
-				$ReferenceDetail->ref_name='SR'.$voucher_no;
-				$ReferenceDetail->sale_return_id=$saleReturn->id;
-				$this->SaleReturns->ReferenceDetails->save($ReferenceDetail);
+			     //Refrence Details For Party//
+			  // pr($saleReturn->supplier_ledger_id);
+				$Ledgers = $this->SaleReturns->SalesInvoices->SalesInvoiceRows->Ledgers->get($saleReturn->party_ledger_id);
+				
+				if($Ledgers->bill_to_bill_accounting=="yes"){
+					$ReferenceDetail = $this->SaleReturns->ReferenceDetails->newEntity(); 
+					$ReferenceDetail->ledger_id=$saleReturn->party_ledger_id;
+					$ReferenceDetail->credit=$saleReturn->amount_after_tax;
+					$ReferenceDetail->debit=0;
+					$ReferenceDetail->transaction_date=$saleReturn->transaction_date;
+					$ReferenceDetail->company_id=$company_id;
+					$ReferenceDetail->type='New Ref';
+					$ReferenceDetail->ref_name='SR'.$voucher_no;
+					$ReferenceDetail->sale_return_id=$saleReturn->id;
+					$this->SaleReturns->ReferenceDetails->save($ReferenceDetail);
+				}
 			   
 				$this->Flash->success(__('The sale return has been saved.'));
 				return $this->redirect(['action' => 'index']);

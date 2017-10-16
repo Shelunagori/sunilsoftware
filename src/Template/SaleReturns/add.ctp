@@ -69,7 +69,11 @@ foreach($partyOptions as $partyOption)
 						<div class="col-md-3">
 							<div class="form-group">
 								<label><b>Sales Return Voucher No :</b></label>&nbsp;&nbsp;<br>
-								<?= h('#'.str_pad($voucher->voucher_no+1, 4, '0', STR_PAD_LEFT)) ?>
+								<?php if($voucher){ ?>
+									<?= h('#'.str_pad($voucher->voucher_no+1, 4, '0', STR_PAD_LEFT)) ?>
+								<?php }else{ ?>
+									<?= h('#'.str_pad(1, 4, '0', STR_PAD_LEFT)) ?>
+								<?php } ?>
 								
 							</div>
 						</div> 

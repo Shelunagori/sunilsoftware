@@ -64,9 +64,14 @@ class PurchaseInvoicesController extends AppController
             'contain' => (['GrnRows'=>['Items'=>['FirstGstFigures']],'SupplierLedgers'])
         ]);
 		
+		$supplier_status="False";
+		if($Grns->supplier_ledger_id==0){
+			$supplier_status="True";
+			goto go;
+		}
 		
-			$Voucher_no_last = $this->PurchaseInvoices->find()->select(['voucher_no'])->where(['company_id'=>$company_id])->order(['voucher_no' => 'DESC'])->first();
-		//pr($Voucher_no_last->voucher_no); exit;
+		$Voucher_no_last = $this->PurchaseInvoices->find()->select(['voucher_no'])->where(['company_id'=>$company_id])->order(['voucher_no' => 'DESC'])->first();
+		//pr($Grns->supplier_ledger_id); exit;
         $purchaseInvoice = $this->PurchaseInvoices->newEntity();
         if ($this->request->is('post')) {
             $purchaseInvoice = $this->PurchaseInvoices->patchEntity($purchaseInvoice, $this->request->getData());
@@ -179,18 +184,21 @@ class PurchaseInvoicesController extends AppController
 						$this->PurchaseInvoices->AccountingEntries->save($AccountingEntrieIGST);
 					   }
 				}
-				
 				//Refrence Details For Party//
-				$ReferenceDetail = $this->PurchaseInvoices->ReferenceDetails->newEntity(); 
-				$ReferenceDetail->ledger_id=$purchaseInvoice->supplier_ledger_id;
-				$ReferenceDetail->credit=$purchaseInvoice->total_amount;
-				$ReferenceDetail->debit=0;
-				$ReferenceDetail->transaction_date=$purchaseInvoice->transaction_date;
-				$ReferenceDetail->company_id=$company_id;
-				$ReferenceDetail->type='New Ref';
-				$ReferenceDetail->ref_name='PI'.$purchaseInvoice->voucher_no;
-				$ReferenceDetail->purchase_invoice_id=$purchaseInvoice->id;
-				$this->PurchaseInvoices->ReferenceDetails->save($ReferenceDetail);
+				
+				$Ledgers = $this->PurchaseInvoices->PurchaseInvoiceRows->Ledgers->get($purchaseInvoice->supplier_ledger_id);
+					if($Ledgers->bill_to_bill_accounting=="yes"){
+					$ReferenceDetail = $this->PurchaseInvoices->ReferenceDetails->newEntity(); 
+					$ReferenceDetail->ledger_id=$purchaseInvoice->supplier_ledger_id;
+					$ReferenceDetail->credit=$purchaseInvoice->total_amount;
+					$ReferenceDetail->debit=0;
+					$ReferenceDetail->transaction_date=$purchaseInvoice->transaction_date;
+					$ReferenceDetail->company_id=$company_id;
+					$ReferenceDetail->type='New Ref';
+					$ReferenceDetail->ref_name='PI'.$purchaseInvoice->voucher_no;
+					$ReferenceDetail->purchase_invoice_id=$purchaseInvoice->id;
+					$this->PurchaseInvoices->ReferenceDetails->save($ReferenceDetail);
+				}
 				  
 				
                 $this->Flash->success(__('The purchase invoice has been saved.'));
@@ -250,11 +258,12 @@ class PurchaseInvoicesController extends AppController
 			$account_ids = explode(",",trim($account_ids,','));
 			$Accountledgers = $this->PurchaseInvoices->Grns->GrnRows->Ledgers->find('list')->where(['Ledgers.accounting_group_id IN' =>$account_ids]);
         }
+		go:
 		//pr($Accountledgers->toArray());
 		//exit;
         $companies = $this->PurchaseInvoices->Companies->find('list', ['limit' => 200]);
         $supplierLedgers = $this->PurchaseInvoices->SupplierLedgers->find('list', ['limit' => 200]);
-        $this->set(compact('purchaseInvoice', 'companies', 'supplierLedgers','Grns','partyOptions','state_id','Accountledgers','supplier_state_id','Voucher_no_last'));
+        $this->set(compact('purchaseInvoice', 'companies', 'supplierLedgers','Grns','partyOptions','state_id','Accountledgers','supplier_state_id','Voucher_no_last','supplier_status'));
         $this->set('_serialize', ['purchaseInvoice']);
     }
 
@@ -376,16 +385,20 @@ class PurchaseInvoicesController extends AppController
 				}
 				
 				//Refrence Details For Party/Supplier  //
-				$ReferenceDetail = $this->PurchaseInvoices->ReferenceDetails->newEntity(); 
-				$ReferenceDetail->ledger_id=$purchaseInvoice->supplier_ledger_id;
-				$ReferenceDetail->credit=$purchaseInvoice->total_amount;
-				$ReferenceDetail->debit=0;
-				$ReferenceDetail->transaction_date=$purchaseInvoice->transaction_date;
-				$ReferenceDetail->company_id=$company_id;
-				$ReferenceDetail->type='New Ref';
-				$ReferenceDetail->ref_name='PI'.$purchaseInvoice->voucher_no;
-				$ReferenceDetail->purchase_invoice_id=$purchaseInvoice->id;
-				$this->PurchaseInvoices->ReferenceDetails->save($ReferenceDetail);
+				
+				$Ledgers = $this->PurchaseInvoices->PurchaseInvoiceRows->Ledgers->get($purchaseInvoice->supplier_ledger_id);
+				if($Ledgers->bill_to_bill_accounting=="yes"){
+					$ReferenceDetail = $this->PurchaseInvoices->ReferenceDetails->newEntity(); 
+					$ReferenceDetail->ledger_id=$purchaseInvoice->supplier_ledger_id;
+					$ReferenceDetail->credit=$purchaseInvoice->total_amount;
+					$ReferenceDetail->debit=0;
+					$ReferenceDetail->transaction_date=$purchaseInvoice->transaction_date;
+					$ReferenceDetail->company_id=$company_id;
+					$ReferenceDetail->type='New Ref';
+					$ReferenceDetail->ref_name='PI'.$purchaseInvoice->voucher_no;
+					$ReferenceDetail->purchase_invoice_id=$purchaseInvoice->id;
+					$this->PurchaseInvoices->ReferenceDetails->save($ReferenceDetail);
+				}
 				  
                 $this->Flash->success(__('The purchase invoice has been saved.'));
 
@@ -448,6 +461,7 @@ class PurchaseInvoicesController extends AppController
 			$account_ids = explode(",",trim($account_ids,','));
 			$Accountledgers = $this->PurchaseInvoices->Grns->GrnRows->Ledgers->find('list')->where(['Ledgers.accounting_group_id IN' =>$account_ids]);
         }
+		
         $companies = $this->PurchaseInvoices->Companies->find('list', ['limit' => 200]);
         $supplierLedgers = $this->PurchaseInvoices->SupplierLedgers->find('list', ['limit' => 200]);
         $this->set(compact('purchaseInvoice', 'companies', 'supplierLedgers', 'companies', 'partyOptions','state_id','Accountledgers','supplier_state_id'));
