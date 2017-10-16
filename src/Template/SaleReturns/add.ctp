@@ -32,13 +32,13 @@ foreach($partyOptions as $partyOption)
 						<div class="col-md-6 caption-subject font-green-sharp bold " align="center" style="font-size:16px"><b>SALES RETURN</b></div>
 					</div><br><br>
 					<div class="row">
-						<div class="col-md-2">
+						<div class="col-md-3">
 							<div class="form-group">
-								<label><b>Voucher No :</b></label>&nbsp;&nbsp;<br>
+								<label><b>Sales Invoice Voucher No :</b></label>&nbsp;&nbsp;<br>
 								<?= h('#'.str_pad($salesInvoice->voucher_no, 4, '0', STR_PAD_LEFT)) ?>
 							</div>
 						</div>
-						<div class="col-md-2">
+						<div class="col-md-3">
 							<div class="form-group">
 								<label><b>Transaction Date</b></label><br>
 								<?php  
@@ -64,21 +64,31 @@ foreach($partyOptions as $partyOption)
 								 echo $salesInvoice->party_ledger->name;
 								?>
 						</div>
+					</div></br>
+					<div class="row">
+						<div class="col-md-3">
+							<div class="form-group">
+								<label><b>Sales Return Voucher No :</b></label>&nbsp;&nbsp;<br>
+								<?= h('#'.str_pad($voucher->voucher_no+1, 4, '0', STR_PAD_LEFT)) ?>
+								
+							</div>
+						</div> 
+						
+							<div class="col-md-3">
+							<div class="form-group">
+								<label><b>Transaction Date <span class="required">*</span></b></label>
+								<?php echo $this->Form->input('transaction_date', ['type' => 'text','label' => false,'class' => 'form-control input-sm date-picker','data-date-format' => 'dd-mm-yyyy','value' => date("d-m-Y"),'data-date-start-date'=>@$coreVariable[fyValidFrom],'data-date-end-date'=>@$coreVariable[fyValidTo]]); ?>
+							</div>
+						</div>
+						
 						<div class="col-md-3">
 							<div class="form-group">
 								<label><b>Sales Account</b></label>
 								<?php echo $this->Form->control('sales_ledger_id',['class'=>'form-control input-sm sales_ledger_id select2me','label'=>false, 'options' => $Accountledgers,'required'=>'required', 'value'=>$salesInvoice->sales_ledger_id]);
 								?>
 							</div>
-						</div> 
-						<div class="col-md-2">
-							<div class="form-group">
-								<label>Transaction Date <span class="required">*</span></label>
-								<?php echo $this->Form->input('transaction_date', ['type' => 'text','label' => false,'class' => 'form-control input-sm date-picker','data-date-format' => 'dd-mm-yyyy','value' => date("d-m-Y"),'data-date-start-date'=>@$coreVariable[fyValidFrom],'data-date-end-date'=>@$coreVariable[fyValidTo]]); ?>
-								
-								
-							</div>
 						</div>
+					
 					</div>
 					
 				   <div class="row">

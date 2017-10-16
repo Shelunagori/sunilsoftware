@@ -89,6 +89,15 @@ class ReferenceDetailsTable extends Table
             'foreignKey' => 'sales_invoice_id',
 			'joinType' => 'LEFT'
         ]);
+		$this->belongsTo('SaleReturns');
+		$this->belongsTo('PurchaseInvoices', [
+            'foreignKey' => 'purchase_invoice_id',
+			'joinType' => 'LEFT'
+        ]);
+		$this->belongsTo('PurchaseReturns', [
+            'foreignKey' => 'purchase_return_id',
+			'joinType' => 'LEFT'
+        ]);
     }
 
     /**

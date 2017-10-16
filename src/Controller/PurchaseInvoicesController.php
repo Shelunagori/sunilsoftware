@@ -179,6 +179,18 @@ class PurchaseInvoicesController extends AppController
 						$this->PurchaseInvoices->AccountingEntries->save($AccountingEntrieIGST);
 					   }
 				}
+				
+				//Refrence Details For Party//
+				$ReferenceDetail = $this->PurchaseInvoices->ReferenceDetails->newEntity(); 
+				$ReferenceDetail->ledger_id=$purchaseInvoice->supplier_ledger_id;
+				$ReferenceDetail->credit=$purchaseInvoice->total_amount;
+				$ReferenceDetail->debit=0;
+				$ReferenceDetail->transaction_date=$purchaseInvoice->transaction_date;
+				$ReferenceDetail->company_id=$company_id;
+				$ReferenceDetail->type='New Ref';
+				$ReferenceDetail->ref_name='PI'.$purchaseInvoice->voucher_no;
+				$ReferenceDetail->purchase_invoice_id=$purchaseInvoice->id;
+				$this->PurchaseInvoices->ReferenceDetails->save($ReferenceDetail);
 				  
 				
                 $this->Flash->success(__('The purchase invoice has been saved.'));
@@ -273,7 +285,7 @@ class PurchaseInvoicesController extends AppController
 				
 				//$this->PurchaseInvoices->ItemLedgers->deleteAll(['ItemLedgers.purchase_invoice_id' => $purchaseInvoice->id]);
 				$this->PurchaseInvoices->AccountingEntries->deleteAll(['AccountingEntries.purchase_invoice_id' => $purchaseInvoice->id]);
-				
+				$this->PurchaseInvoices->ReferenceDetails->deleteAll(['ReferenceDetails.purchase_invoice_id' => $purchaseInvoice->id]);
 				
 				
 				//Accounting Entries for Purchase account//
@@ -363,6 +375,17 @@ class PurchaseInvoicesController extends AppController
 					   }
 				}
 				
+				//Refrence Details For Party/Supplier  //
+				$ReferenceDetail = $this->PurchaseInvoices->ReferenceDetails->newEntity(); 
+				$ReferenceDetail->ledger_id=$purchaseInvoice->supplier_ledger_id;
+				$ReferenceDetail->credit=$purchaseInvoice->total_amount;
+				$ReferenceDetail->debit=0;
+				$ReferenceDetail->transaction_date=$purchaseInvoice->transaction_date;
+				$ReferenceDetail->company_id=$company_id;
+				$ReferenceDetail->type='New Ref';
+				$ReferenceDetail->ref_name='PI'.$purchaseInvoice->voucher_no;
+				$ReferenceDetail->purchase_invoice_id=$purchaseInvoice->id;
+				$this->PurchaseInvoices->ReferenceDetails->save($ReferenceDetail);
 				  
                 $this->Flash->success(__('The purchase invoice has been saved.'));
 

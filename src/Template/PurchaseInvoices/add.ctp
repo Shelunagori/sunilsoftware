@@ -37,7 +37,14 @@ if($supplier_state_id== $state_id){
 								<?php echo $Grns->transaction_date; ?>
 							</div>
 						</div>
-					</div>
+						<div class="col-md-3">
+								<label>Supplier</label>
+								<?php
+									 echo $this->Form->control('q',['class'=>'form-control input-sm supplier_state_id ','label'=>false,'type'=>'hidden','value'=>$supplier_state_id]);
+									echo $this->Form->control('supplier_ledger_id',['class'=>'form-control input-sm supplier_ledger select2me','label'=>false, 'options' => $partyOptions,'required'=>'required','disabled']);
+								?>
+						</div>
+					</div><br>
 						<input type="hidden" name="state_id" class="state_id" value="<?php echo $state_id;?>">
 						<input type="hidden" name="is_interstate" id="is_interstate" value="<?php echo $is_interstate;?>">
 						
@@ -52,21 +59,8 @@ if($supplier_state_id== $state_id){
 								<?php } ?>
 							</div>
 						</div>
-						<div class="col-md-3">
-								<label>Supplier</label>
-								<?php
-									 echo $this->Form->control('q',['class'=>'form-control input-sm supplier_state_id ','label'=>false,'type'=>'hidden','value'=>$supplier_state_id]);
-									 
-									echo $this->Form->control('supplier_ledger_id',['class'=>'form-control input-sm supplier_ledger select2me','label'=>false, 'options' => $partyOptions,'required'=>'required','disabled']);
-								?>
-						</div>
 						
 						<div class="col-md-3">
-								<label>Purchase Account</label>
-								<?php echo $this->Form->control('purchase_ledger_id',['class'=>'form-control input-sm  select2me','label'=>false, 'options' => $Accountledgers,'required'=>'required']);
-								?>
-						</div>
-						<div class="col-md-2">
 							<div class="form-group">
 								<label>Transaction Date <span class="required">*</span></label>
 								
@@ -74,6 +68,12 @@ if($supplier_state_id== $state_id){
 								
 							</div>
 						</div>
+						<div class="col-md-3">
+								<label>Purchase Account</label>
+								<?php echo $this->Form->control('purchase_ledger_id',['class'=>'form-control input-sm  select2me','label'=>false, 'options' => $Accountledgers,'required'=>'required']);
+								?>
+						</div>
+						
 					</div><BR/><BR/>
 					
 				   
