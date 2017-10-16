@@ -111,7 +111,7 @@ class SalesInvoicesController extends AppController
 			if($salesInvoice->cash_or_credit=='cash'){
 				$salesInvoice->customer_id=0;
 			}
-		
+			
 			if($salesInvoice->invoice_receipt_type=='cash' && $salesInvoice->invoiceReceiptTd==1){
 					$salesInvoice->receipt_amount=$salesInvoice->amount_after_tax;
 			}else{
@@ -164,6 +164,29 @@ class SalesInvoicesController extends AppController
 										'ledger_id' => $receiptLedgerId->id,
 										'debit' => $salesInvoice->amount_after_tax])
 					  ->execute();
+					 
+					//Accounting Entries for Receipt Start//
+					$accountEntry = $this->SalesInvoices->Receipts->AccountingEntries->newEntity();
+					$accountEntry->ledger_id                  = $salesInvoice->party_ledger_id;
+					$accountEntry->debit                      = 0;
+					$accountEntry->credit                     = $salesInvoice->amount_after_tax;
+					$accountEntry->transaction_date           = $salesInvoice->transaction_date;
+					$accountEntry->company_id                 = $company_id;
+					$accountEntry->receipt_id                 = $receiptId->id;
+					$accountEntry->receipt_row_id             = 0;
+					$this->SalesInvoices->Receipts->AccountingEntries->save($accountEntry);
+					
+					$accountEntry = $this->SalesInvoices->Receipts->AccountingEntries->newEntity();
+					$accountEntry->ledger_id                  = $receiptLedgerId->id;
+					$accountEntry->debit                      = $salesInvoice->amount_after_tax;
+					$accountEntry->credit                     = 0;
+					$accountEntry->transaction_date           = $salesInvoice->transaction_date;
+					$accountEntry->company_id                 = $company_id;
+					$accountEntry->receipt_id                 = $receiptId->id;
+					$accountEntry->receipt_row_id             = 0;
+					$this->SalesInvoices->Receipts->AccountingEntries->save($accountEntry);
+					//Accounting Entries for Receipt End//
+					
 				}
 				
 
@@ -284,10 +307,8 @@ class SalesInvoicesController extends AppController
 		   }
 		    $this->Flash->success(__('The sales invoice has been saved.'));
             return $this->redirect(['action' => 'salesInvoiceBill/'.$salesInvoice->id]);
-			 return $this->redirect(['action' => 'salesInvoiceBill1/'.$salesInvoice->id]);
-			  return $this->redirect(['action' => 'salesInvoiceBill2/'.$salesInvoice->id]);
 		 }
-		 pr($salesInvoice); exit;
+		 
 		 $this->Flash->error(__('The sales invoice could not be saved. Please, try again.'));
 		}
 		$customers = $this->SalesInvoices->Customers->find()
