@@ -493,7 +493,7 @@ function rename_rows()
 					{ 
 						gstTax=round(gstTax,2);
 						alert(supplier_state_id);
-						alert(state_id);
+						
 						var amt2=(taxableAmt*gstTax)/100;
 						$(this).closest('tr').find('.gstValue').val(amt2.toFixed(2));
 						var gstamt1=parseFloat($(this).closest('tr').find('.gstValue').val());
