@@ -103,20 +103,13 @@ margin-bottom: 0;
 									  $endYear=$year+1;
 									  $financialyear=$startYear.'-'.$endYear;
 									}
-								if($coreVariable['company_name']=='DANGI SAREES')
-								{
-								$field='DS';
-								}
-								else if($coreVariable['company_name']=='SUNIL TEXTILES')
-								{
-								$field='ST';
-								}
-								else if($coreVariable['company_name']=='SUNIL GARMENTS')
-								{
-								$field='SG';
+								$words = explode(" ", $coreVariable['company_name']);
+								$acronym = "";
+								foreach ($words as $w) {
+								$acronym .= $w[0];
 								}
 								?>
-								<?= $field.'/'.$financialyear.'/'. h(str_pad($data->voucher_no, 3, '0', STR_PAD_LEFT))?>
+								<?= $acronym.'/'.$financialyear.'/'. h(str_pad($data->voucher_no, 3, '0', STR_PAD_LEFT))?>
 	</tr>
 	<tr>
 		<td colspan="4"
