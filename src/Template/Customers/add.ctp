@@ -79,7 +79,7 @@ $this->set('title', 'Create Customer');
 								</div>
 							</div>
 							<div class="col-md-2" style="padding-left: 0px;padding-right:0;">
-							    <label style="visibility:hidden;"></label>
+							    <label style="visibility:hidden;">sdasdasdsa</label>
 								<?php $option =[['value'=>'Dr','text'=>'Dr'],['value'=>'Cr','text'=>'Cr']];
 									echo $this->Form->control('debit_credit',['class'=>'form-control input-sm','label'=>false, 'options' => $option,'value'=>'debitor']);
 									?>

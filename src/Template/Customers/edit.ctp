@@ -71,7 +71,7 @@ $this->set('title', 'Edit Customer');
 							</div>
 					   </div>
 					   <div class="row">
-							<div class="col-md-3" style="padding-right: 0px;">
+							<div class="col-md-3" style="padding-right: 0px;vertical-align: top !important;">
 								<div class="form-group" >
 									<label>Opening balance value</label>
 									<?php 
@@ -88,8 +88,8 @@ $this->set('title', 'Edit Customer');
 									?>
 								</div>
 							</div>
-							<div class="col-md-2" style="padding-left: 0px;padding-right:0;">
-							    <label style="visibility:hidden;"></label>
+							<div class="col-md-2" style="padding-left: 0px;padding-right:0;vertical-align: top !important;">
+							    <label style="visibility:hidden;">sdfdsfdsfs</label>
 								<?php $option =[['value'=>'Dr','text'=>'Dr'],['value'=>'Cr','text'=>'Cr']];
 								    $check="";
 								    if(!empty($account_entry->debit))
