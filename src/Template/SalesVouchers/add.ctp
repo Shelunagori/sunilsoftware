@@ -271,7 +271,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 	<!-- END COMPONENTS DROPDOWNS -->
 <!-- END PAGE LEVEL SCRIPTS -->
 <?php
-	$kk='<input type="text" class="form-control input-sm ref_name " placeholder="Reference Name">';
+	$kk='<input type="text" class="form-control input-sm ref_name " placeholder="Reference Name" "required"="required">';
 	$total_input='<input type="text" class="form-control input-sm rightAligntextClass total calculation noBorder" >';
 	$total_type='<input type="text" class="form-control input-sm total_type calculation noBorder" >';
 	$style ='style="vertical-align: top !important;"';
@@ -409,20 +409,20 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				var currentRefRow=$(this).closest('tr');
 				var ledger_id=$(this).closest('tr.MainTr').find('select.ledger option:selected').val();
 				
-				if(type=='Against'){
+				if(type=='Against'){ 
 					$(this).closest('tr').find('td:nth-child(2)').html('Loading Ref List...');
 					var url='".$this->Url->build(['controller'=>'ReferenceDetails','action'=>'listRef'])."';
 					url=url+'/'+ledger_id;
 					$.ajax({
 						url: url,
-					}).done(function(response) { 
+					}).done(function(response) {
 						currentRefRow.find('td:nth-child(2)').html(response);
 						
 						renameRefRows(SelectedTr);
 					});
-				}else if(type=='On Account'){
+				}else if(type=='On Account'){ 
 					currentRefRow.find('td:nth-child(2)').html('');
-				}else{
+				}else{ alert('".$kk."');
 					currentRefRow.find('td:nth-child(2)').html('".$kk."');
 					
 				}
@@ -585,9 +585,9 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 					var is_select=$(this).find('td:nth-child(2) select.refList').length;
 					var is_input=$(this).find('td:nth-child(2) input.ref_name').length;
 					if(is_select){
-						$(this).find('td:nth-child(2) select.refList').attr({name:'sales_voucher_rows['+row_no+'][reference_details]['+i+'][ref_name]',id:'sales_voucher_rows-'+row_no+'-reference_details-'+i+'-ref_name'});
+						$(this).find('td:nth-child(2) select.refList').attr({name:'sales_voucher_rows['+row_no+'][reference_details]['+i+'][ref_name]',id:'sales_voucher_rows-'+row_no+'-reference_details-'+i+'-ref_name'}).rules('add','required');
 					}else if(is_input){
-						$(this).find('td:nth-child(2) input.ref_name').attr({name:'sales_voucher_rows['+row_no+'][reference_details]['+i+'][ref_name]',id:'sales_voucher_rows-'+row_no+'-reference_details-'+i+'-ref_name'});
+						$(this).find('td:nth-child(2) input.ref_name').attr({name:'sales_voucher_rows['+row_no+'][reference_details]['+i+'][ref_name]',id:'sales_voucher_rows-'+row_no+'-reference_details-'+i+'-ref_name'}).rules('add','required');
 					}
 					var Dr_Cr=$(this).find('td:nth-child(4) select option:selected').val();
 					if(Dr_Cr=='Dr'){

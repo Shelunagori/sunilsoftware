@@ -159,7 +159,7 @@ $this->set('title', 'Create Inter Location stock Transfer Voucher');
 	$(document).ready(function() {
 	
 		$('.itemStock').die().live('change',function(){
-		var itemQ=$(this).closest('tr');
+		var itemQ=$(this).closest('tr'); 
 		var itemId=$(this).val();
 		var url='".$this->Url->build(["controller" => "IntraLocationStockTransferVouchers", "action" => "ajaxItemQuantity"])."';
 		url=url+'/'+itemId
