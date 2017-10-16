@@ -56,6 +56,7 @@ class SaleReturnsController extends AppController
     {
 		//pr($id); exit;
 		$this->viewBuilder()->layout('index_layout');
+		$company_id=$this->Auth->User('session_company_id');
         $salesInvoice = $this->SaleReturns->SalesInvoices->get($id, [
             'contain' => (['PartyLedgers','SaleReturns'=>['SaleReturnRows' => function($q) {
 				return $q->select(['sale_return_id','item_id','sales_invoice_row_id','total' => $q->func()->sum('SaleReturnRows.return_quantity')])->group('SaleReturnRows.sales_invoice_row_id');
@@ -69,6 +70,8 @@ class SaleReturnsController extends AppController
 				$sales_return_qty[@$sale_return_row->sales_invoice_row_id]=@$sales_return_qty[$sale_return_row->sales_invoice_row_id]+$sale_return_row->total;
 			}
 		}
+		
+		$voucher = $this->SaleReturns->find()->select(['voucher_no'])->where(['company_id'=>$company_id])->order(['voucher_no' => 'DESC'])->first();
 		//pr($sales_return_qty); exit;
 		$company_id=$this->Auth->User('session_company_id');
 		$stateDetails=$this->Auth->User('session_company');
@@ -97,9 +100,7 @@ class SaleReturnsController extends AppController
 				$gstVal=0;
 				$gVal=0;
 				foreach($saleReturn->sale_return_rows as $sale_return_row){ 
-					//pr($sale_return_row->item_id); exit;
 					$Grns = $this->SaleReturns->Grns->GrnRows->find()->where(['GrnRows.item_id'=>$sale_return_row->item_id])->first();
-					
 					$exactAmt=0;
 					$purchase_rate=0;
 					if(empty($Grns)){
@@ -127,48 +128,48 @@ class SaleReturnsController extends AppController
 							])
 					->execute();
 				} 
-					$partyData = $this->SaleReturns->SalesInvoices->AccountingEntries->query();
-					$partyData->insert(['ledger_id', 'debit','credit', 'transaction_date', 'company_id', 'sale_return_id'])
-							->values([
-							'ledger_id' => $saleReturn->party_ledger_id,
-							'debit' => '',
-							'credit' => $saleReturn->amount_after_tax,
-							'transaction_date' => $saleReturn->transaction_date,
-							'company_id' => $saleReturn->company_id,
-							'sale_return_id' => $saleReturn->id
-							])
-					->execute();
-					$accountData = $this->SaleReturns->SalesInvoices->AccountingEntries->query();
-					$accountData->insert(['ledger_id', 'debit','credit', 'transaction_date', 'company_id', 'sale_return_id'])
-							->values([
-							'ledger_id' => $saleReturn->sales_ledger_id,
-							'debit' => $saleReturn->amount_before_tax,
-							'credit' =>  '',
-							'transaction_date' => $saleReturn->transaction_date,
-							'company_id' => $saleReturn->company_id,
-							'sale_return_id' => $saleReturn->id
-							])
-					->execute();
-					if(str_replace('-',' ',$saleReturn->round_off)>0){
-						$roundData = $this->SaleReturns->SalesInvoices->AccountingEntries->query();
-						if($saleReturn->isRoundofType=='0'){
-							$credit=0;
-							$debit=str_replace('-',' ',$saleReturn->round_off);
-						}else if($saleReturn->isRoundofType=='1'){
-							$debit=0;
-							$credit=str_replace('-',' ',$saleReturn->round_off);
-						}
-						$roundData->insert(['ledger_id', 'debit','credit', 'transaction_date', 'company_id', 'sale_return_id'])
-								->values([
-								'ledger_id' => $roundOffId->id,
-								'debit' => $debit,
-								'credit' => $credit,
-								'transaction_date' => $saleReturn->transaction_date,
-								'company_id' => $saleReturn->company_id,
-								'sale_return_id' => $saleReturn->id
-								])
-						->execute();
+				$partyData = $this->SaleReturns->SalesInvoices->AccountingEntries->query();
+				$partyData->insert(['ledger_id', 'debit','credit', 'transaction_date', 'company_id', 'sale_return_id'])
+						->values([
+						'ledger_id' => $saleReturn->party_ledger_id,
+						'debit' => '',
+						'credit' => $saleReturn->amount_after_tax,
+						'transaction_date' => $saleReturn->transaction_date,
+						'company_id' => $saleReturn->company_id,
+						'sale_return_id' => $saleReturn->id
+						])
+				->execute();
+				$accountData = $this->SaleReturns->SalesInvoices->AccountingEntries->query();
+				$accountData->insert(['ledger_id', 'debit','credit', 'transaction_date', 'company_id', 'sale_return_id'])
+						->values([
+						'ledger_id' => $saleReturn->sales_ledger_id,
+						'debit' => $saleReturn->amount_before_tax,
+						'credit' =>  '',
+						'transaction_date' => $saleReturn->transaction_date,
+						'company_id' => $saleReturn->company_id,
+						'sale_return_id' => $saleReturn->id
+						])
+				->execute();
+				if(str_replace('-',' ',$saleReturn->round_off)>0){
+					$roundData = $this->SaleReturns->SalesInvoices->AccountingEntries->query();
+					if($saleReturn->isRoundofType=='0'){
+						$credit=0;
+						$debit=str_replace('-',' ',$saleReturn->round_off);
+					}else if($saleReturn->isRoundofType=='1'){
+						$debit=0;
+						$credit=str_replace('-',' ',$saleReturn->round_off);
 					}
+					$roundData->insert(['ledger_id', 'debit','credit', 'transaction_date', 'company_id', 'sale_return_id'])
+							->values([
+							'ledger_id' => $roundOffId->id,
+							'debit' => $debit,
+							'credit' => $credit,
+							'transaction_date' => $saleReturn->transaction_date,
+							'company_id' => $saleReturn->company_id,
+							'sale_return_id' => $saleReturn->id
+							])
+					->execute();
+				}
 				if($saleReturn->is_interstate=='0')
 				{
 					for(@$i=0; $i<2; $i++)
@@ -221,6 +222,20 @@ class SaleReturnsController extends AppController
 						->execute();
 					}
 			   }
+			   
+			   
+			   //Refrence Details For Party//
+				$ReferenceDetail = $this->SaleReturns->ReferenceDetails->newEntity(); 
+				$ReferenceDetail->ledger_id=$saleReturn->party_ledger_id;
+				$ReferenceDetail->credit=$saleReturn->amount_after_tax;
+				$ReferenceDetail->debit=0;
+				$ReferenceDetail->transaction_date=$saleReturn->transaction_date;
+				$ReferenceDetail->company_id=$company_id;
+				$ReferenceDetail->type='New Ref';
+				$ReferenceDetail->ref_name='SR'.$voucher_no;
+				$ReferenceDetail->sale_return_id=$saleReturn->id;
+				$this->SaleReturns->ReferenceDetails->save($ReferenceDetail);
+			   
 				$this->Flash->success(__('The sale return has been saved.'));
 				return $this->redirect(['action' => 'index']);
             } else{
@@ -287,7 +302,7 @@ class SaleReturnsController extends AppController
 
 //pr($partyOptions); exit;
         $this->set(compact('saleReturn', 'companies', 'customers', 'salesLedgers', 'partyLedgers', 'locations', 'salesInvoices','sales_return_qty'));
-		$this->set(compact('salesInvoice', 'companies', 'customerOptions', 'gstFigures', 'voucher_no','company_id','itemOptions','state_id', 'Accountledgers', 'partyOptions', 'location_id'));
+		$this->set(compact('salesInvoice', 'companies', 'customerOptions', 'gstFigures', 'voucher','company_id','itemOptions','state_id', 'Accountledgers', 'partyOptions', 'location_id'));
         $this->set('_serialize', ['saleReturn']);
     }
 

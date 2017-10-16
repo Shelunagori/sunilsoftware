@@ -62,6 +62,11 @@ class PurchaseReturnsTable extends Table
             'foreignKey' => 'purchase_invoice_id',
             'joinType' => 'INNER'
         ]);
+		
+		$this->hasMany('ReferenceDetails', [
+            'foreignKey' => 'purchase_return_id',
+			'joinType' => 'LEFT'
+        ]);
     }
 
     /**

@@ -215,6 +215,19 @@ class PurchaseReturnsController extends AppController
 						$this->PurchaseReturns->AccountingEntries->save($AccountingEntrieIGST);
 					   }
 				}
+				
+				//Refrence Details For Party/Supplier  //
+				$ReferenceDetail = $this->PurchaseReturns->ReferenceDetails->newEntity(); 
+				$ReferenceDetail->ledger_id=$PurchaseInvoice->supplier_ledger_id;
+				$ReferenceDetail->debit=$total_amount;
+				$ReferenceDetail->credit=0;
+				$ReferenceDetail->transaction_date=$purchaseReturn->transaction_date;
+				$ReferenceDetail->company_id=$company_id;
+				$ReferenceDetail->type='New Ref';
+				$ReferenceDetail->ref_name='PR'.$purchaseReturn->voucher_no;
+				$ReferenceDetail->purchase_return_id=$purchaseReturn->id;
+			//	pr($ReferenceDetail); exit;
+				$this->PurchaseReturns->ReferenceDetails->save($ReferenceDetail);
 
                 return $this->redirect(['action' => 'index']);
             }
