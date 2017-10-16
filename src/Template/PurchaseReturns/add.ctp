@@ -460,6 +460,7 @@ function rename_rows()
 					discount=round(discount,2);
 					var disAmt=(amount*discount)/100;
 					disAmt=round(disAmt,2);
+					
 					$(this).closest('tr').find('.discountAmount').val(disAmt);
 					total_dis=total_dis+disAmt;
 					
@@ -477,8 +478,10 @@ function rename_rows()
 					$(this).closest('tr').find('.pnfAmount').val(pnfAmt.toFixed(2));
 					total_pnf=total_pnf+pnfAmt;
 				}
+				//alert(disAmt);
 				taxableAmt=(amount-disAmt)+pnfAmt;
 				taxableAmt=round(taxableAmt,2);
+				
 				$(this).closest('tr').find('.taxableValue').val(taxableAmt.toFixed(2));
 				total_taxable=total_taxable+taxableAmt;
 				var gstTax=parseFloat($(this).closest('tr').find('.gst_figure_id').val());
@@ -492,19 +495,18 @@ function rename_rows()
 					if(supplier_state_id!=state_id)
 					{ 
 						gstTax=round(gstTax,2);
-						alert(supplier_state_id);
+						//alert(supplier_state_id);
 						
 						var amt2=(taxableAmt*gstTax)/100;
 						$(this).closest('tr').find('.gstValue').val(amt2.toFixed(2));
 						var gstamt1=parseFloat($(this).closest('tr').find('.gstValue').val());
 						total_gst=total_gst+gstamt1;
-					}else{
+					}else{ 
 						gstTax=round(gstTax,2);
 						gstTax=gstTax/2;
 						gstTax=round(gstTax,2);
 						var gstAmt1=(taxableAmt*gstTax)/100;
 						var gstAmt2=(taxableAmt*gstTax)/100;
-						
 						gstAmt1=round(gstAmt1,2);
 						gstAmt2=round(gstAmt2,2);
 						
@@ -521,7 +523,6 @@ function rename_rows()
 				
 				var totalAmount=taxableAmt+amt2;
 				var Actualquantity=parseFloat($(this).closest('tr').find('.quantity').val());
-				//alert(Actualquantity);
 				 var round_of_amt=parseFloat($(this).closest('tr').find('.actroundOff').val());
 				 if(isNaN(round_of_amt)){
 					 var round_of=0;
@@ -530,23 +531,22 @@ function rename_rows()
 					var round_of=(quantity/Actualquantity)*round_of_amt;
 					 // var round_of=round_of_amt;
 				 }
-				 
+				// alert(round_of);
 				total_round=total_round+round_of;
 				$(this).closest('tr').find('.roundOff').val(round_of.toFixed(2));
 				var totalAmountAfterRound=totalAmount+round_of;
-				
 				//$(this).closest('tr').find('.netAmount').val(parseFloat(totalAmountAfterRound).toFixed(2));
 				var netAmount =parseFloat($(this).closest('tr').find('.netAmount ').val());
-				
+				var totalAmountReturn=0; 
 				if(isNaN(quantity)){
 					var totalAmountReturn=0; 
 					total_amt=total_amt+totalAmountReturn;
 					$(this).closest('tr').find('.returnQty').val(parseFloat(0).toFixed(2));
 					$(this).closest('tr').find('.returnAmt').val(parseFloat(totalAmountReturn).toFixed(2));
 				 }else{
-					var totalAmountReturn=(quantity/Actualquantity)*netAmount;
-					total_amt=total_amt+totalAmountReturn;
-					$(this).closest('tr').find('.returnAmt').val(parseFloat(totalAmountReturn).toFixed(2));
+					 totalAmountAfterRound=round(totalAmountAfterRound,2);
+					 
+					$(this).closest('tr').find('.returnAmt').val(parseFloat(totalAmountAfterRound).toFixed(2));
 				 }
 				}
 			});
@@ -557,7 +557,7 @@ function rename_rows()
 		}
 		
 	function checkValidation() 
-	{  alert();
+	{ 
 		var total_amt  = parseFloat($('.total_amt').val());
 		if(!total_amt || total_amt==0){
 			alert('Error: zero amount invoice can not be generated.');

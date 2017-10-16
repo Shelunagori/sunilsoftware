@@ -40,12 +40,18 @@ class PurchaseReturnsController extends AppController
      */
     public function view($id = null)
     {	
-		
+	
+		$this->viewBuilder()->layout('index_layout');
+		$company_id=$this->Auth->User('session_company_id');
+		$location_id=$this->Auth->User('session_location_id');
+		$stateDetails=$this->Auth->User('session_company');
+		$state_id=$stateDetails->state_id;
         $purchaseReturn = $this->PurchaseReturns->get($id, [
-            'contain' => [ 'Companies', 'PurchaseReturnRows']
-        ]);
-
+            'contain' => (['PurchaseReturnRows'=>['Items'=>['FirstGstFigures']],'PurchaseInvoices'=>['PurchaseInvoiceRows'=>['Items'=>['FirstGstFigures']],'PurchaseLedgers','SupplierLedgers'=>['Suppliers']]])]);
+		$supplier_state_id=$purchaseReturn->purchase_invoice->supplier_ledger->supplier->state_id;
+	//	pr($purchaseReturn); exit;
         $this->set('purchaseReturn', $purchaseReturn);
+		$this->set(compact('state_id','supplier_state_id'));
         $this->set('_serialize', ['purchaseReturn']);
     }
 
