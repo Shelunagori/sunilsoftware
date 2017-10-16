@@ -165,7 +165,6 @@ class SalesInvoicesController extends AppController
 										'ledger_id' => $receiptLedgerId->id,
 										'debit' => $salesInvoice->amount_after_tax])
 					  ->execute();
-<<<<<<< HEAD
 					  
 					  
 					  
@@ -198,7 +197,6 @@ class SalesInvoicesController extends AppController
 										'receipt_row_id' => $receiptRowDrId->id])
 					  ->execute();
 						}
-=======
 					 
 					//Accounting Entries for Receipt Start//
 					$accountEntry = $this->SalesInvoices->Receipts->AccountingEntries->newEntity();
@@ -222,7 +220,6 @@ class SalesInvoicesController extends AppController
 					$this->SalesInvoices->Receipts->AccountingEntries->save($accountEntry);
 					//Accounting Entries for Receipt End//
 					
->>>>>>> 1eefa83b060d8fe6455a51fa27b899f78cd9c40a
 				}
 				
 
@@ -520,7 +517,28 @@ public function edit($id = null)
 						->where(['ReceiptRows.company_id'=>$company_id, 'ReceiptRows.receipt_id'=>$receiptId->id, 'ReceiptRows.cr_dr'=>'Dr'])
 						->execute();
 						
-					  
+						$this->SalesInvoices->Receipts->AccountingEntries->deleteAll(['ReferenceDetails.receipt_id'=>$receiptId->id]);
+						
+						$accountEntry = $this->SalesInvoices->Receipts->AccountingEntries->newEntity();
+					$accountEntry->ledger_id                  = $salesInvoice->party_ledger_id;
+					$accountEntry->debit                      = 0;
+					$accountEntry->credit                     = $salesInvoice->receipt_amount;
+					$accountEntry->transaction_date           = $salesInvoice->transaction_date;
+					$accountEntry->company_id                 = $company_id;
+					$accountEntry->receipt_id                 = $receiptId->id;
+					$accountEntry->receipt_row_id             = 0;
+					$this->SalesInvoices->Receipts->AccountingEntries->save($accountEntry);
+					
+					$accountEntry = $this->SalesInvoices->Receipts->AccountingEntries->newEntity();
+					$accountEntry->ledger_id                  = $receiptLedgerId->id;
+					$accountEntry->debit                      = $salesInvoice->receipt_amount;
+					$accountEntry->credit                     = 0;
+					$accountEntry->transaction_date           = $salesInvoice->transaction_date;
+					$accountEntry->company_id                 = $company_id;
+					$accountEntry->receipt_id                 = $receiptId->id;
+					$accountEntry->receipt_row_id             = 0;
+					$this->SalesInvoices->Receipts->AccountingEntries->save($accountEntry);
+						
 					   $receiptRowCrId = $this->SalesInvoices->Receipts->ReceiptRows->find()->select(['id'])->where(['ReceiptRows.company_id'=>$company_id,'ReceiptRows.receipt_id'=>$receiptId->id, 'ReceiptRows.cr_dr'=>'Cr'])->first();
 					   $receiptRowDrId = $this->SalesInvoices->Receipts->ReceiptRows->find()->select(['id'])->where(['ReceiptRows.company_id'=>$company_id,'ReceiptRows.receipt_id'=>$receiptId->id, 'ReceiptRows.cr_dr'=>'Dr'])->first();
 					  
@@ -612,6 +630,30 @@ public function edit($id = null)
 						->where(['ReceiptRows.company_id'=>$company_id, 'ReceiptRows.receipt_id'=>$receiptId->id, 'ReceiptRows.cr_dr'=>'Dr'])
 						->execute();
 						
+						$this->SalesInvoices->Receipts->AccountingEntries->deleteAll(['ReferenceDetails.receipt_id'=>$receiptId->id]);
+						
+					$accountEntry = $this->SalesInvoices->Receipts->AccountingEntries->newEntity();
+					$accountEntry->ledger_id                  = $salesInvoice->party_ledger_id;
+					$accountEntry->debit                      = 0;
+					$accountEntry->credit                     = 0;
+					$accountEntry->transaction_date           = $salesInvoice->transaction_date;
+					$accountEntry->company_id                 = $company_id;
+					$accountEntry->receipt_id                 = $receiptId->id;
+					$accountEntry->receipt_row_id             = 0;
+					$this->SalesInvoices->Receipts->AccountingEntries->save($accountEntry);
+					
+					$accountEntry = $this->SalesInvoices->Receipts->AccountingEntries->newEntity();
+					$accountEntry->ledger_id                  = $receiptLedgerId->id;
+					$accountEntry->debit                      = 0;
+					$accountEntry->credit                     = 0;
+					$accountEntry->transaction_date           = $salesInvoice->transaction_date;
+					$accountEntry->company_id                 = $company_id;
+					$accountEntry->receipt_id                 = $receiptId->id;
+					$accountEntry->receipt_row_id             = 0;
+					$this->SalesInvoices->Receipts->AccountingEntries->save($accountEntry);
+						
+						
+						
 						$refExist = $this->SalesInvoices->Receipts->ReceiptRows->ReferenceDetails->find()->select(['id'])->where(['ReferenceDetails.company_id'=>$company_id,'ReferenceDetails.receipt_id'=>$receiptId->id]);
 						
 						if($refExist)
@@ -690,6 +732,30 @@ public function edit($id = null)
 										'ledger_id' => $receiptLedgerId->id,
 										'debit' => $salesInvoice->receipt_amount])
 					  ->execute();
+					  
+					  $this->SalesInvoices->Receipts->AccountingEntries->deleteAll(['ReferenceDetails.receipt_id'=>$receiptId->id]);
+						
+					$accountEntry = $this->SalesInvoices->Receipts->AccountingEntries->newEntity();
+					$accountEntry->ledger_id                  = $salesInvoice->party_ledger_id;
+					$accountEntry->debit                      = 0;
+					$accountEntry->credit                     = $salesInvoice->receipt_amount;
+					$accountEntry->transaction_date           = $salesInvoice->transaction_date;
+					$accountEntry->company_id                 = $company_id;
+					$accountEntry->receipt_id                 = $receiptId->id;
+					$accountEntry->receipt_row_id             = 0;
+					$this->SalesInvoices->Receipts->AccountingEntries->save($accountEntry);
+					
+					$accountEntry = $this->SalesInvoices->Receipts->AccountingEntries->newEntity();
+					$accountEntry->ledger_id                  = $receiptLedgerId->id;
+					$accountEntry->debit                      = $salesInvoice->receipt_amount;
+					$accountEntry->credit                     = 0;
+					$accountEntry->transaction_date           = $salesInvoice->transaction_date;
+					$accountEntry->company_id                 = $company_id;
+					$accountEntry->receipt_id                 = $receiptId->id;
+					$accountEntry->receipt_row_id             = 0;
+					$this->SalesInvoices->Receipts->AccountingEntries->save($accountEntry);
+					  
+					  
 					  
 					   $receiptRowCrId = $this->SalesInvoices->Receipts->ReceiptRows->find()->select(['id'])->where(['ReceiptRows.company_id'=>$company_id,'ReceiptRows.receipt_id'=>$receiptId->id, 'ReceiptRows.cr_dr'=>'Cr'])->first();
 					   $receiptRowDrId = $this->SalesInvoices->Receipts->ReceiptRows->find()->select(['id'])->where(['ReceiptRows.company_id'=>$company_id,'ReceiptRows.receipt_id'=>$receiptId->id, 'ReceiptRows.cr_dr'=>'Dr'])->first();
