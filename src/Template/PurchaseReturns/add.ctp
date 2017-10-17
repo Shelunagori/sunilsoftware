@@ -545,11 +545,12 @@ function rename_rows()
 					$(this).closest('tr').find('.returnAmt').val(parseFloat(totalAmountReturn).toFixed(2));
 				 }else{
 					 totalAmountAfterRound=round(totalAmountAfterRound,2);
-					 
+					 total_amt=total_amt+totalAmountAfterRound;
 					$(this).closest('tr').find('.returnAmt').val(parseFloat(totalAmountAfterRound).toFixed(2));
 				 }
 				}
 			});
+			 total_amt=round(total_amt,2);
 			$('.amount_before_tax').val(parseFloat(total_amt).toFixed(2));
 			 
 			

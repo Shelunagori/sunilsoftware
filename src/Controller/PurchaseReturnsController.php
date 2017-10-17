@@ -76,7 +76,7 @@ class PurchaseReturnsController extends AppController
 		$Voucher_no = $this->PurchaseReturns->find()->select(['voucher_no'])->where(['company_id'=>$company_id])->order(['voucher_no' => 'DESC'])->first();
 		
 		$NewVoucherNo=0;
-		if(empty($Voucher_no)){
+		if(!empty($Voucher_no)){
 		$NewVoucherNo=@$Voucher_no->voucher_no;
 		}
 		 $purchase_return_qty=[];
