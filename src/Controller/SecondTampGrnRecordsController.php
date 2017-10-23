@@ -455,12 +455,12 @@ class SecondTampGrnRecordsController extends AppController
 								->where(['SecondTampGrnRecords.id' =>$SecondTampGrnRecord->id])
 								->execute();
 								
-							/* $query = $this->SecondTampGrnRecords->query();
+							$query = $this->SecondTampGrnRecords->query();
 							$query->update()
 								->set(['second_gst_figure_id' => $gstFigure->id])
 								->where(['SecondTampGrnRecords.id' =>$SecondTampGrnRecord->id])
 								->execute();
-							$second_gst_figure_id=$gstFigure->id; */
+							$second_gst_figure_id=$gstFigure->id; 
 						}else{
 							goto DoNotMarkYesValidToImport;
 						}
