@@ -22,7 +22,9 @@ $this->set('title', 'Stock Journal View');
 					<td width="15%"><b>Voucher No </b></td>
 					<td width="1%">:</td>
 					<td><?php echo '#'.str_pad($saleReturn->voucher_no, 4, '0', STR_PAD_LEFT);?></td>
-					<td width="15%"><b>Reference No</b></td>
+				   </tr>
+				   <tr>
+					<td width="15%"><b>Party</b></td>
 					<td width="1%">:</td>
 					<td><?php echo $saleReturn->party_ledger->name; ?></td>
 					<td width="15%"><b>Transaction Date</b></td>
@@ -51,7 +53,7 @@ $this->set('title', 'Stock Journal View');
 										 {  
 								?>
 									<tr class="main_tr" class="tab">
-										<td width="7%"><?php echo $i+1; ?></td>
+										<td width="7%" class="rightAligntextClass"><?php echo $i+1; ?></td>
 										<td width="25%">
 											<?php echo $sale_return_row->item->name; ?>
 										</td>
