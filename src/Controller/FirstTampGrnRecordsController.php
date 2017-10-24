@@ -154,7 +154,7 @@ class FirstTampGrnRecordsController extends AppController
 						{
 							$data = explode(",",$test1[0]);
 							$FirstTampGrnRecords = $this->FirstTampGrnRecords->newEntity();
-							$FirstTampGrnRecords->item_code                       = $data[0];
+							$FirstTampGrnRecords->item_code                       = trim($data[0]);
 							$FirstTampGrnRecords->quantity                        = $data[1]; 
 							$FirstTampGrnRecords->purchase_rate                   = $data[2];
 							$FirstTampGrnRecords->sales_rate                      = $data[3];
