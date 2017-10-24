@@ -143,6 +143,29 @@ class AccountingEntriesController extends AppController
 		$this->set(compact('from_date','to_date', 'groupForPrint', 'GrossProfit', 'closingValue'));
 		
     }
+	
+	public function bankReconciliation()
+    {
+		$this->viewBuilder()->layout('index_layout');
+        $company_id=$this->Auth->User('session_company_id');
+		$from_date=$this->request->query('from_date');
+		$to_date=$this->request->query('to_date');
+		if($from_date){
+			$from_date = date("Y-m-d",strtotime($from_date));
+		}else{
+			$from_date="";
+		}
+		
+		if($to_date){
+			$to_date= date("Y-m-d",strtotime($to_date));
+		}else{
+			$to_date="";
+		}
+		
+		
+		
+		$this->set(compact('from_date','to_date'));
+	}
     /**
      * View method
      *
