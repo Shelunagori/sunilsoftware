@@ -40,7 +40,7 @@ class SaleReturnsController extends AppController
     {
 		$this->viewBuilder()->layout('index_layout');
         $saleReturn = $this->SaleReturns->get($id, [
-            'contain' => ['Companies', 'SalesLedgers', 'PartyLedgers', 'Locations', 'SalesInvoices', 'SaleReturnRows'=>['GstFigures','Items']]
+            'contain' => ['Companies'=>['States'], 'SalesLedgers', 'PartyLedgers', 'Locations', 'SalesInvoices', 'SaleReturnRows'=>['GstFigures','Items']]
         ]);
 		//pr($saleReturn); exit;
         $this->set('saleReturn', $saleReturn);
@@ -82,8 +82,10 @@ class SaleReturnsController extends AppController
 
         $saleReturn = $this->SaleReturns->newEntity();
         if ($this->request->is(['patch', 'post', 'put'])) {
+			
 			$transaction_date=date('Y-m-d', strtotime($this->request->data['transaction_date']));
 			$saleReturn = $this->SaleReturns->patchEntity($saleReturn, $this->request->getData());
+			
 			$saleReturn->transaction_date=$transaction_date;
 			$saleReturn->sales_invoice_id=$id;
 			$Voucher_no = $this->SaleReturns->find()->select(['voucher_no'])->where(['company_id'=>$company_id])->order(['voucher_no' => 'DESC'])->first();
@@ -96,7 +98,9 @@ class SaleReturnsController extends AppController
 			$saleReturn->voucher_no=$voucher_no;
 			$saleReturn->sales_ledger_id=$salesInvoice->sales_ledger_id;
 			$saleReturn->party_ledger_id=$salesInvoice->party_ledger_id;
+			
             if($this->SaleReturns->save($saleReturn)){
+				
 				$gstVal=0;
 				$gVal=0;
 				foreach($saleReturn->sale_return_rows as $sale_return_row){ 
