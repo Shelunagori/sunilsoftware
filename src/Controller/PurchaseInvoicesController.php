@@ -40,11 +40,18 @@ class PurchaseInvoicesController extends AppController
      */
     public function view($id = null)
     {
+		$this->viewBuilder()->layout('index_layout');
+		$company_id=$this->Auth->User('session_company_id');
+		$stateDetails=$this->Auth->User('session_company');
+		$state_id=$stateDetails->state_id;
         $purchaseInvoice = $this->PurchaseInvoices->get($id, [
-            'contain' => ['Companies', 'SupplierLedgers', 'PurchaseInvoiceRows']
+            'contain' => ['Companies'=>['States'], 'Grns','SupplierLedgers'=>['Suppliers'], 'PurchaseInvoiceRows'=>['Items']]
         ]);
-
-        $this->set('purchaseInvoice', $purchaseInvoice);
+		$supplier_state_id=$purchaseInvoice->supplier_ledger->supplier->state_id;
+		//pr($purchaseInvoice->toArray());
+		//exit;
+		$this->set(compact('purchaseInvoice','supplier_state_id','state_id'));
+       
         $this->set('_serialize', ['purchaseInvoice']);
     }
 

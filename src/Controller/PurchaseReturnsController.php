@@ -47,7 +47,7 @@ class PurchaseReturnsController extends AppController
 		$stateDetails=$this->Auth->User('session_company');
 		$state_id=$stateDetails->state_id;
         $purchaseReturn = $this->PurchaseReturns->get($id, [
-            'contain' => (['PurchaseReturnRows'=>['Items'=>['FirstGstFigures']],'PurchaseInvoices'=>['PurchaseInvoiceRows'=>['Items'=>['FirstGstFigures']],'PurchaseLedgers','SupplierLedgers'=>['Suppliers']]])]);
+            'contain' => (['Companies'=>['States'],'PurchaseReturnRows'=>['Items'=>['FirstGstFigures']],'PurchaseInvoices'=>['PurchaseInvoiceRows'=>['Items'=>['FirstGstFigures']],'PurchaseLedgers','SupplierLedgers'=>['Suppliers']]])]);
 		$supplier_state_id=$purchaseReturn->purchase_invoice->supplier_ledger->supplier->state_id;
 	//	pr($purchaseReturn); exit;
         $this->set('purchaseReturn', $purchaseReturn);
