@@ -38,7 +38,7 @@ $this->set('title', 'Sales Invoice List');
 								<td><?= h($saleReturn->transaction_date) ?></td>
 								<td class="rightAligntextClass"><?= h($saleReturn->amount_after_tax) ?></td>
 								<td class="actions">
-									<?= $this->Html->link(__('View '), ['action' => 'view', $saleReturn->id],['escape'=>false,'target'=>'_blank']) ?>
+									<?= $this->Html->link(__('View Bill '), ['action' => 'sale_return_bill', $saleReturn->id],['escape'=>false,'target'=>'_blank']) ?>
 								</td>
 							</tr>
 							<?php endforeach; ?>

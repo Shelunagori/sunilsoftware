@@ -364,4 +364,67 @@ class SaleReturnsController extends AppController
 
         return $this->redirect(['action' => 'index']);
     }
+	
+		
+	public function saleReturnBill($id=null)
+    {
+		$this->viewBuilder()->layout('');
+		$company_id=$this->Auth->User('session_company_id');
+		$stateDetails=$this->Auth->User('session_company');
+		$state_id=$stateDetails->state_id;
+        $saleReturn = $this->SaleReturns->get($id, [
+            'contain' => ['Companies'=>['States'], 'SalesLedgers', 'PartyLedgers'=>['Customers'], 'Locations', 'SalesInvoices', 'SaleReturnRows'=>['GstFigures','Items']]
+        ]);
+		//pr($saleReturn->toArray());exit;
+		
+			@$partyDetail= $this->SaleReturns->PartyLedgers->find()
+			->where(['id'=>$saleReturn->party_ledger_id])->first();
+			$partyCustomerid=$partyDetail->customer_id;
+			if($partyCustomerid>0)
+			{
+				$partyDetails= $this->SaleReturns->PartyLedgers->Customers->find()
+				->where(['Customers.id'=>$partyCustomerid])
+				->contain(['States', 'Cities'])->first();
+				$saleReturn->partyDetails=$partyDetails;
+			}
+			else
+			{
+				$partyDetails=(object)['name'=>'Cash Customer', 'state_id'=>$state_id];
+				$saleReturn->partyDetails=$partyDetails;
+			}
+			
+			if(@$saleReturn->company->state_id==$saleReturn->partyDetails->state_id){
+				$taxable_type='CGST/SGST';
+			}else{
+				$taxable_type='IGST';
+			}
+		
+		//pr($taxable_type);exit;
+		$query = $this->SaleReturns->SaleReturnRows->find();
+		
+		$totalTaxableAmt = $query->newExpr()
+			->addCase(
+				$query->newExpr()->add(['sale_return_id']),
+				$query->newExpr()->add(['taxable_value']),
+				'decimal'
+			);
+		$totalgstAmt = $query->newExpr()
+			->addCase(
+				$query->newExpr()->add(['sale_return_id']),
+				$query->newExpr()->add(['gst_value']),
+				'decimal'
+			);
+		$query->select([
+			'total_taxable_amount' => $query->func()->sum($totalTaxableAmt),
+			'total_gst_amount' => $query->func()->sum($totalgstAmt),'sale_return_id','item_id'
+		])
+		->where(['SaleReturnRows.sale_return_id' => $id])
+		->group('gst_figure_id')
+		->autoFields(true)
+		->contain(['GstFigures']);
+        $sale_return_rows = ($query);
+		
+		$this->set(compact('saleReturn','taxable_type','sale_return_rows','partyCustomerid'));
+        $this->set('_serialize', ['saleReturn']);
+    }	
 }
