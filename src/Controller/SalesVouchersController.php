@@ -78,6 +78,8 @@ class SalesVouchersController extends AppController
 			$salesVoucher = $this->SalesVouchers->patchEntity($salesVoucher, $this->request->getData(), [
 							'associated' => ['SalesVoucherRows','SalesVoucherRows.ReferenceDetails']
 						]);
+						
+			//transaction date for reference detail code start here--
 			foreach($salesVoucher->sales_voucher_rows as $sales_voucher_row)
 			{
 				if(!empty($sales_voucher_row->reference_details))
@@ -88,7 +90,8 @@ class SalesVouchersController extends AppController
 					}
 				}
 			}
-			//pr($salesVoucher->sales_voucher_rows); exit;
+			//transaction date for reference detail code close here--
+			
             if ($this->SalesVouchers->save($salesVoucher)) {
 				
 				foreach($salesVoucher->sales_voucher_rows as $sales_voucher_row)
