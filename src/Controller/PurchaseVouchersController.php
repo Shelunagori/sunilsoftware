@@ -81,6 +81,16 @@ class PurchaseVouchersController extends AppController
 				$purchaseVoucher->supplier_invoice_date = date("Y-m-d",strtotime($purchaseVoucher->supplier_invoice_date));
 			}
 			$purchaseVoucher->transaction_date      = date("Y-m-d",strtotime($purchaseVoucher->transaction_date));
+			foreach($purchaseVoucher->purchase_voucher_rows as $purchase_voucher_row)
+			{
+				if(!empty($purchase_voucher_row->reference_details))
+				{
+					foreach($purchase_voucher_row->reference_details as $reference_detail)
+					{
+						$reference_detail->transaction_date = $purchaseVoucher->transaction_date;
+					}
+				}
+			}
 			//pr($purchaseVoucher);exit;
 			if ($this->PurchaseVouchers->save($purchaseVoucher)) 
 			{
@@ -251,6 +261,16 @@ class PurchaseVouchersController extends AppController
 				$purchaseVoucher->supplier_invoice_date = date("Y-m-d",strtotime($purchaseVoucher->supplier_invoice_date));
 			}
 			$purchaseVoucher->transaction_date      = date("Y-m-d",strtotime($purchaseVoucher->transaction_date));
+			foreach($purchaseVoucher->purchase_voucher_rows as $purchase_voucher_row)
+			{
+				if(!empty($purchase_voucher_row->reference_details))
+				{
+					foreach($purchase_voucher_row->reference_details as $reference_detail)
+					{
+						$reference_detail->transaction_date = $purchaseVoucher->transaction_date;
+					}
+				}
+			}
 			//pr($purchaseVoucher->toArray());exit;
 		    if ($this->PurchaseVouchers->save($purchaseVoucher)) {
 				$query_delete = $this->PurchaseVouchers->AccountingEntries->query();
