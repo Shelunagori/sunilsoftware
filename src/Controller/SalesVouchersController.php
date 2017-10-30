@@ -78,6 +78,16 @@ class SalesVouchersController extends AppController
 			$salesVoucher = $this->SalesVouchers->patchEntity($salesVoucher, $this->request->getData(), [
 							'associated' => ['SalesVoucherRows','SalesVoucherRows.ReferenceDetails']
 						]);
+			foreach($salesVoucher->sales_voucher_rows as $sales_voucher_row)
+			{
+				if(!empty($sales_voucher_row->reference_details))
+				{
+					foreach($sales_voucher_row->reference_details as $reference_detail)
+					{
+						$reference_detail->transaction_date = $salesVoucher->transaction_date;
+					}
+				}
+			}
 			//pr($salesVoucher->sales_voucher_rows); exit;
             if ($this->SalesVouchers->save($salesVoucher)) {
 				
@@ -245,7 +255,16 @@ class SalesVouchersController extends AppController
 
 			//pr($salesVoucher);
 			//exit;
-			
+			foreach($salesVoucher->sales_voucher_rows as $sales_voucher_row)
+			{
+				if(!empty($sales_voucher_row->reference_details))
+				{
+					foreach($sales_voucher_row->reference_details as $reference_detail)
+					{
+						$reference_detail->transaction_date = $salesVoucher->transaction_date;
+					}
+				}
+			}
 			
 			if ($this->SalesVouchers->save($salesVoucher)) {
 				$query_delete = $this->SalesVouchers->AccountingEntries->query();

@@ -76,6 +76,16 @@ class JournalVouchersController extends AppController
 						]);
 			$journalVoucher->transaction_date      = date("Y-m-d",strtotime($journalVoucher->transaction_date));
 			//pr($journalVoucher);exit;
+			foreach($journalVoucher->journal_voucher_rows as $journal_voucher_row)
+			{
+				if(!empty($journal_voucher_row->reference_details))
+				{
+					foreach($journal_voucher_row->reference_details as $reference_detail)
+					{
+						$reference_detail->transaction_date = $journalVoucher->transaction_date;
+					}
+				}
+			}
             if ($this->JournalVouchers->save($journalVoucher)) 
 			{
 				foreach($journalVoucher->journal_voucher_rows as $journal_voucher_row)
@@ -185,6 +195,16 @@ class JournalVouchersController extends AppController
 						]);
 			$journalVoucher->transaction_date      = date("Y-m-d",strtotime($journalVoucher->transaction_date));
 			//pr($journalVoucher);exit;
+			foreach($journalVoucher->journal_voucher_rows as $journal_voucher_row)
+			{
+				if(!empty($journal_voucher_row->reference_details))
+				{
+					foreach($journal_voucher_row->reference_details as $reference_detail)
+					{
+						$reference_detail->transaction_date = $journalVoucher->transaction_date;
+					}
+				}
+			}
             if ($this->JournalVouchers->save($journalVoucher)) {
 				$query_delete = $this->JournalVouchers->AccountingEntries->query();
 					$query_delete->delete()
