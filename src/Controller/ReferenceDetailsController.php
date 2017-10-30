@@ -39,6 +39,7 @@ class ReferenceDetailsController extends AppController
 		->autoFields(true);
 		$referenceDetails=$query;
 		$option=[];
+		
 		foreach($referenceDetails as $referenceDetail){
 			$remider=$referenceDetail->total_debit-$referenceDetail->total_credit;
 			if($remider>0){

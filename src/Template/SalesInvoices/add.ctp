@@ -61,7 +61,7 @@ $this->set('title', 'Create Sales Invoice');
 						<div class="col-md-3">
 							<div class="form-group">
 								<label>Transaction Date <span class="required">*</span></label>
-								<?php echo $this->Form->control('transaction_date',['class'=>'form-control input-sm date-picker','data-date-format'=>'dd-mm-yyyy','label'=>false,'placeholder'=>'DD-MM-YYYY','type'=>'text','data-date-start-date'=>@$coreVariable[fyValidFrom],'data-date-end-date'=>@$coreVariable[fyValidTo],'value'=>date('d-m-Y')]); ?>
+								<?php echo $this->Form->control('transaction_date',['class'=>'form-control input-sm date-picker transaction_date','data-date-format'=>'dd-mm-yyyy','label'=>false,'placeholder'=>'DD-MM-YYYY','type'=>'text','data-date-start-date'=>@$coreVariable[fyValidFrom],'data-date-end-date'=>@$coreVariable[fyValidTo],'value'=>date('d-m-Y')]); ?>
 							</div>
 						</div>
 						<input type="hidden" name="outOfStock" class="outOfStock" value="0">
@@ -540,6 +540,7 @@ $this->set('title', 'Create Sales Invoice');
 			var discountValue=round(discountValue,2);
 			var convertDiscount=round(discountValue,2);
 			totDiscounts=round(parseFloat(totDiscounts)+parseFloat(discountValue), 2);
+			
 			var discountAmount=totamount-discountValue;
 			var discountAmount=round(discountAmount,2);
 			$(this).find('.dis_amount').val(convertDiscount);

@@ -58,7 +58,7 @@ if($supplier_state_id== $state_id){
 								<label>Supplier</label>
 								<?php
 									 echo $this->Form->control('q',['class'=>'form-control input-sm supplier_state_id ','label'=>false,'type'=>'hidden','value'=>$supplier_state_id]);
-									echo $this->Form->control('supplier_ledger_id',['class'=>'form-control input-sm supplier_ledger select2me','label'=>false, 'options' => $partyOptions,'required'=>'required','disabled']);
+									echo $this->Form->control('supplier_ledger_id',['class'=>'form-control input-sm supplier_ledger select2me','label'=>false, 'options' => $partyOptions,'required'=>'required','value'=>$supplier_ledger_id,'disabled']);
 								?>
 						</div>
 					</div><br>

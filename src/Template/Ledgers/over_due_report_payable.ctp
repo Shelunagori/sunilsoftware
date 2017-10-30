@@ -12,7 +12,7 @@ $this->set('title', 'Overdue Report');
 			<div class="portlet-title">
 				<div class="caption">
 					<i class="icon-bar-chart font-green-sharp hide"></i>
-					<span class="caption-subject font-green-sharp bold ">Outstanding Receivable Report</span>
+					<span class="caption-subject font-green-sharp bold ">Outstanding Payable Report</span>
 				</div>
 			</div>
 			<div class="portlet-body">
@@ -35,7 +35,7 @@ $this->set('title', 'Overdue Report');
 					<table class="table table-bordered table-hover table-condensed">
 						<thead>
 							<tr>
-								<th scope="col"> Transaction Date </th>
+								<th scope="col">Transaction Date </th>
 								<th scope="col">Reference Name</th>
 								<th scope="col">Party</th>
 								<th scope="col">Due Balance</th>
@@ -45,7 +45,7 @@ $this->set('title', 'Overdue Report');
 						<tbody><?php $sno = 1; 
 							if($run_time_date){
 								  foreach ($reference_details as $reference_detail):
-									$duebalance = $reference_detail->total_debit - $reference_detail->total_credit;
+									$duebalance = $reference_detail->total_credit - $reference_detail->total_debit;
 									if($duebalance > 0)
 									{ ?>
 										<tr>
@@ -57,10 +57,12 @@ $this->set('title', 'Overdue Report');
 											$due_days=$reference_detail->ledger->due_days;
 											$ref_date = date('Y-m-d',strtotime($reference_detail->transaction_date));	
 											$ref_date_create =  date_create($ref_date.'+'.$due_days.'days' );
-											$run_time_date_create = date_create($run_time_date);
+											$run_time_date_create =  date_create($run_time_date);
 											
 											$diff=date_diff($ref_date_create,$run_time_date_create);
-											echo $diff->format("%a days");
+											$diff=$diff->format("%a days");
+											if($diff>0){ echo $diff;}
+											else { echo '0 days';}
 											?></td>
 										</tr>
 							<?php } endforeach;  } ?>

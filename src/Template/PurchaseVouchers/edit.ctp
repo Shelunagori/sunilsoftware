@@ -141,7 +141,8 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
                                                             
 															if(!empty($refDropDown[$purchase_voucher_row->id]))
 															{
-																echo $this->Form->input('mode_of_payment', ['options'=>$refDropDown[$purchase_voucher_row->id],'label' => false,'class' => 'form-control input-sm paymentType','required'=>'required','value'=>$reference_detail->type]);
+																//pr($refDropDown);
+																echo $this->Form->input('purchase_voucher_rows.'.$i.'.reference_details.'.$j.'.ref_name', ['options'=>$refDropDown[$purchase_voucher_row->id],'label' => false,'class' => 'form-control input-sm paymentType','required'=>'required','value'=>$reference_detail->ref_name]);
 																
 															} }?>
 															
