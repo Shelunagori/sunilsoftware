@@ -132,7 +132,7 @@ $this->set('title', 'Credit Note Voucher');
 															<?php 
 															if(!empty($refDropDown[$creditNoteRows->id]))
 															{
-																echo $this->Form->input('mode_of_payment', ['options'=>$refDropDown[3],'label' => false,'class' => 'form-control input-sm paymentType','required'=>'required','value'=>$reference_detail->type]);
+																echo $this->Form->input('credit_note_rows.'.$i.'.reference_details.'.$j.'.ref_name', ['options'=>$refDropDown[$creditNoteRows->id],'label' => false,'class' => 'form-control input-sm paymentType','required'=>'required','value'=>$reference_detail->type]);
 																
 															} }?>
 															

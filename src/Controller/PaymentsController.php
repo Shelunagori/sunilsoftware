@@ -79,7 +79,18 @@ class PaymentsController extends AppController
 			$payment = $this->Payments->patchEntity($payment, $this->request->getData(), [
 							'associated' => ['PaymentRows','PaymentRows.ReferenceDetails']
 						]);
-			
+			//transaction date for payment code start here--
+			foreach($payment->payment_rows as $payment_row)
+			{
+				if(!empty($payment_row->reference_details))
+				{
+					foreach($payment_row->reference_details as $reference_detail)
+					{
+						$reference_detail->transaction_date = $payment->transaction_date;
+					}
+				}
+			}
+			//transaction date for payment code close here-- 
 			if ($this->Payments->save($payment)) {
 			foreach($payment->payment_rows as $payment_row)
 				{
@@ -244,7 +255,18 @@ class PaymentsController extends AppController
 			$payment = $this->Payments->patchEntity($payment, $this->request->getData(), [
 							'associated' => ['PaymentRows','PaymentRows.ReferenceDetails']
 						]);
-						
+			//transaction date for payment code start here--
+			foreach($payment->payment_rows as $payment_row)
+			{
+				if(!empty($payment_row->reference_details))
+				{
+					foreach($payment_row->reference_details as $reference_detail)
+					{
+						$reference_detail->transaction_date = $payment->transaction_date;
+					}
+				}
+			}
+			
             if ($this->Payments->save($payment)) {
 			
 			$query_delete = $this->Payments->AccountingEntries->query();

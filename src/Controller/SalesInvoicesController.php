@@ -182,7 +182,9 @@ class SalesInvoicesController extends AppController
 										'ref_name' => $voucher_no,
 										'credit' => $salesInvoice->amount_after_tax,
 										'receipt_id' => $receiptId->id,
-										'receipt_row_id' => $receiptRowCrId->id])
+										'receipt_row_id' => $receiptRowCrId->id,
+										'transaction_date' => $salesInvoice->transaction_date
+										])
 					  ->execute();
 					  
 								$refData2 = $this->SalesInvoices->Receipts->ReceiptRows->ReferenceDetails->query();
@@ -194,7 +196,9 @@ class SalesInvoicesController extends AppController
 										'ref_name' => $voucher_no,
 										'debit' => $salesInvoice->amount_after_tax,
 										'receipt_id' => $receiptId->id,
-										'receipt_row_id' => $receiptRowDrId->id])
+										'receipt_row_id' => $receiptRowDrId->id,
+										'transaction_date' => $salesInvoice->transaction_date
+										])
 					  ->execute();
 						}
 					 
@@ -551,7 +555,9 @@ public function edit($id = null)
 										'type' => 'New Ref',
 										'credit' => $salesInvoice->receipt_amount,
 										'receipt_id' => $receiptId->id,
-										'receipt_row_id' => $receiptRowCrId->id])
+										'receipt_row_id' => $receiptRowCrId->id,
+										'transaction_date' => $salesInvoice->transaction_date
+										])
 						->where(['ReferenceDetails.company_id'=>$company_id, 'ReferenceDetails.receipt_id'=>$receiptId->id, 'ReferenceDetails.receipt_row_id'=>$receiptRowCrId->id])
 						->execute();
 					  
@@ -562,7 +568,9 @@ public function edit($id = null)
 										'type' => 'Against',
 										'debit' => $salesInvoice->receipt_amount,
 										'receipt_id' => $receiptId->id,
-										'receipt_row_id' => $receiptRowDrId->id])
+										'receipt_row_id' => $receiptRowDrId->id,
+										'transaction_date' => $salesInvoice->transaction_date
+										])
 						->where(['ReferenceDetails.company_id'=>$company_id, 'ReferenceDetails.receipt_id'=>$receiptId->id, 'ReferenceDetails.receipt_row_id'=>$receiptRowDrId->id])
 						->execute();
 						}

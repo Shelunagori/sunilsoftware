@@ -17,8 +17,6 @@ class SaleReturnsController extends AppController
      * Index method
      *
      * @return \Cake\Http\Response|void
-     */
-    public function index() 
     {
 		$this->viewBuilder()->layout('index_layout');
 		$company_id=$this->Auth->User('session_company_id');

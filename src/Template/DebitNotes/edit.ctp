@@ -132,7 +132,7 @@ $this->set('title', 'Debit Note Voucher');
 															<?php 
 															if(!empty($refDropDown[$debitNoteRows->id]))
 															{
-																echo $this->Form->input('mode_of_payment', ['options'=>$refDropDown[3],'label' => false,'class' => 'form-control input-sm paymentType','required'=>'required','value'=>$reference_detail->type]);
+																echo $this->Form->input('debit_note_rows.'.$i.'.reference_details.'.$j.'.ref_name', ['options'=>$refDropDown[$debitNoteRows->id],'label' => false,'class' => 'form-control input-sm paymentType','required'=>'required','value'=>$reference_detail->ref_name]);
 																
 															} }?>
 															

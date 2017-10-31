@@ -60,10 +60,21 @@ class ReceiptsController extends AppController
         $receipt = $this->Receipts->newEntity();
 		$company_id=$this->Auth->User('session_company_id');
         if ($this->request->is('post')) {
-		 $receipt = $this->Receipts->patchEntity($receipt, $this->request->getData(),['associated' => ['ReceiptRows','ReceiptRows.ReferenceDetails']]);
-		 $tdate=$this->request->data('transaction_date');
-		 $receipt->transaction_date=date('Y-m-d',strtotime($tdate));
-		 
+		$receipt = $this->Receipts->patchEntity($receipt, $this->request->getData(),['associated' => ['ReceiptRows','ReceiptRows.ReferenceDetails']]);
+		$tdate=$this->request->data('transaction_date');
+		$receipt->transaction_date=date('Y-m-d',strtotime($tdate));
+		   //transaction date for receipt code start here--
+			foreach($receipt->receipt_rows as $receipt_row)
+			{
+				if(!empty($receipt_row->reference_details))
+				{
+					foreach($receipt_row->reference_details as $reference_detail)
+					{
+						$reference_detail->transaction_date = $receipt->transaction_date;
+					}
+				}
+			}
+			//transaction date for receipt code close here-- 
             if ($this->Receipts->save($receipt)) {
 			
 			foreach($receipt->receipt_rows as $receipt_row)
@@ -248,7 +259,18 @@ class ReceiptsController extends AppController
 		 
 		//pr($receipt);
 		//exit;
-		
+		//transaction date for receipt code start here--
+			foreach($receipt->receipt_rows as $receipt_row)
+			{
+				if(!empty($receipt_row->reference_details))
+				{
+					foreach($receipt_row->reference_details as $reference_detail)
+					{
+						$reference_detail->transaction_date = $receipt->transaction_date;
+					}
+				}
+			}
+			//transaction date for receipt code close here-- 
 		
             if ($this->Receipts->save($receipt)) {
 			$query_delete = $this->Receipts->AccountingEntries->query();
