@@ -76,7 +76,7 @@ class PurchaseInvoicesController extends AppController
 			$supplier_status="True";
 			goto go;
 		}
-		
+		 $supplier_ledger_id=$Grns->supplier_ledger_id;
 		$Voucher_no_last = $this->PurchaseInvoices->find()->select(['voucher_no'])->where(['company_id'=>$company_id])->order(['voucher_no' => 'DESC'])->first();
 		//pr($Grns->supplier_ledger_id); exit;
         $purchaseInvoice = $this->PurchaseInvoices->newEntity();
@@ -96,6 +96,7 @@ class PurchaseInvoicesController extends AppController
 			$purchaseInvoice->grn_id = $Grns->id;
                         $purchaseInvoice->purchase_ledger_id=$purchaseInvoice->purchase_ledger_id;
                         $purchaseInvoice->supplier_ledger_id=$Grns->supplier_ledger_id;
+						
 			//pr($purchaseInvoice); exit;
             if ($this->PurchaseInvoices->save($purchaseInvoice)) { 
 				
@@ -270,7 +271,7 @@ class PurchaseInvoicesController extends AppController
 		//exit;
         $companies = $this->PurchaseInvoices->Companies->find('list', ['limit' => 200]);
         $supplierLedgers = $this->PurchaseInvoices->SupplierLedgers->find('list', ['limit' => 200]);
-        $this->set(compact('purchaseInvoice', 'companies', 'supplierLedgers','Grns','partyOptions','state_id','Accountledgers','supplier_state_id','Voucher_no_last','supplier_status'));
+        $this->set(compact('purchaseInvoice', 'companies', 'supplierLedgers','Grns','partyOptions','state_id','Accountledgers','supplier_state_id','Voucher_no_last','supplier_status','supplier_ledger_id'));
         $this->set('_serialize', ['purchaseInvoice']);
     }
 
