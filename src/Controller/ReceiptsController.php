@@ -60,10 +60,11 @@ class ReceiptsController extends AppController
         $receipt = $this->Receipts->newEntity();
 		$company_id=$this->Auth->User('session_company_id');
         if ($this->request->is('post')) {
-<<<<<<< HEAD
+
 		$receipt = $this->Receipts->patchEntity($receipt, $this->request->getData(),['associated' => ['ReceiptRows','ReceiptRows.ReferenceDetails']]);
 		$tdate=$this->request->data('transaction_date');
 		$receipt->transaction_date=date('Y-m-d',strtotime($tdate));
+		
 		   //transaction date for receipt code start here--
 			foreach($receipt->receipt_rows as $receipt_row)
 			{
@@ -76,10 +77,7 @@ class ReceiptsController extends AppController
 				}
 			}
 			//transaction date for receipt code close here-- 
-=======
-		 $receipt = $this->Receipts->patchEntity($receipt, $this->request->getData(),['associated' => ['ReceiptRows','ReceiptRows.ReferenceDetails']]);
-		
->>>>>>> origin/master
+
             if ($this->Receipts->save($receipt)) {
 			
 			foreach($receipt->receipt_rows as $receipt_row)

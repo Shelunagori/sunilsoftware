@@ -235,6 +235,10 @@ class JournalVouchersController extends AppController
 		{
 			if(!empty($journal_voucher_row->reference_details))
 			{
+				foreach($journal_voucher_row->reference_details as $referenceDetailRows)
+				{
+					@$ref_details_name[]=$referenceDetailRows->ref_name;
+				}
 				$query = $this->JournalVouchers->JournalVoucherRows->ReferenceDetails->find();
 				$query->select(['total_debit' => $query->func()->sum('ReferenceDetails.debit'),'total_credit' => $query->func()->sum('ReferenceDetails.credit')])
 				->where(['ReferenceDetails.ledger_id'=>$journal_voucher_row->ledger_id,'ReferenceDetails.type !='=>'On Account'])
@@ -249,7 +253,7 @@ class JournalVouchersController extends AppController
 					}else if($remider<0){
 						$bal=abs($remider).' Cr';
 					}
-					if($referenceDetail->total_debit!=$referenceDetail->total_credit){
+					if($referenceDetail->total_debit!=$referenceDetail->total_credit || in_array($referenceDetail->ref_name,$ref_details_name)){
 						$option[] = ['text' =>$referenceDetail->ref_name.' ('.$bal.')', 'value' => $referenceDetail->ref_name];
 						 
 					}

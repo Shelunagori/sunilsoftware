@@ -180,14 +180,11 @@ class SalesInvoicesController extends AppController
 										'ledger_id' => $salesInvoice->party_ledger_id,
 										'type' => 'New Ref',
 										'ref_name' => $voucher_no,
-<<<<<<< HEAD
 										'credit' => $salesInvoice->amount_after_tax,
 										'receipt_id' => $receiptId->id,
 										'receipt_row_id' => $receiptRowCrId->id,
-=======
-										'debit' => $salesInvoice->amount_after_tax,
+                                        'debit' => $salesInvoice->amount_after_tax,
 										'sales_invoice_id' => $salesInvoice->id,
->>>>>>> origin/master
 										'transaction_date' => $salesInvoice->transaction_date
 										])
 					  ->execute();
@@ -201,11 +198,7 @@ class SalesInvoicesController extends AppController
 										'ref_name' => $voucher_no,
 										'credit' => $salesInvoice->amount_after_tax,
 										'receipt_id' => $receiptId->id,
-<<<<<<< HEAD
 										'receipt_row_id' => $receiptRowDrId->id,
-=======
-										'receipt_row_id' => $receiptRowCrId->id,
->>>>>>> origin/master
 										'transaction_date' => $salesInvoice->transaction_date
 										])
 					  ->execute();
@@ -562,17 +555,13 @@ public function edit($id = null)
 							->set(['company_id' => $salesInvoice->company_id,
 										'ledger_id' => $salesInvoice->party_ledger_id,
 										'type' => 'New Ref',
-<<<<<<< HEAD
-										'credit' => $salesInvoice->receipt_amount,
+                                        'credit' => $salesInvoice->receipt_amount,
 										'receipt_id' => $receiptId->id,
 										'receipt_row_id' => $receiptRowCrId->id,
-										'transaction_date' => $salesInvoice->transaction_date
-=======
 										'debit' => $salesInvoice->amount_after_tax,
 										'sales_invoice_id' => $salesInvoice->id,
 										'transaction_date'=>$salesInvoice->transaction_date
->>>>>>> origin/master
-										])
+									])
 						->where(['ReferenceDetails.company_id'=>$company_id, 'ReferenceDetails.receipt_id'=>$receiptId->id, 'ReferenceDetails.receipt_row_id'=>$receiptRowCrId->id])
 						->execute();
 					  
@@ -583,13 +572,8 @@ public function edit($id = null)
 										'type' => 'Against',
 										'credit' => $salesInvoice->amount_after_tax,
 										'receipt_id' => $receiptId->id,
-<<<<<<< HEAD
 										'receipt_row_id' => $receiptRowDrId->id,
 										'transaction_date' => $salesInvoice->transaction_date
-=======
-										'receipt_row_id' => $receiptRowCrId->id,
-										'transaction_date'=>$salesInvoice->transaction_date
->>>>>>> origin/master
 										])
 						->where(['ReferenceDetails.company_id'=>$company_id, 'ReferenceDetails.receipt_id'=>$receiptId->id, 'ReferenceDetails.receipt_row_id'=>$receiptRowDrId->id])
 						->execute();
@@ -799,7 +783,8 @@ public function edit($id = null)
 										'ref_name' => $salesInvoice->voucher_no,
 										'credit' => $salesInvoice->amount_after_tax,
 										'receipt_id' => $receiptId->id,
-										'receipt_row_id' => $receiptRowCrId->id])
+										'receipt_row_id' => $receiptRowCrId->id,
+										'transaction_date' => $salesInvoice->transaction_date])
 					  ->execute();
 					  
 								$refData2 = $this->SalesInvoices->Receipts->ReceiptRows->ReferenceDetails->query();
@@ -811,7 +796,8 @@ public function edit($id = null)
 										'ref_name' => $salesInvoice->voucher_no,
 										'debit' => $salesInvoice->amount_after_tax,
 										'receipt_id' => $receiptId->id,
-										'receipt_row_id' => $receiptRowDrId->id])
+										'receipt_row_id' => $receiptRowDrId->id,
+										'transaction_date' => $salesInvoice->transaction_date])
 					  ->execute();
 						}
 				    }
