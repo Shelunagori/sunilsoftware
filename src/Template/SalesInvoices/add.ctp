@@ -145,7 +145,7 @@ $this->set('title', 'Create Sales Invoice');
 							</td>
 						</tr>
 						<tr>
-							<td colspan="6" align="right"><b>Round OFF</b>
+							<td colspan="6" align="right"><b>Round Off</b>
 							</td>
 							<td colspan="2">
 							<?php echo $this->Form->input('round_off', ['label' => false,'class' => 'form-control input-sm roundValue rightAligntextClass','required'=>'required', 'readonly'=>'readonly','placeholder'=>'', 'tabindex'=>'-1']); ?>	

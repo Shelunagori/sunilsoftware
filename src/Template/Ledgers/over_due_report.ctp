@@ -55,12 +55,16 @@ $this->set('title', 'Overdue Report');
 											<td><?php echo $duebalance;  ?></td>
 											<td><?php 
 											$due_days=$reference_detail->ledger->due_days;
-											$ref_date = date('Y-m-d',strtotime($reference_detail->transaction_date));	
-											$ref_date_create =  date_create($ref_date.'+'.$due_days.'days' );
+											$ref_date = date('Y-m-d',strtotime($reference_detail->transaction_date));
+											$ref_date_add_days= date('Y-m-d', strtotime($ref_date.'+' .$due_days.'days'));
+											$ref_date_create =  date_create($ref_date_add_days );
 											$run_time_date_create = date_create($run_time_date);
 											
 											$diff=date_diff($ref_date_create,$run_time_date_create);
+											$diff_val =$diff->format("%R%a");
+											if($diff_val>0){
 											echo $diff->format("%a days");
+											}
 											?></td>
 										</tr>
 							<?php } endforeach;  } ?>

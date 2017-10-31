@@ -468,7 +468,7 @@ public function edit($id = null)
 			
 			if($salesInvoice->invoice_receipt_type=='cash' && $salesInvoice->invoiceReceiptTd==1)
 				{
-					$salesInvoice->receipt_amount=$salesInvoice->receipt_amount;
+					$salesInvoice->receipt_amount=$salesInvoice->amount_after_tax;
 				}
 				else{
 				$salesInvoice->receipt_amount=0;
@@ -552,19 +552,19 @@ public function edit($id = null)
 							->set(['company_id' => $salesInvoice->company_id,
 										'ledger_id' => $salesInvoice->party_ledger_id,
 										'type' => 'New Ref',
-										'debit' => $salesInvoice->amount_after_tax,
+										'debit' =>$salesInvoice->receipt_amount,
 										'sales_invoice_id' => $salesInvoice->id,
 										'transaction_date'=>$salesInvoice->transaction_date
 									])
-						->where(['ReferenceDetails.company_id'=>$company_id, 'ReferenceDetails.receipt_id'=>$receiptId->id, 'ReferenceDetails.receipt_row_id'=>$receiptRowCrId->id])
+						->where(['ReferenceDetails.company_id'=>$company_id, 'ReferenceDetails.sales_invoice_id'=>$salesInvoice->id])
 						->execute();
 					  
 					 $refData2 = $this->SalesInvoices->Receipts->ReceiptRows->ReferenceDetails->query();
 						$refData2->update()
 						->set(['company_id' => $salesInvoice->company_id,
-										'ledger_id' => $receiptLedgerId->id,
+										'ledger_id' => $salesInvoice->party_ledger_id,
 										'type' => 'Against',
-										'credit' => $salesInvoice->amount_after_tax,
+										'credit' => $salesInvoice->receipt_amount,
 										'receipt_id' => $receiptId->id,
 										'receipt_row_id' => $receiptRowDrId->id,
 										'transaction_date' => $salesInvoice->transaction_date
@@ -681,7 +681,7 @@ public function edit($id = null)
 								 $refData2 = $this->SalesInvoices->Receipts->ReceiptRows->ReferenceDetails->query();
 									$refData2->update()
 									->set(['company_id' => $salesInvoice->company_id,
-													'ledger_id' => $receiptLedgerId->id,
+												'ledger_id' => $receiptLedgerId->id,
 												'type' => 'Against',
 												'debit' => '0',
 												'receipt_id' => $receiptId->id,
