@@ -229,7 +229,7 @@ class PaymentsController extends AppController
 			$payment = $this->Payments->patchEntity($payment, $this->request->getData(), [
 							'associated' => ['PaymentRows','PaymentRows.ReferenceDetails']
 						]);
-<<<<<<< HEAD
+
 			//transaction date for payment code start here--
 			foreach($payment->payment_rows as $payment_row)
 			{
@@ -241,11 +241,6 @@ class PaymentsController extends AppController
 					}
 				}
 			}
-			
-=======
-			
-		 			
->>>>>>> origin/master
             if ($this->Payments->save($payment)) {
 			
 			$query_delete = $this->Payments->AccountingEntries->query();
