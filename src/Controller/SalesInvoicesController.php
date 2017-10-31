@@ -180,10 +180,7 @@ class SalesInvoicesController extends AppController
 										'ledger_id' => $salesInvoice->party_ledger_id,
 										'type' => 'New Ref',
 										'ref_name' => $voucher_no,
-										'credit' => $salesInvoice->amount_after_tax,
-										'receipt_id' => $receiptId->id,
-										'receipt_row_id' => $receiptRowCrId->id,
-                                        'debit' => $salesInvoice->amount_after_tax,
+										'debit' => $salesInvoice->amount_after_tax,
 										'sales_invoice_id' => $salesInvoice->id,
 										'transaction_date' => $salesInvoice->transaction_date
 										])
@@ -555,9 +552,6 @@ public function edit($id = null)
 							->set(['company_id' => $salesInvoice->company_id,
 										'ledger_id' => $salesInvoice->party_ledger_id,
 										'type' => 'New Ref',
-                                        'credit' => $salesInvoice->receipt_amount,
-										'receipt_id' => $receiptId->id,
-										'receipt_row_id' => $receiptRowCrId->id,
 										'debit' => $salesInvoice->amount_after_tax,
 										'sales_invoice_id' => $salesInvoice->id,
 										'transaction_date'=>$salesInvoice->transaction_date
