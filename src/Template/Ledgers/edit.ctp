@@ -4,6 +4,12 @@
  */
 $this->set('title', 'Edit Ledger');
 ?>
+<style>
+.disabledbutton {
+    pointer-events: none;
+    opacity: 0.7;
+}
+</style>
 <div class="row">
 	<div class="col-md-6">
 		<div class="portlet light ">
@@ -17,9 +23,24 @@ $this->set('title', 'Edit Ledger');
 				<?= $this->Form->create($ledger) ?>
 				<div class="row">
 					<div class="col-md-12">
-						<div class="form-group">
+						<?php if($ledger->flag==1) { ?>
+						<div class="form-group disabledbutton" >
 							<label>Name <span class="required">*</span></label>
-							<?php echo $this->Form->control('name',['class'=>'form-control input-sm','placeholder'=>'Name','label'=>false,'autofocus']); ?>
+							<?php echo $this->Form->control('name',['class'=>'form-control input-sm','placeholder'=>'Name','label'=>false]); ?>
+						</div>
+						
+						<div class="row">
+							<div class="col-md-6">
+								<div class="form-group disabledbutton">
+									<label>Under Accounting Group</label>
+									<?php echo $this->Form->control('accounting_group_id',['class'=>'form-control input-sm select2me','label'=>false,'empty'=>'-Primary Group-', 'options' => $accountingGroups,'required','required'=>'required']); ?>
+								</div>
+							</div>
+						</div>
+						<?php } else { ?>
+						<div class="form-group" >
+							<label>Name <span class="required">*</span></label>
+							<?php echo $this->Form->control('name',['class'=>'form-control input-sm','placeholder'=>'Name','label'=>false]); ?>
 						</div>
 						
 						<div class="row">
@@ -30,6 +51,7 @@ $this->set('title', 'Edit Ledger');
 								</div>
 							</div>
 						</div>
+						<?php } ?>
 					</div>
 				</div>
 				<div class="row">

@@ -522,7 +522,7 @@ public function edit($id = null)
 						
 						$this->SalesInvoices->Receipts->AccountingEntries->deleteAll(['ReferenceDetails.receipt_id'=>$receiptId->id]);
 						
-						$accountEntry = $this->SalesInvoices->Receipts->AccountingEntries->newEntity();
+					$accountEntry = $this->SalesInvoices->Receipts->AccountingEntries->newEntity();
 					$accountEntry->ledger_id                  = $salesInvoice->party_ledger_id;
 					$accountEntry->debit                      = 0;
 					$accountEntry->credit                     = $salesInvoice->receipt_amount;
