@@ -131,7 +131,7 @@ $this->set('title', 'Receipt Voucher');
 															if(!empty($refDropDown[$receiptRows->id]))
 															{
 																//pr($refDropDown);
-																echo $this->Form->input('receipt_rows.'.$i.'.reference_details.'.$j.'.ref_name', ['options'=>@$refDropDown[$receiptRows->id],'label' => false,'class' => 'form-control input-sm paymentType','required'=>'required','value'=>@$reference_detail->ref_name]);
+																echo $this->Form->input('receipt_rows.'.$i.'.reference_details.'.$j.'.ref_name', ['options'=>@$refDropDown[$receiptRows->id],'label' => false,'class' => 'form-control input-sm paymentType refList','required'=>'required','value'=>@$reference_detail->ref_name]);
 																
 															} }?>
 															

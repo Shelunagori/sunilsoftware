@@ -130,7 +130,7 @@ $this->set('title', 'Payment Voucher');
 															<?php 
 															if(!empty($refDropDown[$paymentRows->id]))
 															{
-																echo $this->Form->input('payment_rows.'.$i.'.reference_details.'.$j.'.ref_name', ['options'=>@$refDropDown[$paymentRows->id],'label' => false,'class' => 'form-control input-sm paymentType','required'=>'required','value'=>$reference_detail->ref_name]);
+																echo $this->Form->input('payment_rows.'.$i.'.reference_details.'.$j.'.ref_name', ['options'=>@$refDropDown[$paymentRows->id],'label' => false,'class' => 'form-control input-sm paymentType refList','required'=>'required','value'=>$reference_detail->ref_name]);
 																
 															} }?>
 															
