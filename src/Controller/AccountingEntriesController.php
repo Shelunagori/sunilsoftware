@@ -161,10 +161,13 @@ class AccountingEntriesController extends AppController
 		}else{
 			$to_date="";
 		}
+		if($to_date){
+			$AccountingEntries=$this->AccountingEntries->find()->where(['AccountingEntries.transaction_date >='=>$to_date]);
+		}
 		
 		
 		
-		$this->set(compact('from_date','to_date'));
+		$this->set(compact('from_date','to_date', 'AccountingEntries'));
 	}
     /**
      * View method

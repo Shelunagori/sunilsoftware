@@ -28,10 +28,29 @@ $this->set('title', 'Bank Reconciliation');
 							</div>	
 						</div>
 				</form>
-				<?php if($from_date){ 
-				$LeftTotal=0; $RightTotal=0; ?>
+				<?php if($to_date){ ?>
 				<div class="row">
-				
+					<table class="table table-condensed table-hover table-bordered">
+						<thead>
+							<tr>
+								<th>Date</th>
+								<th>Voucher </th>
+								<th>Transaction Date</th>
+								<th>Instrument Date</th>
+								<th>Bank Date</th>
+								<th>Debit</th>
+								<th>Credit</th>
+							</tr>
+						</thead>
+						<tbody>
+						<?php foreach($AccountingEntries as $AccountingEntrie){ ?>
+							<tr>
+								<td>asd</td>
+								<td>asd</td>
+							</tr>
+						<?php } ?>
+						</tbody>
+					</table>
 				</div>
 				<?php } ?>
 				</ul>
