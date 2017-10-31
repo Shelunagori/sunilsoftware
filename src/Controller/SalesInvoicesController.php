@@ -468,7 +468,7 @@ public function edit($id = null)
 			
 			if($salesInvoice->invoice_receipt_type=='cash' && $salesInvoice->invoiceReceiptTd==1)
 				{
-					$salesInvoice->receipt_amount=$salesInvoice->amount_after_tax;
+					$salesInvoice->receipt_amount=$salesInvoice->receipt_amount;
 				}
 				else{
 				$salesInvoice->receipt_amount=0;
@@ -552,7 +552,7 @@ public function edit($id = null)
 							->set(['company_id' => $salesInvoice->company_id,
 										'ledger_id' => $salesInvoice->party_ledger_id,
 										'type' => 'New Ref',
-										'debit' =>$salesInvoice->receipt_amount,
+										'debit' =>$salesInvoice->amount_after_tax,
 										'sales_invoice_id' => $salesInvoice->id,
 										'transaction_date'=>$salesInvoice->transaction_date
 									])
@@ -788,7 +788,7 @@ public function edit($id = null)
 										'ledger_id' => $receiptLedgerId->id,
 										'type' => 'Against',
 										'ref_name' => $salesInvoice->voucher_no,
-										'debit' => $salesInvoice->amount_after_tax,
+										'debit' => $salesInvoice->receipt_amount,
 										'receipt_id' => $receiptId->id,
 										'receipt_row_id' => $receiptRowDrId->id,
 										'transaction_date' => $salesInvoice->transaction_date])

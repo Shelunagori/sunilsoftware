@@ -44,7 +44,11 @@ $this->set('title', 'Edit Customer');
 									<label>Bill to Bill Accounting </label>
 									<?php 
 									$option =[['value'=>'yes','text'=>'yes'],['value'=>'no','text'=>'no']];
-									echo $this->Form->control('bill_to_bill_accounting',['class'=>'form-control input-sm','label'=>false, 'options' => $option,'required'=>'required','value'=>$customer->ledger->bill_to_bill_accounting]); ?>
+									echo $this->Form->control('bill_to_bill_accounting',['class'=>'form-control input-sm bill_to_bill_accounting','label'=>false, 'options' => $option,'required'=>'required','value'=>$customer->ledger->bill_to_bill_accounting]); ?>
+								</div>
+								<div class="form-group default_credit_days_div" >
+								<label>Default Credit Days</label>
+									<?php echo $this->Form->control('default_credit_days',['class'=>'form-control input-sm default_credit_days','placeholder'=>'Default Credit Days','label'=>false,'value'=>$customer->ledger->default_credit_days]); ?>
 								</div>
 							</div>
 							<div class="col-md-6">
@@ -165,6 +169,27 @@ $this->set('title', 'Edit Customer');
 <?php
 	$js="
 	$(document).ready(function() {	
+		var bill_accounting=$('option:selected', this).val();
+			if(bill_accounting=='no'){
+				$('.default_credit_days').val(0);
+				$('.default_credit_days_div').hide();
+				
+			}
+			else{
+				$('.default_credit_days_div').show();
+			}
+		
+		$('.bill_to_bill_accounting').die().live('change',function(){
+			var bill_accounting=$('option:selected', this).val();
+			if(bill_accounting=='no'){
+				$('.default_credit_days').val(0);
+				$('.default_credit_days_div').hide();
+				
+			}
+			else{
+				$('.default_credit_days_div').show();
+			}
+		});
 		ComponentsPickers.init();
 	});	
 	function checkValidation()

@@ -63,6 +63,7 @@ class CustomersController extends AppController
 			
 			$customer = $this->Customers->patchEntity($customer, $this->request->data);
 			$bill_to_bill_accounting=$customer->bill_to_bill_accounting;
+			$default_credit_days=$customer->default_credit_days;
 			if ($this->Customers->save($customer)) {
 				
 				$query=$this->Customers->query();
@@ -77,7 +78,7 @@ class CustomersController extends AppController
 				$ledger->company_id =$company_id;
 				$ledger->customer_id=$customer->id;
 				$ledger->bill_to_bill_accounting=$bill_to_bill_accounting;
-				
+				$ledger->default_credit_days=$default_credit_days;
 				if($this->Customers->Ledgers->save($ledger))
 				{
 					//Create Accounting Entry//
@@ -168,10 +169,11 @@ class CustomersController extends AppController
         if ($this->request->is(['patch', 'post', 'put'])) {
             $customer = $this->Customers->patchEntity($customer, $this->request->getData());
 			$bill_to_bill_accounting=$customer->bill_to_bill_accounting;
+			$default_credit_days=$customer->default_credit_days;
             if ($this->Customers->save($customer)) {
 				$query = $this->Customers->Ledgers->query();
 					$query->update()
-						->set(['name' => $customer->name,'accounting_group_id'=>$customer->accounting_group_id,'bill_to_bill_accounting'=>$bill_to_bill_accounting])
+						->set(['name' => $customer->name,'accounting_group_id'=>$customer->accounting_group_id,'bill_to_bill_accounting'=>$bill_to_bill_accounting,'default_credit_days'=>$default_credit_days])
 						->where(['customer_id' => $id,'company_id'=>$company_id])
 						->execute();
 						

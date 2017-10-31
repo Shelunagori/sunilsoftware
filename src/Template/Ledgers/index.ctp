@@ -31,7 +31,14 @@ $this->set('title', 'Ledgers');
 							<td><?= h($ledger->name) ?></td>
 							<td><?= h($ledger->accounting_group->name)  ?></td>
 							<td class="actions">
-								<?= $this->Html->link(__('Edit'), ['action' => 'edit', $ledger->id]) ?>
+								<?php if(!empty($ledger->customer_id))
+								{ ?>
+									<?= $this->Html->link(__('Edit'), ['controller'=> 'customers' ,'action' => 'edit', $ledger->customer_id]) ?>
+								<?php }
+								else if(!empty($ledger->supplier_id)){ ?>
+								<?= $this->Html->link(__('Edit'), ['controller'=> 'suppliers' ,'action' => 'edit', $ledger->supplier_id]) ?>
+								<?php } else { ?>
+								<?= $this->Html->link(__('Edit'), ['action' => 'edit', $ledger->id]) ?><?php } ?>
 							</td>
 						</tr>
 						<?php endforeach; ?>
