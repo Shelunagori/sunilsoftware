@@ -38,7 +38,7 @@ $this->set('title', 'Overdue Report');
 								<th scope="col"> Transaction Date </th>
 								<th scope="col">Reference Name</th>
 								<th scope="col">Party</th>
-								<th scope="col">Due Balance</th>
+								<th scope="col">Pending Amount</th>
 								<th scope="col">Over Due Days</th>
 							</tr>
 						</thead>
@@ -64,7 +64,7 @@ $this->set('title', 'Overdue Report');
 											$diff_val =$diff->format("%R%a");
 											if($diff_val>0){
 											echo $diff->format("%a days");
-											}
+											}else { echo '0 days';}
 											?></td>
 										</tr>
 							<?php } endforeach;  } ?>

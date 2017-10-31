@@ -38,7 +38,7 @@ $this->set('title', 'Overdue Report');
 								<th scope="col">Transaction Date </th>
 								<th scope="col">Reference Name</th>
 								<th scope="col">Party</th>
-								<th scope="col">Due Balance</th>
+								<th scope="col">Pending Amount</th>
 								<th scope="col">Over Due Days</th>
 							</tr>
 						</thead>
@@ -56,13 +56,15 @@ $this->set('title', 'Overdue Report');
 											<td><?php 
 											$due_days=$reference_detail->ledger->due_days;
 											$ref_date = date('Y-m-d',strtotime($reference_detail->transaction_date));	
-											$ref_date_create =  date_create($ref_date.'+'.$due_days.'days' );
-											$run_time_date_create =  date_create($run_time_date);
+											$ref_date_add_days= date('Y-m-d', strtotime($ref_date.'+' .$due_days.'days'));
+											$ref_date_create =  date_create($ref_date_add_days );
+											$run_time_date_create = date_create($run_time_date);
 											
 											$diff=date_diff($ref_date_create,$run_time_date_create);
-											$diff=$diff->format("%a days");
-											if($diff>0){ echo $diff;}
-											else { echo '0 days';}
+											$diff_val =$diff->format("%R%a");
+											if($diff_val>0){
+											echo $diff->format("%a days");
+											} else { echo '0 days';}
 											?></td>
 										</tr>
 							<?php } endforeach;  } ?>
