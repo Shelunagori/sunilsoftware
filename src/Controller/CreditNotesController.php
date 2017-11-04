@@ -61,11 +61,22 @@ class CreditNotesController extends AppController
         $creditNote = $this->CreditNotes->newEntity();
 		$company_id=$this->Auth->User('session_company_id');
         if ($this->request->is('post')) {
-		 $creditNote = $this->CreditNotes->patchEntity($creditNote, $this->request->getData(),['associated' => ['CreditNoteRows','CreditNoteRows.ReferenceDetails']]);
-		 $tdate=$this->request->data('transaction_date');
-		 $creditNote->transaction_date=date('Y-m-d',strtotime($tdate));
-		 
-	
+		$creditNote = $this->CreditNotes->patchEntity($creditNote, $this->request->getData(),['associated' => ['CreditNoteRows','CreditNoteRows.ReferenceDetails']]);
+		$tdate=$this->request->data('transaction_date');
+		$creditNote->transaction_date=date('Y-m-d',strtotime($tdate));
+		//pr($creditNote);exit;
+		//transaction date for credit note code start here--
+			foreach($creditNote->credit_note_rows as $credit_note_row)
+			{
+				if(!empty($credit_note_row->reference_details))
+				{
+					foreach($credit_note_row->reference_details as $reference_detail)
+					{
+						$reference_detail->transaction_date = $creditNote->transaction_date;
+					}
+				}
+			}
+			//transaction date for credit note code close here--
 		 
             if ($this->CreditNotes->save($creditNote)) {
 			
@@ -308,11 +319,22 @@ class CreditNotesController extends AppController
 			
 		
 		
-		 $creditNote = $this->CreditNotes->patchEntity($creditNote, $this->request->getData(),['associated' => ['CreditNoteRows','CreditNoteRows.ReferenceDetails']]);
-		 $tdate=$this->request->data('transaction_date');
-		 $creditNote->transaction_date=date('Y-m-d',strtotime($tdate));
+			$creditNote = $this->CreditNotes->patchEntity($creditNote, $this->request->getData(),['associated' => ['CreditNoteRows','CreditNoteRows.ReferenceDetails']]);
+			$tdate=$this->request->data('transaction_date');
+			$creditNote->transaction_date=date('Y-m-d',strtotime($tdate));
 		 
-	
+			//transaction date for credit note code start here--
+			foreach($creditNote->credit_note_rows as $credit_note_row)
+			{
+				if(!empty($credit_note_row->reference_details))
+				{
+					foreach($credit_note_row->reference_details as $reference_detail)
+					{
+						$reference_detail->transaction_date = $creditNote->transaction_date;
+					}
+				}
+			}
+			//transaction date for credit note code close here--
 		
             if ($this->CreditNotes->save($creditNote)) {
 			$query_delete = $this->CreditNotes->AccountingEntries->query();

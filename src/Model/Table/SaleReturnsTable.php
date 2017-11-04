@@ -50,14 +50,7 @@ class SaleReturnsTable extends Table
             'foreignKey' => 'customer_id',
             'joinType' => 'INNER'
         ]);
-        $this->belongsTo('SalesLedgers', [
-            'foreignKey' => 'sales_ledger_id',
-            'joinType' => 'INNER'
-        ]);
-        $this->belongsTo('PartyLedgers', [
-            'foreignKey' => 'party_ledger_id',
-            'joinType' => 'INNER'
-        ]);
+        
         $this->belongsTo('Locations', [
             'foreignKey' => 'location_id',
             'joinType' => 'INNER'

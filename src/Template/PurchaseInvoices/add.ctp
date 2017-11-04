@@ -1,3 +1,20 @@
+<?php if($supplier_status=="True"){ ?>
+	
+<div class="row">
+	<div class="col-md-12">
+		<div class="portlet light ">
+			<div class="portlet-title">
+				<div class="caption">
+					<i class="icon-bar-chart font-green-sharp hide"></i>
+					<span class="caption-subject bold ">Please Select Supplier In GRN</span>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+	
+<?php }  else{ ?>
+
 <?php //pr($salesInvoice); exit;
 /**
  * @Author: PHP Poets IT Solutions Pvt. Ltd.
@@ -41,7 +58,7 @@ if($supplier_state_id== $state_id){
 								<label>Supplier</label>
 								<?php
 									 echo $this->Form->control('q',['class'=>'form-control input-sm supplier_state_id ','label'=>false,'type'=>'hidden','value'=>$supplier_state_id]);
-									echo $this->Form->control('supplier_ledger_id',['class'=>'form-control input-sm supplier_ledger select2me','label'=>false, 'options' => $partyOptions,'required'=>'required','disabled']);
+									echo $this->Form->control('supplier_ledger_id',['class'=>'form-control input-sm supplier_ledger select2me','label'=>false, 'options' => $partyOptions,'required'=>'required','value'=>$supplier_ledger_id,'disabled']);
 								?>
 						</div>
 					</div><br>
@@ -161,7 +178,7 @@ if($supplier_state_id== $state_id){
 										<?php echo $this->Form->input('q', ['style'=>'text-align:right','label' => false,'class' => 'form-control input-sm roundOff','placeholder'=>'','type'=>'text']);
 										?>	
 									</td>
-									<td  width="10%" align="center">
+									<td  width="20%" align="center">
 										<?php echo $this->Form->input('q', ['style'=>'text-align:right','readonly','label' => false,'class' => 'form-control input-sm netAmount','type'=>'text','tabindex'=>'-1']);
 										?>	
 									</td>
@@ -521,4 +538,8 @@ if($supplier_state_id== $state_id){
 	";
 
 echo $this->Html->scriptBlock($js, array('block' => 'scriptBottom')); 
+
 ?>
+
+
+<?php }   ?>

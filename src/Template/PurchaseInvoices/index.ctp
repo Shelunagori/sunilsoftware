@@ -37,7 +37,7 @@ $this->set('title', 'Purchase Invoice List');
 								<td><?= h($purchaseInvoice->transaction_date) ?></td>
 								
 								<td class="actions">
-									
+									<?= $this->Html->link(__('View '), ['action' => 'view', $purchaseInvoice->id],['escape'=>false,'target'=>'_blank']) ?>
 									<?= $this->Html->link(__('Edit'), ['action' => 'edit', $purchaseInvoice->id]) ?>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 								</td>
 							</tr>

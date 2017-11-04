@@ -69,7 +69,11 @@ foreach($partyOptions as $partyOption)
 						<div class="col-md-3">
 							<div class="form-group">
 								<label><b>Sales Return Voucher No :</b></label>&nbsp;&nbsp;<br>
-								<?= h('#'.str_pad($voucher->voucher_no+1, 4, '0', STR_PAD_LEFT)) ?>
+								<?php if($voucher){ ?>
+									<?= h('#'.str_pad($voucher->voucher_no+1, 4, '0', STR_PAD_LEFT)) ?>
+								<?php }else{ ?>
+									<?= h('#'.str_pad(1, 4, '0', STR_PAD_LEFT)) ?>
+								<?php } ?>
 								
 							</div>
 						</div> 
@@ -158,7 +162,7 @@ foreach($partyOptions as $partyOption)
 									?>
 								</td>
 								<td width="5%" align="center">
-									<?php echo $this->Form->input('q', ['type'=>'hidden','label' => false,'class' => 'form-control input-sm calculation discount rightAligntextClass','placeholder'=>'Dis.','disabled', 'value'=>$salesInvoiceRow->discount_percentage]); 
+									<?php echo $this->Form->input('q', ['type'=>'hidden','label' => false,'class' => 'form-control input-sm rightAligntextClass discount','placeholder'=>'Dis.', 'value'=>$salesInvoiceRow->discount_percentage]); 
 									echo $salesInvoiceRow->discount_percentage;
 									?>	
 								</td>
@@ -439,39 +443,40 @@ foreach($partyOptions as $partyOption)
 		if(val){ 
 			$(this).find('td:nth-child(1) input.id').attr({name:'sale_return_rows['+i+'][sales_invoice_row_id]',id:'sale_return_rows['+i+'][sales_invoice_row_id]'});
 			$(this).find('td:nth-child(1) input.attrGet').attr({name:'sale_return_rows['+i+'][item_id]',id:'sale_return_rows['+i+'][item_id]'});
-		  $(this).find('.quantity').attr({name:'sale_return_rows['+i+'][quantity]',id:'sale_return_rows['+i+'][quantity]'});
+			$(this).find('.quantity').attr({name:'sale_return_rows['+i+'][quantity]',id:'sale_return_rows['+i+'][quantity]'});
 		 
 			var max_qty=$(this).find('.returnQty').attr('max');
 			$(this).find('.rate').attr({name:'sale_return_rows['+i+'][rate]',id:'sale_return_rows['+i+'][rate]'});
-		  $(this).find('.discount').attr({name:'sale_return_rows['+i+'][discount_percentage]',id:'sale_return_rows['+i+'][discount_percentage]'});
+			$(this).find('.discount').attr({name:'sale_return_rows['+i+'][discount_percentage]',id:'sale_return_rows['+i+'][discount_percentage]'});
 		  
-		  $(this).find('.gstAmount').attr({name:'sale_return_rows['+i+'][taxable_value]',id:'sale_return_rows['+i+'][taxable_value]'});
+			$(this).find('.gstAmount').attr({name:'sale_return_rows['+i+'][taxable_value]',id:'sale_return_rows['+i+'][taxable_value]'});
 		  
-		  $(this).find('.gst_figure_id').attr({name:'sale_return_rows['+i+'][gst_figure_id]',id:'sale_return_rows['+i+'][gst_figure_id]'});
+			$(this).find('.gst_figure_id').attr({name:'sale_return_rows['+i+'][gst_figure_id]',id:'sale_return_rows['+i+'][gst_figure_id]'});
 		  
-		  $(this).find('.discountAmount').attr({name:'sale_return_rows['+i+'][net_amount]',id:'sale_return_rows['+i+'][net_amount]'});
-		  $(this).find('.gstValue').attr({name:'sale_return_rows['+i+'][gst_value]',id:'sale_return_rows['+i+'][gst_value]'});
-		$(this).find('.returnQty').attr({name:'sale_return_rows['+i+'][return_quantity]',id:'sale_return_rows['+i+'][return_quantity]'}).attr('max', max_qty).removeAttr('readonly');
+			$(this).find('.discountAmount').attr({name:'sale_return_rows['+i+'][net_amount]',id:'sale_return_rows['+i+'][net_amount]'});
+			$(this).find('.gstValue').attr({name:'sale_return_rows['+i+'][gst_value]',id:'sale_return_rows['+i+'][gst_value]'});
+			$(this).find('.returnQty').attr({name:'sale_return_rows['+i+'][return_quantity]',id:'sale_return_rows['+i+'][return_quantity]'}).attr('max', max_qty).removeAttr('readonly');
 		  
-		$(this).css('background-color','#fffcda');
-		i++;
-		}else{
+			$(this).css('background-color','#fffcda');
+			i++;
+			}else{
 			$(this).find('td:nth-child(1) input.id').attr({name:'q'});
 
 			$(this).find('td:nth-child(1) input.attrGet').attr({name:'q'});
 			$(this).find('.quantity').attr({name:'q'});
-		  $(this).find('.rate').attr({name:'q'});
-		  $(this).find('.discount').attr({name:'q'});
-		  
-		  $(this).find('.gstAmount').attr({name:'q'});
-		  
-		  $(this).find('.gst_figure_id').attr({name:'q'});
-		  
-		  $(this).find('.discountAmount').attr({name:'q'});
-		  $(this).find('.gstValue').attr({name:'q'});
-		  $(this).find('.returnQty').attr({name:'q' , readonly:'readonly'}).val(0);
-		$(this).css('background-color','#FFF');
-		}
+			  
+			$(this).find('.rate').attr({name:'q'});
+			$(this).find('.discount').attr({name:'q'});
+			  
+			$(this).find('.gstAmount').attr({name:'q'});
+			  
+			$(this).find('.gst_figure_id').attr({name:'q'});
+			  
+			$(this).find('.discountAmount').attr({name:'q'});
+			$(this).find('.gstValue').attr({name:'q'});
+			$(this).find('.returnQty').attr({name:'q' , readonly:'readonly'}).val(0);
+			$(this).css('background-color','#FFF');
+			}
 
 		});
 	}
@@ -574,6 +579,7 @@ foreach($partyOptions as $partyOption)
 				  
 				var discount  = parseFloat($(this).find('.discount').val());
 				if(!discount){discount=0;}
+				
 				var discountValue=(discount*totamount)/100;
 				var discountAmount=totamount-discountValue;
 				$(this).find('.discountAmount').val(discountAmount.toFixed(2));

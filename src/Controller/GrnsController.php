@@ -343,7 +343,7 @@ class GrnsController extends AppController
 						 $data = explode(",",$test1[0]);
 						 $item = $this->Items->newEntity();
 						 $item->name           = $data[0];
-						 $item->item_code      = $data[1]; 
+						 $item->item_code      = trim($data[1]); 
 						 $item->hsn_code       = $data[2];
 						 $item->unit_id        = $data[3];
 						 $item->stock_group_id = $data[4];

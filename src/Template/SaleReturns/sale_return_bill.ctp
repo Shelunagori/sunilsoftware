@@ -27,7 +27,7 @@ margin-bottom: 0;
 /**
  * @Author: PHP Poets IT Solutions Pvt. Ltd.
  */
-$this->set('title', 'Sales Invoice Bill');
+$this->set('title', 'Sales Return Bill');
 ?>
 <div style="width:300px;font-family: monospace !important;" class="maindiv">
 <?php echo $this->Html->link('Print',array(),['escape'=>false,'class'=>'hidden-print','style'=>' background-color:blue;  font-size:18px; padding:5px; color:white; cursor:hand;  float: left','onclick'=>'javascript:window.print()();']);
@@ -35,65 +35,64 @@ $this->set('title', 'Sales Invoice Bill');
 ?>
 <table  width="100%" border="0"  >
 <tbody>
-<?php foreach($invoiceBills->toArray() as $data){
-		foreach($data->sales_invoice_rows as $sales_invoice_row){?>
-			<?php }}?>
+
+
 			<tr>
 	<td colspan="4" align="center">
-	<?php if(!empty(@$data->company->logo)){ ?>
-	<?php echo $this->Html->image('/img/'.$data->company->logo, ['height' => '50px', 'width' => '50px']); ?>
+	<?php if(!empty(@$saleReturn->company->logo)){ ?>
+	<?php echo $this->Html->image('/img/'.$saleReturn->company->logo, ['height' => '50px', 'width' => '50px']); ?>
 	<?php } ?>
  	</tr>
 	<tr>
 		<td colspan="4"
-		style="text-align:center;font-size:20px;"><b><span><?=@$data->company->name?></span></b></td>
+		style="text-align:center;font-size:20px;"><b><span><?=@$saleReturn->company->name?></span></b></td>
     </tr>
 	<tr>
 	<td colspan="4"
- 		style="text-align:center;font-size:12px !important;"><span><?=@$data->company->address?>, <?=@$data->company->state->name?></span></td>
+ 		style="text-align:center;font-size:12px !important;"><span><?=@$saleReturn->company->address?>, <?=@$saleReturn->company->state->name?></span></td>
 	</tr>
 	<tr><td colspan="4"
- 		style="text-align:center;font-size:12px !important;"><span>Ph : <?=@$data->company->phone_no ?> |  Mobile : <?=@$data->company->mobile ?><br> GSTIN NO:
-		<?=@$data->company->gstin ?></span></td>
+ 		style="text-align:center;font-size:12px !important;"><span>Ph : <?=@$saleReturn->company->phone_no ?> |  Mobile : <?=@$saleReturn->company->mobile ?><br> GSTIN NO:
+		<?=@$saleReturn->company->gstin ?></span></td>
 	</tr>
 	<tr>
 		<td colspan="4"
-		style="text-align:center;font-size:16px; padding-bottom:10px;  padding-top:10px;"><b><span><u>GST INVOICE</u></span></b></td>
+		style="text-align:center;font-size:16px; padding-bottom:10px;  padding-top:10px;"><b><span><u>Sales Return Bill</u></span></b></td>
 	</tr>
 	<tr>
 		<td colspan="4" style="font-size:14px;">
-		<b>Invoice Date:</b> <?= h(@$data->transaction_date)?>
+		<b>Invoice Date:</b> <?= h(@$saleReturn->transaction_date)?>
 		</td>
 	</tr>
 	<tr>
 		<td colspan="4" style="font-size:14px;"><b>Customer Name: 
 		<?php if(!empty($partyCustomerid)){?>
-		<?= h(str_pad(@$data->partyDetails->customer_id, 4, '0', STR_PAD_LEFT))?>
+		<?= h(str_pad(@$saleReturn->partyDetails->customer_id, 4, '0', STR_PAD_LEFT))?>
 		<?php }?>
-		<?=ucwords($data->partyDetails->name)?></b></td>
+		<?=ucwords($saleReturn->partyDetails->name)?></b></td>
 	</tr>
 	<?php if(!empty($partyCustomerid)){?>
 	<tr>
 		<td colspan="4" style="font-size:14px;">Mobile No: 
-		<?=$data->partyDetails->mobile?></td>
+		<?=$saleReturn->partyDetails->mobile?></td>
 	</tr>
 	<tr>
 		<td colspan="4" style="font-size:14px;">GSTIN No: 
-		<?=$data->partyDetails->gstin?></td>
+		<?=$saleReturn->partyDetails->gstin?></td>
 	</tr>
 	<tr>
 		<td colspan="4" style="font-size:14px;">City: 
-		<?=@$data->partyDetails->city->name?></td>
+		<?=@$saleReturn->partyDetails->city->name?></td>
 	</tr>
 	<tr>
 		<td colspan="4" style="font-size:14px;">State: 
-		<?=$data->partyDetails->state->name?></td>
+		<?=$saleReturn->partyDetails->state->name?></td>
 	</tr>
 	<?php } ?>
 	<tr>
-		<td colspan="4" style="font-size:14px;">Invoice No.: 
+		<td colspan="4" style="font-size:14px;">Sales Invoice No.: 
 		<?php
-								    $date = date('Y-m-d', strtotime($data->transaction_date));
+								    $date = date('Y-m-d', strtotime($saleReturn->transaction_date));
 									$d = date_parse_from_format('Y-m-d',$date);
 									$yr=$d["year"];$year= substr($yr, -2);
 									if($d["month"]=='01' || $d["month"]=='02' || $d["month"]=='03')
@@ -114,7 +113,11 @@ $this->set('title', 'Sales Invoice Bill');
 								$acronym .= $w[0];
 								}
 								?>
-								<?= $acronym.'/'.$financialyear.'/'. h(str_pad($data->voucher_no, 3, '0', STR_PAD_LEFT))?>
+								<?= $acronym.'/'.$financialyear.'/'. h(str_pad($saleReturn->sales_invoice->voucher_no, 3, '0', STR_PAD_LEFT))?>
+	</tr>
+	<tr>
+		<td colspan="4" style="font-size:14px;">Voucher No.: 
+		<?php echo '#'.str_pad($saleReturn->voucher_no, 4, '0', STR_PAD_LEFT);?></td>
 	</tr>
 	<tr>
 		<td colspan="4"
@@ -147,66 +150,62 @@ $this->set('title', 'Sales Invoice Bill');
 	</tr>
 	<?php
 		
-		foreach($invoiceBills->toArray() as $data){
+		
 		$cgst=0;
 		$sgst=0;
 		$igst=0;
 		$totalAmount=0;
-		$totDis=0;
+		$total_discount=0;
+		foreach($saleReturn->sale_return_rows as $sale_return_row){ ?>
 		
-		foreach($data->sales_invoice_rows as $sales_invoice_row){ ?>
 		<tr><td colspan="4" style="border-top:1px dashed;"></td></tr>
 		<?php
-			if(@$data->company->state_id==$data->partyDetails->state_id){
-				$gst_type=$sales_invoice_row->gst_figure->tax_percentage;
-				$gst_perc=$gst_type/2;
-				$gstValue=$sales_invoice_row->gst_value;
-				$gst=$gstValue/2;
-				$cgst+=$gst;
-				$sgst+=$gst;
-				$totalAmount+=$sales_invoice_row->quantity*$sales_invoice_row->rate;
+			$discount_amt=round(($sale_return_row->return_quantity*$sale_return_row->rate)*$sale_return_row->discount_percentage/100,2);
+			$total_discount+=$discount_amt;
+			if(@$saleReturn->company->state_id==$saleReturn->partyDetails->state_id){
+				
+			$gst_type=$sale_return_row->gst_figure->tax_percentage;
+			$gst_perc=$gst_type/2;
+			$gstValue=$sale_return_row->gst_value;
+			$gst=$gstValue/2;
+			$cgst+=$gst;
+			$sgst+=$gst;
+			$totalAmount+=$sale_return_row->return_quantity*$sale_return_row->rate;
 			}
 			else{
-				$gst_type=$sales_invoice_row->gst_figure->name;
-				$gstValue=$sales_invoice_row->gst_value;
-				$gst=$gstValue;
-				$igst+=$gst;
-				
-				$totalAmount+=$sales_invoice_row->quantity*$sales_invoice_row->rate;
-			}
-			if($sales_invoice_row->discount_percentage>0)
-			{
-				$DisVal=$sales_invoice_row->quantity*$sales_invoice_row->rate;
-				$totDis+=$DisVal*$sales_invoice_row->discount_percentage/100;
-			}
-		
+			$gst_type=$sale_return_row->gst_figure->name;
+			$gstValue=$sale_return_row->gst_value;
+			$gst=$gstValue;
+			$igst+=$gst;
 			
+			$totalAmount+=$sale_return_row->return_quantity*$sale_return_row->rate;
+			}
 		?>
 		<tr>
-			<td style="font-size:12px;"><?=$sales_invoice_row->item->item_code.' ' ?><?=  $sales_invoice_row->item->name ?></td>
+			<td style="font-size:12px;"><?=$sale_return_row->item->item_code.' ' ?><?=  $sale_return_row->item->name ?></td>
 			<td style="font-size:14px;"><?php
-			if(!empty($sales_invoice_row->item->size->name))
+			if(!empty($sale_return_row->item->size->name))
 			{
-				echo @$sales_invoice_row->item->size->name;
+			echo @$sale_return_row->item->size->name;
 			}
 			else{
-				echo '-';
+			echo '-';
 			}
 			?></td>
-			<td style="text-align:right;"><?=$sales_invoice_row->quantity ?></td>
-			<td style="text-align:right;"><?=$sales_invoice_row->rate ?></td>
+			<td style="text-align:right;"><?=$sale_return_row->return_quantity ?></td>
+			<td style="text-align:right;"><?=$sale_return_row->rate ?></td>
 		</tr>
 		<tr>
-			<td style="font-style:italic;font-size:12px;"><?=$sales_invoice_row->item->hsn_code ?></td>
-			<td style="font-style:italic;font-size:12px;text-align:right"><?=$sales_invoice_row->discount_percentage ?></td>
+			<td style="font-style:italic;font-size:12px;"><?=$sale_return_row->item->hsn_code ?></td>
+			<td style="font-style:italic;font-size:12px;text-align:right"><?=$sale_return_row->discount_percentage ?></td>
 			<td></td>
-			<td style="font-style:italic;font-size:12px;text-align:right"><?=$sales_invoice_row->net_amount ?></td>
+			<td style="font-style:italic;font-size:12px;text-align:right"><?=$sale_return_row->net_amount ?></td>
 		</tr>
 		
-		<?php if($data->company->state_id==$data->partyDetails->state_id){?>
+		<?php if($saleReturn->company->state_id==$saleReturn->partyDetails->state_id){?>
 		<tr>
 			<td></td>
-			<td style="font-style:italic;font-size:12px;text-align:right"><?=$sales_invoice_row->taxable_value ?></td>
+			<td style="font-style:italic;font-size:12px;text-align:right"><?=$sale_return_row->taxable_value ?></td>
 			<td style="font-style:italic;font-size:12px;text-align:right"><?=$gst_perc.' %' ?><br/><?=$gst_perc.' %'?></td>
 			<td></td>
 		</tr>
@@ -214,12 +213,12 @@ $this->set('title', 'Sales Invoice Bill');
 		<?php }else {?>
 		<tr>
 			<td></td>
-			<td style="font-style:italic;font-size:12px;text-align:right"><?=$sales_invoice_row->taxable_value ?></td>
+			<td style="font-style:italic;font-size:12px;text-align:right"><?=$sale_return_row->taxable_value ?></td>
 			<td style="font-style:italic;font-size:12px;text-align:right"><?=$gst_type ?></td>
 			<td></td>
 		</tr>
 		<?php }?>
-		<?php }} ?>
+		<?php } ?>
 		<tr><td colspan="4" style="border-top:1px dashed;"></td></tr>
 		
 		<tr>
@@ -228,32 +227,26 @@ $this->set('title', 'Sales Invoice Bill');
 			<td></td>
 			<td style="text-align:right;"><?php echo number_format($totalAmount,2);  ?></td>
 			</tr>
-		<?php if(!empty($data->discount_amount)) {?>
+		<?php if(!empty($total_discount)){ ?>
 		<tr>
 			<td>Discount </td>
 			<td></td>
 			<td></td>
-			<td style="text-align:right;"><?php echo $totDis;  ?></td>
+			<td style="text-align:right;"><?php echo $total_discount;  ?></td>
 		</tr>
-		<tr>
-			<td>Round Off </td>
-			<td></td>
-			<td></td>
-			<td style="text-align:right;"><?php echo $data->round_off;  ?></td>
-		</tr>
-		<?php} if(!empty($data->round_off)) {?>
+		<?php }  if(!empty($saleReturn->round_off)) {?>
 		<tr>
 		<td>Round Off </td>
 			<td></td>
 			<td></td>
-			<td style="text-align:right;"><?php echo $data->round_off;  ?></td>
+			<td style="text-align:right;"><?php echo $saleReturn->round_off;  ?></td>
 		</tr>
-		<?php } ?>
+		<?php } ?> 
 		<tr>
 			<td>Net Total</td>
 			<td></td>
 			<td></td>
-			<td style="text-align:right;"><?php echo number_format($data->amount_after_tax, 2);  ?></td>
+			<td style="text-align:right;"><?php echo number_format($saleReturn->amount_after_tax, 2);  ?></td>
 		</tr>
 				
 </tbody></table>
@@ -276,20 +269,20 @@ $this->set('title', 'Sales Invoice Bill');
 		<td align="center">IGST Amount</td>
 	</tr>
 	<?php } ?>
-	<?php foreach($sale_invoice_rows as $sale_invoice_row){
+	<?php foreach($sale_return_rows as $sale_return_row){
 	if($taxable_type!= 'IGST') { ?>
 	<tr>
-		<td  style="text-align:right;"><?php echo number_format($sale_invoice_row->total_taxable_amount,2) ?></td>
-		<td style="text-align:right;"> <?= h($sale_invoice_row->gst_figure->tax_percentage/2) .'%' ?></td>
-		<td style="text-align:right;"><?php echo number_format($sale_invoice_row->total_gst_amount/2,2) ?></td>
-		<td style="text-align:right;"><?= h($sale_invoice_row->gst_figure->tax_percentage/2) .'%' ?></td>
-		<td style="text-align:right;"><?php echo number_format($sale_invoice_row->total_gst_amount/2,2) ?></td>
+		<td  style="text-align:right;"><?php echo number_format($sale_return_row->total_taxable_amount,2) ?></td>
+		<td style="text-align:right;"> <?= h($sale_return_row->gst_figure->tax_percentage/2) .'%' ?></td>
+		<td style="text-align:right;"><?php echo number_format($sale_return_row->total_gst_amount/2,2) ?></td>
+		<td style="text-align:right;"><?= h($sale_return_row->gst_figure->tax_percentage/2) .'%' ?></td>
+		<td style="text-align:right;"><?php echo number_format($sale_return_row->total_gst_amount/2,2) ?></td>
 	</tr>
 	<?php } else { ?>
 	<tr>
-		<td style="text-align:right;"><?php echo number_format($sale_invoice_row->total_taxable_amount,2) ?></td>
-		<td style="text-align:right;"><?= h($sale_invoice_row->gst_figure->tax_percentage).'%' ?></td>
-		<td style="text-align:right;"><?php echo number_format($sale_invoice_row->total_gst_amount,2) ?></td>
+		<td style="text-align:right;"><?php echo number_format($sale_return_row->total_taxable_amount,2) ?></td>
+		<td style="text-align:right;"><?= h($sale_return_row->gst_figure->tax_percentage).'%' ?></td>
+		<td style="text-align:right;"><?php echo number_format($sale_return_row->total_gst_amount,2) ?></td>
 	</tr>
 	<?php } } ?>
 	

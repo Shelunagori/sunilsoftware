@@ -80,39 +80,7 @@ class PurchaseInvoiceRowsTable extends Table
             ->requirePresence('rate', 'create')
             ->notEmpty('rate');
 
-        $validator
-            ->decimal('discount_percentage')
-            ->requirePresence('discount_percentage', 'create')
-            ->notEmpty('discount_percentage');
-
-        $validator
-            ->decimal('discount_amount')
-            ->requirePresence('discount_amount', 'create')
-            ->notEmpty('discount_amount');
-
-        $validator
-            ->requirePresence('pnf_percentage', 'create')
-            ->notEmpty('pnf_percentage');
-
-        $validator
-            ->decimal('pnf_amount')
-            ->requirePresence('pnf_amount', 'create')
-            ->notEmpty('pnf_amount');
-
-        $validator
-            ->decimal('taxable_value')
-            ->requirePresence('taxable_value', 'create')
-            ->notEmpty('taxable_value');
-
-        $validator
-            ->decimal('net_amount')
-            ->requirePresence('net_amount', 'create')
-            ->notEmpty('net_amount');
-
-        $validator
-            ->decimal('gst_value')
-            ->requirePresence('gst_value', 'create')
-            ->notEmpty('gst_value');
+       
 
         return $validator;
     }

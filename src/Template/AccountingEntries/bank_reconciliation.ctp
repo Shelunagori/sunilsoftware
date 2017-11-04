@@ -2,96 +2,58 @@
 /**
  * @Author: PHP Poets IT Solutions Pvt. Ltd.
  */
-$this->set('title', 'Edit Ledger');
+$this->set('title', 'Bank Reconciliation');
 ?>
-<style>
-.disabledbutton {
-    pointer-events: none;
-    opacity: 0.7;
-}
-</style>
 <div class="row">
-	<div class="col-md-6">
-		<div class="portlet light ">
+	<div class="col-md-12">
+		<div class="portlet light bordered">
 			<div class="portlet-title">
 				<div class="caption">
-					<i class="icon-bar-chart font-green-sharp hide"></i>
-					<span class="caption-subject font-green-sharp bold ">Edit Ledger</span>
+					<i class="fa fa-cogs"></i>Bank Reconciliation
 				</div>
 			</div>
 			<div class="portlet-body">
-				<?= $this->Form->create($ledger) ?>
+				<form method="get">
+						<div class="row">
+							<div class="col-md-3">
+								<?php echo $this->Form->control('from_date',['class'=>'form-control input-sm date-picker','data-date-format'=>'dd-mm-yyyy', 'label'=>false,'placeholder'=>'DD-MM-YYYY','type'=>'text','data-date-start-date'=>@$coreVariable[fyValidFrom],'data-date-end-date'=>@$coreVariable[fyValidTo],'value'=>date('d-m-Y',strtotime($from_date)),'required'=>'required']); ?>
+							</div>
+							<div class="col-md-3">
+								<?php echo $this->Form->control('to_date',['class'=>'form-control input-sm date-picker','data-date-format'=>'dd-mm-yyyy', 'label'=>false,'placeholder'=>'DD-MM-YYYY','type'=>'text','data-date-start-date'=>@$coreVariable[fyValidFrom],'data-date-end-date'=>@$coreVariable[fyValidTo],'value'=>date('d-m-Y',strtotime($to_date)),'required'=>'required']); ?>
+							</div>
+							<div class="col-md-3">
+								<span class="input-group-btn">
+								<button class="btn blue" type="submit">Go</button>
+								</span>
+							</div>	
+						</div>
+				</form>
+				<?php if($to_date){ ?>
 				<div class="row">
-					<div class="col-md-12">
-						<?php if($ledger->flag==1) { ?>
-						<div class="form-group disabledbutton" >
-							<label>Name <span class="required">*</span></label>
-							<?php echo $this->Form->control('name',['class'=>'form-control input-sm','placeholder'=>'Name','label'=>false]); ?>
-						</div>
-						
-						<div class="row">
-							<div class="col-md-6">
-								<div class="form-group disabledbutton">
-									<label>Under Accounting Group</label>
-									<?php echo $this->Form->control('accounting_group_id',['class'=>'form-control input-sm select2me','label'=>false,'empty'=>'-Primary Group-', 'options' => $accountingGroups,'required','required'=>'required']); ?>
-								</div>
-							</div>
-						</div>
-						<?php } else { ?>
-						<div class="form-group" >
-							<label>Name <span class="required">*</span></label>
-							<?php echo $this->Form->control('name',['class'=>'form-control input-sm','placeholder'=>'Name','label'=>false]); ?>
-						</div>
-						
-						<div class="row">
-							<div class="col-md-6">
-								<div class="form-group">
-									<label>Under Accounting Group</label>
-									<?php echo $this->Form->control('accounting_group_id',['class'=>'form-control input-sm select2me','label'=>false,'empty'=>'-Primary Group-', 'options' => $accountingGroups,'required','required'=>'required']); ?>
-								</div>
-							</div>
-						</div>
+					<table class="table table-condensed table-hover table-bordered">
+						<thead>
+							<tr>
+								<th>Date</th>
+								<th>Voucher </th>
+								<th>Transaction Date</th>
+								<th>Instrument Date</th>
+								<th>Bank Date</th>
+								<th>Debit</th>
+								<th>Credit</th>
+							</tr>
+						</thead>
+						<tbody>
+						<?php foreach($AccountingEntries as $AccountingEntrie){ ?>
+							<tr>
+								<td>asd</td>
+								<td>asd</td>
+							</tr>
 						<?php } ?>
-					</div>
+						</tbody>
+					</table>
 				</div>
-				<div class="row">
-					<div class="col-md-4" style="padding-right: 0px;">
-						<div class="form-group" >
-							<label>Opening Balance</label>
-							
-							<?php 
-							$value="";
-									if(!empty($ledger->accounting_entries[0]->debit))
-									{
-										$value =$ledger->accounting_entries[0]->debit;
-									}
-									else
-									{
-										$value =@$ledger->accounting_entries[0]->credit;
-									}
-							echo $this->Form->control('opening_balance_value',['class'=>'rightAligntextClass form-control input-sm','label'=>false,'value'=>$value,'placeholder'=>'Opening Balance']);
-							?>
-						</div>
-					</div>
-					<div class="col-md-2" style="padding-left: 0px;padding-right:0;">
-						<label style="visibility:hidden;">s</label>
-						<?php 
-						    $check="";
-							if(!empty($ledger->accounting_entries[0]->debit))
-							{
-								$check ='Dr';
-							}
-							else
-							{
-								$check ='Cr';
-							}
-							$option =[['value'=>'Dr','text'=>'Dr'],['value'=>'Cr','text'=>'Cr']];
-							echo $this->Form->control('debit_credit',['class'=>'form-control input-sm','label'=>false, 'options' => $option,'value'=>'debitor']);
-							?>
-					</div>
-				</div>
-				<?= $this->Form->button(__('Submit'),['class'=>'btn btn-success']) ?>
-				<?= $this->Form->end() ?>
+				<?php } ?>
+				</ul>
 			</div>
 		</div>
 	</div>
@@ -112,6 +74,11 @@ $this->set('title', 'Edit Ledger');
 	<?php echo $this->Html->css('/assets/global/plugins/jquery-multi-select/css/multi-select.css', ['block' => 'PAGE_LEVEL_CSS']); ?>
 	<!-- END COMPONENTS DROPDOWNS -->
 <!-- END PAGE LEVEL STYLES -->
+
+<!-- BEGIN PAGE LEVEL PLUGINS -->
+	<!-- BEGIN VALIDATEION -->
+	<?php echo $this->Html->script('/assets/global/plugins/jquery-validation/js/jquery.validate.min.js', ['block' => 'PAGE_LEVEL_PLUGINS_JS']); ?>
+	<!-- END VALIDATEION -->
 
 <!-- BEGIN PAGE LEVEL PLUGINS -->
 	<!-- BEGIN COMPONENTS PICKERS -->
@@ -144,13 +111,12 @@ $this->set('title', 'Edit Ledger');
 	<?php echo $this->Html->script('/assets/admin/pages/scripts/components-dropdowns.js', ['block' => 'PAGE_LEVEL_SCRIPTS_JS']); ?>
 	<!-- END COMPONENTS DROPDOWNS -->
 <!-- END PAGE LEVEL SCRIPTS -->
-
 <?php
 	$js="
-	$(document).ready(function() {	
-		ComponentsPickers.init();
-	});	
+		$(document).ready(function() {
+			ComponentsPickers.init();	
+		});
 	";
-
-echo $this->Html->scriptBlock($js, array('block' => 'scriptBottom')); 
 ?>
+<?php echo $this->Html->scriptBlock($js, array('block' => 'scriptBottom'));  ?>
+

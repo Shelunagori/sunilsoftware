@@ -227,7 +227,7 @@ foreach($partyOptions as $partyOption)
 									</tr>
 							
 									<tr>
-										<td colspan="6" align="right"><b>Round OFF</b>
+										<td colspan="6" align="right"><b>Round Off</b>
 										</td>
 										<td colspan="2">
 										<?php echo $this->Form->input('round_off', ['label' => false,'class' => 'form-control input-sm roundValue rightAligntextClass','required'=>'required', 'readonly'=>'readonly','placeholder'=>'', 'tabindex'=>'-1']); ?>	
@@ -257,7 +257,7 @@ foreach($partyOptions as $partyOption)
 									<input type="hidden" id="invoiceReceiptTd2" name="invoiceReceiptTd" value="<?php if($salesInvoice->invoice_receipt_type=='cash'){ echo '1';}else { echo '0';}?>">
 							</td>
 							<td colspan="2" align="right">
-							<b>Receipt Amount</b>';
+							<b>Receipt Amount</b>
 							</td>
 							
 							<td colspan="2">

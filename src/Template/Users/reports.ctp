@@ -45,6 +45,26 @@ $this->set('title', 'Report Setup');
 							</div>
 					</div>
 				</div>
+				<div class="row">
+					<div class="col-md-6">
+						<div class="list-group">
+							<?php echo $this->Html->link('Bank Reconciliation', '/accounting-entries/bankReconciliation?from_date='.@$coreVariable["fyValidFrom"].'&to_date='.@$coreVariable["fyValidTo"],['escape' => false, 'class'=>'list-group-item']); ?>
+						</div>
+					</div>
+				
+				</div>
+				<div class="row">
+					<div class="col-md-6">
+						<div class="list-group">
+							<?php echo $this->Html->link('Outstanding Receivable Report', '/Ledgers/over_due_report',['escape' => false, 'class'=>'list-group-item']); ?>
+							</div>
+					</div>
+					<div class="col-md-6">
+						<div class="list-group">
+							<?php echo $this->Html->link('Outstanding Payable Report', '/Ledgers/over_due_report_payable',['escape' => false, 'class'=>'list-group-item']); ?>
+							</div>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>

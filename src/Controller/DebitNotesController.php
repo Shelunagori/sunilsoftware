@@ -58,6 +58,7 @@ class DebitNotesController extends AppController
         $debitNote = $this->DebitNotes->newEntity();
 		$company_id=$this->Auth->User('session_company_id');
         if ($this->request->is('post')) {
+<<<<<<< HEAD
 		 $debitNote = $this->DebitNotes->patchEntity($debitNote, $this->request->getData(),['associated' => ['DebitNoteRows','DebitNoteRows.ReferenceDetails']]);
 		 $tdate=$this->request->data('transaction_date');
 		 $debitNote->transaction_date=date('Y-m-d',strtotime($tdate));
@@ -65,6 +66,23 @@ class DebitNotesController extends AppController
 		// pr($debitNote->);
 		 //exit;
 		 
+=======
+		$debitNote = $this->DebitNotes->patchEntity($debitNote, $this->request->getData(),['associated' => ['DebitNoteRows','DebitNoteRows.ReferenceDetails']]);
+		$tdate=$this->request->data('transaction_date');
+		$debitNote->transaction_date=date('Y-m-d',strtotime($tdate));
+		//transaction date for debit note code start here--
+			foreach($debitNote->debit_note_rows as $debit_note_row)
+			{
+				if(!empty($debit_note_row->reference_details))
+				{
+					foreach($debit_note_row->reference_details as $reference_detail)
+					{
+						$reference_detail->transaction_date = $debitNote->transaction_date;
+					}
+				}
+			}
+		//transaction date for debit note code close here--
+>>>>>>> 2d0a246bd23782da561d0369844ae7670a9a7c1f
             if ($this->DebitNotes->save($debitNote)) {
 			
 			foreach($debitNote->debit_note_rows as $debit_note_row)
@@ -311,11 +329,22 @@ class DebitNotesController extends AppController
 			
 		
 		
-		 $debitNote = $this->DebitNotes->patchEntity($debitNote, $this->request->getData(),['associated' => ['DebitNoteRows','DebitNoteRows.ReferenceDetails']]);
-		 $tdate=$this->request->data('transaction_date');
-		 $debitNote->transaction_date=date('Y-m-d',strtotime($tdate));
+			$debitNote = $this->DebitNotes->patchEntity($debitNote, $this->request->getData(),['associated' => ['DebitNoteRows','DebitNoteRows.ReferenceDetails']]);
+			$tdate=$this->request->data('transaction_date');
+			$debitNote->transaction_date=date('Y-m-d',strtotime($tdate));
 		 
-	
+			//transaction date for debit note code start here--
+			foreach($debitNote->debit_note_rows as $debit_note_row)
+			{
+				if(!empty($debit_note_row->reference_details))
+				{
+					foreach($debit_note_row->reference_details as $reference_detail)
+					{
+						$reference_detail->transaction_date = $debitNote->transaction_date;
+					}
+				}
+			}
+		    //transaction date for debit note code close here--
 		
             if ($this->DebitNotes->save($debitNote)) {
 			$query_delete = $this->DebitNotes->AccountingEntries->query();

@@ -13,12 +13,12 @@ use App\Controller\AppController;
 class SaleReturnsController extends AppController
 {
 
-    /**
+       /**
      * Index method
      *
      * @return \Cake\Http\Response|void
      */
-    public function index() 
+	 public function index()
     {
 		$this->viewBuilder()->layout('index_layout');
 		$company_id=$this->Auth->User('session_company_id');
@@ -28,11 +28,10 @@ class SaleReturnsController extends AppController
         $this->set(compact('saleReturns'));
         $this->set('_serialize', ['saleReturns']);
     }
-
-    /**
+ /**
      * View method
      *
-     * @param string|null $id Sale Return id.
+     * @param string|null $id Sales Invoice id.
      * @return \Cake\Http\Response|void
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
@@ -40,7 +39,7 @@ class SaleReturnsController extends AppController
     {
 		$this->viewBuilder()->layout('index_layout');
         $saleReturn = $this->SaleReturns->get($id, [
-            'contain' => ['Companies', 'SalesLedgers', 'PartyLedgers', 'Locations', 'SalesInvoices', 'SaleReturnRows'=>['GstFigures','Items']]
+            'contain' => ['Companies'=>['States'], 'SalesLedgers', 'PartyLedgers', 'Locations', 'SalesInvoices', 'SaleReturnRows'=>['GstFigures','Items']]
         ]);
 		//pr($saleReturn); exit;
         $this->set('saleReturn', $saleReturn);
@@ -82,8 +81,10 @@ class SaleReturnsController extends AppController
 
         $saleReturn = $this->SaleReturns->newEntity();
         if ($this->request->is(['patch', 'post', 'put'])) {
+			
 			$transaction_date=date('Y-m-d', strtotime($this->request->data['transaction_date']));
 			$saleReturn = $this->SaleReturns->patchEntity($saleReturn, $this->request->getData());
+			
 			$saleReturn->transaction_date=$transaction_date;
 			$saleReturn->sales_invoice_id=$id;
 			$Voucher_no = $this->SaleReturns->find()->select(['voucher_no'])->where(['company_id'=>$company_id])->order(['voucher_no' => 'DESC'])->first();
@@ -96,7 +97,9 @@ class SaleReturnsController extends AppController
 			$saleReturn->voucher_no=$voucher_no;
 			$saleReturn->sales_ledger_id=$salesInvoice->sales_ledger_id;
 			$saleReturn->party_ledger_id=$salesInvoice->party_ledger_id;
+			
             if($this->SaleReturns->save($saleReturn)){
+				
 				$gstVal=0;
 				$gVal=0;
 				foreach($saleReturn->sale_return_rows as $sale_return_row){ 
@@ -223,18 +226,22 @@ class SaleReturnsController extends AppController
 					}
 			   }
 			   
-			   
-			   //Refrence Details For Party//
-				$ReferenceDetail = $this->SaleReturns->ReferenceDetails->newEntity(); 
-				$ReferenceDetail->ledger_id=$saleReturn->party_ledger_id;
-				$ReferenceDetail->credit=$saleReturn->amount_after_tax;
-				$ReferenceDetail->debit=0;
-				$ReferenceDetail->transaction_date=$saleReturn->transaction_date;
-				$ReferenceDetail->company_id=$company_id;
-				$ReferenceDetail->type='New Ref';
-				$ReferenceDetail->ref_name='SR'.$voucher_no;
-				$ReferenceDetail->sale_return_id=$saleReturn->id;
-				$this->SaleReturns->ReferenceDetails->save($ReferenceDetail);
+			     //Refrence Details For Party//
+			  // pr($saleReturn->supplier_ledger_id);
+				$Ledgers = $this->SaleReturns->SalesInvoices->SalesInvoiceRows->Ledgers->get($saleReturn->party_ledger_id);
+				
+				if($Ledgers->bill_to_bill_accounting=="yes"){
+					$ReferenceDetail = $this->SaleReturns->ReferenceDetails->newEntity(); 
+					$ReferenceDetail->ledger_id=$saleReturn->party_ledger_id;
+					$ReferenceDetail->credit=$saleReturn->amount_after_tax;
+					$ReferenceDetail->debit=0;
+					$ReferenceDetail->transaction_date=$saleReturn->transaction_date;
+					$ReferenceDetail->company_id=$company_id;
+					$ReferenceDetail->type='New Ref';
+					$ReferenceDetail->ref_name='SR'.$voucher_no;
+					$ReferenceDetail->sale_return_id=$saleReturn->id;
+					$this->SaleReturns->ReferenceDetails->save($ReferenceDetail);
+				}
 			   
 				$this->Flash->success(__('The sale return has been saved.'));
 				return $this->redirect(['action' => 'index']);
@@ -356,4 +363,67 @@ class SaleReturnsController extends AppController
 
         return $this->redirect(['action' => 'index']);
     }
+	
+		
+	public function saleReturnBill($id=null)
+    {
+		$this->viewBuilder()->layout('');
+		$company_id=$this->Auth->User('session_company_id');
+		$stateDetails=$this->Auth->User('session_company');
+		$state_id=$stateDetails->state_id;
+        $saleReturn = $this->SaleReturns->get($id, [
+            'contain' => ['Companies'=>['States'], 'SalesLedgers', 'PartyLedgers'=>['Customers'], 'Locations', 'SalesInvoices', 'SaleReturnRows'=>['GstFigures','Items']]
+        ]);
+		//pr($saleReturn->toArray());exit;
+		
+			@$partyDetail= $this->SaleReturns->PartyLedgers->find()
+			->where(['id'=>$saleReturn->party_ledger_id])->first();
+			$partyCustomerid=$partyDetail->customer_id;
+			if($partyCustomerid>0)
+			{
+				$partyDetails= $this->SaleReturns->PartyLedgers->Customers->find()
+				->where(['Customers.id'=>$partyCustomerid])
+				->contain(['States', 'Cities'])->first();
+				$saleReturn->partyDetails=$partyDetails;
+			}
+			else
+			{
+				$partyDetails=(object)['name'=>'Cash Customer', 'state_id'=>$state_id];
+				$saleReturn->partyDetails=$partyDetails;
+			}
+			
+			if(@$saleReturn->company->state_id==$saleReturn->partyDetails->state_id){
+				$taxable_type='CGST/SGST';
+			}else{
+				$taxable_type='IGST';
+			}
+		
+		//pr($taxable_type);exit;
+		$query = $this->SaleReturns->SaleReturnRows->find();
+		
+		$totalTaxableAmt = $query->newExpr()
+			->addCase(
+				$query->newExpr()->add(['sale_return_id']),
+				$query->newExpr()->add(['taxable_value']),
+				'decimal'
+			);
+		$totalgstAmt = $query->newExpr()
+			->addCase(
+				$query->newExpr()->add(['sale_return_id']),
+				$query->newExpr()->add(['gst_value']),
+				'decimal'
+			);
+		$query->select([
+			'total_taxable_amount' => $query->func()->sum($totalTaxableAmt),
+			'total_gst_amount' => $query->func()->sum($totalgstAmt),'sale_return_id','item_id'
+		])
+		->where(['SaleReturnRows.sale_return_id' => $id])
+		->group('gst_figure_id')
+		->autoFields(true)
+		->contain(['GstFigures']);
+        $sale_return_rows = ($query);
+		
+		$this->set(compact('saleReturn','taxable_type','sale_return_rows','partyCustomerid'));
+        $this->set('_serialize', ['saleReturn']);
+    }	
 }

@@ -594,9 +594,12 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				});
 				var total_type=SelectedTr.find('td:nth-child(2) div.window table.refTbl tfoot tr td:nth-child(3) input.total_type').val();
 				
-				if(total_type=='Dr'){
+				if(total_type=='Dr')
+				{
 					eqlClass=eqlClassDr;
-				}else{
+				}
+				else
+				{
 					eqlClass=eqlClassCr;
 				}
 				

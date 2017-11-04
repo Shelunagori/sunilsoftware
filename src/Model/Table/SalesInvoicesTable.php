@@ -86,6 +86,9 @@ class SalesInvoicesTable extends Table
             'foreignKey' => 'sales_invoice_id',
 			'joinType' => 'LEFT'
         ]);
+		$this->hasMany('ReferenceDetails', [
+            'foreignKey' => 'sales_invoice_id'
+        ]);
     }
 
     /**

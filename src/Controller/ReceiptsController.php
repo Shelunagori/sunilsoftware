@@ -60,10 +60,24 @@ class ReceiptsController extends AppController
         $receipt = $this->Receipts->newEntity();
 		$company_id=$this->Auth->User('session_company_id');
         if ($this->request->is('post')) {
-		 $receipt = $this->Receipts->patchEntity($receipt, $this->request->getData(),['associated' => ['ReceiptRows','ReceiptRows.ReferenceDetails']]);
-		 $tdate=$this->request->data('transaction_date');
-		 $receipt->transaction_date=date('Y-m-d',strtotime($tdate));
-		 
+
+		$receipt = $this->Receipts->patchEntity($receipt, $this->request->getData(),['associated' => ['ReceiptRows','ReceiptRows.ReferenceDetails']]);
+		$tdate=$this->request->data('transaction_date');
+		$receipt->transaction_date=date('Y-m-d',strtotime($tdate));
+		
+		   //transaction date for receipt code start here--
+			foreach($receipt->receipt_rows as $receipt_row)
+			{
+				if(!empty($receipt_row->reference_details))
+				{
+					foreach($receipt_row->reference_details as $reference_detail)
+					{
+						$reference_detail->transaction_date = $receipt->transaction_date;
+					}
+				}
+			}
+			//transaction date for receipt code close here-- 
+
             if ($this->Receipts->save($receipt)) {
 			
 			foreach($receipt->receipt_rows as $receipt_row)
@@ -189,33 +203,6 @@ class ReceiptsController extends AppController
         ]);
 		$company_id=$this->Auth->User('session_company_id');
 		
-		$refDropDown =[];
-		foreach($receipt->receipt_rows as $receipt_row)
-		{
-			if(!empty($receipt_row->reference_details))
-			{
-				$query = $this->Receipts->ReceiptRows->ReferenceDetails->find();
-				$query->select(['total_debit' => $query->func()->sum('ReferenceDetails.debit'),'total_credit' => $query->func()->sum('ReferenceDetails.credit')])
-				->where(['ReferenceDetails.ledger_id'=>$receipt_row->ledger_id,'ReferenceDetails.type !='=>'On Account'])
-				->group(['ReferenceDetails.ref_name'])
-				->autoFields(true);
-				$referenceDetails=$query;
-				$option=[];
-				foreach($referenceDetails as $referenceDetail){
-					$remider=$referenceDetail->total_debit-$referenceDetail->total_credit;
-					if($remider>0){
-						$bal=abs($remider).' Dr';
-					}else if($remider<0){
-						$bal=abs($remider).' Cr';
-					}
-					if($referenceDetail->total_debit!=$referenceDetail->total_credit){
-						$option[] =['text' =>$referenceDetail->ref_name.' ('.$bal.')', 'value' => $referenceDetail->ref_name];
-						 
-					}
-				}
-				$refDropDown[$receipt_row->id] = $option;
-			}
-		}
 		
 		$originalReceipt=$receipt;
         if ($this->request->is('put','patch','post')) {
@@ -239,16 +226,28 @@ class ReceiptsController extends AppController
 					->where(['receipt_id' => $receipt->id])
 					->execute();
 					 */
-		
-		
-		 $receipt = $this->Receipts->patchEntity($receipt, $this->request->getData(),['associated' => ['ReceiptRows','ReceiptRows.ReferenceDetails']]);
-		 $tdate=$this->request->data('transaction_date');
-		 $receipt->transaction_date=date('Y-m-d',strtotime($tdate));
+		$receipt = $this->Receipts->patchEntity($receipt, $this->request->getData(),['associated' => ['ReceiptRows','ReceiptRows.ReferenceDetails']]);
 		 
-		 
+<<<<<<< HEAD
 		pr($receipt);
 		exit;
 		
+=======
+		//pr($receipt);
+		//exit;
+		//transaction date for receipt code start here--
+			foreach($receipt->receipt_rows as $receipt_row)
+			{
+				if(!empty($receipt_row->reference_details))
+				{
+					foreach($receipt_row->reference_details as $reference_detail)
+					{
+						$reference_detail->transaction_date = $receipt->transaction_date;
+					}
+				}
+			}
+			//transaction date for receipt code close here-- 
+>>>>>>> 2d0a246bd23782da561d0369844ae7670a9a7c1f
 		
             if ($this->Receipts->save($receipt)) {
 			$query_delete = $this->Receipts->AccountingEntries->query();
@@ -276,6 +275,39 @@ class ReceiptsController extends AppController
             }
             $this->Flash->error(__('The receipt could not be saved. Please, try again.'));
         }
+		
+		$refDropDown =[];
+		foreach($receipt->receipt_rows as $receipt_row)
+		{	
+			if(!empty($receipt_row->reference_details))
+			{	
+				foreach($receipt_row->reference_details as $referenceDetailRows)
+				{
+					@$ref_details_name[]=$referenceDetailRows->ref_name;
+				}
+				
+				$query = $this->Receipts->ReceiptRows->ReferenceDetails->find();
+				$query->select(['total_debit' => $query->func()->sum('ReferenceDetails.debit'),'total_credit' => $query->func()->sum('ReferenceDetails.credit')])
+				->where(['ReferenceDetails.ledger_id'=>$receipt_row->ledger_id,'ReferenceDetails.type !='=>'On Account'])
+				->group(['ReferenceDetails.ref_name'])
+				->autoFields(true);
+				$referenceDetails=$query;
+				$option=[];
+				foreach($referenceDetails as $referenceDetail){
+					$remider=$referenceDetail->total_debit-$referenceDetail->total_credit;
+					if($remider>0){
+						$bal=abs($remider).' Dr';
+					}else if($remider<0){
+						$bal=abs($remider).' Cr';
+					}
+					if($referenceDetail->total_debit!=$referenceDetail->total_credit || in_array($referenceDetail->ref_name,$ref_details_name)){
+						$option[] =['text' =>$referenceDetail->ref_name.' ('.$bal.')', 'value' => $referenceDetail->ref_name];
+					}
+				}
+				$refDropDown[$receipt_row->id] = $option;
+			}
+		}
+		
 		
 		//bank group
 		$bankParentGroups = $this->Receipts->ReceiptRows->Ledgers->AccountingGroups->find()

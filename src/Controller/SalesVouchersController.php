@@ -78,7 +78,20 @@ class SalesVouchersController extends AppController
 			$salesVoucher = $this->SalesVouchers->patchEntity($salesVoucher, $this->request->getData(), [
 							'associated' => ['SalesVoucherRows','SalesVoucherRows.ReferenceDetails']
 						]);
-			//pr($salesVoucher->sales_voucher_rows); exit;
+						
+			//transaction date for reference detail code start here--
+			foreach($salesVoucher->sales_voucher_rows as $sales_voucher_row)
+			{
+				if(!empty($sales_voucher_row->reference_details))
+				{
+					foreach($sales_voucher_row->reference_details as $reference_detail)
+					{
+						$reference_detail->transaction_date = $salesVoucher->transaction_date;
+					}
+				}
+			}
+			//transaction date for reference detail code close here--
+			
             if ($this->SalesVouchers->save($salesVoucher)) {
 				
 				foreach($salesVoucher->sales_voucher_rows as $sales_voucher_row)
@@ -245,7 +258,16 @@ class SalesVouchersController extends AppController
 
 			//pr($salesVoucher);
 			//exit;
-			
+			foreach($salesVoucher->sales_voucher_rows as $sales_voucher_row)
+			{
+				if(!empty($sales_voucher_row->reference_details))
+				{
+					foreach($sales_voucher_row->reference_details as $reference_detail)
+					{
+						$reference_detail->transaction_date = $salesVoucher->transaction_date;
+					}
+				}
+			}
 			
 			if ($this->SalesVouchers->save($salesVoucher)) {
 				$query_delete = $this->SalesVouchers->AccountingEntries->query();
@@ -280,6 +302,10 @@ class SalesVouchersController extends AppController
 		{
 			if(!empty($sales_voucher_row->reference_details))
 			{
+				foreach($sales_voucher_row->reference_details as $referenceDetailRows)
+				{
+					@$ref_details_name[]=$referenceDetailRows->ref_name;
+				}
 				$query = $this->SalesVouchers->SalesVoucherRows->ReferenceDetails->find();
 				$query->select(['total_debit' => $query->func()->sum('ReferenceDetails.debit'),'total_credit' => $query->func()->sum('ReferenceDetails.credit')])
 				->where(['ReferenceDetails.ledger_id'=>$sales_voucher_row->ledger_id,'ReferenceDetails.type !='=>'On Account'])
@@ -294,7 +320,7 @@ class SalesVouchersController extends AppController
 					}else if($remider<0){
 						$bal=abs($remider).' Cr';
 					}
-					if($referenceDetail->total_debit!=$referenceDetail->total_credit){
+					if($referenceDetail->total_debit!=$referenceDetail->total_credit || in_array($referenceDetail->ref_name,$ref_details_name)){
 						$option[] =['text' =>$referenceDetail->ref_name.' ('.$bal.')', 'value' => $referenceDetail->ref_name];
 						 
 					}

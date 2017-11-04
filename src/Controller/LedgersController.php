@@ -128,7 +128,9 @@ class LedgersController extends AppController
     {
 		$this->viewBuilder()->layout('index_layout');
         $ledger = $this->Ledgers->get($id, [
-            'contain' => ['AccountingEntries'],'where'=>['AccountingEntries.is_opening_balance'=>'yes']
+            'contain' => ['AccountingEntries'=>function($q){
+				return $q->where(['AccountingEntries.is_opening_balance'=>'yes']);
+			}],
         ]);
 		
 		$company_id=$this->Auth->User('session_company_id');
@@ -443,10 +445,10 @@ class LedgersController extends AppController
 		$company_id=$this->Auth->User('session_company_id');
 		$this->viewBuilder()->layout('index_layout');
 		$run_time_date = $this->request->query('run_time_date');
-
-		if(empty($run_time_date)) { $run_time_date = date('Y-m-d');  }
-
 		
+		if(!empty($run_time_date)) {
+		$run_time_date = date("Y-m-d",strtotime($run_time_date)); }
+	
 		$parentSundryDebtors = $this->Ledgers->AccountingGroups->find()
 				->where(['AccountingGroups.company_id'=>$company_id, 'AccountingGroups.customer'=>'1']);
 		
@@ -469,28 +471,80 @@ class LedgersController extends AppController
 		{
 			$ledgerAccountids[]=$ledgerAccount->id;
 		}
+		$reference_details = $this->Ledgers->ReferenceDetails->find()->contain(['Ledgers'])->where(['ReferenceDetails.company_id'=>$company_id]);
+		$reference_details->select(['total_debit' => $reference_details->func()->sum('ReferenceDetails.debit'),'total_credit' => $reference_details->func()->sum('ReferenceDetails.credit')])
+		->where(['ReferenceDetails.ledger_id IN '=> $ledgerAccountids,'ReferenceDetails.transaction_date <=' => $run_time_date])
+		->group(['ReferenceDetails.ref_name','ReferenceDetails.ledger_id'])
+		->autoFields(true);		 
 		
+		//pr($reference_details->toArray()); exit;
+		$this->set(compact('reference_details','run_time_date'));
+        $this->set('_serialize', ['reference_details']);
 		
-/* 		$reference_details = $this->Ledgers->ReferenceDetails->find()
+	/* 	$reference_details = $this->Ledgers->ReferenceDetails->find()
 		->contain(['SalesInvoices'])
 		->where(['ReferenceDetails.ledger_id IN'=>$ledgerAccountids]); */
 		
+		/*
+		$reference_details=$reference_details->leftJoinWith('SalesInvoices', function ($q) use($run_time_date){
+		return $q->orWhere(['SalesInvoices.transaction_date <=' => $run_time_date]);
+		});
 		
-        $reference_details = $this->Ledgers->ReferenceDetails->find()->contain(['SalesInvoices','Ledgers']);
-		$reference_details->select(['total_debit' => $reference_details->func()->sum('ReferenceDetails.debit'),'total_credit' => $reference_details->func()->sum('ReferenceDetails.credit')])
-		->where(['ReferenceDetails.ledger_id IN '=>$ledgerAccountids])
-		->group(['ReferenceDetails.ref_name','ReferenceDetails.ledger_id'])
-		->autoFields(true);		
-
-		//pr($reference_details->toArray()); exit;
+		$reference_details->leftJoinWith('Receipts', function ($q) use($run_time_date){
+		return $q->orWhere(['Receipts.transaction_date <=' => $run_time_date]);
+		});
 		
-		$this->set(compact('reference_details','run_time_date'));
-        $this->set('_serialize', ['reference_details']);
+		$reference_details->leftJoinWith('Payments', function ($q) use($run_time_date){
+		return $q->orWhere(['Payments.transaction_date <=' => $run_time_date]);
+		});
+		*/
+		
 		
 	}
 	
 	
+	public function overDueReportPayable()
+	{
+		$company_id=$this->Auth->User('session_company_id');
+		$this->viewBuilder()->layout('index_layout');
+		$run_time_date = $this->request->query('run_time_date');
+		
+		if(!empty($run_time_date)) {
+		$run_time_date = date("Y-m-d",strtotime($run_time_date)); }
 	
+		$parentSundryCreditors = $this->Ledgers->AccountingGroups->find()
+				->where(['AccountingGroups.company_id'=>$company_id, 'AccountingGroups.supplier'=>'1']);
+	
+		$childSundryCreditors=[];
+		
+		foreach($parentSundryCreditors as $parentSundryCreditor)
+		{
+			$accountingGroups = $this->Ledgers->AccountingGroups->find('children', ['for' => $parentSundryCreditor->id]);
+			$childSundryCreditors[]=$parentSundryCreditor->id;
+			foreach($accountingGroups as $accountingGroup){
+				$childSundryCreditors[]=$accountingGroup->id;
+			}			
+		}
+		
+		$ledgerAccounts = $this->Ledgers->find()->where(['accounting_group_id IN'=>$childSundryCreditors]);
+		
+		$ledgerAccountids = [];
+
+		foreach($ledgerAccounts as $ledgerAccount)
+		{
+			$ledgerAccountids[]=$ledgerAccount->id;
+		}
+		$reference_details = $this->Ledgers->ReferenceDetails->find()->contain(['Ledgers'])->where(['ReferenceDetails.company_id'=>$company_id]);
+		$reference_details->select(['total_debit' => $reference_details->func()->sum('ReferenceDetails.debit'),'total_credit' => $reference_details->func()->sum('ReferenceDetails.credit')])
+		->where(['ReferenceDetails.ledger_id IN '=> $ledgerAccountids,'ReferenceDetails.transaction_date <=' => $run_time_date])
+		->group(['ReferenceDetails.ref_name','ReferenceDetails.ledger_id'])
+		->autoFields(true);		 
+		
+		//pr($reference_details->toArray()); exit;
+		$this->set(compact('reference_details','run_time_date'));
+        $this->set('_serialize', ['reference_details']);
+		
+	}
 	
 	
 	

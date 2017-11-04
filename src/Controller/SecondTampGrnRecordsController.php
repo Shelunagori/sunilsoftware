@@ -460,7 +460,7 @@ class SecondTampGrnRecordsController extends AppController
 								->set(['second_gst_figure_id' => $gstFigure->id])
 								->where(['SecondTampGrnRecords.id' =>$SecondTampGrnRecord->id])
 								->execute();
-							$second_gst_figure_id=$gstFigure->id;
+							$second_gst_figure_id=$gstFigure->id; 
 						}else{
 							goto DoNotMarkYesValidToImport;
 						}
@@ -491,7 +491,7 @@ class SecondTampGrnRecordsController extends AppController
 								->where(['SecondTampGrnRecords.id' =>$SecondTampGrnRecord->id])
 								->execute();
 							
-							$second_gst_figure_id=$gstFigure->id;
+							$second_gst_figure_id=$secondgstFigure->id;
 						}else{
 							goto DoNotMarkYesValidToImport;
 						}
@@ -522,7 +522,7 @@ class SecondTampGrnRecordsController extends AppController
 				$item->company_id=$company_id;
 				$item->first_gst_figure_id=$first_gst_figure_id;
 				$item->gst_amount=$SecondTampGrnRecord->amount_in_ref_of_gst_rate;
-				$item->second_gst_figure_id=$second_gst_figure_id;
+				$item->second_gst_figure_id=@$second_gst_figure_id;
 				$item->kind_of_gst=$SecondTampGrnRecord->gst_rate_fixed_or_fluid;
 				$item->purchase_rate=$SecondTampGrnRecord->purchase_rate;
 				$item->sales_rate=$SecondTampGrnRecord->sales_rate;

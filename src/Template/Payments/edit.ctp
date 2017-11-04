@@ -36,7 +36,7 @@ $this->set('title', 'Payment Voucher');
 					<div class="col-md-3">
 						<div class="form-group">
 							<label>Transaction Date <span class="required">*</span></label>
-							<?php echo $this->Form->control('transaction_date',['class'=>'form-control input-sm date-picker','data-date-format'=>'dd-mm-yyyy', 'label'=>false,'placeholder'=>'DD-MM-YYYY','type'=>'text','data-date-start-date'=>@$coreVariable[fyValidFrom],'data-date-end-date'=>@$coreVariable[fyValidTo],'value'=>date('d-m-Y', strtotime($payment->transaction_date)),'required'=>'required']); ?>
+							<?php echo $this->Form->control('transaction_date',['class'=>'form-control input-sm date-picker transaction_date','data-date-format'=>'dd-mm-yyyy', 'label'=>false,'placeholder'=>'DD-MM-YYYY','type'=>'text','data-date-start-date'=>@$coreVariable[fyValidFrom],'data-date-end-date'=>@$coreVariable[fyValidTo],'value'=>date('d-m-Y', strtotime($payment->transaction_date)),'required'=>'required']); ?>
 						</div>
 					</div>
 				</div>
@@ -109,8 +109,14 @@ $this->set('title', 'Payment Voucher');
 												?>
 													<tr>
 														<td width="20%">
-															<input type="hidden" class="ledgerIdContainer" value="<?php echo $reference_detail->ledger_id;?>"/>
-															<input type="hidden" class="companyIdContainer" value="<?php echo $reference_detail->company_id;?>"/>
+															<?php 
+															echo $this->Form->input('payment_rows.'.$i.'.reference_details.'.$j.'.ledger_id', ['type'=>'hidden','label' => false,'class' => 'form-control input-sm ledgerIdContainer','value'=>$reference_detail->ledger_id]); ?>
+															
+															<?php 
+															echo $this->Form->input('payment_rows.'.$i.'.reference_details.'.$j.'.company_id', ['type'=>'hidden','label' => false,'class' => 'form-control input-sm companyIdContainer','value'=>$reference_detail->company_id]); ?>
+															
+															<?php 
+															echo $this->Form->input('payment_rows.'.$i.'.reference_details.'.$j.'.transaction_date', ['type'=>'hidden','label' => false,'class' => 'form-control input-sm companyIdContainer','value'=> date('d-m-Y', strtotime($reference_detail->transaction_date))]); ?>
 															<?php 
 															echo $this->Form->input('payment_rows.'.$i.'.reference_details.'.$j.'.type', ['options'=>$option_ref,'label' => false,'class' => 'form-control input-sm refType','required'=>'required','value'=>$reference_detail->type]); ?>
 														</td>
@@ -124,7 +130,7 @@ $this->set('title', 'Payment Voucher');
 															<?php 
 															if(!empty($refDropDown[$paymentRows->id]))
 															{
-																echo $this->Form->input('mode_of_payment', ['options'=>$refDropDown[3],'label' => false,'class' => 'form-control input-sm paymentType','required'=>'required','value'=>$reference_detail->type]);
+																echo $this->Form->input('payment_rows.'.$i.'.reference_details.'.$j.'.ref_name', ['options'=>@$refDropDown[$paymentRows->id],'label' => false,'class' => 'form-control input-sm paymentType refList','required'=>'required','value'=>$reference_detail->ref_name]);
 																
 															} }?>
 															
@@ -279,6 +285,7 @@ $this->set('title', 'Payment Voucher');
 			<td width="20%" valign="top"> 
 				<input type="hidden" class="ledgerIdContainer" />
 				<input type="hidden" class="companyIdContainer" />
+				<input type="hidden" class="transaction_date_ref" />
 				<?php 
 				echo $this->Form->input('type', ['options'=>$option_ref,'label' => false,'class' => 'form-control input-sm refType','required'=>'required']); ?>
 			</td>
@@ -750,7 +757,10 @@ $this->set('title', 'Payment Voucher');
 			}
 			function renameRefRows(SelectedTr){
 				var i=0;
+				var Ref_date=$('.transaction_date').val();
+				
 				var ledger_id=SelectedTr.find('td:nth-child(2) select.ledger').val();
+				
 				var cr_dr=SelectedTr.find('td:nth-child(1) select.cr_dr option:selected').val();
 				if(cr_dr=='Dr'){
 					var eqlClassDr=SelectedTr.find('td:nth-child(3) input.debitBox').attr('id');
@@ -762,11 +772,13 @@ $this->set('title', 'Payment Voucher');
 				
 				SelectedTr.find('input.ledgerIdContainer').val(ledger_id);
 				SelectedTr.find('input.companyIdContainer').val(".$company_id.");
+				SelectedTr.find('input.transaction_date_ref').val(Ref_date);
 				var row_no=SelectedTr.attr('row_no');
 				if(SelectedTr.find('td:nth-child(2) div.window table tbody tr').length>0){
 				SelectedTr.find('td:nth-child(2) div.window table tbody tr').each(function(){
 					$(this).find('td:nth-child(1) input.companyIdContainer').attr({name:'payment_rows['+row_no+'][reference_details]['+i+'][company_id]',id:'payment_rows-'+row_no+'-reference_details-'+i+'-company_id'});
 					$(this).find('td:nth-child(1) input.ledgerIdContainer').attr({name:'payment_rows['+row_no+'][reference_details]['+i+'][ledger_id]',id:'payment_rows-'+row_no+'-reference_details-'+i+'-ledger_id'});
+					$(this).find('td:nth-child(1) input.transaction_date_ref').attr({name:'payment_rows['+row_no+'][reference_details]['+i+'][transaction_date]',id:'payment_rows-'+row_no+'-reference_details-'+i+'-transaction_date'});
 					$(this).find('td:nth-child(1) select.refType').attr({name:'payment_rows['+row_no+'][reference_details]['+i+'][type]',id:'payment_rows-'+row_no+'-reference_details-'+i+'-type'});
 					var is_select=$(this).find('td:nth-child(2) select.refList').length;
 					var is_input=$(this).find('td:nth-child(2) input.ref_name').length;
