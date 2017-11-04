@@ -611,7 +611,7 @@ $this->set('title', 'Debit Note Voucher');
 					var isTblExist=windowContainer.find('table.refTbl').length;
 					if(isTblExist==0)
 					{
-					windowContainer.html('<table width=90% class=refTbl><tbody></tbody><tfoot><tr style=border-top:double#a5a1a1><td colspan=2><a role=button class=addRefRow>Add Row</a></td><td>$total_input</td><td valign=top>$total_type</td></tr></tfoot></table>');
+					windowContainer.html('<table width=90% class=refTbl><tbody></tbody><tfoot><tr style=border-top:double#a5a1a1><td colspan=2><a role=button class=addRefRow>Add Row</a></td><td>$total_input</td><td>$total_type</td></tr></tfoot></table>');
 					  AddRefRow(SelectedTr);
 					}
 				}

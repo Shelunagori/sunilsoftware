@@ -62,6 +62,9 @@ class DebitNotesController extends AppController
 		 $tdate=$this->request->data('transaction_date');
 		 $debitNote->transaction_date=date('Y-m-d',strtotime($tdate));
 		 
+		// pr($debitNote->);
+		 //exit;
+		 
             if ($this->DebitNotes->save($debitNote)) {
 			
 			foreach($debitNote->debit_note_rows as $debit_note_row)

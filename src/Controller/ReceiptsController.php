@@ -246,8 +246,8 @@ class ReceiptsController extends AppController
 		 $receipt->transaction_date=date('Y-m-d',strtotime($tdate));
 		 
 		 
-		//pr($receipt);
-		//exit;
+		pr($receipt);
+		exit;
 		
 		
             if ($this->Receipts->save($receipt)) {

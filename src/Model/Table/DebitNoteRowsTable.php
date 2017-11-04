@@ -73,7 +73,7 @@ class DebitNoteRowsTable extends Table
             ->integer('id')
             ->allowEmpty('id', 'create');
 
-        $validator
+       /*  $validator
             ->requirePresence('cr_dr', 'create')
             ->notEmpty('cr_dr');
 
@@ -83,9 +83,9 @@ class DebitNoteRowsTable extends Table
 
         $validator
             ->decimal('credit')
-            ->allowEmpty('credit');
+            ->allowEmpty('credit'); */
 
-        $validator
+        /* $validator
             ->requirePresence('mode_of_payment', 'create')
             ->notEmpty('mode_of_payment');
 
@@ -96,7 +96,7 @@ class DebitNoteRowsTable extends Table
         $validator
             ->date('cheque_date')
             ->requirePresence('cheque_date', 'create')
-            ->notEmpty('cheque_date');
+            ->notEmpty('cheque_date'); */
 
         return $validator;
     }

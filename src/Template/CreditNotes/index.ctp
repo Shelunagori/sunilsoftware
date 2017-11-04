@@ -35,7 +35,7 @@ $this->set('title', 'Credit Note Voucher');
 									<td class="actions">
 										<?= $this->Html->link(__('View'), ['action' => 'view', $credit_note->id]) ?>
 										<?= $this->Html->link(__('Edit'), ['action' => 'edit', $credit_note->id]) ?>
-										<?= $this->Form->postLink(__('Delete'), ['action' => 'delete', $credit_note->id], ['confirm' => __('Are you sure you want to delete # {0}?', $credit_note->id)]) ?>
+										<!--<?= $this->Form->postLink(__('Delete'), ['action' => 'delete', $credit_note->id], ['confirm' => __('Are you sure you want to delete # {0}?', $credit_note->id)]) ?> -->
 									</td>
 								</tr>
 							<?php endforeach; ?>

@@ -147,38 +147,45 @@ margin-bottom: 0;
 		$sgst=0;
 		$igst=0;
 		$totalAmount=0;
+		$totDis=0;
 		
 		foreach($data->sales_invoice_rows as $sales_invoice_row){ ?>
-		
 		<tr><td colspan="4" style="border-top:1px dashed;"></td></tr>
 		<?php
 			if(@$data->company->state_id==$data->partyDetails->state_id){
-			$gst_type=$sales_invoice_row->gst_figure->tax_percentage;
-			$gst_perc=$gst_type/2;
-			$gstValue=$sales_invoice_row->gst_value;
-			$gst=$gstValue/2;
-			$cgst+=$gst;
-			$sgst+=$gst;
-			$totalAmount+=$sales_invoice_row->quantity*$sales_invoice_row->rate;
+				$gst_type=$sales_invoice_row->gst_figure->tax_percentage;
+				$gst_perc=$gst_type/2;
+				$gstValue=$sales_invoice_row->gst_value;
+				$gst=$gstValue/2;
+				$cgst+=$gst;
+				$sgst+=$gst;
+				$totalAmount+=$sales_invoice_row->quantity*$sales_invoice_row->rate;
 			}
 			else{
-			$gst_type=$sales_invoice_row->gst_figure->name;
-			$gstValue=$sales_invoice_row->gst_value;
-			$gst=$gstValue;
-			$igst+=$gst;
-			
-			$totalAmount+=$sales_invoice_row->quantity*$sales_invoice_row->rate;
+				$gst_type=$sales_invoice_row->gst_figure->name;
+				$gstValue=$sales_invoice_row->gst_value;
+				$gst=$gstValue;
+				$igst+=$gst;
+				
+				$totalAmount+=$sales_invoice_row->quantity*$sales_invoice_row->rate;
 			}
+			if($sales_invoice_row->discount_percentage>0)
+			{
+				$DisVal=$sales_invoice_row->quantity*$sales_invoice_row->rate;
+				$totDis+=$DisVal*$sales_invoice_row->discount_percentage/100;
+			}
+		
+			
 		?>
 		<tr>
 			<td style="font-size:12px;"><?=$sales_invoice_row->item->item_code.' ' ?><?=  $sales_invoice_row->item->name ?></td>
 			<td style="font-size:14px;"><?php
 			if(!empty($sales_invoice_row->item->size->name))
 			{
-			echo @$sales_invoice_row->item->size->name;
+				echo @$sales_invoice_row->item->size->name;
 			}
 			else{
-			echo '-';
+				echo '-';
 			}
 			?></td>
 			<td style="text-align:right;"><?=$sales_invoice_row->quantity ?></td>
@@ -220,7 +227,13 @@ margin-bottom: 0;
 			<td>Discount </td>
 			<td></td>
 			<td></td>
-			<td style="text-align:right;"><?php echo $data->discount_amount;  ?></td>
+			<td style="text-align:right;"><?php echo $totDis;  ?></td>
+		</tr>
+		<tr>
+			<td>Round Off </td>
+			<td></td>
+			<td></td>
+			<td style="text-align:right;"><?php echo $data->round_off;  ?></td>
 		</tr>
 		<tr>
 			<td>Net Total</td>

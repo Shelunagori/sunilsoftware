@@ -35,7 +35,7 @@ $this->set('title', 'Debit Note Voucher');
 									<td class="actions">
 										<?= $this->Html->link(__('View'), ['action' => 'view', $debit_note->id]) ?>
 										<?= $this->Html->link(__('Edit'), ['action' => 'edit', $debit_note->id]) ?>
-										<?= $this->Form->postLink(__('Delete'), ['action' => 'delete', $debit_note->id], ['confirm' => __('Are you sure you want to delete # {0}?', $debit_note->id)]) ?>
+										<!--<?= $this->Form->postLink(__('Delete'), ['action' => 'delete', $debit_note->id], ['confirm' => __('Are you sure you want to delete # {0}?', $debit_note->id)]) ?>-->
 									</td>
 								</tr>
 							<?php endforeach; ?>
