@@ -96,7 +96,7 @@ $this->set('title', 'Debit Note Voucher');
 									<tr style="border-top:double;">
 										<td colspan="2" valign="top" >	
 											<button type="button" class="AddMainRow btn btn-default input-sm"><i class="fa fa-plus"></i> Add row</button>
-											<input type="text" id="totalBankCash">
+											<input type="hidden" id="totalBankCash">
 										</td>
 										<td valign="top"><input type="text" class="form-control input-sm rightAligntextClass noBorder " name="totalMainDr" id="totalMainDr" readonly></td>
 										<td valign="top"><input type="text" class="form-control input-sm rightAligntextClass noBorder" name="totalMainCr" id="totalMainCr" readonly></td>

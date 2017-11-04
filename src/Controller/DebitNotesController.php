@@ -58,15 +58,7 @@ class DebitNotesController extends AppController
         $debitNote = $this->DebitNotes->newEntity();
 		$company_id=$this->Auth->User('session_company_id');
         if ($this->request->is('post')) {
-<<<<<<< HEAD
-		 $debitNote = $this->DebitNotes->patchEntity($debitNote, $this->request->getData(),['associated' => ['DebitNoteRows','DebitNoteRows.ReferenceDetails']]);
-		 $tdate=$this->request->data('transaction_date');
-		 $debitNote->transaction_date=date('Y-m-d',strtotime($tdate));
-		 
-		// pr($debitNote->);
-		 //exit;
-		 
-=======
+
 		$debitNote = $this->DebitNotes->patchEntity($debitNote, $this->request->getData(),['associated' => ['DebitNoteRows','DebitNoteRows.ReferenceDetails']]);
 		$tdate=$this->request->data('transaction_date');
 		$debitNote->transaction_date=date('Y-m-d',strtotime($tdate));
@@ -82,8 +74,8 @@ class DebitNotesController extends AppController
 				}
 			}
 		//transaction date for debit note code close here--
->>>>>>> 2d0a246bd23782da561d0369844ae7670a9a7c1f
-            if ($this->DebitNotes->save($debitNote)) {
+
+		if ($this->DebitNotes->save($debitNote)) {
 			
 			foreach($debitNote->debit_note_rows as $debit_note_row)
 				{
