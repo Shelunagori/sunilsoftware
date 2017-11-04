@@ -117,8 +117,11 @@ $this->set('title', 'Debit Note Voucher');
 												?>
 													<tr>
 														<td width="20%">
-															<input type="hidden" class="ledgerIdContainer" value="<?php echo $reference_detail->ledger_id;?>"/>
-															<input type="hidden" class="companyIdContainer" value="<?php echo $reference_detail->company_id;?>"/>
+															<?php 
+															echo $this->Form->input('debit_note_rows.'.$i.'.reference_details.'.$j.'.ledger_id', ['type'=>'hidden','label' => false,'class' => 'form-control input-sm ledgerIdContainer','value'=>$reference_detail->ledger_id]); ?>
+															
+															<?php 
+															echo $this->Form->input('debit_note_rows.'.$i.'.reference_details.'.$j.'.company_id', ['type'=>'hidden','label' => false,'class' => 'form-control input-sm companyIdContainer','value'=>$reference_detail->company_id]); ?>
 															<?php 
 															echo $this->Form->input('debit_note_rows.'.$i.'.reference_details.'.$j.'.type', ['options'=>$option_ref,'label' => false,'class' => 'form-control input-sm refType','required'=>'required','value'=>$reference_detail->type]); ?>
 														</td>

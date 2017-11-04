@@ -335,7 +335,7 @@ class CreditNotesController extends AppController
 				}
 			}
 			//transaction date for credit note code close here--
-		
+		//pr($creditNote);exit;
             if ($this->CreditNotes->save($creditNote)) {
 			$query_delete = $this->CreditNotes->AccountingEntries->query();
 					$query_delete->delete()

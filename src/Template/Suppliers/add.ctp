@@ -61,7 +61,7 @@ $this->set('title', 'Create Supplier');
 									<label>Bill to Bill Accounting </label>
 									<?php 
 									$option =[['value'=>'yes','text'=>'yes'],['value'=>'no','text'=>'no']];
-									echo $this->Form->control('bill_to_bill_accounting',['class'=>'form-control input-sm bill_to_bill_accounting','label'=>false, 'options' => $option,'required'=>'required']); ?>
+									echo $this->Form->control('bill_to_bill_accounting',['class'=>'form-control input-sm bill_to_bill_accounting','label'=>false, 'options' => $option,'required'=>'required','value'=>'no']); ?>
 								</div>
 								<div class="form-group default_credit_days_div" >
 								<label>Default Credit Days</label>

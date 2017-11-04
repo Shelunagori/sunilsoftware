@@ -422,7 +422,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 					});
 				}else if(type=='On Account'){ 
 					currentRefRow.find('td:nth-child(2)').html('');
-				}else{ alert('".$kk."');
+				}else{ 
 					currentRefRow.find('td:nth-child(2)').html('".$kk."');
 					
 				}
