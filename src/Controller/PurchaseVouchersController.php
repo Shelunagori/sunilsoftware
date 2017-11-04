@@ -272,6 +272,11 @@ class PurchaseVouchersController extends AppController
 				}
 			}
 			//pr($purchaseVoucher->toArray());exit;
+			
+			/* pr($purchaseVoucher);
+		    exit; */
+			
+			
 		    if ($this->PurchaseVouchers->save($purchaseVoucher)) {
 				$query_delete = $this->PurchaseVouchers->AccountingEntries->query();
 					$query_delete->delete()

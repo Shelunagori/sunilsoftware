@@ -115,7 +115,7 @@ $this->set('title', 'Receipt Voucher');
 															echo $this->Form->input('receipt_rows.'.$i.'.reference_details.'.$j.'.company_id', ['type'=>'hidden','label' => false,'class' => 'form-control input-sm companyIdContainer','value'=>$reference_detail->company_id]); ?>
 															
 															<?php 
-															echo $this->Form->input('receipt_rows.'.$i.'.reference_details.'.$j.'.transaction_date', ['type'=>'hidden','label' => false,'class' => 'form-control input-sm companyIdContainer','value'=> date('d-m-Y', strtotime($reference_detail->transaction_date))]); ?>
+															echo $this->Form->input('receipt_rows.'.$i.'.reference_details.'.$j.'.transaction_date', ['type'=>'hidden','label' => false,'class' => 'form-control input-sm','value'=> date('d-m-Y', strtotime($reference_detail->transaction_date))]); ?>
 														
 															<?php 
 															echo $this->Form->input('receipt_rows.'.$i.'.reference_details.'.$j.'.type', ['options'=>$option_ref,'label' => false,'class' => 'form-control input-sm refType','required'=>'required','value'=>$reference_detail->type]); ?>

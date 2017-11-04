@@ -338,6 +338,10 @@ class DebitNotesController extends AppController
 			}
 		    //transaction date for debit note code close here--
 		
+	/* 	pr($debitNote);
+		exit; */
+		
+		
             if ($this->DebitNotes->save($debitNote)) {
 			$query_delete = $this->DebitNotes->AccountingEntries->query();
 					$query_delete->delete()
