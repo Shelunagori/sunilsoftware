@@ -474,8 +474,7 @@ public function edit($id = null)
 				$salesInvoice->receipt_amount=0;
 				}
 			
-			pr($salesInvoice);
-			exit;
+		
 			
 			
 			if ($this->SalesInvoices->save($salesInvoice)) {
