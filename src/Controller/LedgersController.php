@@ -471,11 +471,20 @@ class LedgersController extends AppController
 		{
 			$ledgerAccountids[]=$ledgerAccount->id;
 		}
+		$reference_details = $this->Ledgers->ReferenceDetails->find()->contain(['Ledgers'])->where(['ReferenceDetails.company_id'=>$company_id]);
+		$reference_details->select(['total_debit' => $reference_details->func()->sum('ReferenceDetails.debit'),'total_credit' => $reference_details->func()->sum('ReferenceDetails.credit')])
+		->where(['ReferenceDetails.ledger_id IN '=> $ledgerAccountids,'ReferenceDetails.transaction_date <=' => $run_time_date])
+		->group(['ReferenceDetails.ref_name','ReferenceDetails.ledger_id'])
+		->autoFields(true);		 
+		
+		//pr($reference_details->toArray()); exit;
+		$this->set(compact('reference_details','run_time_date'));
+        $this->set('_serialize', ['reference_details']);
 		
 	/* 	$reference_details = $this->Ledgers->ReferenceDetails->find()
 		->contain(['SalesInvoices'])
 		->where(['ReferenceDetails.ledger_id IN'=>$ledgerAccountids]); */
-		$reference_details = $this->Ledgers->ReferenceDetails->find()->contain(['Ledgers']);
+		
 		/*
 		$reference_details=$reference_details->leftJoinWith('SalesInvoices', function ($q) use($run_time_date){
 		return $q->orWhere(['SalesInvoices.transaction_date <=' => $run_time_date]);
@@ -489,14 +498,7 @@ class LedgersController extends AppController
 		return $q->orWhere(['Payments.transaction_date <=' => $run_time_date]);
 		});
 		*/
-		$reference_details->select(['total_debit' => $reference_details->func()->sum('ReferenceDetails.debit'),'total_credit' => $reference_details->func()->sum('ReferenceDetails.credit')])
-		->where(['ReferenceDetails.ledger_id IN '=> $ledgerAccountids,'ReferenceDetails.transaction_date <=' => $run_time_date])
-		->group(['ReferenceDetails.ref_name','ReferenceDetails.ledger_id'])
-		->autoFields(true);		 
 		
-		//pr($reference_details->toArray()); exit;
-		$this->set(compact('reference_details','run_time_date'));
-        $this->set('_serialize', ['reference_details']);
 		
 	}
 	
@@ -532,24 +534,7 @@ class LedgersController extends AppController
 		{
 			$ledgerAccountids[]=$ledgerAccount->id;
 		}
-		
-	/* 	$reference_details = $this->Ledgers->ReferenceDetails->find()
-		->contain(['SalesInvoices'])
-		->where(['ReferenceDetails.ledger_id IN'=>$ledgerAccountids]); */
-		$reference_details = $this->Ledgers->ReferenceDetails->find()->contain(['Ledgers']);
-		/*
-		$reference_details=$reference_details->leftJoinWith('SalesInvoices', function ($q) use($run_time_date){
-		return $q->orWhere(['SalesInvoices.transaction_date <=' => $run_time_date]);
-		});
-		
-		$reference_details->leftJoinWith('Receipts', function ($q) use($run_time_date){
-		return $q->orWhere(['Receipts.transaction_date <=' => $run_time_date]);
-		});
-		
-		$reference_details->leftJoinWith('Payments', function ($q) use($run_time_date){
-		return $q->orWhere(['Payments.transaction_date <=' => $run_time_date]);
-		});
-		*/
+		$reference_details = $this->Ledgers->ReferenceDetails->find()->contain(['Ledgers'])->where(['ReferenceDetails.company_id'=>$company_id]);
 		$reference_details->select(['total_debit' => $reference_details->func()->sum('ReferenceDetails.debit'),'total_credit' => $reference_details->func()->sum('ReferenceDetails.credit')])
 		->where(['ReferenceDetails.ledger_id IN '=> $ledgerAccountids,'ReferenceDetails.transaction_date <=' => $run_time_date])
 		->group(['ReferenceDetails.ref_name','ReferenceDetails.ledger_id'])

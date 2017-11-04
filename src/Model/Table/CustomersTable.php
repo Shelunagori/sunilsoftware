@@ -49,6 +49,10 @@ class CustomersTable extends Table
             'foreignKey' => 'customer_id'
         ]);
 		
+		$this->hasMany('ReferenceDetails', [
+            'foreignKey' => 'customer_id'
+        ]);
+		
     }
 
     /**

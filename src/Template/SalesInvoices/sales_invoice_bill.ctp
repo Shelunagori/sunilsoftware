@@ -221,12 +221,21 @@ $this->set('title', 'Sales Invoice Bill');
 			<td></td>
 			<td style="text-align:right;"><?php echo number_format($totalAmount,2);  ?></td>
 			</tr>
+		<?php if(!empty($data->discount_amount)) {?>
 		<tr>
 			<td>Discount </td>
 			<td></td>
 			<td></td>
 			<td style="text-align:right;"><?php echo $data->discount_amount;  ?></td>
 		</tr>
+		<?php} if(!empty($data->round_off)) {?>
+		<tr>
+		<td>Round Off </td>
+			<td></td>
+			<td></td>
+			<td style="text-align:right;"><?php echo $data->round_off;  ?></td>
+		</tr>
+		<?php } ?>
 		<tr>
 			<td>Net Total</td>
 			<td></td>

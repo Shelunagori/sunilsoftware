@@ -50,6 +50,15 @@ class ReferenceDetailsTable extends Table
             'foreignKey' => 'ledger_id',
             'joinType' => 'INNER'
         ]);
+		$this->belongsTo('Customers', [
+            'foreignKey' => 'customer_id',
+            'joinType' => 'LEFT'
+        ]);
+		$this->belongsTo('Suppliers', [
+            'foreignKey' => 'supplier_id',
+            'joinType' => 'LEFT'
+        ]);
+		
         $this->belongsTo('Receipts', [
             'foreignKey' => 'receipt_id',
             'joinType' => 'LEFT'

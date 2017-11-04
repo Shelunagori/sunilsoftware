@@ -13,10 +13,12 @@ use App\Controller\AppController;
 class SaleReturnsController extends AppController
 {
 
-    /**
+       /**
      * Index method
      *
      * @return \Cake\Http\Response|void
+     */
+	 public function index()
     {
 		$this->viewBuilder()->layout('index_layout');
 		$company_id=$this->Auth->User('session_company_id');
@@ -26,11 +28,10 @@ class SaleReturnsController extends AppController
         $this->set(compact('saleReturns'));
         $this->set('_serialize', ['saleReturns']);
     }
-
-    /**
+ /**
      * View method
      *
-     * @param string|null $id Sale Return id.
+     * @param string|null $id Sales Invoice id.
      * @return \Cake\Http\Response|void
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */

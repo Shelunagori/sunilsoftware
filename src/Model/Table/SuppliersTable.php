@@ -48,6 +48,9 @@ class SuppliersTable extends Table
         $this->hasOne('Ledgers', [
             'foreignKey' => 'supplier_id'
         ]);
+		$this->hasMany('ReferenceDetails', [
+            'foreignKey' => 'supplier_id'
+        ]);
     }
 
     /**

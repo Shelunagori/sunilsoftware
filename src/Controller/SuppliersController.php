@@ -63,6 +63,16 @@ class SuppliersController extends AppController
             $supplier = $this->Suppliers->patchEntity($supplier, $this->request->getData());
 			$bill_to_bill_accounting=$supplier->bill_to_bill_accounting;
 			$default_credit_days=$supplier->default_credit_days;
+			
+			if(!empty($supplier->reference_details))
+				{
+					foreach($supplier->reference_details as $reference_detail)
+					{
+						$reference_detail->transaction_date = $this->Auth->User('session_company')->books_beginning_from;
+						$reference_detail->company_id = $company_id;
+						$reference_detail->opening_balance = 'yes';
+					}
+				}
             if ($this->Suppliers->save($supplier)) {
 				//Create Ledger//
 			$accounting_group = $this->Suppliers->Ledgers->AccountingGroups->find()->where(['company_id'=>$company_id,'supplier'=>1])->first();
@@ -76,6 +86,11 @@ class SuppliersController extends AppController
 				$ledger->default_credit_days=$default_credit_days;
 				if($this->Suppliers->Ledgers->save($ledger))
 				{
+					$query=$this->Suppliers->ReferenceDetails->query();
+						$result = $query->update()
+						->set(['ledger_id' => $ledger->id])
+						->where(['supplier_id' => $supplier->id])
+						->execute();
 					//Create Accounting Entry//
 			        $transaction_date=$this->Auth->User('session_company')->books_beginning_from;
 					$AccountingEntry = $this->Suppliers->Ledgers->AccountingEntries->newEntity();
@@ -153,14 +168,26 @@ class SuppliersController extends AppController
     {
 		$this->viewBuilder()->layout('index_layout');
         $supplier = $this->Suppliers->get($id, [
-            'contain' => ['Ledgers']
+            'contain' => ['Ledgers','ReferenceDetails']
         ]); 
 		//pr($supplier);exit;
 		$company_id=$this->Auth->User('session_company_id');
         if ($this->request->is(['patch', 'post', 'put'])) {
             $supplier = $this->Suppliers->patchEntity($supplier, $this->request->getData());
+			$this->Suppliers->ReferenceDetails->deleteAll(['ReferenceDetails.supplier_id'=>$supplier->id]);
 			$bill_to_bill_accounting=$supplier->bill_to_bill_accounting;
 			$default_credit_days=$supplier->default_credit_days;
+			
+			if(!empty($supplier->reference_details))
+				{
+					foreach($supplier->reference_details as $reference_detail)
+					{
+						$reference_detail->transaction_date = $this->Auth->User('session_company')->books_beginning_from;
+						$reference_detail->company_id = $company_id;
+						$reference_detail->opening_balance = 'yes';
+						$reference_detail->ledger_id =$supplier->ledger->id ;
+					}
+				}
             if ($this->Suppliers->save($supplier)) {
 				$ledger = $this->Suppliers->Ledgers->get($supplier->ledger->id);
 				$ledger->name=$supplier->name;
