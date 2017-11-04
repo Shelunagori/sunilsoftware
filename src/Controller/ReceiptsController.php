@@ -270,6 +270,7 @@ class ReceiptsController extends AppController
             $this->Flash->error(__('The receipt could not be saved. Please, try again.'));
         }
 		
+		
 		$refDropDown =[];
 		foreach($receipt->receipt_rows as $receipt_row)
 		{	
