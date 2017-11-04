@@ -257,14 +257,16 @@ $option_ref[]= ['value'=>'On Account','text'=>'On Account'];
 			{	
 				$(this).closest('tr').remove();
 				renameRefRows();
+				calculation();
 			});
-		AddRefRow();
+		
 		$('.bill_to_bill_accounting').die().live('change',function(){
 			var bill_accounting=$('option:selected', this).val();
-			if(bill_accounting=='no'){
+			if(bill_accounting=='no'){ 
 				$('.default_credit_days').val(0);
 				$('.default_credit_days_div').hide();
 				$('div.window table tbody').find('tr').remove();
+				$('div.window table.refTbl tfoot tr td:nth-child(2) input.total').rules('remove', 'equalTo');
 				$('.window').hide();
 			}
 			else{
@@ -275,6 +277,7 @@ $option_ref[]= ['value'=>'On Account','text'=>'On Account'];
 				AddRefRow();
 				}else{
 				$('div.window table tbody').find('tr').remove();
+				$('div.window table.refTbl tfoot tr td:nth-child(2) input.total').rules('remove', 'equalTo');
 				$('.window').hide();
 				}
 				
@@ -289,6 +292,7 @@ $option_ref[]= ['value'=>'On Account','text'=>'On Account'];
 			var refTr=$('#sampleForRef tbody tr').clone();
 			$('div.window table tbody').append(refTr);
 			renameRefRows();
+			calculation();
 		}
 		
 		function renameRefRows(){
@@ -348,19 +352,25 @@ $option_ref[]= ['value'=>'On Account','text'=>'On Account'];
 		$('.balance').live('blur',function()
 		{
 			var main_amt=$(this).val();
-			var bill_accounting=$('.balance option:selected', this).val();
+			var bill_accounting=$('.bill_to_bill_accounting option:selected').val();
+			
 			if(main_amt>0 && bill_accounting=='yes'){
 				$('.window').show();
 				AddRefRow();
 				}else{
 				$('div.window table tbody').find('tr').remove();
+				$('div.window table.refTbl tfoot tr td:nth-child(2) input.total').rules('remove', 'equalTo');
 				$('.window').hide();
 				}
 		});
 		
-		$('.calculation').die().live('keyup, change, click',function()
+		$('.calculation').die().live('keyup, change',function()
 			{ 
-				
+				calculation();
+			});	
+			
+			function calculation(){
+			
 				var total_debit=0;var total_credit=0; var remaining=0;
 				$('div.window table tbody tr').each(function(){
 					var Dr_Cr=$(this).find('td:nth-child(4) select option:selected').val();
@@ -389,8 +399,8 @@ $option_ref[]= ['value'=>'On Account','text'=>'On Account'];
 						$(this).closest('table').find(' tfoot td:nth-child(3) input.total_type').val('');	
 					}
 				});
-				renameRefRows();
-			});	
+				renameRefRows();	
+			}
 			
 		ComponentsPickers.init();
 	});	

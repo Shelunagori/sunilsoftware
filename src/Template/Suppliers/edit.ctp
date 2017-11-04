@@ -39,6 +39,38 @@ $this->set('title', 'Edit Supplier');
 									<label>Mobile </label>
 									<?php echo $this->Form->control('mobile',['class'=>'form-control input-sm','placeholder'=>'Mobile no','label'=>false,'autofocus','maxlength'=>10]); ?>
 								</div>
+								<div class="col-md-8" style="padding-left: 0px;padding-right: 0px;">
+								<div class="form-group" >
+									<label>Opening balance value</label>
+									<?php 
+										$value="";
+										if(!empty($account_entry->debit))
+										{
+											$value =@$account_entry->debit;
+										}
+										else
+										{
+											$value = @$account_entry->credit;
+										}
+										echo $this->Form->control('opening_balance_value',['id'=>'opening_balance_value','class'=>'rightAligntextClass form-control input-sm balance','label'=>false,'value'=>@$value,'placeholder'=>'Opening Balance']);
+									?>
+								</div>
+							</div>
+							<div class="col-md-2" style="padding-left: 0px;padding-right:0;">
+								<label style="visibility:hidden;">s</label>
+								<?php $option =[['value'=>'Dr','text'=>'Dr'],['value'=>'Cr','text'=>'Cr']];
+									$check="";
+									if(!empty($account_entry->debit))
+									{
+										$check ='Dr';
+									}
+									else
+									{
+										$check ='Cr';
+									}
+									echo $this->Form->control('debit_credit',['id'=>'cr_dr','class'=>'form-control input-sm cr_dr','label'=>false, 'options' => $option,'value'=>'creditor','value'=>$check]);
+								?>
+							</div>
 								<div class="form-group">
 									<label>Bill to Bill Accounting </label>
 									<?php 
@@ -73,43 +105,10 @@ $this->set('title', 'Edit Supplier');
 								</div>
 							</div>
 						</div>
-						<div class="row">
-							<div class="col-md-3" style="padding-right: 0px;">
-								<div class="form-group" >
-									<label>Opening balance value</label>
-									<?php 
-										$value="";
-										if(!empty($account_entry->debit))
-										{
-											$value =@$account_entry->debit;
-										}
-										else
-										{
-											$value = @$account_entry->credit;
-										}
-										echo $this->Form->control('opening_balance_value',['id'=>'opening_balance_value','class'=>'rightAligntextClass form-control input-sm balance','label'=>false,'value'=>@$value,'placeholder'=>'Opening Balance']);
-									?>
-								</div>
-							</div>
-							<div class="col-md-2" style="padding-left: 0px;padding-right:0;">
-								<label style="visibility:hidden;">s</label>
-								<?php $option =[['value'=>'Dr','text'=>'Dr'],['value'=>'Cr','text'=>'Cr']];
-									$check="";
-									if(!empty($account_entry->debit))
-									{
-										$check ='Dr';
-									}
-									else
-									{
-										$check ='Cr';
-									}
-									echo $this->Form->control('debit_credit',['id'=>'cr_dr','class'=>'form-control input-sm cr_dr','label'=>false, 'options' => $option,'value'=>'creditor','value'=>$check]);
-								?>
-							</div>
-						</div>
-					</div>
+						
 					<div class="row">
-							<div class="window" style="margin:auto;">
+							<div class="window" style="margin:auto;display:hidden;">
+								<table width="90%" class="refTbl"><tbody>
 							<?php
                           //  unset($option_ref);								 
 							$option_ref[]= ['value'=>'New Ref','text'=>'New Ref'];
@@ -117,7 +116,7 @@ $this->set('title', 'Edit Supplier');
 							$option_ref[]= ['value'=>'On Account','text'=>'On Account'];
 								if(!empty($supplier->reference_details)){
 								?>
-									<table width="90%" class="refTbl"><tbody>
+									
 									<?php
 										$j=0;$total_amount_dr=0;$total_amount_cr=0;$colspan=0; 
 										
@@ -178,21 +177,20 @@ $this->set('title', 'Edit Supplier');
 											$type="Cr";
 										}
 										?>
+										<?php } ?>
 									</tbody>
+									
 									<tfoot>
 										<tr class="remove_ref_foot">
-											<td colspan="2"><input type="hidden" id="htotal" value="<?php echo $total;?>">
+											<td colspan="2"><input type="hidden" id="htotal" value="<?php echo @$total;?>">
 											<a role="button" class="addRefRow">Add Row</a>
 											</td>
 											<td valign="top">
-											<input type="text" name="total" class="form-control input-sm rightAligntextClass total calculation " id="total" value="<?php echo $total;?>" readonly></td><td valign="top"><input type="text" id="total_type" name="total_type" class="form-control input-sm total_type calculation " value="<?php echo @$type;?>" readonly></td>
+											<input type="text" name="total" class="form-control input-sm rightAligntextClass total calculation " id="total" value="<?php echo @$total;?>" readonly></td><td valign="top"><input type="text" id="total_type" name="total_type" class="form-control input-sm total_type calculation " value="<?php echo @$type;?>" readonly></td>
 										
 										</tr>
 									</tfoot>
 									</table>
-									
-								<?php } ?>
-						
 						</div>
 				   </div>
 				</div>
@@ -281,7 +279,6 @@ $this->set('title', 'Edit Supplier');
 	<!-- END COMPONENTS DROPDOWNS -->
 <!-- END PAGE LEVEL SCRIPTS -->
 
-
 <?php
 	$kk='<input type="text" class="form-control input-sm ref_name " placeholder="Reference Name">';
 	
@@ -337,44 +334,76 @@ $this->set('title', 'Edit Supplier');
 
                 }
 			});
-			renameRefRows();
-		var bill_accounting=$('option:selected', this).val();
-			if(bill_accounting=='no'){
+			
+			var bill_accounting=$('.bill_to_bill_accounting option:selected', this).val();
+			var main_amt=$('.balance').val();
+			if(bill_accounting=='yes' && main_amt>0){
+			$('.default_credit_days_div').show();
+			$('.window').show();
+			}
+			else if(bill_accounting=='no'){
 				$('.default_credit_days').val(0);
 				$('.default_credit_days_div').hide();
-				
+				$('.window').hide();
 			}
 			else{
-				$('.default_credit_days_div').show();
+				$('.window').hide();
 			}
+			
 		$('.delete-tr-ref').die().live('click',function() 
 			{	
 				$(this).closest('tr').remove();
 				renameRefRows();
+				calculation();
 			});
 		
 		$('.bill_to_bill_accounting').die().live('change',function(){
 			var bill_accounting=$('option:selected', this).val();
-			if(bill_accounting=='no'){
+			if(bill_accounting=='no'){ 
 				$('.default_credit_days').val(0);
-				$('.window').remove();
+				$('.default_credit_days_div').hide();
+				$('div.window table tbody').find('tr').remove();
+				$('div.window table.refTbl tfoot tr td:nth-child(2) input.total').rules('remove', 'equalTo');
 				$('.window').hide();
 			}
 			else{
 				$('.default_credit_days_div').show();
+				var mainAmt=$('.balance').val();
+				if(mainAmt>0){
 				$('.window').show();
 				AddRefRow();
+				}else{
+				$('div.window table tbody').find('tr').remove();
+				$('div.window table.refTbl tfoot tr td:nth-child(2) input.total').rules('remove', 'equalTo');
+				$('.window').hide();
+				}
+				
 			}
 		});
-		
+		$('.balance').live('blur',function()
+		{
+			var main_amt=$(this).val();
+			var bill_accounting=$('.bill_to_bill_accounting option:selected').val();
+			
+			if(main_amt>0 && bill_accounting=='yes'){
+				$('.window').show();
+				AddRefRow();
+				}else{
+				$('div.window table tbody').find('tr').remove();
+				$('div.window table.refTbl tfoot tr td:nth-child(2) input.total').rules('remove', 'equalTo');
+				$('.window').hide();
+				}
+		});
 		$('.addRefRow').die().live('click',function(){
 				AddRefRow();
 			});
 			
 		function AddRefRow(){
+			
 			var refTr=$('#sampleForRef tbody tr').clone();
 			$('div.window table tbody').append(refTr);
 			renameRefRows();
+			calculation();
 		}
 		
 		function renameRefRows(){
@@ -431,10 +460,13 @@ $this->set('title', 'Edit Supplier');
 				renameRefRows();
 			});
 		
-		$('.calculation').die().live('keyup, change, click',function()
+		$('.calculation').die().live('keyup, change',function()
 			{ 
+				calculation();
 				
-				var total_debit=0;var total_credit=0; var remaining=0;
+			});	
+		function calculation(){
+			var total_debit=0;var total_credit=0; var remaining=0;
 				$('div.window table tbody tr').each(function(){
 					var Dr_Cr=$(this).find('td:nth-child(4) select option:selected').val();
 					var amt= parseFloat($(this).find('td:nth-child(3) input').val());
@@ -463,8 +495,7 @@ $this->set('title', 'Edit Supplier');
 					}
 				});
 				renameRefRows();
-			});	
-			
+		}	
 		ComponentsPickers.init();
 	});	
 	
