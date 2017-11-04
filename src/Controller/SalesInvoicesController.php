@@ -443,8 +443,7 @@ public function edit($id = null)
 					
 				}
 			}
-//pr($sales_return_qty);
-		 //exit;
+
 		$company_id=$this->Auth->User('session_company_id');
 		$stateDetails=$this->Auth->User('session_company');
 		$location_id=$this->Auth->User('session_location_id');
@@ -590,7 +589,7 @@ public function edit($id = null)
 					 $refData2 = $this->SalesInvoices->Receipts->ReceiptRows->ReferenceDetails->query();
 						$refData2->update()
 						->set(['company_id' => $salesInvoice->company_id,
-										'ledger_id' => $receiptLedgerId->id,
+										'ledger_id' => $salesInvoice->party_ledger_id,
 										'type' => 'Against',
 										'debit' => '0',
 										'receipt_id' => $receiptId->id,
@@ -683,7 +682,7 @@ public function edit($id = null)
 								 $refData2 = $this->SalesInvoices->Receipts->ReceiptRows->ReferenceDetails->query();
 									$refData2->update()
 									->set(['company_id' => $salesInvoice->company_id,
-												'ledger_id' => $receiptLedgerId->id,
+												'ledger_id' => $salesInvoice->party_ledger_id,
 												'type' => 'Against',
 												'debit' => '0',
 												'receipt_id' => $receiptId->id,
@@ -787,7 +786,7 @@ public function edit($id = null)
 								$refData2->insert(['company_id','ledger_id','type', 'ref_name', 'debit', 'receipt_id','receipt_row_id'])
 										->values([
 										'company_id' => $salesInvoice->company_id,
-										'ledger_id' => $receiptLedgerId->id,
+										'ledger_id' => $salesInvoice->party_ledger_id,
 										'type' => 'Against',
 										'ref_name' => $salesInvoice->voucher_no,
 										'debit' => $salesInvoice->receipt_amount,
@@ -1005,6 +1004,11 @@ public function edit($id = null)
         }
         $gstFigures = $this->SalesInvoices->GstFigures->find('list')
 						->where(['company_id'=>$company_id]);
+						
+						//pr($sales_return_qty);
+						//exit;
+						
+						
         $this->set(compact('salesInvoice', 'companies', 'customerOptions', 'gstFigures', 'voucher_no','company_id','itemOptions','state_id', 'Accountledgers', 'partyOptions', 'location_id','sales_return_qty'));
         $this->set('_serialize', ['salesInvoice']);
     }	

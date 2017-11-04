@@ -228,8 +228,7 @@ class ReceiptsController extends AppController
 					 */
 		$receipt = $this->Receipts->patchEntity($receipt, $this->request->getData(),['associated' => ['ReceiptRows','ReceiptRows.ReferenceDetails']]);
 
-		//pr($receipt);
-		//exit;
+		
 		//transaction date for receipt code start here--
 			foreach($receipt->receipt_rows as $receipt_row)
 			{
@@ -242,7 +241,8 @@ class ReceiptsController extends AppController
 				}
 			}
 			//transaction date for receipt code close here-- 
-
+			//pr($receipt->toArray());
+			//exit;
             if ($this->Receipts->save($receipt)) {
 			$query_delete = $this->Receipts->AccountingEntries->query();
 					$query_delete->delete()

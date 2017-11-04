@@ -154,7 +154,13 @@ foreach($partyOptions as $partyOption)
 										<span class="itemQty" style="color:red"></span>
 								</td>
 								<td>
-									<?php echo $this->Form->input('salesInvoiceRow.'.$i.'.quantity', ['type'=>'text','label' => false,'class' => 'form-control input-medium calculation quantity rightAligntextClass','id'=>'check','required'=>'required','placeholder'=>'Quantity', 'value'=>$salesInvoiceRow->quantity,'min'=>@$sales_return_qty[$salesInvoiceRow->item->id]]); ?>
+									<?php echo $this->Form->input('salesInvoiceRow.'.$i.'.quantity', ['type'=>'text','label' => false,'class' => 'form-control input-medium calculation quantity rightAligntextClass','id'=>'check','required'=>'required','placeholder'=>'Quantity', 'value'=>$salesInvoiceRow->quantity]); ?>
+									
+									<input type="hidden" name="" class="salesReturnQuantity" value=<?php echo @$sales_return_qty[$salesInvoiceRow->item->id];?>>
+									
+									<input type="hidden" name="" class="salesRQuantity" value=<?php echo @$salesInvoiceRow->quantity;?>>
+									
+									
 								</td>
 								<td>
 									<?php echo $this->Form->input('salesInvoiceRow.'.$i.'.rate', ['label' => false,'class' => 'form-control input-sm calculation rate rightAligntextClass','required'=>'required','placeholder'=>'Rate','value'=>$salesInvoiceRow->rate, 'readonly'=>'readonly', 'tabindex'=>'-1']); ?>
@@ -405,6 +411,19 @@ foreach($partyOptions as $partyOption)
 		});	
 		forward_total_amount();
 		});
+		
+		$('.quantity').die().live('keyup',function(){
+			var itemQ=$(this).closest('tr');
+			var returnQty=itemQ.find('.salesReturnQuantity').val();
+			var exactQty=itemQ.find('.salesRQuantity').val();
+			var quantityVal=$(this).val();
+				if(quantityVal < returnQty)
+				{
+				 alert('Please enter value max than '+returnQty);
+				 $(this).val(exactQty);
+				}
+         forward_total_amount();				
+		});	
 		
 		$(document).ready(onLoadInvoiceReceipt);
 		function onLoadInvoiceReceipt()
