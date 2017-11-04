@@ -44,17 +44,29 @@ $this->set('title', 'Create Customer');
 									<label>Mobile </label>
 									<?php echo $this->Form->control('mobile',['class'=>'form-control input-sm','placeholder'=>'Mobile no','label'=>false,'autofocus','maxlength'=>10]); ?>
 								</div>
-								<div class="form-group" >
-									<label>Bill to Bill Accounting </label>
-									<?php 
-									$option =[['value'=>'yes','text'=>'yes'],['value'=>'no','text'=>'no']];
-									echo $this->Form->control('bill_to_bill_accounting',['class'=>'form-control input-sm bill_to_bill_accounting','label'=>false, 'options' => $option,'required'=>'required']); ?>
+								<div class="col-md-8" style="padding-left: 0px;padding-right:0px;">
+								<div class="form-group " >
+									<label>Opening balance</label>
+									<?php echo $this->Form->control('opening_balance_value',['id'=>'opening_balance_value','class'=>'rightAligntextClass form-control input-sm balance','label'=>false,'placeholder'=>'Opening Balance']);
+									?>
 								</div>
-								<div class="form-group default_credit_days_div" >
+								</div>
+								<div class="col-md-2" style="padding-left: 0px;padding-right:0;">
+									<label style="visibility:hidden;">sdasdasdsa</label>
+									<?php $option =[['value'=>'Dr','text'=>'Dr'],['value'=>'Cr','text'=>'Cr']];
+										echo $this->Form->control('debit_credit',['id'=>'cr_dr','class'=>'form-control input-sm cr_dr','label'=>false, 'options' => $option]);
+										?>
+								</div>
+								<div class="form-group" >
+										<label>Bill to Bill Accounting </label>
+										<?php 
+										$option =[['value'=>'yes','text'=>'yes'],['value'=>'no','text'=>'no']];
+										echo $this->Form->control('bill_to_bill_accounting',['class'=>'form-control input-sm bill_to_bill_accounting','label'=>false, 'options' => $option,'required'=>'required','value'=>'no']); ?>
+								</div>
+								<div class="form-group default_credit_days_div" style="display:none;" >
 								<label>Default Credit Days</label>
 									<?php echo $this->Form->control('default_credit_days',['class'=>'form-control input-sm default_credit_days','placeholder'=>'Default Credit Days','label'=>false,'value'=>0]); ?>
 								</div>
-								
 							</div>
 							<div class="col-md-6">
 								<div class="form-group">
@@ -78,25 +90,12 @@ $this->set('title', 'Create Customer');
 									<label>Address</label>
 									<?php echo $this->Form->control('address',['class'=>'form-control input-sm','label'=>false,'placeholder'=>'Address']); ?>
 								</div>
+								
 							</div>
 						</div>
+						
 						<div class="row">
-							<div class="col-md-3" style="padding-right: 0px;">
-								<div class="form-group" >
-									<label>Opening balance</label>
-									<?php echo $this->Form->control('opening_balance_value',['id'=>'opening_balance_value','class'=>'rightAligntextClass form-control input-sm balance','label'=>false,'placeholder'=>'Opening Balance']);
-									?>
-								</div>
-							</div>
-							<div class="col-md-2" style="padding-left: 0px;padding-right:0;">
-							    <label style="visibility:hidden;">sdasdasdsa</label>
-								<?php $option =[['value'=>'Dr','text'=>'Dr'],['value'=>'Cr','text'=>'Cr']];
-									echo $this->Form->control('debit_credit',['id'=>'cr_dr','class'=>'form-control input-sm cr_dr','label'=>false, 'options' => $option]);
-									?>
-							</div>
-						</div>
-						<div class="row">
-							<div class="window" style="margin:auto;">
+							<div class="window" style="margin:auto;display:none;">
 								<table width="90%" class="refTbl">
 								<tbody></tbody>
 								<tfoot>
@@ -264,13 +263,21 @@ $option_ref[]= ['value'=>'On Account','text'=>'On Account'];
 			var bill_accounting=$('option:selected', this).val();
 			if(bill_accounting=='no'){
 				$('.default_credit_days').val(0);
+				$('.default_credit_days_div').hide();
 				$('div.window table tbody').find('tr').remove();
 				$('.window').hide();
 			}
 			else{
 				$('.default_credit_days_div').show();
+				var mainAmt=$('.balance').val();
+				if(mainAmt>0){
 				$('.window').show();
 				AddRefRow();
+				}else{
+				$('div.window table tbody').find('tr').remove();
+				$('.window').hide();
+				}
+				
 			}
 		});
 		
@@ -337,6 +344,19 @@ $option_ref[]= ['value'=>'On Account','text'=>'On Account'];
 				}
 				renameRefRows();
 			});
+			
+		$('.balance').live('blur',function()
+		{
+			var main_amt=$(this).val();
+			var bill_accounting=$('.balance option:selected', this).val();
+			if(main_amt>0 && bill_accounting=='yes'){
+				$('.window').show();
+				AddRefRow();
+				}else{
+				$('div.window table tbody').find('tr').remove();
+				$('.window').hide();
+				}
+		});
 		
 		$('.calculation').die().live('keyup, change, click',function()
 			{ 
