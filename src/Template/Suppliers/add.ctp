@@ -44,6 +44,19 @@ $this->set('title', 'Create Supplier');
 									<label>Mobile </label>
 									<?php echo $this->Form->control('mobile',['class'=>'form-control input-sm','placeholder'=>'Mobile no','label'=>false,'autofocus','maxlength'=>10]); ?>
 								</div>
+								<div class="col-md-8" style="padding-left: 0px;padding-right: 0px;">
+								<div class="form-group" >
+									<label>Opening balance value</label>
+									<?php echo $this->Form->control('opening_balance_value',['id'=>'opening_balance_value','class'=>'rightAligntextClass form-control input-sm balance','label'=>false,'placeholder'=>'Opening Balance']);
+									?>
+								</div>
+								</div>
+								<div class="col-md-2" style="padding-left: 0px;padding-right:0;">
+							    <label style="visibility:hidden;">s</label>
+								<?php $option =[['value'=>'Dr','text'=>'Dr'],['value'=>'Cr','text'=>'Cr']];
+									echo $this->Form->control('debit_credit',['id'=>'cr_dr','class'=>'form-control input-sm cr_dr','label'=>false, 'options' => $option,'value'=>'creditor']);
+									?>
+								</div>
 								<div class="form-group">
 									<label>Bill to Bill Accounting </label>
 									<?php 
@@ -79,27 +92,12 @@ $this->set('title', 'Create Supplier');
 						   </div>
 						</div>
 						<div class="row">
-							<div class="col-md-3" style="padding-right: 0px;">
-								<div class="form-group" >
-									<label>Opening balance value</label>
-									<?php echo $this->Form->control('opening_balance_value',['id'=>'opening_balance_value','class'=>'rightAligntextClass form-control input-sm balance','label'=>false,'placeholder'=>'Opening Balance']);
-									?>
-								</div>
-							</div>
-							<div class="col-md-2" style="padding-left: 0px;padding-right:0;">
-							    <label style="visibility:hidden;">s</label>
-								<?php $option =[['value'=>'Dr','text'=>'Dr'],['value'=>'Cr','text'=>'Cr']];
-									echo $this->Form->control('debit_credit',['id'=>'cr_dr','class'=>'form-control input-sm cr_dr','label'=>false, 'options' => $option,'value'=>'creditor']);
-									?>
-							</div>
-					    </div>
-						<div class="row">
-							<div class="window" style="margin:auto;">
+							<div class="window" style="margin:auto;display:none;">
 								<table width="90%" class="refTbl">
 								<tbody></tbody>
 								<tfoot>
 								<tr style="border-top:#a5a1a1"><td colspan="2"><a role="button" class="addRefRow">Add Row</a></td><td valign="top"><input type="text" name="total" class="form-control input-sm rightAligntextClass total calculation " id="total" readonly></td><td valign="top"><input type="text" id="total_type" name="total_type" class="form-control input-sm total_type calculation " readonly></td></tr></tfoot></table>
-								</div>
+							</div>
 						</div>
 				    </div>
 				</div>
@@ -253,19 +251,31 @@ $option_ref[]= ['value'=>'On Account','text'=>'On Account'];
 			{	
 				$(this).closest('tr').remove();
 				renameRefRows();
+				calculation();
 			});
-		AddRefRow();
+		
+		
 		$('.bill_to_bill_accounting').die().live('change',function(){
 			var bill_accounting=$('option:selected', this).val();
-			if(bill_accounting=='no'){
+			if(bill_accounting=='no'){ 
 				$('.default_credit_days').val(0);
-				$('.window').remove();
+				$('.default_credit_days_div').hide();
+				$('div.window table tbody').find('tr').remove();
+				$('div.window table.refTbl tfoot tr td:nth-child(2) input.total').rules('remove', 'equalTo');
 				$('.window').hide();
 			}
 			else{
 				$('.default_credit_days_div').show();
+				var mainAmt=$('.balance').val();
+				if(mainAmt>0){
 				$('.window').show();
 				AddRefRow();
+				}else{
+				$('div.window table tbody').find('tr').remove();
+				$('div.window table.refTbl tfoot tr td:nth-child(2) input.total').rules('remove', 'equalTo');
+				$('.window').hide();
+				}
+				
 			}
 		});
 		
@@ -277,6 +287,7 @@ $option_ref[]= ['value'=>'On Account','text'=>'On Account'];
 			var refTr=$('#sampleForRef tbody tr').clone();
 			$('div.window table tbody').append(refTr);
 			renameRefRows();
+			calculation();
 		}
 		
 		function renameRefRows(){
@@ -331,11 +342,28 @@ $option_ref[]= ['value'=>'On Account','text'=>'On Account'];
 					currentRefRow.find('td:nth-child(2)').html('".$kk."');
 				}
 				renameRefRows();
-			});
-		
+		});
+		$('.balance').live('blur',function()
+		{
+			var main_amt=$(this).val();
+			var bill_accounting=$('.bill_to_bill_accounting option:selected').val();
+			
+			if(main_amt>0 && bill_accounting=='yes'){
+				$('.window').show();
+				AddRefRow();
+				}else{
+				$('div.window table tbody').find('tr').remove();
+				$('div.window table.refTbl tfoot tr td:nth-child(2) input.total').rules('remove', 'equalTo');
+				$('.window').hide();
+				}
+		});
 		$('.calculation').die().live('keyup, change',function()
 			{ 
-				
+				calculation();
+			});	
+			
+			function calculation(){
+			
 				var total_debit=0;var total_credit=0; var remaining=0;
 				$('div.window table tbody tr').each(function(){
 					var Dr_Cr=$(this).find('td:nth-child(4) select option:selected').val();
@@ -364,9 +392,8 @@ $option_ref[]= ['value'=>'On Account','text'=>'On Account'];
 						$(this).closest('table').find(' tfoot td:nth-child(3) input.total_type').val('');	
 					}
 				});
-				renameRefRows();
-			});	
-			
+				renameRefRows();	
+			}
 		ComponentsPickers.init();
 	});	
 	
