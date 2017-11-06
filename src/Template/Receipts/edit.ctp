@@ -533,6 +533,7 @@ $this->set('title', 'Receipt Voucher');
 			});
 			
 			$('.refType').die().live('change',function(){
+				var SelectedTr=$(this).closest('tr.MainTr');
 				var type=$(this).val();
 				var currentRefRow=$(this).closest('tr');
 				var ledger_id=$(this).closest('tr.MainTr').find('select.ledger option:selected').val();
@@ -545,6 +546,7 @@ $this->set('title', 'Receipt Voucher');
 						url: url,
 					}).done(function(response) { 
 						currentRefRow.find('td:nth-child(2)').html(response);
+						renameRefRows(SelectedTr);
 					});
 				}else if(type=='On Account'){
 					currentRefRow.find('td:nth-child(2)').html('');

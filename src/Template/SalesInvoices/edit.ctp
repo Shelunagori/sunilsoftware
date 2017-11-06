@@ -419,7 +419,7 @@ foreach($partyOptions as $partyOption)
 			var quantityVal=$(this).val();
 				if(quantityVal < returnQty)
 				{
-				 alert('Please enter value max than '+returnQty);
+				 alert('Please enter quantity max than '+returnQty);
 				 $(this).val(exactQty);
 				}
          forward_total_amount();				

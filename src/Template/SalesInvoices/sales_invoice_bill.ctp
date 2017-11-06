@@ -233,15 +233,10 @@ $this->set('title', 'Sales Invoice Bill');
 			<td>Discount </td>
 			<td></td>
 			<td></td>
-			<td style="text-align:right;"><?php echo $totDis;  ?></td>
+			<td style="text-align:right;"><?php echo $data->discount_amount;  ?></td>
 		</tr>
-		<tr>
-			<td>Round Off </td>
-			<td></td>
-			<td></td>
-			<td style="text-align:right;"><?php echo $data->round_off;  ?></td>
-		</tr>
-		<?php} if(!empty($data->round_off)) {?>
+		
+		<?php } if(!empty($data->round_off)) {?>
 		<tr>
 		<td>Round Off </td>
 			<td></td>

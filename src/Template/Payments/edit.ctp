@@ -124,7 +124,7 @@ $this->set('title', 'Payment Voucher');
 														<td width="">
 														<?php if($reference_detail->type=='New Ref' || $reference_detail->type=='Advance'){ 
 														?>
-															<?php echo $this->Form->input('payment_rows.'.$i.'.reference_details.'.$j.'.ref_name', ['type'=>'text','label' => false,'class' => 'form-control input-sm ref_name','placeholder'=>'Reference Name','required'=>'required', 'value'=>$reference_detail->ref_name]); ?>
+															<?php echo $this->Form->input('payment_rows.'.$i.'.reference_details.'.$j.'.ref_name', ['type'=>'text','label' => false,'class' => 'form-control input-sm ref_name','placeholder'=>'Reference Name','required'=>'required']); ?>
 															<?php } if($reference_detail->type=='Against')
 															{?>
 															<?php 
@@ -530,6 +530,7 @@ $this->set('title', 'Payment Voucher');
 			});
 			
 			$('.refType').die().live('change',function(){
+				var SelectedTr=$(this).closest('tr.MainTr');
 				var type=$(this).val();
 				var currentRefRow=$(this).closest('tr');
 				var ledger_id=$(this).closest('tr.MainTr').find('select.ledger option:selected').val();
@@ -542,6 +543,7 @@ $this->set('title', 'Payment Voucher');
 						url: url,
 					}).done(function(response) { 
 						currentRefRow.find('td:nth-child(2)').html(response);
+						renameRefRows(SelectedTr);
 					});
 				}else if(type=='On Account'){
 					currentRefRow.find('td:nth-child(2)').html('');

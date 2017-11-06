@@ -300,9 +300,17 @@ class CreditNotesController extends AppController
 			}
 		}
 		
+		
+		
+		
+		
 		$originalcreditNote=$creditNote;
         if ($this->request->is('put','patch','post')) {
 		
+	
+	
+	
+	
 	
 		//GET ORIGINAL DATA AND DELETE REFERENCE DATA//
 			$orignalCreditNote_ids=[];
@@ -316,12 +324,16 @@ class CreditNotesController extends AppController
 					->where(['credit_note_id' => $creditNote->id])
 					->execute();
 			//GET ORIGINAL DATA AND DELETE REFERENCE DATA//
-			
+			//exit;
 		
 		
 			$creditNote = $this->CreditNotes->patchEntity($creditNote, $this->request->getData(),['associated' => ['CreditNoteRows','CreditNoteRows.ReferenceDetails']]);
 			$tdate=$this->request->data('transaction_date');
 			$creditNote->transaction_date=date('Y-m-d',strtotime($tdate));
+		 
+		 
+		// pr($creditNote->toArray());
+		// exit;
 		 
 			//transaction date for credit note code start here--
 			foreach($creditNote->credit_note_rows as $credit_note_row)
