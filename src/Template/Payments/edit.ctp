@@ -317,11 +317,11 @@ $this->set('title', 'Payment Voucher');
 				echo $this->Form->input('mode_of_payment', ['options'=>$option_mode,'label' => false,'class' => 'form-control input-sm paymentType','required'=>'required']); ?>
 			</td>
 			<td width="30%" valign="top">
-				<?php echo $this->Form->input('cheque_no', ['label' =>false,'class' => 'form-control input-sm cheque_no','placeholder'=>'Cheque No','required'=>'required']); ?> 
+				<?php echo $this->Form->input('cheque_no', ['label' =>false,'class' => 'form-control input-sm cheque_no','placeholder'=>'Cheque No']); ?> 
 			</td>
 			
 			<td width="30%" valign="top">
-				<?php echo $this->Form->input('cheque_date', ['label' =>false,'class' => 'form-control input-sm date-picker cheque_date ','data-date-format'=>'dd-mm-yyyy','placeholder'=>'Cheque Date','required'=>'required']); ?>
+				<?php echo $this->Form->input('cheque_date', ['label' =>false,'class' => 'form-control input-sm date-picker cheque_date ','data-date-format'=>'dd-mm-yyyy','placeholder'=>'Cheque Date']); ?>
 			</td>
 		</tr>
 	</tbody>
@@ -517,7 +517,8 @@ $this->set('title', 'Payment Voucher');
 					renameBankRows(SelectedTr);
 				}
 				else{
-				   
+				    currentRefRow.find('td:nth-child(2)').removeAttr('style');
+					currentRefRow.find('td:nth-child(3)').removeAttr('style');
 					currentRefRow.find('td:nth-child(2)').show();
 					currentRefRow.find('td:nth-child(3)').show();
 					renameBankRows(SelectedTr);
@@ -735,7 +736,7 @@ $this->set('title', 'Payment Voucher');
 						$(this).find('td:nth-child(2) input.cheque_no').rules('add','required');
 						$(this).find('td:nth-child(3) input.cheque_date').rules('add','required');
 					}
-					else
+					else if(type=='NEFT/RTGS')
 					{
 						$(this).find('td:nth-child(2) input').rules('remove','required');
 						$(this).find('td:nth-child(3) input').rules('remove','required');
