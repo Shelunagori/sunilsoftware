@@ -32,7 +32,30 @@ $this->set('title', 'Sales Invoice List');
 							<?php foreach ($saleReturns as $saleReturn): ?>
 							<tr>
 								<td><?= h(++$page_no) ?></td>
-								<td><?= h('#'.str_pad($saleReturn->sales_invoice->voucher_no, 4, '0', STR_PAD_LEFT)) ?></td>
+								<td><?php $date=date('Y-m-d',strtotime($saleReturn->transaction_date));
+								    $d = date_parse_from_format('Y-m-d',$date);
+									$yr=$d["year"];$year= substr($yr, -2);
+									if($d["month"]=='01' || $d["month"]=='02' || $d["month"]=='03')
+									{
+									  $startYear=$year-1;
+									  $endYear=$year;
+									  $financialyear=$startYear.'-'.$endYear;
+									}
+									else
+									{
+									  $startYear=$year;
+									  $endYear=$year+1;
+									  $financialyear=$startYear.'-'.$endYear;
+									}
+								$words = explode(" ", $coreVariable['company_name']);
+								$acronym = "";
+								foreach ($words as $w) {
+								$acronym .= $w[0];
+								}
+								?>
+								<?= $acronym.'/'.$financialyear.'/'. h(str_pad($saleReturn->sales_invoice->voucher_no, 3, '0', STR_PAD_LEFT))
+								?>
+								</td>
 								<td><?= h('#'.str_pad($saleReturn->voucher_no, 4, '0', STR_PAD_LEFT)) ?></td>
 								<td><?= h($saleReturn->party_ledger->name) ?></td>
 								<td><?= h($saleReturn->transaction_date) ?></td>

@@ -151,10 +151,10 @@ foreach($partyOptions as $partyOption)
 																
 										<?php echo $this->Form->input('salesInvoiceRow.'.$i.'.item_id', ['empty'=>'-Item Name-','options'=>$itemOptions,'label' => false,'class' => 'form-control input-sm attrGet calculation','required'=>'required','value'=>$salesInvoiceRow->item->id]);
 										echo $this->Form->input('salesInvoiceRow.'.$i.'.id', ['value'=>$salesInvoiceRow->id,'type'=>'hidden']);	?>
-										<span class="itemQty" style="color:red"></span>
+										<span class="itemQty" style="font-size:10px;"></span>
 								</td>
 								<td>
-									<?php echo $this->Form->input('salesInvoiceRow.'.$i.'.quantity', ['type'=>'text','label' => false,'class' => 'form-control input-medium calculation quantity rightAligntextClass','id'=>'check','required'=>'required','placeholder'=>'Quantity', 'value'=>$salesInvoiceRow->quantity]); ?>
+									<?php echo $this->Form->input('salesInvoiceRow.'.$i.'.quantity', ['type'=>'text','label' => false,'class' => 'form-control input-sm calculation quantity rightAligntextClass','id'=>'check','required'=>'required','placeholder'=>'Quantity', 'value'=>$salesInvoiceRow->quantity]); ?>
 									
 									<input type="hidden" name="" class="salesReturnQuantity" value=<?php echo @$sales_return_qty[$salesInvoiceRow->item->id];?>>
 									
@@ -206,7 +206,7 @@ foreach($partyOptions as $partyOption)
 										<td colspan="6" align="right"><b>Discount Amount</b>
 										</td>
 										<td colspan="2">
-										<?php echo $this->Form->input('discount_amount', ['label' => false,'class' => 'form-control input-sm toalDiscount rightAligntextClass','required'=>'required', 'readonly'=>'readonly','placeholder'=>'', 'tabindex'=>'-1', 'style'=>'padding-right:25px']); ?>	
+										<?php echo $this->Form->input('discount_amount', ['label' => false,'class' => 'form-control input-sm toalDiscount rightAligntextClass','required'=>'required', 'readonly'=>'readonly','placeholder'=>'', 'tabindex'=>'-1']); ?>	
 										</td>
 									</tr>
 									
@@ -270,7 +270,7 @@ foreach($partyOptions as $partyOption)
 							<?php 
 							if($salesInvoice->invoice_receipt_type=='cash'){ $sa=$salesInvoice->receipt_amount;}else{ $sa='0';}
 							
-							echo $this->Form->input('receipt_amount', ['label' => false,'class' => 'form-control input-sm receipt_amount rightAligntextClass','required'=>'required','placeholder'=>'', 'value'=>$sa]); 
+							echo $this->Form->input('receipt_amount', ['label' => false,'class' => 'form-control input-sm receipt_amount rightAligntextClass','required'=>'required','placeholder'=>'', 'value'=>$sa, 'type'=>'text']); 
 							?>	
 							</td>
 						</tr>
@@ -348,7 +348,7 @@ foreach($partyOptions as $partyOption)
             <input type="hidden" name="" class="discountvalue calculation" value="">
 			<input type="hidden" name="exactgst_value" class="exactgst_value calculation" value="">
 				<?php echo $this->Form->input('item_id', ['empty'=>'-Item Name-','options'=>$itemOptions,'label' => false,'class' => 'form-control input-sm attrGet calculation','required'=>'required']); ?>
-			<span class="itemQty" style="color:red;font-size:10px;"></span>
+			<span class="itemQty" style="font-size:10px;"></span>
 			</td>
 			<td>
 				<?php echo $this->Form->input('quantity', ['label' => false,'class' => 'form-control input-sm calculation quantity rightAligntextClass','id'=>'check','required'=>'required','placeholder'=>'Quantity', 'value'=>1]); ?>
@@ -412,7 +412,7 @@ foreach($partyOptions as $partyOption)
 		forward_total_amount();
 		});
 		
-		$('.quantity').die().live('keyup',function(){
+		$('.quantity').die().on('blur',function(){
 			var itemQ=$(this).closest('tr');
 			var returnQty=itemQ.find('.salesReturnQuantity').val();
 			var exactQty=itemQ.find('.salesRQuantity').val();

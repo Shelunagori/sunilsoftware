@@ -120,7 +120,7 @@ $this->set('title', 'Create Sales Invoice');
 							<td colspan="6" align="right"><b>Discount Amount</b>
 							</td>
 							<td colspan="2">
-							<?php echo $this->Form->input('discount_amount', ['label' => false,'class' => 'form-control input-sm rightAligntextClass toalDiscount','required'=>'required', 'readonly'=>'readonly','placeholder'=>'', 'tabindex'=>'-1', 'style'=>'padding-right:25px']); ?>	
+							<?php echo $this->Form->input('discount_amount', ['label' => false,'class' => 'form-control input-sm rightAligntextClass toalDiscount','required'=>'required', 'readonly'=>'readonly','placeholder'=>'', 'tabindex'=>'-1']); ?>	
 							</td>
 						</tr>
 						<tr id="add_cgst">
@@ -249,7 +249,7 @@ $this->set('title', 'Create Sales Invoice');
 				<input type="hidden" name="exactgst_value" class="exactgst_value calculation" value="">
 				<input type="hidden" name="discountvalue" class="discountvalue calculation" value="">
 				<?php echo $this->Form->input('item_id', ['empty'=>'-Item Name-', 'options'=>$itemOptions,'label' => false,'class' =>'form-control input-medium input-sm attrGet bottomSelect','required'=>'required']); ?>
-				<span class="itemQty" style="color:#4e4d4d;font-size:10px;"></span>
+				<span class="itemQty" style="font-size:10px;"></span>
 			</td>			
 			<td>
 				<?php echo $this->Form->input('quantity', ['label' => false,'class' => 'form-control input-sm calculation quantity rightAligntextClass','id'=>'check','required'=>'required','placeholder'=>'Quantity', 'value'=>1]); ?>

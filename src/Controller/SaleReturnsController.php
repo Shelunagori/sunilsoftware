@@ -243,8 +243,9 @@ class SaleReturnsController extends AppController
 					$this->SaleReturns->ReferenceDetails->save($ReferenceDetail);
 				}
 			   
-				$this->Flash->success(__('The sale return has been saved.'));
-				return $this->redirect(['action' => 'index']);
+			$this->Flash->success(__('The sale return has been saved.'));
+			return $this->redirect(['action' => 'saleReturnBill/'.$saleReturn->id]);
+
             } else{
 				 $this->Flash->error(__('The sale return could not be saved. Please, try again.'));
 			}

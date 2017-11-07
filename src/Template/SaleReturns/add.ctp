@@ -35,7 +35,29 @@ foreach($partyOptions as $partyOption)
 						<div class="col-md-3">
 							<div class="form-group">
 								<label><b>Sales Invoice Voucher No :</b></label>&nbsp;&nbsp;<br>
-								<?= h('#'.str_pad($salesInvoice->voucher_no, 4, '0', STR_PAD_LEFT)) ?>
+								<?php
+								    $date = date('Y-m-d', strtotime($salesInvoice->transaction_date));
+									$d = date_parse_from_format('Y-m-d',$date);
+									$yr=$d["year"];$year= substr($yr, -2);
+									if($d["month"]=='01' || $d["month"]=='02' || $d["month"]=='03')
+									{
+									  $startYear=$year-1;
+									  $endYear=$year;
+									  $financialyear=$startYear.'-'.$endYear;
+									}
+									else
+									{
+									  $startYear=$year;
+									  $endYear=$year+1;
+									  $financialyear=$startYear.'-'.$endYear;
+									}
+									$words = explode(" ", $coreVariable['company_name']);
+									$acronym = "";
+									foreach ($words as $w) {
+									$acronym .= $w[0];
+									}
+								?>
+								<?= $acronym.'/'.$financialyear.'/'. h(str_pad($salesInvoice->voucher_no, 3, '0', STR_PAD_LEFT))?>
 							</div>
 						</div>
 						<div class="col-md-3">

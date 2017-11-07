@@ -31,7 +31,7 @@ $this->set('title', 'Sales Return Bill');
 ?>
 <div style="width:300px;font-family: monospace !important;" class="maindiv">
 <?php echo $this->Html->link('Print',array(),['escape'=>false,'class'=>'hidden-print','style'=>' background-color:blue;  font-size:18px; padding:5px; color:white; cursor:hand;  float: left','onclick'=>'javascript:window.print()();']);
- echo $this->Html->link('Close',['controller'=>'SalesInvoices','action'=>'add'],['escape'=>false,'class'=>'hidden-print','style'=>' background-color:blue;  font-size:18px; padding:5px; color:white; cursor:hand;  float: right']);
+ echo $this->Html->link('Close',['controller'=>'SaleReturns','action'=>'index'],['escape'=>false,'class'=>'hidden-print','style'=>' background-color:blue;  font-size:18px; padding:5px; color:white; cursor:hand;  float: right']);
 ?>
 <table  width="100%" border="0"  >
 <tbody>
