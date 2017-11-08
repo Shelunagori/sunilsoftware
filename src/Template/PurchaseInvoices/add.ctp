@@ -100,7 +100,7 @@ if($supplier_state_id== $state_id){
 								style=" height: 24px; padding: 0px 0px;font-size: 12px;" width="100%">
 								<thead>
 								<tr align="center">
-									<th rowspan="2" style="text-align:center;"><label>Item<label></td>
+									<th rowspan="2" style="text-align:left;"><label>Item<label></td>
 									<th rowspan="2" style="text-align:center;"><label>Qty<label></td>
 									<th rowspan="2" style="text-align:center;"><label>Rate<label></td>
 									<th  colspan="2" style="text-align:center;"><label align="center">Discount (%)</label></th>
@@ -127,7 +127,7 @@ if($supplier_state_id== $state_id){
 									//pr($grn_row->item->FirstGstFigures->tax_percentage); exit;
 							     ?>
 								<tr class="main_tr" class="tab">
-									<td width="15%" align="center">
+									<td width="15%" align="left">
 									<input type="hidden" name="q" class="attrGet calculation" value="<?php echo $grn_row->item_id; ?>">
 									<?php echo $grn_row->item->name; ?></td>
 									<td width="5%" align="center">

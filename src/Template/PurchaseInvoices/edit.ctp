@@ -88,7 +88,7 @@ if($supplier_state_id== $state_id){
 									//pr($purchase_invoice_row); exit;
 							     ?>
 								<tr class="main_tr" class="tab">
-									<td width="15%" align="center">
+									<td width="15%" align="left">
 									<input type="hidden" name="q" class="purchase_invoice_row_id calculation" value="<?php echo $purchase_invoice_row->id; ?>">
 									
 									<input type="hidden" name="q" class="attrGet calculation" value="<?php echo $purchase_invoice_row->item_id; ?>">
