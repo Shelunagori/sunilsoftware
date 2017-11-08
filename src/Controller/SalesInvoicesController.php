@@ -568,6 +568,12 @@ public function edit($id = null)
 					   $receiptRowCrId = $this->SalesInvoices->Receipts->ReceiptRows->find()->select(['id'])->where(['ReceiptRows.company_id'=>$company_id,'ReceiptRows.receipt_id'=>$receiptId->id, 'ReceiptRows.cr_dr'=>'Cr'])->first();
 					   $receiptRowDrId = $this->SalesInvoices->Receipts->ReceiptRows->find()->select(['id'])->where(['ReceiptRows.company_id'=>$company_id,'ReceiptRows.receipt_id'=>$receiptId->id, 'ReceiptRows.cr_dr'=>'Dr'])->first();
 					  
+					  $refExist = $this->SalesInvoices->Receipts->ReceiptRows->ReferenceDetails->find()->select(['id'])->where(['ReferenceDetails.company_id'=>$company_id,'ReferenceDetails.sales_invoice_id'=>$salesInvoice->id]);
+						
+						if($refExist)
+						{
+						
+					  
 					  if($refLedgerId->bill_to_bill_accounting=='yes')
 						{
 							$refData1 = $this->SalesInvoices->Receipts->ReceiptRows->ReferenceDetails->query();
@@ -582,6 +588,10 @@ public function edit($id = null)
 						->where(['ReferenceDetails.company_id'=>$company_id, 'ReferenceDetails.sales_invoice_id'=>$salesInvoice->id])
 						->execute();
 					  
+					  $refExist2nd = $this->SalesInvoices->Receipts->ReceiptRows->ReferenceDetails->find()->select(['id'])->where(['ReferenceDetails.company_id'=>$company_id,'ReferenceDetails.receipt_id'=>$receiptId->id]);
+						
+						if($refExist2nd)
+						{
 					 $refData2 = $this->SalesInvoices->Receipts->ReceiptRows->ReferenceDetails->query();
 						$refData2->update()
 						->set(['company_id' => $salesInvoice->company_id,
@@ -595,6 +605,24 @@ public function edit($id = null)
 						->where(['ReferenceDetails.company_id'=>$company_id, 'ReferenceDetails.receipt_id'=>$receiptId->id, 'ReferenceDetails.receipt_row_id'=>$receiptRowDrId->id])
 						->execute();
 						}
+						else{
+						echo 'wf';
+						exit;
+						$refData2 = $this->SalesInvoices->Receipts->ReceiptRows->ReferenceDetails->query();
+								$refData2->insert(['company_id','ledger_id','type', 'ref_name', 'credit', 'receipt_id','receipt_row_id','transaction_date'])
+										->values([
+										'company_id' => $salesInvoice->company_id,
+										'ledger_id' => $salesInvoice->party_ledger_id,
+										'type' => 'Against',
+										'ref_name' => $salesInvoice->voucher_no,
+										'credit' => $salesInvoice->receipt_amount,
+										'receipt_id' => $receiptId->id,
+										'receipt_row_id' => $receiptRowDrId->id,
+										'transaction_date' => $salesInvoice->transaction_date])
+					  ->execute();
+						}
+						
+						}
 						else if($refLedgerId->bill_to_bill_accounting=='no')
 						{
 							$refData1 = $this->SalesInvoices->Receipts->ReceiptRows->ReferenceDetails->query();
@@ -604,7 +632,7 @@ public function edit($id = null)
 										'type' => 'New Ref',
 										'debit' => '0',
 										'sales_invoice_id' => $salesInvoice->id])
-						->where(['ReferenceDetails.company_id'=>$company_id, 'ReferenceDetails.receipt_id'=>$receiptId->id, 'ReferenceDetails.receipt_row_id'=>$receiptRowCrId->id])
+						->where(['ReferenceDetails.company_id'=>$company_id, 'ReferenceDetails.sales_invoice_id'=>$salesInvoice->id])
 						->execute();
 					  
 					 $refData2 = $this->SalesInvoices->Receipts->ReceiptRows->ReferenceDetails->query();
@@ -618,11 +646,43 @@ public function edit($id = null)
 						->where(['ReferenceDetails.company_id'=>$company_id, 'ReferenceDetails.receipt_id'=>$receiptId->id, 'ReferenceDetails.receipt_row_id'=>$receiptRowDrId->id])
 						->execute();
 						
+						 }
+						
 						}
-
+						else{
+						
+					  if($refLedgerId->bill_to_bill_accounting=='yes')
+						      {
+						        $refData1 = $this->SalesInvoices->Receipts->ReceiptRows->ReferenceDetails->query();
+								$refData1->insert(['company_id','ledger_id','type', 'ref_name', 'debit','sales_invoice_id','transaction_date'])
+										->values([
+										'company_id' => $salesInvoice->company_id,
+										'ledger_id' => $salesInvoice->party_ledger_id,
+										'type' => 'New Ref',
+										'ref_name' => $salesInvoice->voucher_no,
+										'debit' => $salesInvoice->amount_after_tax,
+										'sales_invoice_id' => $salesInvoice->id,
+										'transaction_date' => $salesInvoice->transaction_date])
+					  ->execute();
+					  
+								$refData2 = $this->SalesInvoices->Receipts->ReceiptRows->ReferenceDetails->query();
+								$refData2->insert(['company_id','ledger_id','type', 'ref_name', 'credit', 'receipt_id','receipt_row_id','transaction_date'])
+										->values([
+										'company_id' => $salesInvoice->company_id,
+										'ledger_id' => $salesInvoice->party_ledger_id,
+										'type' => 'Against',
+										'ref_name' => $salesInvoice->voucher_no,
+										'credit' => $salesInvoice->receipt_amount,
+										'receipt_id' => $receiptId->id,
+										'receipt_row_id' => $receiptRowDrId->id,
+										'transaction_date' => $salesInvoice->transaction_date])
+					  ->execute();
+					        }
+						}
 					}
 					else
 					{
+					//echo 'ok';exit;
 					$query_update = $this->SalesInvoices->Receipts->query();
 						$query_update->update()
 						->set(['company_id' => $salesInvoice->company_id,
@@ -684,11 +744,12 @@ public function edit($id = null)
 						
 						$refExist = $this->SalesInvoices->Receipts->ReceiptRows->ReferenceDetails->find()->select(['id'])->where(['ReferenceDetails.company_id'=>$company_id,'ReferenceDetails.receipt_id'=>$receiptId->id]);
 						
-						if($refExist)
+						if($refExist->toArray())
 						{
 						   $receiptRowCrId = $this->SalesInvoices->Receipts->ReceiptRows->find()->select(['id'])->where(['ReceiptRows.company_id'=>$company_id,'ReceiptRows.receipt_id'=>$receiptId->id, 'ReceiptRows.cr_dr'=>'Cr'])->first();
 						   $receiptRowDrId = $this->SalesInvoices->Receipts->ReceiptRows->find()->select(['id'])->where(['ReceiptRows.company_id'=>$company_id,'ReceiptRows.receipt_id'=>$receiptId->id, 'ReceiptRows.cr_dr'=>'Dr'])->first();
-					  
+							  if($refLedgerId->bill_to_bill_accounting=='yes')
+								  {
 								$refData1 = $this->SalesInvoices->Receipts->ReceiptRows->ReferenceDetails->query();
 								$refData1->update()
 								->set(['company_id' => $salesInvoice->company_id,
@@ -696,7 +757,7 @@ public function edit($id = null)
 											'type' => 'New Ref',
 											'debit' => $salesInvoice->receipt_amount,
 											'sales_invoice_id' => $salesInvoice->id])
-								->where(['ReferenceDetails.company_id'=>$company_id, 'ReferenceDetails.receipt_id'=>$receiptId->id, 'ReferenceDetails.receipt_row_id'=>$receiptRowCrId->id])
+								->where(['ReferenceDetails.company_id'=>$company_id, 'ReferenceDetails.sales_invoice_id'=>$salesInvoice->id])
 								->execute();
 							  
 								 $refData2 = $this->SalesInvoices->Receipts->ReceiptRows->ReferenceDetails->query();
@@ -709,6 +770,48 @@ public function edit($id = null)
 												'receipt_row_id' => $receiptRowDrId->id])
 								->where(['ReferenceDetails.company_id'=>$company_id, 'ReferenceDetails.receipt_id'=>$receiptId->id, 'ReferenceDetails.receipt_row_id'=>$receiptRowDrId->id])
 								->execute();
+								}
+								else{
+								   $refData1 = $this->SalesInvoices->Receipts->ReceiptRows->ReferenceDetails->query();
+								$refData1->update()
+								->set(['company_id' => $salesInvoice->company_id,
+											'ledger_id' => $salesInvoice->party_ledger_id,
+											'type' => 'New Ref',
+											'debit' => 0,
+											'sales_invoice_id' => $salesInvoice->id])
+								->where(['ReferenceDetails.company_id'=>$company_id, 'ReferenceDetails.sales_invoice_id'=>$salesInvoice->id])
+								->execute();
+							  
+								 $refData2 = $this->SalesInvoices->Receipts->ReceiptRows->ReferenceDetails->query();
+									$refData2->update()
+									->set(['company_id' => $salesInvoice->company_id,
+												'ledger_id' => $salesInvoice->party_ledger_id,
+												'type' => 'Against',
+												'credit' => '0',
+												'receipt_id' => $receiptId->id,
+												'receipt_row_id' => $receiptRowDrId->id])
+								->where(['ReferenceDetails.company_id'=>$company_id, 'ReferenceDetails.receipt_id'=>$receiptId->id, 'ReferenceDetails.receipt_row_id'=>$receiptRowDrId->id])
+								->execute();
+								}
+						}
+						else{
+						
+						
+						 if($refLedgerId->bill_to_bill_accounting=='yes')
+						      {
+						        $refData1 = $this->SalesInvoices->Receipts->ReceiptRows->ReferenceDetails->query();
+								$refData1->insert(['company_id','ledger_id','type', 'ref_name', 'debit', 'sales_invoice_id','transaction_date'])
+										->values([
+										'company_id' => $salesInvoice->company_id,
+										'ledger_id' => $salesInvoice->party_ledger_id,
+										'type' => 'New Ref',
+										'ref_name' => $salesInvoice->voucher_no,
+										'debit' => $salesInvoice->amount_after_tax,
+										'sales_invoice_id' => $salesInvoice->id,
+										'transaction_date' => $salesInvoice->transaction_date])
+					  ->execute();
+					        }
+						
 						}
 					}
 			}
@@ -790,7 +893,7 @@ public function edit($id = null)
 					  if($refLedgerId->bill_to_bill_accounting=='yes')
 						{
 						        $refData1 = $this->SalesInvoices->Receipts->ReceiptRows->ReferenceDetails->query();
-								$refData1->insert(['company_id','ledger_id','type', 'ref_name', 'credit', 'receipt_id','receipt_row_id'])
+								$refData1->insert(['company_id','ledger_id','type', 'ref_name', 'debit', 'sales_invoice_id','transaction_date'])
 										->values([
 										'company_id' => $salesInvoice->company_id,
 										'ledger_id' => $salesInvoice->party_ledger_id,
@@ -802,7 +905,7 @@ public function edit($id = null)
 					  ->execute();
 					  
 								$refData2 = $this->SalesInvoices->Receipts->ReceiptRows->ReferenceDetails->query();
-								$refData2->insert(['company_id','ledger_id','type', 'ref_name', 'debit', 'receipt_id','receipt_row_id'])
+								$refData2->insert(['company_id','ledger_id','type', 'ref_name', 'debit', 'receipt_id','receipt_row_id','transaction_date'])
 										->values([
 										'company_id' => $salesInvoice->company_id,
 										'ledger_id' => $salesInvoice->party_ledger_id,
@@ -818,12 +921,46 @@ public function edit($id = null)
 					
 			else if($salesInvoice->invoice_receipt_type=='credit' && $salesInvoice->invoiceReceiptTd==1)
 				{
+				     $refExist = $this->SalesInvoices->Receipts->ReceiptRows->ReferenceDetails->find()->select(['id'])->where(['ReferenceDetails.company_id'=>$company_id,'ReferenceDetails.sales_invoice_id'=>$salesInvoice->id]);
+						
+						$refLedgerId = $this->SalesInvoices->SalesInvoiceRows->Ledgers->find()
+						->where(['Ledgers.id' =>$salesInvoice->party_ledger_id,'Ledgers.company_id'=>$company_id])->first();
+						
+						if($refExist)
+						{
+						
+							  if($refLedgerId->bill_to_bill_accounting=='yes')
+								  {
+								$refData1 = $this->SalesInvoices->Receipts->ReceiptRows->ReferenceDetails->query();
+								$refData1->update()
+								->set(['company_id' => $salesInvoice->company_id,
+											'ledger_id' => $salesInvoice->party_ledger_id,
+											'type' => 'New Ref',
+											'debit' => $salesInvoice->receipt_amount,
+											'sales_invoice_id' => $salesInvoice->id])
+								->where(['ReferenceDetails.company_id'=>$company_id, 'ReferenceDetails.sales_invoice_id'=>$salesInvoice->id])
+								->execute();
+								}
+								else{
+								   $refData1 = $this->SalesInvoices->Receipts->ReceiptRows->ReferenceDetails->query();
+								$refData1->update()
+								->set(['company_id' => $salesInvoice->company_id,
+											'ledger_id' => $salesInvoice->party_ledger_id,
+											'type' => 'New Ref',
+											'debit' => 0,
+											'sales_invoice_id' => $salesInvoice->id])
+								->where(['ReferenceDetails.company_id'=>$company_id, 'ReferenceDetails.sales_invoice_id'=>$salesInvoice->id])
+								->execute();
+								}
+						}
+						else{
+						
 				    $refLedgerId = $this->SalesInvoices->SalesInvoiceRows->Ledgers->find()
 						->where(['Ledgers.id' =>$salesInvoice->party_ledger_id,'Ledgers.company_id'=>$company_id])->first();
 					  if($refLedgerId->bill_to_bill_accounting=='yes')
 						{
 						        $refData1 = $this->SalesInvoices->Receipts->ReceiptRows->ReferenceDetails->query();
-								$refData1->insert(['company_id','ledger_id','type', 'ref_name', 'credit', 'receipt_id','receipt_row_id'])
+								$refData1->insert(['company_id','ledger_id','type', 'ref_name', 'debit', 'sales_invoice_id','transaction_date'])
 										->values([
 										'company_id' => $salesInvoice->company_id,
 										'ledger_id' => $salesInvoice->party_ledger_id,
@@ -836,6 +973,7 @@ public function edit($id = null)
 						}
 				    }
 			
+			}
 			}
 			
 			
@@ -1053,7 +1191,7 @@ public function edit($id = null)
     }	
 	
 	
-public function salesInvoiceBill($id=null)
+    public function salesInvoiceBill($id=null)
     {
 		
 	    $this->viewBuilder()->layout('');
