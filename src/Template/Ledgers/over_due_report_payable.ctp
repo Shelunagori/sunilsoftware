@@ -50,9 +50,9 @@ $this->set('title', 'Overdue Report');
 									{ ?>
 										<tr>
 											<td><?php echo $reference_detail->transaction_date; ?></td>
-											<td><?php echo $reference_detail->ref_name; ?></td>
+											<td><?= $this->Html->link($reference_detail->ref_name, ['controller' => 'ReferenceDetails', 'action' => 'details', $reference_detail->ledger_id,$reference_detail->ref_name]) ?></td>
 											<td><?php echo $reference_detail->ledger->name; ?></td>
-											<td><?php echo $duebalance;  ?></td>
+											<td class="rightAligntextClass"><?php echo $duebalance;  ?></td>
 											<td><?php 
 											$due_days=$reference_detail->ledger->default_credit_days;
 											$ref_date = date('Y-m-d',strtotime($reference_detail->transaction_date));	

@@ -84,6 +84,7 @@ class AccountingGroupsController extends AppController
     public function edit($id = null)
     {
 		$this->viewBuilder()->layout('index_layout');
+		$company_id=$this->Auth->User('session_company_id');
         $accountingGroup = $this->AccountingGroups->get($id, [
             'contain' => []
         ]);
