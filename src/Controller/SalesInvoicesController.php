@@ -906,7 +906,7 @@ public function edit($id = null)
 					  ->execute();
 					  
 								$refData2 = $this->SalesInvoices->Receipts->ReceiptRows->ReferenceDetails->query();
-								$refData2->insert(['company_id','ledger_id','type', 'ref_name', 'debit', 'receipt_id','receipt_row_id','transaction_date'])
+								$refData2->insert(['company_id','ledger_id','type', 'ref_name', 'credit', 'receipt_id','receipt_row_id','transaction_date'])
 										->values([
 										'company_id' => $salesInvoice->company_id,
 										'ledger_id' => $salesInvoice->party_ledger_id,
