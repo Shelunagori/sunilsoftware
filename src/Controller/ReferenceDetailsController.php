@@ -149,4 +149,14 @@ class ReferenceDetailsController extends AppController
 
         return $this->redirect(['action' => 'index']);
     }
+	
+	 public function details($ledger_id = null,$ref_name = null)
+    {
+        $this->viewBuilder()->layout('index_layout');
+        $query = $this->ReferenceDetails->find()->where(['ReferenceDetails.ledger_id'=>$ledger_id,'ReferenceDetails.type !='=>'On Account','ReferenceDetails.ref_name'=>$ref_name])
+		->autoFields(true);
+		$referenceDetails=$query;
+		$this->set(compact('referenceDetails'));
+        $this->set('_serialize', ['referenceDetail']);
+    }
 }
