@@ -775,9 +775,7 @@ public function edit($id = null)
 								->where(['ReferenceDetails.company_id'=>$company_id, 'ReferenceDetails.receipt_id'=>$receiptId->id, 'ReferenceDetails.receipt_row_id'=>$receiptRowDrId->id])
 								->execute();
 								
-								 echo 'w';
-						   exit;
-						   
+								
 								}
 								else{
 								   $refData1 = $this->SalesInvoices->Receipts->ReceiptRows->ReferenceDetails->query();
