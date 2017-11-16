@@ -5,7 +5,7 @@
 $this->set('title', 'Sales Return');
 foreach($partyOptions as $partyOption)
 {
-		$value=$partyOption['value'];
+	$value=$partyOption['value'];
 	if($value==$salesInvoice->party_ledger_id)
 	{
 		$party_states=$partyOption['party_state_id'];
@@ -18,7 +18,13 @@ foreach($partyOptions as $partyOption)
 		$party_state_id=$state_id;
 	}
 	}
+	else
+	{
+		$party_state_id=$state_id;
+	}
+	
 }
+
 ?>
 
 <div class="row">

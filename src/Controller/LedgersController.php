@@ -424,19 +424,167 @@ class LedgersController extends AppController
     }
 	public function dayBook($id = null)
     {
+		$company_id=$this->Auth->User('session_company_id');
 		$this->viewBuilder()->layout('index_layout');
 		$currentDate=date('Y-m-d');
-		@$salesLedgers=$this->Ledgers->AccountingEntries->SalesInvoices->find()
-		->where(['SalesInvoices.transaction_date'=>$currentDate])
-		->contain(['AccountingEntries'])
-		->order(['id'=>'DESC']);
-		foreach($salesLedgers->toArray() as $data)
+		$from_date         = $this->request->query('from_date');
+		$to_date           = $this->request->query('to_date');
+		$where =[];
+		if(!empty($from_date))
 		{
-		$data->voucher_type='Purchase Vouchers';
+			$from_date = date("Y-m-d",strtotime($from_date));
+			$where['AccountingEntries.transaction_date >=']=$from_date;
+		}
+		if(!empty($to_date))
+		{
+			$to_date   = date("Y-m-d",strtotime($to_date));
+			$where['AccountingEntries.transaction_date <=']=$to_date;
+		}
+		//$day_book=[];
+		//salesIncoice
+		@$salesInvoiceLedgers=$this->Ledgers->AccountingEntries->find()
+		->where(['AccountingEntries.company_id'=>$company_id,'AccountingEntries.transaction_date >='=>$from_date, 'AccountingEntries.transaction_date <='=>$to_date,'AccountingEntries.sales_invoice_id >'=>0,'AccountingEntries.debit >'=>0])->contain(['Ledgers'])
+		->group('AccountingEntries.sales_invoice_id')
+		->autoFields(true);
+		foreach($salesInvoiceLedgers->toArray() as $data)
+		{
+		$data->voucher_id=$data->sales_invoice_id;
+		$data->voucher_type='Sales Invoices';
+		$data->hlink='SalesInvoices';
+		$data->haction='Edit';
+		}
+		//purchaseInvoice
+		@$purchaseInvoiceLedgers=$this->Ledgers->AccountingEntries->find()
+		->where(['AccountingEntries.company_id'=>$company_id,'AccountingEntries.transaction_date >='=>$from_date, 'AccountingEntries.transaction_date <='=>$to_date,'AccountingEntries.purchase_invoice_id >'=>0,'AccountingEntries.credit >'=>0])->contain(['Ledgers'])
+		->group('AccountingEntries.purchase_invoice_id')
+		->autoFields(true);
+		foreach($purchaseInvoiceLedgers->toArray() as $data)
+		{
+		$data->voucher_id=$data->purchase_invoice_id;
+		$data->voucher_type='Purchase Invoices';
+		$data->hlink='Purchase Invoices';
+		$data->haction='Edit';
+		}
+		//payment
+		@$paymentLedgers=$this->Ledgers->AccountingEntries->find()
+		->where(['AccountingEntries.company_id'=>$company_id,'AccountingEntries.transaction_date >='=>$from_date, 'AccountingEntries.transaction_date <='=>$to_date,'AccountingEntries.payment_id >'=>0,'AccountingEntries.debit >'=>0])->contain(['Ledgers'])
+		->group('AccountingEntries.payment_id')
+		->autoFields(true);
+		
+		foreach($paymentLedgers->toArray() as $data)
+		{
+		$data->voucher_id=$data->payment_id;
+		$data->voucher_type='Payment';
+		$data->hlink='Payments';
+		$data->haction='Edit';
+		}
+		//receipt
+		@$receiptLedgers=$this->Ledgers->AccountingEntries->find()
+		->where(['AccountingEntries.company_id'=>$company_id,'AccountingEntries.transaction_date >='=>$from_date, 'AccountingEntries.transaction_date <='=>$to_date,'AccountingEntries.receipt_id >'=>0,'AccountingEntries.credit >'=>0])->contain(['Ledgers'])
+		->group('AccountingEntries.receipt_id')
+		->autoFields(true);
+		foreach($receiptLedgers->toArray() as $data)
+		{
+		$data->voucher_id=$data->receipt_id;
+		$data->voucher_type='Receipt';
+		$data->hlink='Receipts';
+		$data->haction='Edit';
+		}
+		//creditnote
+		@$creditNoteLedgers=$this->Ledgers->AccountingEntries->find()
+		->where(['AccountingEntries.company_id'=>$company_id,'AccountingEntries.transaction_date >='=>$from_date, 'AccountingEntries.transaction_date <='=>$to_date,'AccountingEntries.credit_note_id >'=>0,'AccountingEntries.credit >'=>0])->contain(['Ledgers'])
+		->group('AccountingEntries.credit_note_id')
+		->autoFields(true);
+		foreach($creditNoteLedgers->toArray() as $data)
+		{
+		$data->voucher_id=$data->credit_note_id;
+		$data->voucher_type='Credit Note';
+		$data->hlink='CreditNotes';
+		$data->haction='Edit';
+		}
+		//debitnote
+		@$debitNoteLedgers=$this->Ledgers->AccountingEntries->find()
+		->where(['AccountingEntries.company_id'=>$company_id,'AccountingEntries.transaction_date >='=>$from_date, 'AccountingEntries.transaction_date <='=>$to_date,'AccountingEntries.debit_note_id >'=>0,'AccountingEntries.debit >'=>0])->contain(['Ledgers'])
+		->group('AccountingEntries.debit_note_id')
+		->autoFields(true);
+		foreach($debitNoteLedgers->toArray() as $data)
+		{
+		$data->voucher_id=$data->debit_note_id;
+		$data->voucher_type='Debit Note';
+		$data->hlink='DebitNotes';
+		$data->haction='Edit';
 		}
 		
-		$this->set(compact('salesLedgers'));
-        $this->set('_serialize', ['salesLedgers']);
+		//journalvoucher
+		@$journalVoucherLedgers=$this->Ledgers->AccountingEntries->find()
+		->where(['AccountingEntries.company_id'=>$company_id,'AccountingEntries.transaction_date >='=>$from_date, 'AccountingEntries.transaction_date <='=>$to_date,'AccountingEntries.journal_voucher_id >'=>0])->contain(['Ledgers'])
+		->group('AccountingEntries.journal_voucher_id')
+		->autoFields(true);
+		foreach($journalVoucherLedgers->toArray() as $data)
+		{
+		$data->voucher_id=$data->journal_voucher_id;
+		$data->voucher_type='Journal Voucher';
+		$data->hlink='JournalVouchers';
+		$data->haction='Edit';
+		}
+		
+		
+		
+		//salesVoucher
+		@$salesVoucherLedgers=$this->Ledgers->AccountingEntries->find()
+		->where(['AccountingEntries.company_id'=>$company_id,'AccountingEntries.transaction_date >='=>$from_date, 'AccountingEntries.transaction_date <='=>$to_date,'AccountingEntries.sales_voucher_id >'=>0,'AccountingEntries.debit >'=>0])->contain(['Ledgers'])
+		->group('AccountingEntries.sales_voucher_id')
+		->autoFields(true);
+		foreach($salesVoucherLedgers->toArray() as $data)
+		{
+		$data->voucher_id=$data->sales_voucher_id;
+		$data->voucher_type='Sales Voucher';
+		$data->hlink='SalesVouchers';
+		$data->haction='Edit';
+		}
+		//purchaseVoucher
+		@$purchaseVoucherLedgers=$this->Ledgers->AccountingEntries->find()
+		->where(['AccountingEntries.company_id'=>$company_id,'AccountingEntries.transaction_date >='=>$from_date, 'AccountingEntries.transaction_date <='=>$to_date,'AccountingEntries.purchase_voucher_id >'=>0,'AccountingEntries.credit >'=>0])->contain(['Ledgers'])
+		->group('AccountingEntries.purchase_voucher_id')
+		->autoFields(true);
+		foreach($purchaseVoucherLedgers->toArray() as $data)
+		{
+		$data->voucher_id=$data->purchase_voucher_id;
+		$data->voucher_type='Purchase Voucher';
+		$data->hlink='PurchaseVouchers';
+		$data->haction='Edit';
+		}
+		
+		//salesreturn
+		@$saleReturnLedgers=$this->Ledgers->AccountingEntries->find()
+		->where(['AccountingEntries.company_id'=>$company_id,'AccountingEntries.transaction_date >='=>$from_date, 'AccountingEntries.transaction_date <='=>$to_date,'AccountingEntries.sale_return_id >'=>0,'AccountingEntries.credit >'=>0])->contain(['Ledgers'])
+		->group('AccountingEntries.sale_return_id')
+		->autoFields(true);
+		foreach($saleReturnLedgers->toArray() as $data)
+		{
+		$data->voucher_id=$data->sale_return_id;
+		$data->voucher_type='Sales Returns';
+		$data->hlink='SaleReturns';
+		$data->haction='View';
+		}
+		
+		//purchasereturn
+		@$purchaseReturnLedgers=$this->Ledgers->AccountingEntries->find()
+		->where(['AccountingEntries.company_id'=>$company_id,'AccountingEntries.transaction_date >='=>$from_date, 'AccountingEntries.transaction_date <='=>$to_date,'AccountingEntries.purchase_return_id >'=>0,'AccountingEntries.debit >'=>0])->contain(['Ledgers'])
+		->group('AccountingEntries.purchase_return_id')
+		->autoFields(true);
+		foreach($purchaseReturnLedgers->toArray() as $data)
+		{
+		$data->voucher_id=$data->purchase_return_id;
+		$data->voucher_type='Purchase Returns';
+		$data->hlink='PurchaseReturns';
+		$data->haction='View';
+		}
+		
+		$day_book=array_merge([$salesInvoiceLedgers->toArray(),$purchaseInvoiceLedgers->toArray(),$paymentLedgers->toArray(),$receiptLedgers->toArray(),$creditNoteLedgers->toArray(),$debitNoteLedgers->toArray(),$journalVoucherLedgers->toArray(),$saleReturnLedgers->toArray(),$salesVoucherLedgers->toArray(),$purchaseVoucherLedgers->toArray(),$purchaseReturnLedgers->toArray()]);
+		
+		$this->set(compact('day_book','from_date','to_date'));
+        $this->set('_serialize', ['day_book']);
     }
 	
 	
@@ -450,7 +598,7 @@ class LedgersController extends AppController
 		$run_time_date = date("Y-m-d",strtotime($run_time_date)); }
 	
 		$parentSundryDebtors = $this->Ledgers->AccountingGroups->find()
-				->where(['AccountingGroups.company_id'=>$company_id, 'AccountingGroups.customer'=>'1']);
+				->where(['AccountingGroups.company_id'=>$company_id, 'AccountingGroups.customer'=>'1'])->orWhere(['AccountingGroups.company_id'=>$company_id, 'AccountingGroups.supplier'=>'1']);
 		
 		$childSundryDebtors=[];
 		
@@ -475,6 +623,7 @@ class LedgersController extends AppController
 		$reference_details->select(['total_debit' => $reference_details->func()->sum('ReferenceDetails.debit'),'total_credit' => $reference_details->func()->sum('ReferenceDetails.credit')])
 		->where(['ReferenceDetails.ledger_id IN '=> $ledgerAccountids,'ReferenceDetails.transaction_date <=' => $run_time_date])
 		->group(['ReferenceDetails.ref_name','ReferenceDetails.ledger_id'])
+		
 		->autoFields(true);		 
 		
 		//pr($reference_details->toArray()); exit;
@@ -513,7 +662,7 @@ class LedgersController extends AppController
 		$run_time_date = date("Y-m-d",strtotime($run_time_date)); }
 	
 		$parentSundryCreditors = $this->Ledgers->AccountingGroups->find()
-				->where(['AccountingGroups.company_id'=>$company_id, 'AccountingGroups.supplier'=>'1']);
+				->where(['AccountingGroups.company_id'=>$company_id, 'AccountingGroups.customer'=>'1'])->orWhere(['AccountingGroups.company_id'=>$company_id, 'AccountingGroups.supplier'=>'1']);
 	
 		$childSundryCreditors=[];
 		

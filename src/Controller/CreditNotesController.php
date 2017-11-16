@@ -88,7 +88,7 @@ class CreditNotesController extends AppController
 					$accountEntry->credit                     = @$credit_note_row->credit;
 					$accountEntry->transaction_date           = $creditNote->transaction_date;
 					$accountEntry->company_id                 = $company_id;
-					$accountEntry->creditNote_id                 = $creditNote->id;
+					$accountEntry->credit_note_id                 = $creditNote->id;
 					$accountEntry->credit_note_row_id             = $credit_note_row->id;
 					$this->CreditNotes->AccountingEntries->save($accountEntry);
 				}

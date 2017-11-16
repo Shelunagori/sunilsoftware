@@ -48,7 +48,8 @@ class ReceiptsTable extends Table
 			'saveStrategy'=>'replace'
         ]);
         $this->hasMany('ReferenceDetails', [
-            'foreignKey' => 'receipt_id'
+            'foreignKey' => 'receipt_id',
+			
         ]);
 		$this->hasMany('AccountingEntries', [
             'foreignKey' => 'receipt_id',

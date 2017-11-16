@@ -157,7 +157,7 @@ $this->set('title', 'Receipt Voucher');
 																$name="credit";
 															}
 
-															echo $this->Form->input('receipt_rows.'.$i.'.reference_details.'.$j.'.'.$name, ['label' => false,'class' => 'form-control input-sm calculation rightAligntextClass','placeholder'=>'Amount','required'=>'required','value'=>$value, 'type'=>'text']); ?>
+															echo $this->Form->input('receipt_rows.'.$i.'.reference_details.'.$j.'.'.$name, ['label' => false,'class' => 'form-control input-sm calculation numberOnly rightAligntextClass','placeholder'=>'Amount','required'=>'required','value'=>$value, 'type'=>'text']); ?>
 														</td>
 														<td width="10%" style="padding-left:0px;">
 															<?php 
@@ -233,10 +233,10 @@ $this->set('title', 'Receipt Voucher');
 											</div>
 										</td>
 										<td width="10%">
-											<?php echo $this->Form->input('receipt_rows.'.$i.'.debit', ['label' => false,'class' => 'form-control input-sm debitBox rightAligntextClass totalCalculation calculate_total','placeholder'=>'Debit','value'=>$receiptRows->debit, 'type'=>'text']); ?>
+											<?php echo $this->Form->input('receipt_rows.'.$i.'.debit', ['label' => false,'class' => 'form-control input-sm debitBox rightAligntextClass totalCalculation numberOnly calculate_total','placeholder'=>'Debit','value'=>$receiptRows->debit, 'type'=>'text']); ?>
 										</td>
 										<td width="10%">
-											<?php echo $this->Form->input('receipt_rows.'.$i.'.credit', ['label' => false,'class' => 'form-control input-sm creditBox rightAligntextClass totalCalculation calculate_total','placeholder'=>'Credit','value'=>$receiptRows->credit, 'type'=>'text']); ?>
+											<?php echo $this->Form->input('receipt_rows.'.$i.'.credit', ['label' => false,'class' => 'form-control input-sm creditBox rightAligntextClass totalCalculation numberOnly calculate_total','placeholder'=>'Credit','value'=>$receiptRows->credit, 'type'=>'text']); ?>
 										
 										</td>
 										<td align="center"  width="10%">
@@ -295,7 +295,7 @@ $this->set('title', 'Receipt Voucher');
 			</td>
 			
 			<td width="20%" style="padding-right:0px;" valign="top">
-				<?php echo $this->Form->input('amount', ['label' => false,'class' => 'form-control input-sm calculation rightAligntextClass','placeholder'=>'Amount','required'=>'required']); ?>
+				<?php echo $this->Form->input('amount', ['label' => false,'class' => 'form-control input-sm calculation numberOnly rightAligntextClass','placeholder'=>'Amount','required'=>'required']); ?>
 			</td>
 			<td width="10%" style="padding-left:0px;" valign="top">
 				<?php 
@@ -341,10 +341,10 @@ $this->set('title', 'Receipt Voucher');
 				<div class="window" style="margin:auto;"></div>
 			</td>
 			<td width="10%" valign="top">
-				<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm  debitBox rightAligntextClass calculate_total','placeholder'=>'Debit']); ?>
+				<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm  debitBox numberOnly rightAligntextClass calculate_total','placeholder'=>'Debit']); ?>
 			</td>
 			<td width="10%" valign="top">
-				<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm creditBox rightAligntextClass calculate_total','placeholder'=>'Credit','style'=>'display:none;']); ?>	
+				<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm creditBox numberOnly rightAligntextClass calculate_total','placeholder'=>'Credit','style'=>'display:none;']); ?>	
 			</td>
 			<td align="center"  width="10%" valign="top">
 				<a class="btn btn-danger delete-tr btn-xs" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>

@@ -1209,7 +1209,7 @@ public function edit($id = null)
 		$state_id=$stateDetails->state_id;
 		$invoiceBills= $this->SalesInvoices->find()
 		->where(['SalesInvoices.id'=>$id])
-		->contain(['Companies'=>['States'],'SalesInvoiceRows'=>['Items'=>['Sizes'], 'GstFigures']]);
+		->contain(['Companies'=>['States'],'SalesInvoiceRows'=>['Items'=>['Sizes','Shades','Units'], 'GstFigures']]);
 	
 	    foreach($invoiceBills->toArray() as $data){
 		foreach($data->sales_invoice_rows as $sales_invoice_row){

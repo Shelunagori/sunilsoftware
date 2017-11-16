@@ -26,13 +26,15 @@ $this->set('title', 'View');
 						<label>Reference No.: <?php echo $grn->reference_no; ?></label>
 					</div>
 					<div class="col-md-3 form-group">
-						<label>Supplier.: <?php echo $supplier_ledger; ?></label>
+						<label>Supplier.: <?php echo @$supplier_ledger; ?></label>
 					</div>
 				</div>
 				<br>
 				<div class="row">
 					<div class="table-responsive">
-					<?php if (!empty($grn->grn_rows)): ?>
+					<?php if (!empty($grn->grn_rows)): 
+					//pr($grn->grn_rows);exit;
+					?>
 						<table id="main_table" class="table table-condensed table-bordered" style="margin-bottom: 4px;" width="100%">
 							<thead>
 								<tr>

@@ -252,16 +252,16 @@ $this->set('title', 'Create Sales Invoice');
 				<span class="itemQty" style="font-size:10px;"></span>
 			</td>			
 			<td>
-				<?php echo $this->Form->input('quantity', ['label' => false,'class' => 'form-control input-sm calculation quantity rightAligntextClass','id'=>'check','required'=>'required','placeholder'=>'Quantity', 'value'=>1]); ?>
+				<?php echo $this->Form->input('quantity', ['label' => false,'class' => 'form-control input-sm calculation quantity numberOnly rightAligntextClass','id'=>'check','required'=>'required','placeholder'=>'Quantity', 'value'=>1]); ?>
 			</td>
 			<td>
 				<?php echo $this->Form->input('rate', ['label' => false,'class' => 'form-control input-sm calculation rate rightAligntextClass','required'=>'required','placeholder'=>'Rate', 'readonly'=>'readonly', 'tabindex'=>'-1']); ?>
 			</td>
 			<td>
-				<?php echo $this->Form->input('discount_percentage', ['label' => false,'class' => 'form-control input-sm calculation discount rightAligntextClass','placeholder'=>'Dis.','value'=>0]); ?>	
+				<?php echo $this->Form->input('discount_percentage', ['label' => false,'class' => 'form-control input-sm calculation discount numberOnly rightAligntextClass','placeholder'=>'Dis.','value'=>0]); ?>	
 			</td>
 			<td>
-				<?php echo $this->Form->input('discount', ['label' => false,'class' => 'form-control input-sm discalculation dis_amount rightAligntextClass','placeholder'=>'Dis.','value'=>0]); ?>	
+				<?php echo $this->Form->input('discount', ['label' => false,'class' => 'form-control input-sm discalculation dis_amount numberOnly rightAligntextClass','placeholder'=>'Dis.','value'=>0]); ?>	
 			</td>
 			
 			<td>
@@ -321,7 +321,7 @@ $this->set('title', 'Create Sales Invoice');
 			var Inputitemcode=$('.itembarcode').val();
 			var addQuantity=0;
 			var addDB=0;
-			$('#main_table tbody#main_tbody tr.main_tr').each(function(){
+			/* $('#main_table tbody#main_tbody tr.main_tr').each(function(){
 			var item_code=$(this).find('td:nth-child(1) select.attrGet option:selected').attr('item_code');
 			var quantity=$(this).find('td:nth-child(2) input.quantity').val();
 			addQuantity=parseFloat(quantity)+1;
@@ -329,14 +329,14 @@ $this->set('title', 'Create Sales Invoice');
 			if(Inputitemcode==item_code)
 			{
 			addDB=1;
-			$(this).find('td:nth-child(2) input.quantity').val(addQuantity);
+			//$(this).find('td:nth-child(2) input.quantity').val(addQuantity);
 			}
 			});
 			if(addDB==1)
 			{
 			//$(this).find('td:nth-child(2) input.quantity').val(addQuantity);
 			}
-			else {
+			else { */
 				if(Inputitemcode){
 					var item_id=$('select.bottomSelect option[item_code='+Inputitemcode+']').val();
 					if(item_id){
@@ -362,7 +362,7 @@ $this->set('title', 'Create Sales Invoice');
 						$('.itembarcode').val('');
 					}
 				}
-			}
+			// }
 		});
 		
 		$(document).ready(onLoadInvoiceReceipt);
@@ -534,10 +534,10 @@ $this->set('title', 'Create Sales Invoice');
 			   
 			var discount  = parseFloat($(this).find('.discount').val());
 			if(!discount){discount=0;}
-			var discount=round(discount,2);
+			var discount=round(discount,3);
 			
 			var discountValue=(discount*totamount)/100;
-			var discountValue=round(discountValue,2);
+			var discountValue=round(discountValue,3);
 			var convertDiscount=round(discountValue,2);
 			totDiscounts=round(parseFloat(totDiscounts)+parseFloat(discountValue), 2);
 			
@@ -677,7 +677,7 @@ $this->set('title', 'Create Sales Invoice');
 					var discountValue=dis_amount;
 					totDiscounts=round(parseFloat(totDiscounts)+parseFloat(discountValue), 2);
 					var discountAmount=totamount-discountValue;
-					var convertDiscount=round((dis_amount*100)/totamount, 2);
+					var convertDiscount=round((dis_amount*100)/totamount, 3);
 					$(this).find('.discount').val(convertDiscount);
 			
 

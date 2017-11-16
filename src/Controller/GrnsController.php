@@ -45,8 +45,12 @@ class GrnsController extends AppController
         $grn = $this->Grns->get($id, [
             'contain' => ['Companies','GrnRows'=>['Items']]
         ]);
+		if($grn->supplier_ledger_id){
 		$supplier_details= $this->Grns->GrnRows->Ledgers->get($grn->supplier_ledger_id);
 		$supplier_ledger=$supplier_details->name;
+		}else{
+		$supplier_ledger=''	;
+		}
 		
 		$this->set(compact('grn','supplier_ledger'));
 		$this->set('_serialize', ['grn']);

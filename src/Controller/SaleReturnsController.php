@@ -75,7 +75,7 @@ class SaleReturnsController extends AppController
 		$company_id=$this->Auth->User('session_company_id');
 		$stateDetails=$this->Auth->User('session_company');
 		$location_id=$this->Auth->User('session_location_id');
-		$state_id=$stateDetails->state_id;
+		$state_id=$stateDetails->state_id; 
 		$roundOffId = $this->SaleReturns->SalesInvoices->SalesInvoiceRows->Ledgers->find()
 		->where(['Ledgers.company_id'=>$company_id, 'Ledgers.round_off'=>1])->first();
 

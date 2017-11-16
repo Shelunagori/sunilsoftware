@@ -66,10 +66,10 @@ $this->set('title', 'Journal Voucher');
 										<div class="window" style="margin:auto;"></div>
 									</td>
 									<td width="10%" style="vertical-align: top !important;">
-										<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm  debitBox rightAligntextClass totalCalculation','placeholder'=>'Debit','style'=>'display:none;']); ?>
+										<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm  debitBox numberOnly rightAligntextClass totalCalculation','placeholder'=>'Debit','style'=>'display:none;']); ?>
 									</td>
 									<td width="10%" style="vertical-align: top !important;">
-										<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm creditBox rightAligntextClass totalCalculation','placeholder'=>'Credit','required'=>'required']); ?>	
+										<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm creditBox numberOnly rightAligntextClass totalCalculation','placeholder'=>'Credit','required'=>'required']); ?>	
 									</td>
 									<td align="center"  width="10%" style="vertical-align: top !important;">
 										
@@ -86,10 +86,10 @@ $this->set('title', 'Journal Voucher');
 										<div class="window" style="margin:auto;"></div>
 									</td>
 									<td width="10%" style="vertical-align: top !important;">
-										<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm  debitBox rightAligntextClass totalCalculation','placeholder'=>'Debit','required'=>'required']); ?>
+										<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm  debitBox numberOnly rightAligntextClass totalCalculation','placeholder'=>'Debit','required'=>'required']); ?>
 									</td>
 									<td width="10%" style="vertical-align: top !important;">
-										<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm creditBox rightAligntextClass totalCalculation','placeholder'=>'Credit','style'=>'display:none;']); ?>	
+										<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm creditBox numberOnly rightAligntextClass totalCalculation','placeholder'=>'Credit','style'=>'display:none;']); ?>	
 									</td>
 									<td align="center"  width="10%" style="vertical-align: top !important;">
 										
@@ -144,7 +144,7 @@ $option_ref[]= ['value'=>'On Account','text'=>'On Account'];
 			</td>
 			
 			<td width="20%" style="padding-right:0px;vertical-align: top !important;">
-				<?php echo $this->Form->input('amount', ['label' => false,'class' => 'form-control input-sm calculation rightAligntextClass','placeholder'=>'Amount','required'=>'required']); ?>
+				<?php echo $this->Form->input('amount', ['label' => false,'class' => 'form-control input-sm calculation numberOnly rightAligntextClass','placeholder'=>'Amount','required'=>'required']); ?>
 			</td>
 			<td width="10%" style="padding-left:0px; vertical-align: top !important;">
 				<?php 
@@ -195,10 +195,10 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				<div class="window" style="margin:auto;"></div>
 			</td>
 			<td width="10%" style="vertical-align: top !important;">
-				<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm  debitBox rightAligntextClass totalCalculation','placeholder'=>'Debit','required'=>'required']); ?>
+				<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm  debitBox rightAligntextClass numberOnly totalCalculation','placeholder'=>'Debit','required'=>'required']); ?>
 			</td>
 			<td width="10%" style="vertical-align: top !important;">
-				<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm creditBox rightAligntextClass totalCalculation','placeholder'=>'Credit','style'=>'display:none;']); ?>	
+				<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm creditBox rightAligntextClass numberOnly totalCalculation','placeholder'=>'Credit','style'=>'display:none;']); ?>	
 			</td>
 			<td align="center"  width="10%" style="vertical-align: top !important;">
 				<a class="btn btn-danger delete-tr btn-xs" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>

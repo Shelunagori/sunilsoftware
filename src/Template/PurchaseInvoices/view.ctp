@@ -138,10 +138,10 @@ $this->set('title', 'Purchase Invoice View');
 						 
 					</td>
 					<td width="5%" class="rightAligntextClass">
-						<?php if(!empty($purchaseInvoiceRows->pnf_percentage)) { echo $purchaseInvoiceRows->pnf_percentage; } else { echo ' '; }?>
+						<?php if($purchaseInvoiceRows->pnf_percentage>0) { echo $purchaseInvoiceRows->pnf_percentage; } else { echo ' '; }?>
 					</td>
 					<td width="5%" class="rightAligntextClass">
-						<?php if(!empty($purchaseInvoiceRows->pnf_percentage)) { echo $purchaseInvoiceRows->pnf_amount; } else { echo ' '; }
+						<?php if(!empty($purchaseInvoiceRows->pnf_amount)) { echo $purchaseInvoiceRows->pnf_amount; } else { echo ' '; }
 						$total_pnf+=$purchaseInvoiceRows->pnf_amount;
 						?>
 					</td>

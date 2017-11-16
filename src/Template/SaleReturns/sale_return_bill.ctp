@@ -13,7 +13,7 @@ margin-bottom: 0;
 }
 .table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
     padding: 5px !important;
-	font-family: monospace !important;
+	font-family: device  !important;
 }
 </style>
 
@@ -29,7 +29,7 @@ margin-bottom: 0;
  */
 $this->set('title', 'Sales Return Bill');
 ?>
-<div style="width:300px;font-family: monospace !important;" class="maindiv">
+<div style="width:300px;font-family: device  !important;" class="maindiv">
 <?php echo $this->Html->link('Print',array(),['escape'=>false,'class'=>'hidden-print','style'=>' background-color:blue;  font-size:18px; padding:5px; color:white; cursor:hand;  float: left','onclick'=>'javascript:window.print()();']);
  echo $this->Html->link('Close',['controller'=>'SaleReturns','action'=>'index'],['escape'=>false,'class'=>'hidden-print','style'=>' background-color:blue;  font-size:18px; padding:5px; color:white; cursor:hand;  float: right']);
 ?>
@@ -156,10 +156,12 @@ $this->set('title', 'Sales Return Bill');
 		$igst=0;
 		$totalAmount=0;
 		$total_discount=0;
+		$totalQty=0;
 		foreach($saleReturn->sale_return_rows as $sale_return_row){ ?>
 		
 		<tr><td colspan="4" style="border-top:1px dashed;"></td></tr>
 		<?php
+			$totalQty+=$sale_return_row->return_quantity;
 			$discount_amt=round(($sale_return_row->return_quantity*$sale_return_row->rate)*$sale_return_row->discount_percentage/100,2);
 			$total_discount+=$discount_amt;
 			if(@$saleReturn->company->state_id==$saleReturn->partyDetails->state_id){
@@ -220,13 +222,18 @@ $this->set('title', 'Sales Return Bill');
 		<?php }?>
 		<?php } ?>
 		<tr><td colspan="4" style="border-top:1px dashed;"></td></tr>
-		
+			<tr>
+			<td>Total Qty</td>
+			<td></td>
+			<td></td>
+			<td style="text-align:right;"><?php echo number_format($totalQty,2);  ?></td>
+		</tr>
 		<tr>
 			<td>Total MRP</td>
 			<td></td>
 			<td></td>
 			<td style="text-align:right;"><?php echo number_format($totalAmount,2);  ?></td>
-			</tr>
+		</tr>
 		<?php if(!empty($total_discount)){ ?>
 		<tr>
 			<td>Discount </td>

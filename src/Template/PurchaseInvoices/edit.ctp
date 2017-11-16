@@ -99,7 +99,7 @@ if($supplier_state_id== $state_id){
 										?>
 									</td>
 									<td width="8%" align="center">
-										<?php echo $this->Form->input('q', ['type'=>'text','label' => false,'class' => 'form-control input-sm  rate rightAligntextClass','value'=>$purchase_invoice_row->rate]); 
+										<?php echo $this->Form->input('q', ['type'=>'text','label' => false,'class' => 'form-control input-sm  rate numberOnly rightAligntextClass','value'=>$purchase_invoice_row->rate]); 
 										//echo $purchase_invoice_row->rate;
 										?>
 									</td>
@@ -108,7 +108,7 @@ if($supplier_state_id== $state_id){
 										?>	
 									</td>
 									<td  width="8%" align="center">
-										<?php echo $this->Form->input('q', ['label' => false,'class' => 'form-control input-sm discountAmount','type'=>'text','style'=>'text-align:right','value'=>$purchase_invoice_row->discount_amount]);
+										<?php echo $this->Form->input('q', ['label' => false,'class' => 'form-control input-sm numberOnly discountAmount','type'=>'text','style'=>'text-align:right','value'=>$purchase_invoice_row->discount_amount]);
 										?>	
 									</td>
 									<td  width="6%" align="center">
@@ -116,7 +116,7 @@ if($supplier_state_id== $state_id){
 										?>	
 									</td>
 									<td  width="8%" align="center">
-										<?php echo $this->Form->input('q', ['label' => false,'class' => 'form-control input-sm pnfAmount','type'=>'text','style'=>'text-align:right','value'=>$purchase_invoice_row->pnf_amount]);
+										<?php echo $this->Form->input('q', ['label' => false,'class' => 'form-control input-sm numberOnly pnfAmount','type'=>'text','style'=>'text-align:right','value'=>$purchase_invoice_row->pnf_amount]);
 										?>	
 									</td>
 									
@@ -137,7 +137,7 @@ if($supplier_state_id== $state_id){
 										?>	
 									</td>
 									<td  width="7%" align="center">
-										<?php echo $this->Form->input('q', ['label' => false,'class' => 'form-control input-sm roundOff','placeholder'=>'','style'=>'text-align:right','type'=>'text','value'=>$purchase_invoice_row->round_off]);
+										<?php echo $this->Form->input('q', ['label' => false,'class' => 'form-control input-sm numberOnly roundOff','placeholder'=>'','style'=>'text-align:right','type'=>'text','value'=>$purchase_invoice_row->round_off]);
 										?>	
 									</td>
 									<td  width="10%" align="center">
@@ -299,14 +299,53 @@ if($supplier_state_id== $state_id){
 	});
 	$('.discount').die().live('blur',function()
 	{
+		var quantity=parseFloat($(this).closest('tr').find('.quantity').val());
+			    var rate=parseFloat($(this).closest('tr').find('.rate').val());
+				var amount=quantity*rate;
+			    var discount=parseFloat($(this).closest('tr').find('.discount').val());
+				if(!discount){discount=0;}
+				//quantity=round(quantity,2);
+				//rate=round(rate,2);
+				//amount=round(amount,2);
+				discount=round(discount,3);
+				var disAmt=0;
+				
+				if(isNaN(discount)){ 
+					disAmt=round(disAmt,2);
+					$(this).closest('tr').find('.discountAmount').val(disAmt);
+					$(this).closest('tr').find('.discount').val(disAmt);
+				}else{
+					var disAmt=(amount*discount)/100;
+					
+					disAmt=round(disAmt,2);
+					$(this).closest('tr').find('.discountAmount').val(disAmt);
+					total_dis=total_dis+disAmt;
+					
+				}
 		forward_total_amount();
 	});
 	
 	$('.pnf').die().live('blur',function()
-	{
+	{ 
+		var quantity=parseFloat($(this).closest('tr').find('.quantity').val());
+		var rate=parseFloat($(this).closest('tr').find('.rate').val());
+		var amount=quantity*rate;
+		var pnf=parseFloat($(this).closest('tr').find('.pnf').val());
+				if(!pnf){pnf=0;}
+				if(isNaN(pnf)){ 
+					var pnfAmt=0;
+					pnfAmt=round(pnfAmt,2);
+					$(this).closest('tr').find('.pnfAmount').val(pnfAmt);
+					$(this).closest('tr').find('.pnf').val(pnfAmt);
+				}else{
+					pnf=round(pnf,2);
+					var pnfAmt=(amount*pnf)/100;
+					pnfAmt=round(pnfAmt,2);
+					$(this).closest('tr').find('.pnfAmount').val(pnfAmt);
+					total_pnf=total_pnf+pnfAmt;
+				}
 		forward_total_amount();
 	});
-	
 	$('.roundOff').die().live('blur',function()
 	{
 		forward_total_amount();
@@ -330,29 +369,14 @@ if($supplier_state_id== $state_id){
 				var amount=quantity*rate;
 			    var discount=parseFloat($(this).closest('tr').find('.discount').val());
 				var disAmt=0;
-				
-				
-				if(isNaN(discount)){ 	
-					$(this).closest('tr').find('.discountAmount').val(disAmt.toFixed(2));
-					$(this).closest('tr').find('.discount').val(disAmt.toFixed(2));
-				}else{
-					
-					var disAmt=(amount*discount)/100;
-					$(this).closest('tr').find('.discountAmount').val(disAmt.toFixed(2));
-					total_dis=total_dis+disAmt;
-					
-				}
+				disAmt=parseFloat($(this).closest('tr').find('.discountAmount').val());
+				var pnfAmt=parseFloat($(this).closest('tr').find('.pnfAmount').val());
+				amount=round(amount,2);
+				disAmt=round(disAmt,2);
+				total_dis+=disAmt;
+				total_pnf+=pnfAmt;
 				amountAfterDiscount=amount-disAmt;
-				var pnf=parseFloat($(this).closest('tr').find('.pnf').val());
-				if(isNaN(pnf)){ 
-					var pnfAmt=0;
-					$(this).closest('tr').find('.pnfAmount').val(pnfAmt.toFixed(2));
-					$(this).closest('tr').find('.pnf').val(pnfAmt.toFixed(2));
-				}else{
-					var pnfAmt=(amount*pnf)/100;
-					$(this).closest('tr').find('.pnfAmount').val(pnfAmt.toFixed(2));
-					total_pnf=total_pnf+pnfAmt;
-				}
+				
 				taxableAmt=(amount-disAmt)+pnfAmt;
 				$(this).closest('tr').find('.taxableValue').val(taxableAmt.toFixed(2));
 				total_taxable=total_taxable+taxableAmt;

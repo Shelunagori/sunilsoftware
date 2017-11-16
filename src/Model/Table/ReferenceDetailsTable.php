@@ -81,13 +81,18 @@ class ReferenceDetailsTable extends Table
 			   'joinType' => 'LEFT'
         ]);
 
+		$this->belongsTo('DebitNoteRows', [
+            'foreignKey' => 'debit_note_row_id',
+			   'joinType' => 'LEFT'
+        ]);
+		
 		$this->belongsTo('SalesVoucherRows', [
             'foreignKey' => 'sales_voucher_row_id',
 			'joinType' => 'LEFT'
         ]);
 		
 		$this->belongsTo('PurchaseVoucherRows', [
-            'foreignKey' => 'sales_voucher_row_id',
+            'foreignKey' => 'purchase_voucher_row_id',
 			'joinType' => 'LEFT'
         ]);
 		
@@ -99,7 +104,10 @@ class ReferenceDetailsTable extends Table
             'foreignKey' => 'sales_invoice_id',
 			'joinType' => 'LEFT'
         ]);
-		$this->belongsTo('SaleReturns');
+		$this->belongsTo('SaleReturns',[
+            'foreignKey' => 'sale_return_id',
+			'joinType' => 'LEFT'
+        ]);
 		$this->belongsTo('PurchaseInvoices', [
             'foreignKey' => 'purchase_invoice_id',
 			'joinType' => 'LEFT'

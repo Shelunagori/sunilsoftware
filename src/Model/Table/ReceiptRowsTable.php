@@ -44,6 +44,11 @@ class ReceiptRowsTable extends Table
             'foreignKey' => 'receipt_id',
             'joinType' => 'INNER'
         ]);
+		$this->belongsTo('RefReceipts', [
+			'className' => 'Receipts',
+            'foreignKey' => 'receipt_id',
+            'joinType' => 'LEFT'
+        ]);
         $this->belongsTo('Companies', [
             'foreignKey' => 'company_id',
             'joinType' => 'INNER'

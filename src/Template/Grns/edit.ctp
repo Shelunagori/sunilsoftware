@@ -66,13 +66,13 @@ $this->set('title', 'Edit');
 										?>
 									</td>
 									<td width="25%" >
-										<?php echo $this->Form->input('quantity', ['label' => false,'class' => 'form-control input-sm rightAligntextClass','placeholder'=>'Qty','required','value'=>$grnrow->quantity]); ?>
+										<?php echo $this->Form->input('quantity', ['label' => false,'class' => 'form-control input-sm numberOnly rightAligntextClass','placeholder'=>'Qty','required','value'=>$grnrow->quantity]); ?>
 									</td>
 									<td width="25%">
-										<?php echo $this->Form->input('purchase_rate', ['label' => false,'class' => 'form-control input-sm total rightAligntextClass','required'=>'required','placeholder'=>'Purchase Rate','required','value'=>$grnrow->purchase_rate]); ?>	
+										<?php echo $this->Form->input('purchase_rate', ['label' => false,'class' => 'form-control input-sm total numberOnly rightAligntextClass','required'=>'required','placeholder'=>'Purchase Rate','required','value'=>$grnrow->purchase_rate]); ?>	
 									</td>
 									<td width="25%">
-										<?php echo $this->Form->input('sale_rate', ['label' => false,'class' => 'form-control input-sm total rightAligntextClass','required'=>'required','placeholder'=>'Sale Rate','required','value'=>$grnrow->sale_rate]); ?>	
+										<?php echo $this->Form->input('sale_rate', ['label' => false,'class' => 'form-control input-sm total numberOnly rightAligntextClass','required'=>'required','placeholder'=>'Sale Rate','required','value'=>$grnrow->sale_rate]); ?>	
 									</td>
 									<td align="center">
 										<a class="btn btn-danger delete-tr btn-xs" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
@@ -161,13 +161,13 @@ $this->set('title', 'Edit');
 				<?php echo $this->Form->input('item_id', ['empty'=>'---Select---','options'=>$itemOptions,'label' => false,'class' => 'form-control input-medium ','required'=>'required']); ?>
 			</td>
 			<td width="25%" >
-				<?php echo $this->Form->input('quantity', ['label' => false,'class' => 'form-control input-sm rightAligntextClass','placeholder'=>'Qty','required']); ?>
+				<?php echo $this->Form->input('quantity', ['label' => false,'class' => 'form-control input-sm numberOnly rightAligntextClass','placeholder'=>'Qty','required']); ?>
 			</td>
 			<td width="25%">
-				<?php echo $this->Form->input('purchase_rate', ['label' => false,'class' => 'form-control input-sm total rightAligntextClass','required'=>'required','placeholder'=>'Purchase Rate','required']); ?>	
+				<?php echo $this->Form->input('purchase_rate', ['label' => false,'class' => 'form-control input-sm total numberOnly rightAligntextClass','required'=>'required','placeholder'=>'Purchase Rate','required']); ?>	
 			</td>
 			<td width="25%">
-				<?php echo $this->Form->input('sale_rate', ['label' => false,'class' => 'form-control input-sm total rightAligntextClass','required'=>'required','placeholder'=>'Sale Rate','required']); ?>	
+				<?php echo $this->Form->input('sale_rate', ['label' => false,'class' => 'form-control input-sm total numberOnly rightAligntextClass','required'=>'required','placeholder'=>'Sale Rate','required']); ?>	
 			</td>
 			<td align="center">
 				<a class="btn btn-danger delete-tr btn-xs" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>

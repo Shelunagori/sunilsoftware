@@ -153,9 +153,10 @@ class ReferenceDetailsController extends AppController
 	 public function details($ledger_id = null,$ref_name = null)
     {
         $this->viewBuilder()->layout('index_layout');
-        $query = $this->ReferenceDetails->find()->where(['ReferenceDetails.ledger_id'=>$ledger_id,'ReferenceDetails.type !='=>'On Account','ReferenceDetails.ref_name'=>$ref_name])
-		->autoFields(true);
+        $query = $this->ReferenceDetails->find()->where(['ReferenceDetails.ledger_id'=>$ledger_id,'ReferenceDetails.type !='=>'On Account','ReferenceDetails.ref_name'=>$ref_name])->contain(['ReceiptRows'=>['RefReceipts'],'PaymentRows'=>['RefPayments'],'PurchaseVoucherRows'=>['RefPurchaseVouchers'],'SalesVoucherRows'=>['RefSalesVouchers'],'CreditNoteRows'=>['RefCreditNotes'],'DebitNoteRows'=>['RefDebitNotes'],'JournalVoucherRows'=>['RefJournalVouchers'],'SalesInvoices','SaleReturns','PurchaseInvoices','PurchaseReturns']);
 		$referenceDetails=$query;
+		//pr($referenceDetails->toArray());
+		//exit;
 		$this->set(compact('referenceDetails'));
         $this->set('_serialize', ['referenceDetail']);
     }

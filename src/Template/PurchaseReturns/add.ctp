@@ -91,7 +91,7 @@ if($supplier_state_id== $state_id){
 												<th colspan="2" style="text-align:center;"><label  style="text-align:center; font-size:12px" id="gstDisplay">IGST</label></th>
 									<?php } ?>
 									
-									<th rowspan="2" style="text-align:center;"><label  style="text-align:center; font-size:12px">Round Of</label></th>
+									<th rowspan="2" style="text-align:center;"><label  style="text-align:center; font-size:12px">Round Off</label></th>
 									<th rowspan="2" style="border-right-width:2px; border-right-color:#4db3a2;"><label>Total</label></th>
 									<th  rowspan="2" style="text-align:center;"><label  style="text-align:center; font-size:12px">is Return ?</label></th>
 									<th rowspan="2" style="text-align:center;"><label  style="text-align:center; font-size:12px">Return Quantity</label></th>
@@ -115,7 +115,7 @@ if($supplier_state_id== $state_id){
 									 { //pr($PurchaseInvoice->supplier_ledger->name);
 							?>
 							<tr class="main_tr" class="tab" >
-								<td width="15%" align="center">
+								<td width="15%" align="left">
 										<?php echo $this->Form->input('q', ['type'=>'hidden','label' => false,'class' => 'form-control input-sm  attrGet rightAligntextClass','value'=>$purchase_invoice_row->item_id]); 
 										
 										 echo $this->Form->input('q', ['type'=>'hidden','label' => false,'class' => 'form-control input-sm  purchaseInvoiceRowId rightAligntextClass','value'=>$purchase_invoice_row->id]); 
@@ -134,23 +134,25 @@ if($supplier_state_id== $state_id){
 										?>
 								</td>	
 								<td width="5%" align="center">
-										<?php echo $this->Form->input('q', ['type'=>'hidden','label' => false,'class' => 'form-control input-sm  discount rightAligntextClass','value'=>$purchase_invoice_row->discount_percentage]); 
-										echo $purchase_invoice_row->discount_percentage;
+										<?php echo $this->Form->input('q', ['type'=>'hidden','label' => false,'class' => 'form-control input-sm  discount rightAligntextClass','value'=>$purchase_invoice_row->discount_percentage]); if(!empty($purchase_invoice_row->discount_percentage)) {
+										echo $purchase_invoice_row->discount_percentage; }
 										?>
 								</td>	
 								<td width="5%" align="center">
 										<?php echo $this->Form->input('q', ['type'=>'hidden','label' => false,'class' => 'form-control input-sm  discountAmount rightAligntextClass','value'=>$purchase_invoice_row->discount_amount]); 
-										echo $purchase_invoice_row->discount_amount;
+										if(!empty($purchase_invoice_row->discount_amount)) {
+										echo $purchase_invoice_row->discount_amount;}
 										?>
 								</td>	
 								<td width="5%" align="center">
 										<?php echo $this->Form->input('q', ['type'=>'hidden','label' => false,'class' => 'form-control input-sm  pnf rightAligntextClass','value'=>$purchase_invoice_row->pnf_percentage]); 
-										echo $purchase_invoice_row->pnf_percentage;
+										if($purchase_invoice_row->pnf_percentage>0) {
+										echo $purchase_invoice_row->pnf_percentage; }
 										?>
 								</td>	
 								<td width="5%" align="center">
-										<?php echo $this->Form->input('q', ['type'=>'hidden','label' => false,'class' => 'form-control input-sm  pnfAmount rightAligntextClass','value'=>$purchase_invoice_row->pnf_amount]); 
-										echo $purchase_invoice_row->pnf_amount;
+										<?php echo $this->Form->input('q', ['type'=>'hidden','label' => false,'class' => 'form-control input-sm  pnfAmount rightAligntextClass','value'=>$purchase_invoice_row->pnf_amount]); if(!empty($purchase_invoice_row->pnf_amount)) {
+										echo $purchase_invoice_row->pnf_amount; }
 										?>
 								</td>	
 								
@@ -176,8 +178,8 @@ if($supplier_state_id== $state_id){
 								<td width="5%" align="center">
 										<?php echo $this->Form->input('q', ['type'=>'hidden','label' => false,'class' => 'form-control input-sm  roundOff rightAligntextClass','value'=>$purchase_invoice_row->round_off]); 
 
-										echo $this->Form->input('q', ['type'=>'hidden','label' => false,'class' => 'form-control input-sm  actroundOff rightAligntextClass','value'=>$purchase_invoice_row->round_off]); 
-										echo $purchase_invoice_row->round_off;
+										echo $this->Form->input('q', ['type'=>'hidden','label' => false,'class' => 'form-control input-sm  actroundOff rightAligntextClass','value'=>$purchase_invoice_row->round_off]); if(!empty($purchaseInvoiceRows->round_off)) {
+										echo $purchase_invoice_row->round_off; }
 										?>
 								</td>	
 								<td width="5%" align="center" style="border-left-width:2px; border-right-color:#4db3a2;">
@@ -350,7 +352,7 @@ if($supplier_state_id== $state_id){
 	
 	$('.rename_check').die().live('click',function() {
 		rename_rows();
-		forward_total_amount();
+		//forward_total_amount();
     });
 rename_rows();
 function rename_rows()
@@ -451,33 +453,18 @@ function rename_rows()
 				var amount=quantity*rate;
 				amount=round(amount,2);
 			    var discount=parseFloat($(this).closest('tr').find('.discount').val());
-				var disAmt=0;
 				
-				if(isNaN(discount)){ 
-					$(this).closest('tr').find('.discountAmount').val(disAmt.toFixed(2));
-					$(this).closest('tr').find('.discount').val(disAmt.toFixed(2));
-				}else{
-					discount=round(discount,2);
-					var disAmt=(amount*discount)/100;
-					disAmt=round(disAmt,2);
-					
-					$(this).closest('tr').find('.discountAmount').val(disAmt);
-					total_dis=total_dis+disAmt;
-					
-				}
+				var disAmt=0;
+				disAmt=parseFloat($(this).closest('tr').find('.discountAmount').val());
+				var pnfAmt=parseFloat($(this).closest('tr').find('.pnfAmount').val());
 				amountAfterDiscount=amount-disAmt;
-				var pnf=parseFloat($(this).closest('tr').find('.pnf').val());
-				if(isNaN(pnf)){ 
-					var pnfAmt=0;
-					$(this).closest('tr').find('.pnfAmount').val(pnfAmt.toFixed(2));
-					$(this).closest('tr').find('.pnf').val(pnfAmt.toFixed(2));
-				}else{
-					pnf=round(pnf,2);
-					var pnfAmt=(amount*pnf)/100;
-					pnfAmt=round(pnfAmt,2);
-					$(this).closest('tr').find('.pnfAmount').val(pnfAmt.toFixed(2));
-					total_pnf=total_pnf+pnfAmt;
-				}
+				
+				amount=round(amount,2);
+				disAmt=round(disAmt,2);
+				total_dis+=disAmt;
+				total_pnf+=pnfAmt;
+				amountAfterDiscount=amount-disAmt;
+				
 				//alert(disAmt);
 				taxableAmt=(amount-disAmt)+pnfAmt;
 				taxableAmt=round(taxableAmt,2);
@@ -538,7 +525,7 @@ function rename_rows()
 				//$(this).closest('tr').find('.netAmount').val(parseFloat(totalAmountAfterRound).toFixed(2));
 				var netAmount =parseFloat($(this).closest('tr').find('.netAmount ').val());
 				var totalAmountReturn=0; 
-				if(isNaN(quantity)){
+				if(isNaN(quantity) || (quantity<=0)){
 					var totalAmountReturn=0; 
 					total_amt=total_amt+totalAmountReturn;
 					$(this).closest('tr').find('.returnQty').val(parseFloat(0).toFixed(2));

@@ -39,9 +39,14 @@ class DebitNoteRowsTable extends Table
         $this->setDisplayField('id');
         $this->setPrimaryKey('id');
 
-        $this->belongsTo('CreditNotes', [
-            'foreignKey' => 'credit_note_id',
+        $this->belongsTo('DebitNotes', [
+            'foreignKey' => 'debit_note_id',
             'joinType' => 'INNER'
+        ]);
+		 $this->belongsTo('RefDebitNotes', [
+			'className' => 'DebitNotes',
+            'foreignKey' => 'debit_note_id',
+            'joinType' => 'LEFT'
         ]);
         $this->belongsTo('Ledgers', [
             'foreignKey' => 'ledger_id',
@@ -110,7 +115,7 @@ class DebitNoteRowsTable extends Table
      */
     public function buildRules(RulesChecker $rules)
     {
-        $rules->add($rules->existsIn(['credit_note_id'], 'CreditNotes'));
+        $rules->add($rules->existsIn(['debit_note_id'], 'DebitNotes'));
         $rules->add($rules->existsIn(['ledger_id'], 'Ledgers'));
 
         return $rules;

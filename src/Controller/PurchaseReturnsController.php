@@ -131,6 +131,17 @@ class PurchaseReturnsController extends AppController
 					$this->PurchaseReturns->ItemLedgers->save($ItemLedger);
 				}
 				
+				//Accounting Entries for Supplier account//
+				$AccountingEntrie = $this->PurchaseReturns->AccountingEntries->newEntity(); 
+				$AccountingEntrie->ledger_id=$PurchaseInvoice->supplier_ledger_id;
+				$AccountingEntrie->debit=$total_amount;
+				$AccountingEntrie->credit=0;
+				$AccountingEntrie->transaction_date=$purchaseReturn->transaction_date;
+				$AccountingEntrie->company_id=$company_id;
+				$AccountingEntrie->purchase_return_id=$purchaseReturn->id;
+				$this->PurchaseReturns->AccountingEntries->save($AccountingEntrie);
+               
+				
 				//Accounting Entries for Purchase account//
 				$AccountingEntrie = $this->PurchaseReturns->AccountingEntries->newEntity(); 
 				$AccountingEntrie->ledger_id=$PurchaseInvoice->purchase_ledger_id;
@@ -140,19 +151,7 @@ class PurchaseReturnsController extends AppController
 				$AccountingEntrie->company_id=$company_id;
 				$AccountingEntrie->purchase_return_id=$purchaseReturn->id;
 				$this->PurchaseReturns->AccountingEntries->save($AccountingEntrie);
-			  
-			  
-			  //Accounting Entries for Supplier account//
-				$AccountingEntrie = $this->PurchaseReturns->AccountingEntries->newEntity(); 
-				$AccountingEntrie->ledger_id=$PurchaseInvoice->supplier_ledger_id;
-				$AccountingEntrie->debit=$total_amount;
-				$AccountingEntrie->credit=0;
-				$AccountingEntrie->transaction_date=$purchaseReturn->transaction_date;
-				$AccountingEntrie->company_id=$company_id;
-				$AccountingEntrie->purchase_return_id=$purchaseReturn->id;
-				$this->PurchaseReturns->AccountingEntries->save($AccountingEntrie);
-                $this->Flash->success(__('The purchase return has been saved.'));
-				
+			   $this->Flash->success(__('The purchase return has been saved.'));
 				//Accounting Entries for Round of Amount//
 				$AccountingEntrie = $this->PurchaseReturns->AccountingEntries->newEntity(); 
 				$RoundofLedgers = $this->PurchaseReturns->PurchaseInvoices->PurchaseInvoiceRows->Ledgers->find()->where(['Ledgers.round_off'=>1,'Ledgers.company_id'=>$company_id])->first(); 

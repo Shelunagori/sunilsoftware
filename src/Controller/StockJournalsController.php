@@ -116,14 +116,18 @@ class StockJournalsController extends AppController
             }
             $this->Flash->error(__('The stock journal could not be saved. Please, try again.'));
         }
-		$items     = $this->StockJournals->Inwards->Items->find('list')->where(['company_id'=>$company_id]);
+		$items     = $this->StockJournals->Inwards->Items->find()->where(['company_id'=>$company_id]);
+		$itemOptions=[];
+		foreach($items as $item){
+			$itemOptions[]=['text'=>$item->item_code.' '.$item->name, 'value'=>$item->id,'item_code'=>$item->item_code];
+		}
         $Voucher_no=$this->StockJournals->find()->select(['voucher_no'])->where(['company_id'=>$company_id])->order(['voucher_no' => 'DESC'])->first();
 		if($Voucher_no){
 			$voucher_no=$Voucher_no->voucher_no+1;
 		}else{
 			$voucher_no=1;
 		} 
-        $this->set(compact('stockJournal', 'items','voucher_no'));
+        $this->set(compact('stockJournal', 'items','voucher_no','itemOptions'));
         $this->set('_serialize', ['stockJournal']);
     }
 
@@ -198,13 +202,16 @@ class StockJournalsController extends AppController
 
                 return $this->redirect(['action' => 'index']);
             }else{
-				pr($stockJournal);exit;
+				
             $this->Flash->error(__('The stock journal could not be saved. Please, try again.'));
 			}
         }
-		
-		$items = $this->StockJournals->Inwards->Items->find('list')->where(['company_id'=>$company_id]);
-        $this->set(compact('stockJournal', 'items'));
+		$items     = $this->StockJournals->Inwards->Items->find()->where(['company_id'=>$company_id]);
+		$itemOptions=[];
+		foreach($items as $item){
+			$itemOptions[]=['text'=>$item->item_code.' '.$item->name, 'value'=>$item->id,'item_code'=>$item->item_code];
+		}
+        $this->set(compact('stockJournal', 'items','itemOptions'));
         $this->set('_serialize', ['stockJournal']);
     }
 

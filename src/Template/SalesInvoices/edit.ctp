@@ -154,7 +154,7 @@ foreach($partyOptions as $partyOption)
 										<span class="itemQty" style="font-size:10px;"></span>
 								</td>
 								<td>
-									<?php echo $this->Form->input('salesInvoiceRow.'.$i.'.quantity', ['type'=>'text','label' => false,'class' => 'form-control input-sm calculation quantity rightAligntextClass','id'=>'check','required'=>'required','placeholder'=>'Quantity', 'value'=>$salesInvoiceRow->quantity]); ?>
+									<?php echo $this->Form->input('salesInvoiceRow.'.$i.'.quantity', ['type'=>'text','label' => false,'class' => 'form-control input-sm calculation quantity numberOnly rightAligntextClass','id'=>'check','required'=>'required','placeholder'=>'Quantity', 'value'=>$salesInvoiceRow->quantity]); ?>
 									
 									<input type="hidden" name="" class="salesReturnQuantity" value=<?php echo @$sales_return_qty[$salesInvoiceRow->item->id];?>>
 									
@@ -166,10 +166,10 @@ foreach($partyOptions as $partyOption)
 									<?php echo $this->Form->input('salesInvoiceRow.'.$i.'.rate', ['label' => false,'class' => 'form-control input-sm calculation rate rightAligntextClass','required'=>'required','placeholder'=>'Rate','value'=>$salesInvoiceRow->rate, 'readonly'=>'readonly', 'tabindex'=>'-1']); ?>
 								</td>
 								<td>
-									<?php echo $this->Form->input('salesInvoiceRow.'.$i.'.discount_percentage', ['label' => false,'class' => 'form-control input-sm calculation discount rightAligntextClass','placeholder'=>'Dis.', 'value'=>$salesInvoiceRow->discount_percentage]); ?>	
+									<?php echo $this->Form->input('salesInvoiceRow.'.$i.'.discount_percentage', ['label' => false,'class' => 'form-control input-sm calculation discount numberOnly rightAligntextClass','placeholder'=>'Dis.', 'value'=>$salesInvoiceRow->discount_percentage]); ?>	
 								</td>
 								<td>
-									<?php echo $this->Form->input('salesInvoiceRow.'.$i.'.discount', ['label' => false,'class' => 'form-control input-sm discalculation dis_amount rightAligntextClass','placeholder'=>'Dis.', 'value'=>$salesInvoiceRow->discount]); ?>	
+									<?php echo $this->Form->input('salesInvoiceRow.'.$i.'.discount', ['label' => false,'class' => 'form-control input-sm discalculation dis_amount numberOnly rightAligntextClass','placeholder'=>'Dis.', 'value'=>$salesInvoiceRow->discount]); ?>	
 								</td>
 								<td>
 								<?php echo $this->Form->input('salesInvoiceRow.'.$i.'.taxable_value', ['label' => false,'class' => 'form-control input-sm gstAmount reverse_total_amount rightAligntextClass','required'=>'required', 'placeholder'=>'Amount', 'value'=>$salesInvoiceRow->taxable_value, 'readonly'=>'readonly', 'tabindex'=>'-1']); ?>	
@@ -351,16 +351,16 @@ foreach($partyOptions as $partyOption)
 			<span class="itemQty" style="font-size:10px;"></span>
 			</td>
 			<td>
-				<?php echo $this->Form->input('quantity', ['label' => false,'class' => 'form-control input-sm calculation quantity rightAligntextClass','id'=>'check','required'=>'required','placeholder'=>'Quantity', 'value'=>1]); ?>
+				<?php echo $this->Form->input('quantity', ['label' => false,'class' => 'form-control input-sm calculation quantity numberOnly rightAligntextClass','id'=>'check','required'=>'required','placeholder'=>'Quantity', 'value'=>1]); ?>
 			</td>
 			<td>
 				<?php echo $this->Form->input('rate', ['label' => false,'class' => 'form-control input-sm calculation rate rightAligntextClass','required'=>'required','placeholder'=>'Rate', 'readonly'=>'readonly', 'tabindex'=>'-1']); ?>
 			</td>
 			<td>
-				<?php echo $this->Form->input('discount_percentage', ['label' => false,'class' => 'form-control input-sm calculation discount rightAligntextClass','placeholder'=>'Dis.','value'=>0]); ?>	
+				<?php echo $this->Form->input('discount_percentage', ['label' => false,'class' => 'form-control input-sm calculation discount numberOnly rightAligntextClass','placeholder'=>'Dis.','value'=>0]); ?>	
 			</td>
 			<td>
-				<?php echo $this->Form->input('discount', ['label' => false,'class' => 'form-control input-sm discalculation dis_amount rightAligntextClass','placeholder'=>'Dis.','value'=>0]); ?>	
+				<?php echo $this->Form->input('discount', ['label' => false,'class' => 'form-control input-sm discalculation dis_amount numberOnly rightAligntextClass','placeholder'=>'Dis.','value'=>0]); ?>	
 			</td>
 			<td>
 				<?php echo $this->Form->input('taxable_value', ['label' => false,'class' => 'form-control input-sm gstAmount reverse_total_amount rightAligntextClass','required'=>'required','placeholder'=>'Amount', 'readonly'=>'readonly', 'tabindex'=>'-1']); ?>
@@ -667,10 +667,10 @@ foreach($partyOptions as $partyOption)
 				   
 				var discount  = parseFloat($(this).find('.discount').val());
 				if(!discount){discount=0;}
-				var discount=round(discount,2);
+				var discount=round(discount,3);
 				
 				var discountValue=(discount*totamount)/100;
-				var discountValue=round(discountValue,2);
+				var discountValue=round(discountValue,3);
 				var convertDiscount=round(discountValue,2);
 				totDiscounts=round(parseFloat(totDiscounts)+parseFloat(discountValue), 2);
 				var discountAmount=totamount-discountValue;
@@ -810,7 +810,7 @@ foreach($partyOptions as $partyOption)
 					var discountValue=dis_amount;
 					totDiscounts=round(parseFloat(totDiscounts)+parseFloat(discountValue), 2);
 					var discountAmount=totamount-discountValue;
-					var convertDiscount=round((dis_amount*100)/totamount, 2);
+					var convertDiscount=round((dis_amount*100)/totamount, 3);
 					$(this).find('.discount').val(convertDiscount);
 			
 
