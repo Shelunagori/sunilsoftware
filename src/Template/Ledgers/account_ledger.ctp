@@ -1,18 +1,45 @@
 <?php
+ $url_excel="/?".$url; 
+
 /**
  * @Author: PHP Poets IT Solutions Pvt. Ltd.
  */
 $this->set('title', 'Account Ledger report');
 ?>
+<?php
+	if($status=='excel'){
+		$date= date("d-m-Y"); 
+	$time=date('h:i:a',time());
+
+	$filename="Invoice_report_".$date.'_'.$time;
+	//$from_date=date('d-m-Y',strtotime($from_date));
+	//$to_date=date('d-m-Y',strtotime($to_date));
+	
+	header ("Expires: 0");
+	header ("Last-Modified: " . gmdate("D,d M YH:i:s") . " GMT");
+	header ("Cache-Control: no-cache, must-revalidate");
+	header ("Pragma: no-cache");
+	header ("Content-type: application/vnd.ms-excel");
+	header ("Content-Disposition: attachment; filename=".$filename.".xls");
+	header ("Content-Description: Generated Report" ); 
+	}
+
+ 
+?>
 <div class="row">
 	<div class="col-md-12">
 		<div class="portlet light ">
+		<?php if($status!='excel'){ ?>
 			<div class="portlet-title">
 				<div class="caption">
 					<i class="icon-bar-chart font-green-sharp hide"></i>
 					<span class="caption-subject font-green-sharp bold ">Account Ledger</span>
 				</div>
+				<div class="actions">
+					<?php echo $this->Html->link( '<i class="fa fa-file-excel-o"></i> Excel', '/Ledgers/AccountLedger'.@$url_excel.'&status=excel',['class' =>'btn btn-sm green tooltips pull-right','target'=>'_blank','escape'=>false,'data-original-title'=>'Download as excel']); ?>
+				</div>
 			</div>
+		
 			<div class="portlet-body">
 				<div class="row">
 					<form method="GET" >
@@ -67,11 +94,12 @@ $this->set('title', 'Account Ledger report');
 						</div>	
 					</form>
 				</div>
+				<?php } ?>
 				<?php
 				if(!empty($AccountingLedgers))
 				{
 				?>
-					<table class="table table-bordered table-hover table-condensed" width="100%">
+					<table class="table table-bordered table-hover table-condensed" width="100%" border="1">
 						<thead>
 							<tr>
 								<th colspan="4">

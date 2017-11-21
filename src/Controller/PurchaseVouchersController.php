@@ -22,12 +22,22 @@ class PurchaseVouchersController extends AppController
     {
 		$this->viewBuilder()->layout('index_layout');
 		$company_id=$this->Auth->User('session_company_id');
+		$search=$this->request->query('search');
 		$this->paginate = [
             'contain' => []
         ];
-        $purchaseVouchers = $this->paginate($this->PurchaseVouchers->find()->where(['PurchaseVouchers.company_id'=>$company_id]));
+        $purchaseVouchers = $this->paginate($this->PurchaseVouchers->find()->where(['PurchaseVouchers.company_id'=>$company_id])->where([
+		'OR' => [
+            'PurchaseVouchers.voucher_no' => $search,
+            //....
+			'PurchaseVouchers.supplier_invoice_no LIKE' => '%'.$search.'%',
+			//...
+			'PurchaseVouchers.transaction_date ' => date('Y-m-d',strtotime($search)),
+			//...
+			'PurchaseVouchers.supplier_invoice_date ' => date('Y-m-d',strtotime($search))
+		 ]]));
 
-        $this->set(compact('purchaseVouchers'));
+        $this->set(compact('purchaseVouchers','search'));
         $this->set('_serialize', ['purchaseVouchers']);
     }
 

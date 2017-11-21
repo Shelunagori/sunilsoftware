@@ -13,6 +13,19 @@ $this->set('title', 'Purchase Invoice List');
 					<i class="icon-bar-chart font-green-sharp hide"></i>
 					<span class="caption-subject font-green-sharp bold ">Purchase Invoice</span>
 				</div>
+				<div class="actions">
+				<form method="GET" id="">
+					<div class="row">
+						<div class="col-md-9">
+							<?php echo $this->Form->input('search',['class'=>'form-control input-sm pull-right','label'=>false, 'placeholder'=>'Search','autofocus'=>'autofocus','value'=> @$search]);
+							?>
+						</div>
+						<div class="col-md-1">
+							<button type="submit" class="go btn blue-madison input-sm">Go</button>
+						</div> 
+					</div>
+				</form>
+				</div>
 			</div>
 			<div class="portlet-body">
 				<div class="table-responsive">
@@ -23,6 +36,7 @@ $this->set('title', 'Purchase Invoice List');
 							<tr>
 								<th scope="col"><?= __('Sr') ?></th>
 								<th scope="col"><?= $this->Paginator->sort('voucher_no') ?></th>
+								<th scope="col"><?= $this->Paginator->sort('grn_voucher_no') ?></th>
 								<th scope="col"><?= $this->Paginator->sort('supplier_ledger') ?></th>
 								<th scope="col"><?= $this->Paginator->sort('transaction_date') ?></th>
 								<th scope="col" class="actions"><?= __('Actions') ?></th>
@@ -33,6 +47,7 @@ $this->set('title', 'Purchase Invoice List');
 							<tr>
 								<td><?= h(++$page_no) ?></td>
 								<td><?= h('#'.str_pad($purchaseInvoice->voucher_no, 4, '0', STR_PAD_LEFT)) ?></td>
+								<td><?= h('#'.str_pad($purchaseInvoice->grn->voucher_no, 4, '0', STR_PAD_LEFT)) ?></td>
 								<td><?= h($purchaseInvoice->supplier_ledger->name) ?></td>
 								<td><?= h($purchaseInvoice->transaction_date) ?></td>
 								

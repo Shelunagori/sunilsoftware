@@ -1,3 +1,16 @@
+
+<script type="text/javascript">
+<!--
+function NewPrint(Copies){
+	
+  var Count = 0;
+  while (Count < Copies){
+    window.print(0);
+    Count++;
+  }
+}
+//-->
+</script>
 <style>
 
 @media print{
@@ -13,7 +26,7 @@ margin-bottom: 0;
 }
 .table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
     padding: 5px !important;
-	font-family: device !important;
+	font-family: Calibri !important;
 }
 </style>
 
@@ -29,8 +42,8 @@ margin-bottom: 0;
  */
 $this->set('title', 'Sales Invoice Bill');
 ?>
-<div style="width:300px;font-family: device !important;" class="maindiv">
-<?php echo $this->Html->link('Print',array(),['escape'=>false,'class'=>'hidden-print','style'=>' background-color:blue;  font-size:18px; padding:5px; color:white; cursor:hand;  float: left','onclick'=>'javascript:window.print()();']);
+<div style="width:300px;font-family: Calibri !important;" class="maindiv">
+<?php echo $this->Html->link('Print',array(),['escape'=>false,'class'=>'hidden-print','style'=>' background-color:blue;  font-size:18px; padding:5px; color:white; cursor:hand;  float: left','onclick'=>'javascript:NewPrint(2);']);
  echo $this->Html->link('Close',['controller'=>'SalesInvoices','action'=>'add'],['escape'=>false,'class'=>'hidden-print','style'=>' background-color:blue;  font-size:18px; padding:5px; color:white; cursor:hand;  float: right']);
 ?>
 <table  width="100%" border="0"  >
@@ -222,12 +235,7 @@ $this->set('title', 'Sales Invoice Bill');
 		<?php }?>
 		<?php }} ?>
 		<tr><td colspan="4" style="border-top:1px dashed;"></td></tr>
-		<tr>
-			<td>Total Qty</td>
-			<td></td>
-			<td></td>
-			<td style="text-align:right;"><?php echo number_format($totalQty,2);  ?></td>
-		</tr>
+		
 		<tr>
 			<td>Total MRP</td>
 			<td></td>
@@ -314,3 +322,4 @@ $this->set('title', 'Sales Invoice Bill');
 	</tr>
 </table>
 </div>
+

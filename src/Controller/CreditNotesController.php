@@ -22,12 +22,22 @@ class CreditNotesController extends AppController
     {
 		$this->viewBuilder()->layout('index_layout');
 		$company_id=$this->Auth->User('session_company_id');
+		$search=$this->request->query('search');
         $this->paginate = [
             'contain' => ['Companies']
         ];
-        $creditNotes = $this->paginate($this->CreditNotes->find()->where(['CreditNotes.company_id'=>$company_id]));
+		if($search){
+        $creditNotes = $this->paginate($this->CreditNotes->find()->where(['CreditNotes.company_id'=>$company_id])->where([
+		'OR' => [
+            'CreditNotes.voucher_no' => $search,
+          
+		 ]]));
 
-        $this->set(compact('creditNotes'));
+		}
+		else{
+		 $creditNotes = $this->paginate($this->CreditNotes->find()->where(['CreditNotes.company_id'=>$company_id]));
+		}
+        $this->set(compact('creditNotes','search'));
         $this->set('_serialize', ['creditNotes']);
     }
 

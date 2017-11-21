@@ -22,12 +22,20 @@ class StockJournalsController extends AppController
     {
 		$this->viewBuilder()->layout('index_layout');
 		$company_id=$this->Auth->User('session_company_id');
+		$search=$this->request->query('search');
 		$this->paginate = [
             'contain' => ['Companies']
         ];
-        $stockJournals = $this->paginate($this->StockJournals->find()->where(['StockJournals.company_id'=>$company_id]));
+        $stockJournals = $this->paginate($this->StockJournals->find()->where(['StockJournals.company_id'=>$company_id])->where([
+		'OR' => [
+            'StockJournals.voucher_no' => $search,
+            // ...
+			'StockJournals.reference_no LIKE' => '%'.$search.'%',
+			//...
+			'StockJournals.transaction_date ' => date('Y-m-d',strtotime($search))
+		 ]]));
 
-        $this->set(compact('stockJournals'));
+        $this->set(compact('stockJournals','search'));
         $this->set('_serialize', ['stockJournals']);
     }
 

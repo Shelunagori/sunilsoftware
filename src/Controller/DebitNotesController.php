@@ -21,11 +21,24 @@ class DebitNotesController extends AppController
     public function index()
     {
 	$this->viewBuilder()->layout('index_layout');
+	$company_id=$this->Auth->User('session_company_id');
+	$search=$this->request->query('search');
         $this->paginate = [
             'contain' => ['Companies']
         ];
-        $debitNotes = $this->paginate($this->DebitNotes);
-        $this->set(compact('debitNotes'));
+		if($search){
+        $debitNotes = $this->paginate($this->DebitNotes->find()->where(['DebitNotes.company_id'=>$company_id])->where([
+		'OR' => [
+            'DebitNotes.voucher_no' => $search,
+            //....
+			'DebitNotes.transaction_date ' => date('Y-m-d',strtotime($search))
+			//...
+		 ]]));
+		}else{
+		  $debitNotes = $this->paginate($this->DebitNotes->find()->where(['DebitNotes.company_id'=>$company_id]));	
+		}
+		
+        $this->set(compact('debitNotes','search'));
         $this->set('_serialize', ['debitNotes']);
     }
 

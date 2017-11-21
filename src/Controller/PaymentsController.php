@@ -23,12 +23,22 @@ class PaymentsController extends AppController
 		
 		$this->viewBuilder()->layout('index_layout');
 		$company_id=$this->Auth->User('session_company_id');
+		$search=$this->request->query('search');
         $this->paginate = [
             'contain' => ['Companies']
         ];
-        $payments = $this->paginate($this->Payments->find()->where(['Payments.company_id'=>$company_id]));
-
-        $this->set(compact('payments'));
+		if($search){
+        $payments = $this->paginate($this->Payments->find()->where(['Payments.company_id'=>$company_id])->where([
+		'OR' => [
+            'Payments.voucher_no' => $search,
+            //....
+			'Payments.transaction_date ' => date('Y-m-d',strtotime($search))
+			//...
+		 ]]));
+		} else {
+		 $payments = $this->paginate($this->Payments->find()->where(['Payments.company_id'=>$company_id]));
+		}
+        $this->set(compact('payments','search'));
         $this->set('_serialize', ['payments']);
     }
 

@@ -5,14 +5,15 @@
  */ 
  //pr($reference_details->toArray());
  //exit;
-$this->set('title', 'Overdue Report');
+$this->set('title', 'Sales Return Report');
 ?>
+
 <?php
 	if($status=='excel'){
 		$date= date("d-m-Y"); 
 	$time=date('h:i:a',time());
 
-	$filename="Outstanding_report_".$date.'_'.$time;
+	$filename="salesreturn_report_".$date.'_'.$time;
 	//$from_date=date('d-m-Y',strtotime($from_date));
 	//$to_date=date('d-m-Y',strtotime($to_date));
 	
@@ -33,15 +34,15 @@ $this->set('title', 'Overdue Report');
 			<?php if($status!='excel'){ ?>
 				<div class="caption">
 					<i class="icon-bar-chart font-green-sharp hide"></i>
-					<span class="caption-subject font-green-sharp bold ">Outstanding Payable Report</span>
+					<span class="caption-subject font-green-sharp bold ">Sales Return Report</span>
 				</div>
 				<div class="actions">
-					<?php echo $this->Html->link( '<i class="fa fa-file-excel-o"></i> Excel', '/Ledgers/overDueReportPayable/'.@$url_excel.'&status=excel',['class' =>'btn btn-sm green tooltips pull-right','target'=>'_blank','escape'=>false,'data-original-title'=>'Download as excel']); ?>
+					<?php echo $this->Html->link( '<i class="fa fa-file-excel-o"></i> Excel', '/ItemLedgers/SalesReturnReport/'.@$url_excel.'&status=excel',['class' =>'btn btn-sm green tooltips pull-right','target'=>'_blank','escape'=>false,'data-original-title'=>'Download as excel']); ?>
 				</div>
 			</div>
 			<div class="portlet-body">
-			<div class="row">
-			<?= $this->Form->create('overdue',['type' => 'get']) ?>
+			<!--<div class="row">
+			<?= $this->Form->create('salesReturn',['type' => 'get']) ?>
 				<div class="col-md-12">
 					<div class="col-md-3">
 						<div class="form-group">
@@ -54,45 +55,31 @@ $this->set('title', 'Overdue Report');
 					</div>
 				</div>
 			<?= $this->Form->end() ?>	
-			</div>
+			</div> -->
 			<?php } ?>
 				<div class="table-responsive">
 					<table class="table table-bordered table-hover table-condensed" border="1">
 						<thead>
 							<tr>
-								<th scope="col">Transaction Date </th>
-								<th scope="col">Reference Name</th>
+								<th scope="col"> Transaction Date </th>
+								<th scope="col">Voucher No</th>
+								<th scope="col">Item Name</th>
 								<th scope="col">Party</th>
-								<th scope="col">Pending Amount</th>
-								<th scope="col">Over Due Days</th>
+								<th scope="col">Amount</th>
 							</tr>
 						</thead>
 						<tbody><?php $sno = 1; 
-							if($run_time_date){
-								  foreach ($reference_details as $reference_detail):
-									$duebalance = $reference_detail->total_credit - $reference_detail->total_debit;
-									if($duebalance > 0)
-									{ ?>
-										<tr>
-											<td><?php echo $reference_detail->transaction_date; ?></td>
-											<td><?= $this->Html->link($reference_detail->ref_name, ['controller' => 'ReferenceDetails', 'action' => 'details', $reference_detail->ledger_id,$reference_detail->ref_name]) ?></td>
-											<td><?php echo $reference_detail->ledger->name; ?></td>
-											<td class="rightAligntextClass"><?php echo $duebalance;  ?></td>
-											<td><?php 
-											$due_days=$reference_detail->ledger->default_credit_days;
-											$ref_date = date('Y-m-d',strtotime($reference_detail->transaction_date));	
-											$ref_date_add_days= date('Y-m-d', strtotime($ref_date.'+' .$due_days.'days'));
-											$ref_date_create =  date_create($ref_date_add_days );
-											$run_time_date_create = date_create($run_time_date);
-											
-											$diff=date_diff($ref_date_create,$run_time_date_create);
-											$diff_val =$diff->format("%R%a");
-											if($diff_val>0){
-											echo $diff->format("%a days");
-											} else { echo '0 days';}
-											?></td>
+							
+								  foreach ($itemLedgers as $itemLedger): ?>
+									
+										<tr >
+											<td><?php echo $itemLedger->transaction_date; ?></td>
+											<td><?php echo $itemLedger->sale_return->voucher_no; ?></td>
+											<td><?php echo $itemLedger->item->name; ?></td>
+											<td><?php echo $itemLedger->sale_return->party_ledger->name; ?></td>
+											<td><?php echo $itemLedger->sale_return->amount_after_tax; ?></td>
 										</tr>
-							<?php } endforeach;  } ?>
+								<?php endforeach ?>
 						</tbody>
 					</table>
 				</div>				

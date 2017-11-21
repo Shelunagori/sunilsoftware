@@ -12,6 +12,19 @@ $this->set('title', 'Sales Invoice List');
 					<i class="icon-bar-chart font-green-sharp hide"></i>
 					<span class="caption-subject font-green-sharp bold ">Sales Return</span>
 				</div>
+				<div class="actions">
+				<form method="GET" id="">
+					<div class="row">
+						<div class="col-md-9">
+							<?php echo $this->Form->input('search',['class'=>'form-control input-sm pull-right','label'=>false, 'placeholder'=>'Search','autofocus'=>'autofocus','value'=>@$search]);
+							?>
+						</div>
+						<div class="col-md-1">
+							<button type="submit" class="go btn blue-madison input-sm">Go</button>
+						</div> 
+					</div>
+				</form>
+				</div>
 			</div>
 			<div class="portlet-body">
 				<div class="table-responsive">

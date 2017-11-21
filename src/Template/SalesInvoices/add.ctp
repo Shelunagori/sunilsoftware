@@ -73,7 +73,7 @@ $this->set('title', 'Create Sales Invoice');
 						<input type="hidden" name="voucher_no" id="" value="<?= h($voucher_no, 4, '0') ?>">
 						<div class="col-md-3">
 								<label>Party</label>
-								<?php echo $this->Form->control('party_ledger_id',['empty'=>'-Select Party-', 'class'=>'form-control input-sm party_ledger_id select2me','label'=>false, 'options' => $partyOptions,'required'=>'required','value'=>$CashPartyLedgers->id]);
+								<?php echo $this->Form->control('party_ledger_id',['empty'=>'-Select Party-', 'class'=>'form-control input-sm party_ledger_id select2me','label'=>false,'options' => $partyOptions,'required'=>'required','value'=>$CashPartyLedgers->id]);
 								?>
 						</div>
 						<div class="col-md-3">

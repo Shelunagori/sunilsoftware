@@ -22,12 +22,23 @@ class SuppliersController extends AppController
     {
 		$this->viewBuilder()->layout('index_layout');
 		$company_id=$this->Auth->User('session_company_id');
+		$search=$this->request->query('search');
 		$this->paginate = [
             'contain' => ['States']
         ];
-        $suppliers = $this->paginate($this->Suppliers->find()->where(['Suppliers.company_id'=>$company_id]));
-
-        $this->set(compact('suppliers'));
+        $suppliers = $this->paginate($this->Suppliers->find()->where(['Suppliers.company_id'=>$company_id])->where([
+		'OR' => [
+            'Suppliers.name LIKE' => '%'.$search.'%',
+			//...
+			'States.name LIKE' => '%'.$search.'%',
+			//...
+			'Suppliers.gstin LIKE' => '%'.$search.'%',
+			//...
+			'Suppliers.mobile LIKE' => '%'.$search.'%',
+			//...
+			'Suppliers.email LIKE' => '%'.$search.'%'
+		]]));
+        $this->set(compact('suppliers','search'));
         $this->set('_serialize', ['suppliers']);
     }
 

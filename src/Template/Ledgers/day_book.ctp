@@ -1,16 +1,40 @@
 <?php 
+ $url_excel="/?".$url; 
 /**
  * @Author: PHP Poets IT Solutions Pvt. Ltd.
  */
 $this->set('title', 'Day Book');
 ?>
+<?php
+	if($status=='excel'){
+		$date= date("d-m-Y"); 
+	$time=date('h:i:a',time());
+
+	$filename="Day_book_".$date.'_'.$time;
+	//$from_date=date('d-m-Y',strtotime($from_date));
+	//$to_date=date('d-m-Y',strtotime($to_date));
+	
+	header ("Expires: 0");
+	header ("Last-Modified: " . gmdate("D,d M YH:i:s") . " GMT");
+	header ("Cache-Control: no-cache, must-revalidate");
+	header ("Pragma: no-cache");
+	header ("Content-type: application/vnd.ms-excel");
+	header ("Content-Disposition: attachment; filename=".$filename.".xls");
+	header ("Content-Description: Generated Report" ); 
+	}
+
+?>
 <div class="row">
 	<div class="col-md-12">
 		<div class="portlet light ">
 			<div class="portlet-title">
+			<?php if($status!='excel'){ ?>
 				<div class="caption">
 					<i class="icon-bar-chart font-green-sharp hide"></i>
 					<span class="caption-subject font-green-sharp bold ">Day Book</span>
+				</div>
+				<div class="actions">
+					<?php echo $this->Html->link( '<i class="fa fa-file-excel-o"></i> Excel', '/Ledgers/DayBook/'.@$url_excel.'&status=excel',['class' =>'btn btn-sm green tooltips pull-right','target'=>'_blank','escape'=>false,'data-original-title'=>'Download as excel']); ?>
 				</div>
 			</div>
 			<div class="portlet-body">
@@ -34,7 +58,6 @@ $this->set('title', 'Day Book');
 							<div class="form-group">
 								<label>To Date</label>
 								<?php  
-							
 								if(!empty($to_date))
 								{
 									$to_date = date("d-m-Y",strtotime(@$to_date));
@@ -51,12 +74,13 @@ $this->set('title', 'Day Book');
 					</div>	
 					</form>
 				</div>
+				<?php } ?>
 				<?php 
 				
 				if(!empty($day_book))
 				{
 				?>
-					<table class="table table-bordered table-hover table-condensed" width="100%">
+					<table class="table table-bordered table-hover table-condensed" width="100%" border="1">
 						<thead>
 							<tr>
 								<th scope="col">Date</th>

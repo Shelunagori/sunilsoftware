@@ -13,7 +13,7 @@ margin-bottom: 0;
 }
 .table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
     padding: 5px !important;
-	font-family: device  !important;
+	font-family: Calibri  !important;
 }
 </style>
 
@@ -29,7 +29,7 @@ margin-bottom: 0;
  */
 $this->set('title', 'Sales Return Bill');
 ?>
-<div style="width:300px;font-family: device  !important;" class="maindiv">
+<div style="width:300px;font-family: Calibri  !important;" class="maindiv">
 <?php echo $this->Html->link('Print',array(),['escape'=>false,'class'=>'hidden-print','style'=>' background-color:blue;  font-size:18px; padding:5px; color:white; cursor:hand;  float: left','onclick'=>'javascript:window.print()();']);
  echo $this->Html->link('Close',['controller'=>'SaleReturns','action'=>'index'],['escape'=>false,'class'=>'hidden-print','style'=>' background-color:blue;  font-size:18px; padding:5px; color:white; cursor:hand;  float: right']);
 ?>
@@ -253,7 +253,7 @@ $this->set('title', 'Sales Return Bill');
 			<td>Net Total</td>
 			<td></td>
 			<td></td>
-			<td style="text-align:right;"><?php echo number_format($saleReturn->amount_after_tax, 2);  ?></td>
+			<td style="text-align:right;"><b><?php echo number_format($saleReturn->amount_after_tax, 2);  ?></b></td>
 		</tr>
 				
 </tbody></table>

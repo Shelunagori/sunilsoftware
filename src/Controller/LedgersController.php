@@ -22,12 +22,19 @@ class LedgersController extends AppController
     {
 		$this->viewBuilder()->layout('index_layout');
 		$company_id=$this->Auth->User('session_company_id');
+		$search=$this->request->query('search');
         $this->paginate = [
             'contain' => ['AccountingGroups', 'Companies']
         ];
-        $ledgers = $this->paginate($this->Ledgers->find()->where(['Ledgers.company_id'=>$company_id]));
+        $ledgers = $this->paginate($this->Ledgers->find()->where(['Ledgers.company_id'=>$company_id])->where([
+		'OR' => [
+            'Ledgers.name LIKE' => '%'.$search.'%',
+			//...
+			'AccountingGroups.name LIKE' => '%'.$search.'%'
+		]]));
+
         //pr($ledgers->toArray());exit;
-        $this->set(compact('ledgers'));
+        $this->set(compact('ledgers','search'));
         $this->set('_serialize', ['ledgers']);
     }
 
@@ -351,9 +358,18 @@ class LedgersController extends AppController
 	public function accountLedger($id = null)
     {
 		$this->viewBuilder()->layout('index_layout');
+			
+		$status=$this->request->query('status'); 
+		if(!empty($status)){ 
+			$this->viewBuilder()->layout('');	
+		}else{ 
+			$this->viewBuilder()->layout('index_layout');
+		}
 		$accountLedger     = $this->Ledgers->newEntity();
+	
+		$url=$this->request->here();
+		$url=parse_url($url,PHP_URL_QUERY);
 		$company_id        = $this->Auth->User('session_company_id');
-		
 		$ledger_id         = $this->request->query('ledger_id');
 		$from_date         = $this->request->query('from_date');
 		$to_date           = $this->request->query('to_date');
@@ -419,13 +435,21 @@ class LedgersController extends AppController
 		}
 		//pr($AccountingLedgers->toArray());exit;
 		$ledgers = $this->Ledgers->find('list')->where(['company_id'=>$company_id]);
-		$this->set(compact('accountLedger','ledgers','opening_balance_type','opening_balance','openingBalance_credit1','closingBalance_credit1','AccountingLedgers','from_date','to_date','voucher_type','voucher_no','ledger_id'));
+		$this->set(compact('accountLedger','ledgers','opening_balance_type','opening_balance','openingBalance_credit1','closingBalance_credit1','AccountingLedgers','from_date','to_date','voucher_type','voucher_no','ledger_id','url','status'));
         $this->set('_serialize', ['ledger']);
     }
 	public function dayBook($id = null)
     {
 		$company_id=$this->Auth->User('session_company_id');
 		$this->viewBuilder()->layout('index_layout');
+		$status=$this->request->query('status'); 
+		if(!empty($status)){ 
+			$this->viewBuilder()->layout('');	
+		}else{ 
+			$this->viewBuilder()->layout('index_layout');
+		}
+		$url=$this->request->here();
+		$url=parse_url($url,PHP_URL_QUERY);
 		$currentDate=date('Y-m-d');
 		$from_date         = $this->request->query('from_date');
 		$to_date           = $this->request->query('to_date');
@@ -583,7 +607,7 @@ class LedgersController extends AppController
 		
 		$day_book=array_merge([$salesInvoiceLedgers->toArray(),$purchaseInvoiceLedgers->toArray(),$paymentLedgers->toArray(),$receiptLedgers->toArray(),$creditNoteLedgers->toArray(),$debitNoteLedgers->toArray(),$journalVoucherLedgers->toArray(),$saleReturnLedgers->toArray(),$salesVoucherLedgers->toArray(),$purchaseVoucherLedgers->toArray(),$purchaseReturnLedgers->toArray()]);
 		
-		$this->set(compact('day_book','from_date','to_date'));
+		$this->set(compact('day_book','from_date','to_date','url','status'));
         $this->set('_serialize', ['day_book']);
     }
 	
@@ -592,6 +616,14 @@ class LedgersController extends AppController
 	{
 		$company_id=$this->Auth->User('session_company_id');
 		$this->viewBuilder()->layout('index_layout');
+		$status=$this->request->query('status'); 
+		if(!empty($status)){ 
+			$this->viewBuilder()->layout('');	
+		}else{ 
+			$this->viewBuilder()->layout('index_layout');
+		}
+		$url=$this->request->here();
+		$url=parse_url($url,PHP_URL_QUERY);
 		$run_time_date = $this->request->query('run_time_date');
 		
 		if(!empty($run_time_date)) {
@@ -627,7 +659,7 @@ class LedgersController extends AppController
 		->autoFields(true);		 
 		
 		//pr($reference_details->toArray()); exit;
-		$this->set(compact('reference_details','run_time_date'));
+		$this->set(compact('reference_details','run_time_date','url','status'));
         $this->set('_serialize', ['reference_details']);
 		
 	/* 	$reference_details = $this->Ledgers->ReferenceDetails->find()
@@ -657,7 +689,14 @@ class LedgersController extends AppController
 		$company_id=$this->Auth->User('session_company_id');
 		$this->viewBuilder()->layout('index_layout');
 		$run_time_date = $this->request->query('run_time_date');
-		
+		$status=$this->request->query('status'); 
+		if(!empty($status)){ 
+			$this->viewBuilder()->layout('');	
+		}else{ 
+			$this->viewBuilder()->layout('index_layout');
+		}
+		$url=$this->request->here();
+		$url=parse_url($url,PHP_URL_QUERY);
 		if(!empty($run_time_date)) {
 		$run_time_date = date("Y-m-d",strtotime($run_time_date)); }
 	
@@ -690,7 +729,7 @@ class LedgersController extends AppController
 		->autoFields(true);		 
 		
 		//pr($reference_details->toArray()); exit;
-		$this->set(compact('reference_details','run_time_date'));
+		$this->set(compact('reference_details','run_time_date','url','status'));
         $this->set('_serialize', ['reference_details']);
 		
 	}

@@ -24,10 +24,25 @@ class PurchaseReturnsController extends AppController
 		$company_id=$this->Auth->User('session_company_id');
 		$location_id=$this->Auth->User('session_location_id');
 		$stateDetails=$this->Auth->User('session_company');
-        
-        $purchaseReturns = $this->paginate($this->PurchaseReturns->find()->where(['PurchaseReturns.company_id'=>$company_id]));
+		$search=$this->request->query('search');
+         $this->paginate = [
+            'contain' => ['Companies', 'PurchaseInvoices']
+        ];
+		if($search){
+        $purchaseReturns = $this->paginate($this->PurchaseReturns->find()->where(['PurchaseReturns.company_id'=>$company_id])->where([
+		'OR' => [
+            'PurchaseInvoices.voucher_no' => $search,
+            // ...
+            'PurchaseReturns.voucher_no' => $search,
+			//.....
+			'PurchaseReturns.transaction_date ' => date('Y-m-d',strtotime($search))
+		 ]]));
+		}
+		else {
+		 $purchaseReturns = $this->paginate($this->PurchaseReturns->find()->where(['PurchaseReturns.company_id'=>$company_id]));	
+		}
 		//pr( $purchaseReturns); exit;
-        $this->set(compact('purchaseReturns'));
+        $this->set(compact('purchaseReturns','search'));
         $this->set('_serialize', ['purchaseReturns']);
     }
 

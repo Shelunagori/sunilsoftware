@@ -22,12 +22,21 @@ class AccountingGroupsController extends AppController
     {
 		$this->viewBuilder()->layout('index_layout');
         $company_id=$this->Auth->User('session_company_id');
+		$search=$this->request->query('search');
 			$this->paginate = [
             'contain' => ['NatureOfGroups', 'ParentAccountingGroups', 'Companies']
         ];
-        $accountingGroups = $this->paginate($this->AccountingGroups->find()->where(['AccountingGroups.company_id'=>$company_id]));
+        $accountingGroups = $this->paginate($this->AccountingGroups->find()->where(['AccountingGroups.company_id'=>$company_id])->where([
+		'OR' => [
+            'AccountingGroups.name LIKE' => '%'.$search.'%',
+			//...
+			 'NatureOfGroups.name LIKE' => '%'.$search.'%',	
+			 //...
+			 'ParentAccountingGroups.name LIKE' => '%'.$search.'%'
+			
+		 ]]));
 
-        $this->set(compact('accountingGroups'));
+        $this->set(compact('accountingGroups','search'));
         $this->set('_serialize', ['accountingGroups']);
     }
 

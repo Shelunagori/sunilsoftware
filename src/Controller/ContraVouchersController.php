@@ -21,12 +21,25 @@ class ContraVouchersController extends AppController
     public function index()
     { 
 		$this->viewBuilder()->layout('index_layout');
+		$company_id=$this->Auth->User('session_company_id');
+		$search=$this->request->query('search');
         $this->paginate = [
-            'contain' => ['ContraVoucherRows']
+            'contain' => ['Companies']
         ];
-        $contraVouchers = $this->paginate($this->ContraVouchers);
-
-        $this->set(compact('contraVouchers'));
+		if($search){
+		$contraVouchers = $this->paginate($this->ContraVouchers->find()->where(['ContraVouchers.company_id'=>$company_id])->where([
+		'OR' => [
+            'ContraVouchers.voucher_no' => $search,
+            //....
+			'ContraVouchers.reference_no LIKE' => '%'.$search.'%',
+				//...
+			'ContraVouchers.transaction_date ' => date('Y-m-d',strtotime($search))
+		 ]]));
+		}
+		else {
+        $contraVouchers = $this->paginate($this->ContraVouchers->find()->where(['ContraVouchers.company_id'=>$company_id]));
+		}
+        $this->set(compact('contraVouchers','search'));
         $this->set('_serialize', ['contraVouchers']);
     }
 

@@ -22,10 +22,22 @@ class SaleReturnsController extends AppController
     {
 		$this->viewBuilder()->layout('index_layout');
 		$company_id=$this->Auth->User('session_company_id');
-       
-        $saleReturns = $this->paginate($this->SaleReturns->find()->contain(['Companies',  'SalesLedgers', 'PartyLedgers', 'Locations', 'SalesInvoices'])->where(['SaleReturns.company_id'=>$company_id]));
+		$search=$this->request->query('search');
+		
+        $saleReturns = $this->paginate($this->SaleReturns->find()->contain(['Companies',  'SalesLedgers', 'PartyLedgers', 'Locations', 'SalesInvoices'])->where(['SaleReturns.company_id'=>$company_id])->where([
+		'OR' => [
+            'SalesInvoices.voucher_no' => $search,
+            // ...
+			'SaleReturns.voucher_no' => $search,
+			//....
+            'PartyLedgers.name LIKE' => '%'.$search.'%',
+			//.....
+			'SaleReturns.transaction_date ' => date('Y-m-d',strtotime($search)),
+			//...
+			'SaleReturns.amount_after_tax' => $search
+        ]]));
 		//pr($saleReturns); exit;
-        $this->set(compact('saleReturns'));
+        $this->set(compact('saleReturns','search'));
         $this->set('_serialize', ['saleReturns']);
     }
  /**

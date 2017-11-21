@@ -22,12 +22,24 @@ class CustomersController extends AppController
     {
 		$this->viewBuilder()->layout('index_layout');
 		$company_id=$this->Auth->User('session_company_id');
+		$search=$this->request->query('search');
 		$this->paginate = [
             'contain' => ['States']
         ];
-        $customers = $this->paginate($this->Customers->find()->where(['Customers.company_id'=>$company_id]));
+        $customers = $this->paginate($this->Customers->find()->where(['Customers.company_id'=>$company_id])->where([
+		'OR' => [
+            'Customers.name LIKE' => '%'.$search.'%',
+			//...
+			'States.name LIKE' => '%'.$search.'%',
+			//...
+			'Customers.gstin LIKE' => '%'.$search.'%',
+			//...
+			'Customers.mobile LIKE' => '%'.$search.'%',
+			//...
+			'Customers.email LIKE' => '%'.$search.'%'
+		]]));
 
-        $this->set(compact('customers'));
+        $this->set(compact('customers','search'));
         $this->set('_serialize', ['customers']);
     }
 

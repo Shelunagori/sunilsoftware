@@ -22,13 +22,20 @@ class SalesVouchersController extends AppController
     {
 		$this->viewBuilder()->layout('index_layout');
 		$company_id=$this->Auth->User('session_company_id');
+		$search=$this->request->query('search');
         $this->paginate = [
-            'contain' => ['Companies'],
-			'where'   => $company_id
+            'contain' => ['Companies']
         ];
-        $salesVouchers = $this->paginate($this->SalesVouchers);
+        $salesVouchers = $this->paginate($this->SalesVouchers->find()->where(['SalesVouchers.company_id'=>$company_id])->where([
+		'OR' => [
+            'SalesVouchers.voucher_no' => $search,
+            //....
+			'SalesVouchers.reference_no LIKE' => '%'.$search.'%',
+			//...
+			'SalesVouchers.transaction_date ' => date('Y-m-d',strtotime($search))
+		 ]]));
 
-        $this->set(compact('salesVouchers'));
+        $this->set(compact('salesVouchers','search'));
         $this->set('_serialize', ['salesVouchers']);
     }
 

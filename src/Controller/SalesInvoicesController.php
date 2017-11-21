@@ -22,37 +22,142 @@ class SalesInvoicesController extends AppController
     {
 		$this->viewBuilder()->layout('index_layout');
 		$company_id=$this->Auth->User('session_company_id');
+		$search=$this->request->query('search');
+		
+		
 		$this->paginate = [
             'contain' => ['Companies', 'PartyLedgers', 'SalesLedgers']
         ];
-		$salesInvoices = $this->paginate($this->SalesInvoices->find()->where(['SalesInvoices.company_id'=>$company_id]));
+		$salesInvoices = $this->paginate($this->SalesInvoices->find()->where(['SalesInvoices.company_id'=>$company_id])->where([
+		'OR' => [
+            'SalesInvoices.voucher_no' => $search,
+            // ...
+            'PartyLedgers.name LIKE' => '%'.$search.'%',
+			//.....
+			'SalesLedgers.name LIKE' => '%'.$search.'%',
+			//...
+			'SalesInvoices.transaction_date ' => date('Y-m-d',strtotime($search)),
+			//...
+			'SalesInvoices.amount_after_tax' => $search
+        ]]));
 	
-        $this->set(compact('salesInvoices'));
+        $this->set(compact('salesInvoices','search'));
         $this->set('_serialize', ['salesInvoices']);
     }
 	
 	public function reportFilter()
     {
 		$this->viewBuilder()->layout('index_layout');
+		$company_id=$this->Auth->User('session_company_id');
+		@$partyParentGroups = $this->SalesInvoices->SalesInvoiceRows->Ledgers->AccountingGroups->find()
+						->where(['AccountingGroups.company_id'=>$company_id, 'AccountingGroups.sale_invoice_party'=>'1']);
+		$partyGroups=[];
+		
+		foreach($partyParentGroups as $partyParentGroup)
+		{
+			$accountingGroups = $this->SalesInvoices->SalesInvoiceRows->Ledgers->AccountingGroups
+			->find('children', ['for' => $partyParentGroup->id])->toArray();
+			$partyGroups[]=$partyParentGroup->id;
+			foreach($accountingGroups as $accountingGroup){
+				$partyGroups[]=$accountingGroup->id;
+			}
+		}
+	
+		if($partyGroups)
+		{  
+			$Partyledgers = $this->SalesInvoices->SalesInvoiceRows->Ledgers->find()
+							->where(['Ledgers.accounting_group_id IN' =>$partyGroups,'Ledgers.company_id'=>$company_id])
+							->contain(['Customers']);
+        }
+		
+		
+		$partyOptions=[];
+		foreach($Partyledgers as $Partyledger){
+		
+		$receiptAccountLedgers = $this->SalesInvoices->SalesInvoiceRows->Ledgers->AccountingGroups->find()
+		->where(['AccountingGroups.id'=>$Partyledger->accounting_group_id,'AccountingGroups.customer'=>1])
+		->orWhere(['AccountingGroups.id'=>$Partyledger->accounting_group_id,'AccountingGroups.supplier'=>1])->first();
+		
+		if($receiptAccountLedgers)
+		{
+			$receiptAccountLedgersName='1';
+		}
+		else{
+			$receiptAccountLedgersName='0';
+		}
+			$partyOptions[]=['text' =>str_pad(@$Partyledger->customer->customer_id, 4, '0', STR_PAD_LEFT).' - '.$Partyledger->name, 'value' => $Partyledger->id ,'party_state_id'=>@$Partyledger->customer->state_id, 'partyexist'=>$receiptAccountLedgersName, 'billToBillAccounting'=>$Partyledger->bill_to_bill_accounting];
+		}
+		$this->set(compact('partyOptions'));
     }
 	
 	public function report($id=null)
     {
+		$status=$this->request->query('status'); 
+		if(!empty($status)){ 
+			$this->viewBuilder()->layout('excel_layout');	
+		}else{ 
+			$this->viewBuilder()->layout('index_layout');
+		}
+		
+			$company_id=$this->Auth->User('session_company_id');
+			$url=$this->request->here();
+			$url=parse_url($url,PHP_URL_QUERY);
 	    $from=$this->request->query('from_date');
-		$from_date=date('Y-m-d', strtotime($from));
-
 		$to=$this->request->query('to_date');
-		$to_date=date('Y-m-d', strtotime($to));
-
-		$this->viewBuilder()->layout('index_layout');
-		$company_id=$this->Auth->User('session_company_id');
-		$salesInvoices = $this->SalesInvoices->find()->where(['SalesInvoices.company_id'=>$company_id,'transaction_date >='=>$from_date,'transaction_date <='=>$to_date])
-		->contain(['Companies', 'PartyLedgers'=>['Customers'], 'SalesLedgers', 'SalesInvoiceRows'=>['Items', 'GstFigures']]);
-        
+		
+		$where=[];
+		$where1=[];
+		if(!empty($from)){ 
+			$from_date=date('Y-m-d', strtotime($from));
+		$where['SalesInvoices.transaction_date >=']= $from_date;
+		}
+		if(!empty($to)){
+			$to_date=date('Y-m-d', strtotime($to));
+			$where['SalesInvoices.transaction_date <='] = $to_date;
+		}
+		$party_ids=$this->request->query('party_ledger_id');
+		if(!empty($party_ids)){
+		$where['SalesInvoices.party_ledger_id IN'] = $party_ids;
+		}
+		$invoice_no=$this->request->query('invoice_no');
+		if(!empty($invoice_no)){
+		$invoices_explode_commas=explode(',',$invoice_no);
+		
+		if($invoices_explode_commas){
+			$invoice_ids=[];
+			foreach($invoices_explode_commas as $invoices_explode_comma)
+			{
+				@$invoices_explode_dashs=explode('-',$invoices_explode_comma);
+				
+				$size=sizeOf($invoices_explode_dashs);
+				if($size==2){
+					$var1=$invoices_explode_dashs[0];
+					$var2=$invoices_explode_dashs[1];
+					for($i=$var1; $i<= $var2; $i++){
+						$invoice_ids[]=$i;
+					}
+				}else{
+					$invoice_ids[]=$invoices_explode_dashs[0];
+				}
+			}
+		}
+		$where1['SalesInvoices.voucher_no IN'] = $invoice_ids;
+		}
+		if(!empty($where)){
+		$salesInvoices = $this->SalesInvoices->find()->where(['SalesInvoices.company_id'=>$company_id])->where($where)->orWhere($where1)
+		->contain(['Companies', 'PartyLedgers'=>['Customers'], 'SalesLedgers', 'SalesInvoiceRows'=>['Items', 'GstFigures']])
+        ->order(['voucher_no' => 'ASC']);
+		}
+		else{
+		$salesInvoices = $this->SalesInvoices->find()->where(['SalesInvoices.company_id'=>$company_id])->where($where1)
+		->contain(['Companies', 'PartyLedgers'=>['Customers'], 'SalesLedgers', 'SalesInvoiceRows'=>['Items', 'GstFigures']])
+        ->order(['voucher_no' => 'ASC']);
+		}
+	
 		//pr($salesInvoices->toArray());
 		//exit;
 		
-		$this->set(compact('salesInvoices', 'from', 'to'));
+		$this->set(compact('salesInvoices', 'from', 'to','party_ids','invoice_no','url','status'));
         $this->set('_serialize', ['salesInvoices']);
     }
     /**
@@ -495,10 +600,7 @@ public function edit($id = null)
 				$salesInvoice->receipt_amount=0;
 				}
 			
-		
-			
-			
-			if ($this->SalesInvoices->save($salesInvoice)) {
+		if ($this->SalesInvoices->save($salesInvoice)) {
 			
 			$receiptIdExist = $this->SalesInvoices->Receipts->find()
 			->where(['Receipts.company_id'=>$company_id, 'Receipts.sales_invoice_id'=>$salesInvoice->id])
@@ -1109,7 +1211,7 @@ public function edit($id = null)
 								])
 						->execute();
 			   }
-		   }
+			}
                 $this->Flash->success(__('The sales invoice has been saved.'));
                 return $this->redirect(['action' => 'index']);
             }

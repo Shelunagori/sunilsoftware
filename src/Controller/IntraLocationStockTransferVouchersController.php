@@ -23,6 +23,7 @@ class IntraLocationStockTransferVouchersController extends AppController
 		$this->viewBuilder()->layout('index_layout');
 		$company_id=$this->Auth->User('session_company_id');
 		$location_id=$this->Auth->User('session_location_id');
+		$search=$this->request->query('search');
 		$this->viewBuilder()->layout('index_layout');
 		if(!empty($status))
 		{
@@ -36,8 +37,15 @@ class IntraLocationStockTransferVouchersController extends AppController
         $this->paginate = [
             'contain' => ['TransferFromLocations','TransferToLocations']
         ];
-		$intraLocationStockTransferVouchers = $this->paginate($this->IntraLocationStockTransferVouchers->find()->where(['IntraLocationStockTransferVouchers.company_id'=>$company_id,'IntraLocationStockTransferVouchers.status'=>@$where]));
-		$this->set(compact('intraLocationStockTransferVouchers','status','location_id'));
+		$intraLocationStockTransferVouchers = $this->paginate($this->IntraLocationStockTransferVouchers->find()->where(['IntraLocationStockTransferVouchers.company_id'=>$company_id,'IntraLocationStockTransferVouchers.status'=>@$where])->where([
+		'OR' => [
+            'IntraLocationStockTransferVouchers.voucher_no' => $search,
+            // ...
+			'TransferFromLocations.name LIKE' => '%'.$search.'%',
+			//...
+			'IntraLocationStockTransferVouchers.transaction_date ' => date('Y-m-d',strtotime($search))
+		 ]]));
+		$this->set(compact('intraLocationStockTransferVouchers','status','location_id','search'));
         $this->set('_serialize', ['intraLocationStockTransferVouchers']);
     }
 
@@ -271,6 +279,7 @@ class IntraLocationStockTransferVouchersController extends AppController
 		->contain(['Items']);
         $itemLedgers[] = ($query);
 		}
+		
 		$itemOptions=[];
 		foreach($itemLedgers as $d)
 		{

@@ -22,12 +22,18 @@ class StockGroupsController extends AppController
     {
 		$this->viewBuilder()->layout('index_layout');
 		$company_id=$this->Auth->User('session_company_id');
+		$search=$this->request->query('search');
 		$this->paginate = [
             'contain' => ['ParentStockGroups', 'Companies']
         ];
-        $stockGroups = $this->paginate($this->StockGroups->find()->where(['StockGroups.company_id'=>$company_id]));
+        $stockGroups = $this->paginate($this->StockGroups->find()->where(['StockGroups.company_id'=>$company_id])->where([
+		'OR' => [
+            'StockGroups.name LIKE' => '%'.$search.'%',
+			//...
+			'ParentStockGroups.name LIKE' => '%'.$search.'%'
+		 ]]));
 
-        $this->set(compact('stockGroups'));
+        $this->set(compact('stockGroups','search'));
         $this->set('_serialize', ['stockGroups']);
     }
 

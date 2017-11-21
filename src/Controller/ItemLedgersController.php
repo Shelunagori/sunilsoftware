@@ -120,5 +120,24 @@ class ItemLedgersController extends AppController
         return $this->redirect(['action' => 'index']);
     }
 	
-	
+	 public function salesReturnReport()
+    {
+        $this->viewBuilder()->layout('index_layout');
+		$status=$this->request->query('status'); 
+		if(!empty($status)){ 
+			$this->viewBuilder()->layout('excel_layout');	
+		}else{ 
+			$this->viewBuilder()->layout('index_layout');
+		}
+		
+			$company_id=$this->Auth->User('session_company_id');
+			$url=$this->request->here();
+			$url=parse_url($url,PHP_URL_QUERY);
+        $itemLedgers =$this->ItemLedgers->find()->where(['ItemLedgers.company_id'=>$company_id,'ItemLedgers.sale_return_id >' =>0])
+		->contain(['Items','SaleReturns'=>['PartyLedgers']]);
+		//pr($itemLedgers->toArray());
+		//exit;
+        $this->set(compact('itemLedgers','status','url'));
+        $this->set('_serialize', ['itemLedgers']);
+    }
 }

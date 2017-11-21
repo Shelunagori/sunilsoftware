@@ -50,16 +50,25 @@ if($supplier_state_id== $state_id){
 						</div>
 						<div class="col-md-3">
 							<div class="form-group">
-								<label>GRN Transaction Date <span class="required">*</span></label><br/>
+								<label>GRN Transaction Date </label><br/>
 								<?php echo $Grns->transaction_date; ?>
 							</div>
 						</div>
+						
 						<div class="col-md-3">
 								<label>Supplier</label>
 								<?php
 									 echo $this->Form->control('q',['class'=>'form-control input-sm supplier_state_id ','label'=>false,'type'=>'hidden','value'=>$supplier_state_id]);
 									echo $this->Form->control('supplier_ledger_id',['class'=>'form-control input-sm supplier_ledger select2me','label'=>false, 'options' => $partyOptions,'required'=>'required','value'=>$supplier_ledger_id,'disabled']);
 								?>
+						</div>
+						<div class="col-md-3">
+							<div class="form-group">
+								<label>Reference No</label><br/>
+								<?php
+									 echo $Grns->reference_no;
+								?>
+								</div>
 						</div>
 					</div><br>
 						<input type="hidden" name="state_id" class="state_id" value="<?php echo $state_id;?>">
@@ -91,6 +100,14 @@ if($supplier_state_id== $state_id){
 								?>
 						</div>
 						
+					</div>
+					<div class="row">
+						<div class="col-md-5">
+							<div class="form-group">
+								<label>Narration </label>
+								<?php echo $this->Form->control('narration',['class'=>'form-control input-sm','label'=>false,'placeholder'=>'Narration','rows'=>'4']); ?>
+							</div>
+						</div>
 					</div><BR/><BR/>
 					
 				   

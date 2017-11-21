@@ -21,12 +21,24 @@ class JournalVouchersController extends AppController
     public function index()
     {
 		$this->viewBuilder()->layout('index_layout');
+		$company_id=$this->Auth->User('session_company_id');
+		$search=$this->request->query('search');
         $this->paginate = [
             'contain' => ['Companies']
         ];
-        $journalVouchers = $this->paginate($this->JournalVouchers);
-
-        $this->set(compact('journalVouchers'));
+		if($search){
+        $journalVouchers = $this->paginate($this->JournalVouchers->find()->where(['JournalVouchers.company_id'=>$company_id])->where([
+		'OR' => [
+            'JournalVouchers.voucher_no' => $search,
+            //....
+			'JournalVouchers.reference_no LIKE' => '%'.$search.'%',
+				//...
+			'JournalVouchers.transaction_date ' => date('Y-m-d',strtotime($search))
+		 ]]));
+		} else {
+        $journalVouchers = $this->paginate($this->JournalVouchers->find()->where(['JournalVouchers.company_id'=>$company_id]));
+		}
+        $this->set(compact('journalVouchers','search'));
         $this->set('_serialize', ['journalVouchers']);
     }
 

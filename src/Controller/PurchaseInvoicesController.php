@@ -22,12 +22,22 @@ class PurchaseInvoicesController extends AppController
     {
 		$this->viewBuilder()->layout('index_layout');
 		$company_id=$this->Auth->User('session_company_id');
+		$search=$this->request->query('search');
         $this->paginate = [
-            'contain' => ['Companies', 'SupplierLedgers']
+            'contain' => ['Companies', 'SupplierLedgers','Grns']
         ];
-        $purchaseInvoices = $this->paginate($this->PurchaseInvoices->find()->where(['PurchaseInvoices.company_id'=>$company_id]));
+        $purchaseInvoices = $this->paginate($this->PurchaseInvoices->find()->where(['PurchaseInvoices.company_id'=>$company_id])->where([
+		'OR' => [
+            'PurchaseInvoices.voucher_no' => $search,
+            // ...
+            'Grns.voucher_no' => $search,
+			//.....
+			'SupplierLedgers.name LIKE' => '%'.$search.'%',
+			//...
+			'PurchaseInvoices.transaction_date ' => date('Y-m-d',strtotime($search))
+		 ]]));
 		//pr($purchaseInvoices); exit;
-        $this->set(compact('purchaseInvoices'));
+        $this->set(compact('purchaseInvoices','search'));
         $this->set('_serialize', ['purchaseInvoices']);
     }
 

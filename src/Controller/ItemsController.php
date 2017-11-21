@@ -39,12 +39,22 @@ class ItemsController extends AppController
     {
 		$this->viewBuilder()->layout('index_layout');
 		$company_id=$this->Auth->User('session_company_id');
-		
-        $this->paginate = [
+		$search=$this->request->query('search');
+		$this->paginate = [
             'contain' => ['Units', 'StockGroups']
         ];
-        $items = $this->paginate($this->Items->find()->where(['Items.company_id'=>$company_id]));
-        $this->set(compact('items'));
+        $items = $this->paginate($this->Items->find()->where(['Items.company_id'=>$company_id])->where([
+		'OR' => [
+            'Items.name LIKE' => '%'.$search.'%',
+			//...
+			 'Items.item_code LIKE' => '%'.$search.'%',	
+			 //...
+			 'Items.hsn_code LIKE' => '%'.$search.'%',
+			 
+			'Units.name LIKE' => '%'.$search.'%'
+		 ]]));
+
+        $this->set(compact('items','search'));
         $this->set('_serialize', ['items']);
     }
 

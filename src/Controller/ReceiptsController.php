@@ -23,11 +23,22 @@ class ReceiptsController extends AppController
     {
 	$this->viewBuilder()->layout('index_layout');
 	$company_id=$this->Auth->User('session_company_id');
+	$search=$this->request->query('search');
         $this->paginate = [
             'contain' => ['Companies']
         ];
-        $receipts = $this->paginate($this->Receipts->find()->where(['Receipts.company_id'=>$company_id]));
-        $this->set(compact('receipts'));
+		if($search){
+        $receipts = $this->paginate($this->Receipts->find()->where(['Receipts.company_id'=>$company_id])->where([
+		'OR' => [
+            'Receipts.voucher_no' => $search,
+            //....
+			'Receipts.transaction_date ' => date('Y-m-d',strtotime($search))
+			//...
+		 ]]));
+		}else{
+		  $receipts = $this->paginate($this->Receipts->find()->where(['Receipts.company_id'=>$company_id]));	
+		}
+        $this->set(compact('receipts','search'));
         $this->set('_serialize', ['receipts']);
     }
 

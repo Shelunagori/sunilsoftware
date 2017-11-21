@@ -64,25 +64,34 @@ $this->set('title', 'Purchase Invoice View');
 						<td width="20" align="center">:</td>
 						<td><?php echo '#'.str_pad($purchaseInvoice->voucher_no, 4, '0', STR_PAD_LEFT);?>
 					</tr>
-				</tbody></table>
-			</td>
-			<td width="50%" valign="top" align="right">
-				<table>
-					<tbody><tr>
-						<td>Transaction Date</td>
-						<td width="20" align="center">:</td>
-						<td><?php echo date("d-m-Y",strtotime($purchaseInvoice->transaction_date)); ?></td>
-					</tr>
 					<tr>
-						<td>Supplier</td>
-						<td width="20" align="center">:</td>
-						<td><?php echo $purchaseInvoice->supplier_ledger->name; ?></td>
+						<td>Reference No </td>
+                        <td width="20" align="center">:</td>
+                        <td><?php echo $purchaseInvoice->grn->reference_no;?></td>
 					</tr>
+				
 				</tbody></table>
-			</td>
-		</tr>
+				</td>
+				<td width="50%" valign="top" align="right">
+					<table>
+						<tbody><tr>
+							<td>Transaction Date</td>
+							<td width="20" align="center">:</td>
+							<td><?php echo date("d-m-Y",strtotime($purchaseInvoice->transaction_date)); ?></td>
+						</tr>
+						<tr>
+							<td>Supplier</td>
+							<td width="20" align="center">:</td>
+							<td><?php echo $purchaseInvoice->supplier_ledger->name; ?></td>
+						</tr>
+						
+					</tbody></table>
+				</td>
+			</tr>
+			
 		</tbody></table>
-		<br>
+		Narration: <?php echo $purchaseInvoice->narration;?>
+		<br/><br/>
 		<table width="100%" class="table  table-bordered" style="border:none;" border="0">
 			<thead>
 				<tr></tr>

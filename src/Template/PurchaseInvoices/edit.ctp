@@ -55,7 +55,14 @@ if($supplier_state_id== $state_id){
 							</div>
 						</div>
 					</div>
-					
+					<div class="row">
+						<div class="col-md-5">
+							<div class="form-group">
+								<label>Narration </label>
+								<?php echo $this->Form->control('narration',['class'=>'form-control input-sm','label'=>false,'placeholder'=>'Narration','rows'=>'4','value'=>$purchaseInvoice->narration]); ?>
+							</div>
+						</div>
+					</div>
 				   <div class="row">
 				  <div class="table-responsive">
 								<table id="main_table" class="table table-condensed table-bordered" style="height: 24px; padding: 0px 0px;font-size: 12px;" width="100%">
