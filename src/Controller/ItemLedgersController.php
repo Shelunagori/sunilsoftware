@@ -120,7 +120,7 @@ class ItemLedgersController extends AppController
         return $this->redirect(['action' => 'index']);
     }
 	
-	 public function salesReturnReport()
+	public function salesReturnReport()
     {
         $this->viewBuilder()->layout('index_layout');
 		$status=$this->request->query('status'); 
@@ -140,4 +140,91 @@ class ItemLedgersController extends AppController
         $this->set(compact('itemLedgers','status','url'));
         $this->set('_serialize', ['itemLedgers']);
     }
+	
+	public function stockReport()
+    {
+        $this->viewBuilder()->layout('index_layout');
+		$status=$this->request->query('status'); 
+		if(!empty($status)){ 
+			$this->viewBuilder()->layout('excel_layout');	
+		}else{ 
+			$this->viewBuilder()->layout('index_layout');
+		}
+		$company_id=$this->Auth->User('session_company_id');
+		
+		$to_date=date("Y-m-d");
+		$url=$this->request->here();
+		$url=parse_url($url,PHP_URL_QUERY);
+		$stockGroups = $this->ItemLedgers->Items->StockGroups->find()
+		->where(['StockGroups.company_id'=>$company_id,'StockGroups.parent_id IS NULL']);
+		$stock_report=[];
+		foreach($stockGroups as $stockGroup)
+		{
+			$childGroups=[];$total_rate_stock=0;$total_qty=0;
+			$childStockGroups = $this->ItemLedgers->Items->StockGroups
+			->find('children', ['for' => $stockGroup->id])->toArray();
+			$childGroups[]=$stockGroup->id;
+			foreach($childStockGroups as $childStockGroup){
+				$childGroups[]=$childStockGroup->id;
+			}
+			$items=$this->ItemLedgers->Items->find()->where(['Items.company_id'=>$company_id,'Items.stock_group_id IN'=>$childGroups]);
+			$stock_item=[];
+			foreach($items as $item){
+				$q=0;
+				$total_rate=0;
+				//$item_id[]=$item->id;
+				$result_stock=$this->stockReportQtyRate($to_date,$item->id);
+				if(sizeof($result_stock[$item->id]>0))
+				{ 
+					foreach($result_stock[$item->id] as $stock_rate){
+					
+					@$total_rate+=$stock_rate;
+					 @$q++;
+					}
+					@$avg_rate=$total_rate/$q;
+					@$avg_qty=$q;
+					
+				} 	
+				@$total_rate_stock+=round($avg_rate,2);
+				@$total_qty+=$avg_qty;
+				$stock_total_rate[$stockGroup->id]=$total_rate_stock;
+				$stock_total_qty[$stockGroup->id]=$total_qty;
+			}
+			
+		}
+		
+		$items_main=$this->ItemLedgers->Items->find()->where(['Items.company_id'=>$company_id,'Items.stock_group_id'=>0]);
+		//pr($items_main->toArray());
+		//exit;
+		
+        $this->set(compact('itemLedgers','status','url','stockGroups','stock_total_rate','stock_total_qty'));
+        $this->set('_serialize', ['itemLedgers']);
+    }
+	
+	public function stockReportQtyRate($to_date = null, $item_id = null){
+		$company_id=$this->Auth->User('session_company_id');
+		$locations=$this->ItemLedgers->Locations->find()->where(['Locations.company_id'=>$company_id]);
+		$location_stock=[];
+		foreach($locations as $location){
+		$item_ledgers=$this->ItemLedgers->find()->where(['ItemLedgers.item_id'=>$item_id,'ItemLedgers.company_id'=>$company_id,'ItemLedgers.intra_location_stock_transfer_voucher_id IS NULL','ItemLedgers.transaction_date <=' => $to_date])->order(['ItemLedgers.transaction_date' => 'ASC']);
+		$stock_item=[];
+			foreach($item_ledgers as $item_ledger){
+				if($item_ledger->status=='in'){
+					for($inc=0;$inc < $item_ledger->quantity;$inc++){
+					@$stock_item[$item_ledger->item_id][]=$item_ledger->rate;
+				}
+			}
+			foreach($item_ledgers as $item_ledger){
+				if($item_ledger->status=='out'){
+					@$stock_item[$item_ledger->item_id]=array_slice($stock_item[$item_ledger->item_id],$item_ledger->quantity);
+				}
+			}
+		
+		}
+		pr($stock_item);
+		
+		return $stock_item;
+		}	
+		
+	}
 }

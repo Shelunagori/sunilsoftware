@@ -4,6 +4,12 @@
  */
 $this->set('title', 'Create Sales Invoice');
 ?>
+<style>
+.disabledbutton {
+    pointer-events: none;
+    opacity: 0.7;
+}
+</style>
 <form method="GET" id="barcodeFrom">
 	<div class="row">
 		<div class="col-md-3">
@@ -61,7 +67,7 @@ $this->set('title', 'Create Sales Invoice');
 						<div class="col-md-3">
 							<div class="form-group">
 								<label>Transaction Date <span class="required">*</span></label>
-								<?php echo $this->Form->control('transaction_date',['class'=>'form-control input-sm date-picker transaction_date','data-date-format'=>'dd-mm-yyyy','label'=>false,'placeholder'=>'DD-MM-YYYY','type'=>'text','data-date-start-date'=>@$coreVariable[fyValidFrom],'data-date-end-date'=>@$coreVariable[fyValidTo],'value'=>date('d-m-Y')]); ?>
+								<?php echo $this->Form->control('transaction_date',['class'=>'form-control input-sm date-picker transaction_date disabledbutton','data-date-format'=>'dd-mm-yyyy','label'=>false,'placeholder'=>'DD-MM-YYYY','type'=>'text','data-date-start-date'=>@$coreVariable[fyValidFrom],'data-date-end-date'=>@$coreVariable[fyValidTo],'value'=>date('d-m-Y'),'readonly'=>'readonly']); ?>
 							</div>
 						</div>
 						<input type="hidden" name="outOfStock" class="outOfStock" value="0">

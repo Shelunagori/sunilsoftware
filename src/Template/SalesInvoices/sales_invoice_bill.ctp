@@ -147,17 +147,18 @@ $this->set('title', 'Sales Invoice Bill');
 	</tr>
 	<?php if($taxable_type!= 'IGST') { ?>
 	<tr>
-		<td></td>
-		<td align="center" style="font-style:italic;font-size:12px;">Taxable Value</td>
-		<td align="center" style="font-style:italic;font-size:12px;"> %SGST </br> %CGST</td>
+		<td align="right" style="font-style:italic;font-size:12px;">Taxable Value</td>
+		<td align="center" style="font-style:italic;font-size:12px;">%SGST</td>
+		<td align="center" style="font-style:italic;font-size:12px;"> %CGST</td>
 		<td></td>
 	</tr>
 	<?php } else { ?> 
 	<tr>
-		<td></td>
-		<td style="font-style:italic;font-size:12px;">Taxable Value</td>
-		<td style="font-style:italic;font-size:12px;">%IGST</td> <?php } ?>
+		<td align="right" style="font-style:italic;font-size:12px;">Taxable Value</td>
+		<td style="font-style:italic;font-size:12px;">%IGST</td> 
+		<td style="font-style:italic;font-size:12px;"></td><?php } ?>
 	</tr>
+	
 	<?php
 		
 		foreach($invoiceBills->toArray() as $data){
@@ -219,18 +220,16 @@ $this->set('title', 'Sales Invoice Bill');
 		
 		<?php if($data->company->state_id==$data->partyDetails->state_id){?>
 		<tr>
-			<td></td>
 			<td style="font-style:italic;font-size:12px;text-align:right"><?=$sales_invoice_row->taxable_value ?></td>
-			<td style="font-style:italic;font-size:12px;text-align:right"><?=$gst_perc.' %' ?><br/><?=$gst_perc.' %'?></td>
-			<td></td>
+			<td style="font-style:italic;font-size:12px;text-align:right"><?=$gst_perc.' %' ?></td>
+			<td style="font-style:italic;font-size:12px;text-align:right"><?=$gst_perc.' %'?></td><td></td>
 		</tr>
 		
 		<?php }else {?>
 		<tr>
-			<td></td>
 			<td style="font-style:italic;font-size:12px;text-align:right"><?=$sales_invoice_row->taxable_value ?></td>
 			<td style="font-style:italic;font-size:12px;text-align:right"><?=$gst_type ?></td>
-			<td></td>
+			<td></td><td></td>
 		</tr>
 		<?php }?>
 		<?php }} ?>
@@ -264,7 +263,9 @@ $this->set('title', 'Sales Invoice Bill');
 			<td></td>
 			<td style="text-align:right;"><b><?php echo number_format($data->amount_after_tax, 2);  ?></b></td>
 		</tr>
-				
+		<tr>
+		<td colspan="4" style="font-size:14px;"><b>Amount In words: </b> <?php echo $this->NumberWords->convert_number_to_words($data->amount_after_tax); ?> </td>
+		</tr>		
 </tbody></table>
 <table width="100%" border="" style="font-size:12px; border-collapse: collapse; margin-top:15px; border-style:dashed">
 <thead>

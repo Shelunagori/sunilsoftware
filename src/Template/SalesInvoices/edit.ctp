@@ -69,7 +69,7 @@ foreach($partyOptions as $partyOption)
 						<div class="col-md-3">
 							<div class="form-group">
 								<label>Transaction Date <span class="required">*</span></label>
-								<?php echo $this->Form->control('transaction_date',['class'=>'form-control input-sm date-picker','data-date-format'=>'dd-mm-yyyy','label'=>false,'placeholder'=>'DD-MM-YYYY','type'=>'text','data-date-start-date'=>@$coreVariable[fyValidFrom],'data-date-end-date'=>@$coreVariable[fyValidTo],'value'=>$salesInvoice->transaction_date, 'autofocus'=>'autofocus']); ?>
+								<?php echo $this->Form->control('transaction_date',['class'=>'form-control input-sm date-picker disabledbutton','data-date-format'=>'dd-mm-yyyy','label'=>false,'placeholder'=>'DD-MM-YYYY','type'=>'text','data-date-start-date'=>@$coreVariable[fyValidFrom],'data-date-end-date'=>@$coreVariable[fyValidTo],'value'=>$salesInvoice->transaction_date, 'autofocus'=>'autofocus']); ?>
 							</div>
 						</div>
 						<input type="hidden" name="party_state_id" class="ps" value="<?php echo $party_state_id;?>">
