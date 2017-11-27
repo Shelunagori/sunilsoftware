@@ -419,7 +419,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 					var windowContainer=$(this).closest('td').find('div.window');
 					windowContainer.html('');
 					windowContainer.html('<table width=90% class=refTbl><tbody></tbody><tfoot><tr style=border-top:double#a5a1a1><td colspan=2><a role=button class=addRefRow>Add Row</a></td><td>$total_input</td><td valign=top>$total_type</td></tr></tfoot></table>');
-					AddRefRow(SelectedTr,due_days);
+					AddRefRow(SelectedTr);
 					
 					
 				}
@@ -530,8 +530,9 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				SelectedTr.find('td:nth-child(2) div.window table tbody tr td:nth-child(5) input.dueDays').val(due_days);
 			});
 			
-			function AddRefRow(SelectedTr,due_days){ //alert(c);
+			function AddRefRow(SelectedTr){ //alert(c);
 				var refTr=$('#sampleForRef tbody tr').clone();
+				var due_days=SelectedTr.find('td:nth-child(2) select.ledger option:selected').attr('default_days');
 				//console.log(refTr);
 				SelectedTr.find('td:nth-child(2) div.window table tbody').append(refTr);
 				SelectedTr.find('td:nth-child(2) div.window table tbody tr td:nth-child(5) input.dueDays').val(due_days);
