@@ -385,7 +385,7 @@ class SaleReturnsController extends AppController
 		$stateDetails=$this->Auth->User('session_company');
 		$state_id=$stateDetails->state_id;
         $saleReturn = $this->SaleReturns->get($id, [
-            'contain' => ['Companies'=>['States'], 'SalesLedgers', 'PartyLedgers'=>['Customers'], 'Locations', 'SalesInvoices', 'SaleReturnRows'=>['GstFigures','Items']]
+            'contain' => ['Companies'=>['States'], 'SalesLedgers', 'PartyLedgers'=>['Customers'], 'Locations', 'SalesInvoices', 'SaleReturnRows'=>['GstFigures','Items'=>['Sizes','Shades','Units']]]
         ]);
 		//pr($saleReturn->toArray());exit;
 		

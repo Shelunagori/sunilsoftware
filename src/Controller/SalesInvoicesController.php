@@ -589,6 +589,8 @@ public function edit($id = null)
 		
         if ($this->request->is(['patch', 'post', 'put'])) {
 		    $transaction_date=date('Y-m-d', strtotime($this->request->data['transaction_date']));
+			$due_days=$this->request->data['due_days'];
+			
             $salesInvoice = $this->SalesInvoices->patchEntity($salesInvoice, $this->request->getData());
             $salesInvoice->transaction_date=$transaction_date;
 			
@@ -686,7 +688,8 @@ public function edit($id = null)
 										'type' => 'New Ref',
 										'debit' =>$salesInvoice->amount_after_tax,
 										'sales_invoice_id' => $salesInvoice->id,
-										'transaction_date'=>$salesInvoice->transaction_date
+										'transaction_date'=>$salesInvoice->transaction_date,
+										'due_days'=>$due_days
 									])
 						->where(['ReferenceDetails.company_id'=>$company_id, 'ReferenceDetails.sales_invoice_id'=>$salesInvoice->id])
 						->execute();
@@ -764,6 +767,7 @@ public function edit($id = null)
 										'ref_name' => $salesInvoice->voucher_no,
 										'debit' => $salesInvoice->amount_after_tax,
 										'sales_invoice_id' => $salesInvoice->id,
+										'due_days'=>$due_days,
 										'transaction_date' => $salesInvoice->transaction_date])
 					  ->execute();
 					  
@@ -862,6 +866,7 @@ public function edit($id = null)
 											'ledger_id' => $salesInvoice->party_ledger_id,
 											'type' => 'New Ref',
 											'debit' => $salesInvoice->amount_after_tax,
+											'due_days'=>$due_days,
 											'sales_invoice_id' => $salesInvoice->id])
 								->where(['ReferenceDetails.company_id'=>$company_id, 'ReferenceDetails.sales_invoice_id'=>$salesInvoice->id])
 								->execute();
@@ -915,6 +920,7 @@ public function edit($id = null)
 										'ref_name' => $salesInvoice->voucher_no,
 										'debit' => $salesInvoice->amount_after_tax,
 										'sales_invoice_id' => $salesInvoice->id,
+										'due_days'=>$due_days,
 										'transaction_date' => $salesInvoice->transaction_date])
 					  ->execute();
 					        }
@@ -1011,6 +1017,7 @@ public function edit($id = null)
 										'ref_name' => $salesInvoice->voucher_no,
 										'debit' => $salesInvoice->amount_after_tax,
 										'sales_invoice_id' => $salesInvoice->id,
+										'due_days'=>$due_days,
 										'transaction_date' => $salesInvoice->transaction_date])
 					  ->execute();
 					  
@@ -1048,6 +1055,7 @@ public function edit($id = null)
 											'ledger_id' => $salesInvoice->party_ledger_id,
 											'type' => 'New Ref',
 											'debit' => $salesInvoice->amount_after_tax,
+											'due_days'=>$due_days,
 											'sales_invoice_id' => $salesInvoice->id])
 								->where(['ReferenceDetails.company_id'=>$company_id, 'ReferenceDetails.sales_invoice_id'=>$salesInvoice->id])
 								->execute();
@@ -1079,6 +1087,7 @@ public function edit($id = null)
 										'ref_name' => $salesInvoice->voucher_no,
 										'debit' => $salesInvoice->amount_after_tax,
 										'sales_invoice_id' => $salesInvoice->id,
+										'due_days'=>$due_days,
 										'transaction_date' => $salesInvoice->transaction_date])
 					  ->execute();
 						}
@@ -1270,7 +1279,7 @@ public function edit($id = null)
 			$receiptAccountLedgersName='0';
 		}
 		
-			$partyOptions[]=['text' =>str_pad(@$Partyledger->customer->customer_id, 4, '0', STR_PAD_LEFT).' - '.$Partyledger->name, 'value' => $Partyledger->id ,'party_state_id'=>@$Partyledger->customer->state_id, 'partyexist'=>$receiptAccountLedgersName, 'billToBillAccounting'=>$Partyledger->bill_to_bill_accounting];
+			$partyOptions[]=['text' =>str_pad(@$Partyledger->customer->customer_id, 4, '0', STR_PAD_LEFT).' - '.$Partyledger->name, 'value' => $Partyledger->id ,'party_state_id'=>@$Partyledger->customer->state_id, 'partyexist'=>$receiptAccountLedgersName, 'billToBillAccounting'=>$Partyledger->bill_to_bill_accounting,'default_days'=>$Partyledger->default_credit_days];
 		}
 		
 		$accountLedgers = $this->SalesInvoices->SalesInvoiceRows->Ledgers->AccountingGroups->find()->where(['AccountingGroups.sale_invoice_sales_account'=>1,'AccountingGroups.company_id'=>$company_id])->first();
@@ -1312,9 +1321,16 @@ public function edit($id = null)
 		$invoiceBills= $this->SalesInvoices->find()
 		->where(['SalesInvoices.id'=>$id])
 		->contain(['Companies'=>['States'],'SalesInvoiceRows'=>['Items'=>['Sizes','Shades','Units'], 'GstFigures']]);
-	
+		
+		$unit_ids=[];
+		//pr($units->toArray());
+		//exit;
 	    foreach($invoiceBills->toArray() as $data){
+			
 		foreach($data->sales_invoice_rows as $sales_invoice_row){
+		if(!in_array($sales_invoice_row->item->unit_id,$unit_ids)){
+			$unit_ids[]=$sales_invoice_row->item->unit_id;
+			}
 		$item_id=$sales_invoice_row->item_id;
 		$accountingEntries= $this->SalesInvoices->AccountingEntries->find()
 		->where(['AccountingEntries.sales_invoice_id'=>$data->id]);
@@ -1344,7 +1360,7 @@ public function edit($id = null)
 			
 		}
 		}
-		//pr($id);exit;
+		//pr($unit_ids);exit;
 		$query = $this->SalesInvoices->SalesInvoiceRows->find();
 		
 		$totalTaxableAmt = $query->newExpr()
@@ -1371,7 +1387,8 @@ public function edit($id = null)
 		
 		//pr($invoiceBills->toArray());exit;
 		
-		$this->set(compact('invoiceBills','taxable_type','sale_invoice_rows','partyCustomerid'));
+		
+		$this->set(compact('invoiceBills','taxable_type','sale_invoice_rows','partyCustomerid','units'));
         $this->set('_serialize', ['invoiceBills']);
     }	
 	

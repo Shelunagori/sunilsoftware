@@ -149,13 +149,15 @@ $this->set('title', 'Sales Return Bill');
 	</tr>
 	<?php
 		
-		
+		$k=0;
 		$cgst=0;
 		$sgst=0;
 		$igst=0;
 		$totalAmount=0;
 		$total_discount=0;
 		$totalQty=0;
+		$unitQty=[];
+		$unitName=[];
 		foreach($saleReturn->sale_return_rows as $sale_return_row){ ?>
 		
 		<tr><td colspan="4" style="border-top:1px dashed;"></td></tr>
@@ -178,9 +180,18 @@ $this->set('title', 'Sales Return Bill');
 			$gstValue=$sale_return_row->gst_value;
 			$gst=$gstValue;
 			$igst+=$gst;
-			
 			$totalAmount+=$sale_return_row->return_quantity*$sale_return_row->rate;
 			}
+			if($sale_return_row->item->unit->special_treatment==0){
+			@$unitQty[$sale_return_row->item->unit->id]+=$sale_return_row->return_quantity;
+			@$unitName[$sale_return_row->item->unit->id]=$sale_return_row->item->unit->name;
+			
+			}else{
+				$k++;
+			@$unitQty[$sale_return_row->item->unit->id]=$k;
+			@$unitName[$sale_return_row->item->unit->id]=$sale_return_row->item->unit->name;
+			}
+		
 		?>
 		<tr>
 			<td style="font-size:12px;"><?=$sale_return_row->item->item_code.' ' ?><?=  $sale_return_row->item->name ?></td>
@@ -193,7 +204,7 @@ $this->set('title', 'Sales Return Bill');
 			echo '-';
 			}
 			?></td>
-			<td style="text-align:right;"><?=$sale_return_row->return_quantity ?></td>
+			<td style="text-align:right;font-size:12px;"><?=$sale_return_row->return_quantity ?><?php echo ' ';?><?=$sale_return_row->item->unit->name ?></td>
 			<td style="text-align:right;"><?=$sale_return_row->rate ?></td>
 		</tr>
 		<tr>
@@ -221,12 +232,14 @@ $this->set('title', 'Sales Return Bill');
 		<?php }?>
 		<?php } ?>
 		<tr><td colspan="4" style="border-top:1px dashed;"></td></tr>
-			<tr>
-			<td>Total Qty</td>
+		<?php foreach($unitName as $key=>$unit){ ?>
+		<tr>
+			<td style="font-size:14px;">Total quantity in <?php echo $unit; ?></td>
 			<td></td>
 			<td></td>
-			<td style="text-align:right;"><?php echo number_format($totalQty,2);  ?></td>
+			<td style="font-size:14px;text-align:right;"><?php echo number_format($unitQty[$key],2);  ?></td>
 		</tr>
+		<?php } ?>
 		<tr>
 			<td>Total MRP</td>
 			<td></td>

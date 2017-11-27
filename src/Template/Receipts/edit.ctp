@@ -163,8 +163,11 @@ $this->set('title', 'Receipt Voucher');
 															<?php 
 															echo $this->Form->input('receipt_rows.'.$i.'.reference_details.'.$j.'.type_cr_dr', ['options'=>['Dr'=>'Dr','Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm  calculation refDrCr','value'=>$cr_dr]); ?>
 														</td>
-														
-														<td align="center">
+														<td width="15%" style="padding-left:0px;"valign="top">
+														<?php if($reference_detail->type=='New Ref' || $reference_detail->type=='Advance'){ 
+															echo $this->Form->input('receipt_rows.'.$i.'.reference_details.'.$j.'.due_days', ['label' => false,'class' => 'form-control input-sm numberOnly rightAligntextClass dueDays','placeholder'=>'Due Days','value'=>$reference_detail->due_days, 'type'=>'text']); ?><?php } ?>
+														</td> 
+														<td  width="5%" align="right">
 															<a class="delete-tr-ref" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
 														</td>
 													</tr>
@@ -187,13 +190,12 @@ $this->set('title', 'Receipt Voucher');
 												<tfoot>
 												    <tr class="remove_ref_foot">
 														<td colspan="2"><input type="hidden" id="htotal" value="<?php echo $total;?>">
-													<a role="button" class="addRefRow">Add Row</a>
-													</td>
-			<td>
-			<input type="text" class="form-control input-sm rightAligntextClass total calculation noBorder" name="receipt_rows[<?php echo $i;?>][total]" id="receipt_rows-<?php echo $i;?>-total" aria-invalid="true" aria-describedby="receipt_rows-<?php echo $i;?>-total-error" value="<?php echo $total;?>" readonly>
-			</td>
-														
-														<td><input type="text" class="form-control input-sm total_type calculation noBorder" readonly value="<?php echo @$type;?>" name="receipt_rows<?php echo $i;?>reference_details<?php echo $i;?>type_cr_dr"></td>
+														<a role="button" class="addRefRow">Add Row</a>
+														</td>
+														<td valign="top">
+														<input type="text" class="form-control input-sm rightAligntextClass total calculation noBorder" name="receipt_rows[<?php echo $i;?>][total]" id="receipt_rows-<?php echo $i;?>-total" aria-invalid="true" aria-describedby="receipt_rows-<?php echo $i;?>-total-error" value="<?php echo $total;?>" readonly>
+														</td>
+														<td valign="top"><input type="text" class="form-control input-sm total_type calculation noBorder" readonly value="<?php echo @$type;?>" name="receipt_rows<?php echo $i;?>reference_details<?php echo $i;?>type_cr_dr"></td>
 													</tr>
 												</tfoot>
 												</table>
@@ -217,10 +219,10 @@ $this->set('title', 'Receipt Voucher');
 														<?php }?>
 														
 														
-						<td width="30%" style="<?php echo $style;?>">
+														<td width="30%" style="<?php echo $style;?>">
 															<?php echo $this->Form->input('receipt_rows.'.$i.'.cheque_no', ['label' =>false,'class' => 'form-control input-sm cheque_no','placeholder'=>'Cheque No','value'=>$receiptRows->cheque_no]); ?> 
 														</td>
-						<td width="30%" style="<?php echo $style;?>">
+														<td width="30%" style="<?php echo $style;?>">
 															<?php echo $this->Form->input('receipt_rows.'.$i.'.cheque_date', ['label' =>false,'class' => 'form-control input-sm date-picker cheque_date ','data-date-format'=>'dd-mm-yyyy','placeholder'=>'Cheque Date','value'=>date("d-m-Y",strtotime($receiptRows->cheque_date)),'type'=>'text']); ?>
 														</td>
 													</tr>
@@ -301,8 +303,11 @@ $this->set('title', 'Receipt Voucher');
 				<?php 
 				echo $this->Form->input('type_cr_dr', ['options'=>['Dr'=>'Dr','Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm  calculation refDrCr','value'=>'Dr']); ?>
 			</td>
-			
-			<td align="center" valign="top">
+			<td width="15%" style="padding-left:0px;" valign="top">
+				<?php 
+				echo $this->Form->input('due_days', ['label' => false,'class' => 'form-control input-sm numberOnly rightAligntextClass dueDays','placeholder'=>'Due Days']);  ?>
+			</td>
+			<td width="5%" align="right" valign="top">
 				<a class="delete-tr-ref" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
 			</td>
 		</tr>
@@ -419,6 +424,7 @@ $this->set('title', 'Receipt Voucher');
 <!-- END PAGE LEVEL SCRIPTS -->
 <?php
 	$kk='<input type="text" class="form-control input-sm ref_name " placeholder="Reference Name">';
+	$dd='<input type="text" class="form-control input-sm rightAligntextClass dueDays " placeholder="Due Days">';
 	
 	$total_input='<input type="text" class="form-control input-sm rightAligntextClass total calculation noBorder" readonly>';
 	$total_type='<input type="text" class="form-control input-sm total_type calculation noBorder" readonly>';
@@ -546,13 +552,15 @@ $this->set('title', 'Receipt Voucher');
 						url: url,
 					}).done(function(response) { 
 						currentRefRow.find('td:nth-child(2)').html(response);
+						currentRefRow.find('td:nth-child(5)').html('');
 						renameRefRows(SelectedTr);
 					});
 				}else if(type=='On Account'){
 					currentRefRow.find('td:nth-child(2)').html('');
+					currentRefRow.find('td:nth-child(5)').html('');
 				}else{
 					currentRefRow.find('td:nth-child(2)').html('".$kk."');
-					
+					currentRefRow.find('td:nth-child(5)').html('".$dd."');
 				}
 				var SelectedTr=$(this).closest('tr.MainTr');
 				renameRefRows(SelectedTr);
@@ -681,8 +689,8 @@ $this->set('title', 'Receipt Voucher');
 					var is_cash_bank=$(this).find('td:nth-child(2) option:selected').attr('bank_and_cash');
 					$(this).find('td:nth-child(1) select.cr_dr').attr({name:'receipt_rows['+i+'][cr_dr]',id:'receipt_rows-'+i+'-cr_dr'});
 					
-	$(this).find('td:nth-child(2) input.BankValueDefine').attr({name:'receipt_rows['+i+'][BankDefination]',id:'receipt_rows-'+i+'-BankDefination'});
-					
+					$(this).find('td:nth-child(2) input.BankValueDefine').attr({name:'receipt_rows['+i+'][BankDefination]',id:'receipt_rows-'+i+'-BankDefination'});
+									
 					$(this).find('td:nth-child(2) select.ledger').attr({name:'receipt_rows['+i+'][ledger_id]',id:'receipt_rows-'+i+'-ledger_id'}).select2();
 					$(this).find('td:nth-child(3) input.debitBox').attr({name:'receipt_rows['+i+'][debit]',id:'receipt_rows-'+i+'-debit'});
 					$(this).find('td:nth-child(4) input.creditBox').attr({name:'receipt_rows['+i+'][credit]',id:'receipt_rows-'+i+'-credit'});
@@ -791,7 +799,8 @@ $this->set('title', 'Receipt Voucher');
 					if(is_select){
 						$(this).find('td:nth-child(2) select.refList').attr({name:'receipt_rows['+row_no+'][reference_details]['+i+'][ref_name]',id:'receipt_rows-'+row_no+'-reference_details-'+i+'-ref_name'}).rules('add', 'required');
 					}else if(is_input){
-						$(this).find('td:nth-child(2) input.ref_name').attr({name:'receipt_rows['+row_no+'][reference_details]['+i+'][ref_name]',id:'receipt_rows-'+row_no+'-reference_details-'+i+'-ref_name'}).rules('add', 'required');;
+						$(this).find('td:nth-child(2) input.ref_name').attr({name:'receipt_rows['+row_no+'][reference_details]['+i+'][ref_name]',id:'receipt_rows-'+row_no+'-reference_details-'+i+'-ref_name'}).rules('add', 'required');
+						$(this).find('td:nth-child(5) input.dueDays').attr({name:'receipt_rows['+row_no+'][reference_details]['+i+'][due_days]',id:'receipt_rows-'+row_no+'-reference_details-'+i+'-due_days'});
 					}
 					var Dr_Cr=$(this).find('td:nth-child(4) select option:selected').val();
 					if(Dr_Cr=='Dr'){

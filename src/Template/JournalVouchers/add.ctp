@@ -150,8 +150,11 @@ $option_ref[]= ['value'=>'On Account','text'=>'On Account'];
 				<?php 
 				echo $this->Form->input('type_cr_dr', ['options'=>['Dr'=>'Dr','Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm  calculation refDrCr reload','value'=>'Cr','style'=>'vertical-align: top !important;']); ?>
 			</td>
-			
-			<td align="center" style="vertical-align: top !important;">
+			<td width="15%" style="padding-left:0px;" valign="top">
+				<?php 
+				echo $this->Form->input('due_days', ['label' => false,'class' => 'form-control input-sm numberOnly rightAligntextClass dueDays','placeholder'=>'Due Days']);  ?>
+			</td>
+			<td width="5%" align="right" valign="top">
 				<a class="ref_delete" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
 			</td>
 		</tr>
@@ -272,8 +275,9 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 <!-- END PAGE LEVEL SCRIPTS -->
 <?php
 	$kk='<input type="text" class="form-control input-sm ref_name " placeholder="Reference Name">';
-	$total_input='<input type="text" class="form-control input-sm rightAligntextClass total calculation noBorder" >';
-	$total_type='<input type="text" class="form-control input-sm total_type calculation noBorder" >';
+	$dd='<input type="text" class="form-control input-sm rightAligntextClass dueDays " placeholder="Due Days">';
+	$total_input='<input type="text" class="form-control input-sm rightAligntextClass total calculation noBorder" readonly>';
+	$total_type='<input type="text" class="form-control input-sm total_type calculation noBorder" readonly>';
 	$style ='style="vertical-align: top !important;"';
 	$js="
 		$(document).ready(function() {
@@ -417,14 +421,15 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 						url: url,
 					}).done(function(response) { 
 						currentRefRow.find('td:nth-child(2)').html(response);
-						
+						currentRefRow.find('td:nth-child(5)').html('');
 						renameRefRows(SelectedTr);
 					});
 				}else if(type=='On Account'){
 					currentRefRow.find('td:nth-child(2)').html('');
+					currentRefRow.find('td:nth-child(5)').html('');
 				}else{
 					currentRefRow.find('td:nth-child(2)').html('".$kk."');
-					
+					currentRefRow.find('td:nth-child(5)').html('".$dd."');
 				}
 				var SelectedTr=$(this).closest('tr.MainTr');
 				renameRefRows(SelectedTr);
@@ -575,6 +580,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 						$(this).find('td:nth-child(2) select.refList').attr({name:'journal_voucher_rows['+row_no+'][reference_details]['+i+'][ref_name]',id:'journal_voucher_rows-'+row_no+'-reference_details-'+i+'-ref_name'});
 					}else if(is_input){
 						$(this).find('td:nth-child(2) input.ref_name').attr({name:'journal_voucher_rows['+row_no+'][reference_details]['+i+'][ref_name]',id:'journal_voucher_rows-'+row_no+'-reference_details-'+i+'-ref_name'});
+						$(this).find('td:nth-child(5) input.dueDays').attr({name:'journal_voucher_rows['+row_no+'][reference_details]['+i+'][due_days]',id:'journal_voucher_rows-'+row_no+'-reference_details-'+i+'-due_days'});
 					}
 					var Dr_Cr=$(this).find('td:nth-child(4) select option:selected').val();
 					if(Dr_Cr=='Dr'){

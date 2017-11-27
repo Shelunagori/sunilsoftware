@@ -132,8 +132,11 @@ $option_ref[]= ['value'=>'On Account','text'=>'On Account'];
 				<?php 
 				echo $this->Form->input('type_cr_dr', ['options'=>['Dr'=>'Dr','Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm  calculation refDrCr','value'=>'Dr']); ?>
 			</td>
-			
-			<td align="center" valign="top">
+			<td width="15%" style="padding-left:0px;" valign="top">
+				<?php 
+				echo $this->Form->input('due_days', ['label' => false,'class' => 'form-control input-sm numberOnly rightAligntextClass dueDays','placeholder'=>'Due Days']);  ?>
+			</td>
+			<td width="5%" align="right" valign="top">
 				<a class="delete-tr-ref" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
 			</td>
 		</tr>
@@ -193,7 +196,7 @@ $option_ref[]= ['value'=>'On Account','text'=>'On Account'];
 
 <?php
 	$kk='<input type="text" class="form-control input-sm ref_name " placeholder="Reference Name">';
-	
+	$dd='<input type="text" class="form-control input-sm rightAligntextClass dueDays " placeholder="Due Days">';
 	$total_input='<input type="text" class="form-control input-sm rightAligntextClass total calculation noBorder" readonly>';
 	$total_type='<input type="text" class="form-control input-sm total_type calculation noBorder" readonly>';
 	
@@ -338,8 +341,10 @@ $option_ref[]= ['value'=>'On Account','text'=>'On Account'];
 				
 				 if(type=='On Account'){
 					currentRefRow.find('td:nth-child(2)').html('');
+					currentRefRow.find('td:nth-child(5)').html('');
 				}else{
 					currentRefRow.find('td:nth-child(2)').html('".$kk."');
+					currentRefRow.find('td:nth-child(5)').html('".$dd."');
 				}
 				renameRefRows();
 		});

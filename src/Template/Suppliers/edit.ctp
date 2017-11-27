@@ -161,7 +161,11 @@ $this->set('title', 'Edit Supplier');
 												echo $this->Form->input('reference_details.'.$j.'.type_cr_dr', ['options'=>['Dr'=>'Dr','Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm  calculation refDrCr','value'=>$cr_dr]); ?>
 											</td>
 											
-											<td align="center">
+											<td width="15%" style="padding-left:0px;"valign="top">
+											<?php if($reference_detail->type=='New Ref' || $reference_detail->type=='Advance'){ 
+												echo $this->Form->input('reference_details.'.$j.'.due_days', ['label' => false,'class' => 'form-control input-sm numberOnly rightAligntextClass dueDays','placeholder'=>'Due Days','value'=>$reference_detail->due_days, 'type'=>'text']); ?><?php } ?>
+											</td> 
+											<td  width="5%" align="right">
 												<a class="delete-tr-ref calculation" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
 											</td>
 										</tr>
@@ -221,8 +225,11 @@ $this->set('title', 'Edit Supplier');
 				<?php 
 				echo $this->Form->input('type_cr_dr', ['options'=>['Dr'=>'Dr','Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm  calculation refDrCr','value'=>'Dr']); ?>
 			</td>
-			
-			<td align="center" valign="top">
+			<td width="15%" style="padding-left:0px;" valign="top">
+				<?php 
+				echo $this->Form->input('due_days', ['label' => false,'class' => 'form-control input-sm numberOnly rightAligntextClass dueDays','placeholder'=>'Due Days']);  ?>
+			</td>
+			<td width="5%" align="right" valign="top">
 				<a class="delete-tr-ref calculation" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
 			</td>
 		</tr>
@@ -281,7 +288,7 @@ $this->set('title', 'Edit Supplier');
 
 <?php
 	$kk='<input type="text" class="form-control input-sm ref_name " placeholder="Reference Name">';
-	
+	$dd='<input type="text" class="form-control input-sm rightAligntextClass dueDays " placeholder="Due Days">';
 	$total_input='<input type="text" class="form-control input-sm rightAligntextClass total calculation noBorder" readonly>';
 	$total_type='<input type="text" class="form-control input-sm total_type calculation noBorder" readonly>';
 	
@@ -423,6 +430,7 @@ $this->set('title', 'Edit Supplier');
 					var is_input=$(this).find('td:nth-child(2) input.ref_name').length;
 					if(is_input){
 						$(this).find('td:nth-child(2) input.ref_name').attr({name:'reference_details['+i+'][ref_name]',id:'reference_details-'+i+'-ref_name'}).rules('add', 'required');
+						$(this).find('td:nth-child(5) input.dueDays').attr({name:'reference_details['+i+'][due_days]',id:'reference_details-'+i+'-due_days'});
 					}
 					var Dr_Cr=$(this).find('td:nth-child(4) select option:selected').val();
 					if(Dr_Cr=='Dr'){
@@ -454,8 +462,10 @@ $this->set('title', 'Edit Supplier');
 				
 				 if(type=='On Account'){
 					currentRefRow.find('td:nth-child(2)').html('');
+					currentRefRow.find('td:nth-child(5)').html('');
 				}else{
 					currentRefRow.find('td:nth-child(2)').html('".$kk."');
+					currentRefRow.find('td:nth-child(5)').html('".$dd."');
 				}
 				renameRefRows();
 			});

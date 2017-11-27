@@ -74,7 +74,7 @@ foreach($partyOptions as $partyOption)
 						</div>
 						<input type="hidden" name="party_state_id" class="ps" value="<?php echo $party_state_id;?>">
                         <input type="hidden" name="outOfStock" class="outOfStock" value="false">
-						
+						<input type="hidden" name="due_days" class="dueDays" >
 						<input type="hidden" name="company_id" class="company_id" value="<?php echo $company_id;?>">
 						<input type="hidden" name="location_id" class="location_id" value="<?php echo $location_id;?>">
 						<input type="hidden" name="state_id" class="state_id" value="<?php echo $state_id;?>">
@@ -429,6 +429,8 @@ foreach($partyOptions as $partyOption)
 		function onLoadInvoiceReceipt()
 		{
 		 var partyexist=$('select[name=party_ledger_id] :selected').attr('partyexist');
+		 var due_days=$('select[name=party_ledger_id] :selected').attr('default_days');
+		$('.dueDays').val(due_days);
 		 if(partyexist=='1')
 			{
 				$('#invoiceReceiptTd1').show();
@@ -446,6 +448,8 @@ foreach($partyOptions as $partyOption)
 			var partyexist=$('option:selected', this).attr('partyexist');
 			if(!customer_state_id){customer_state_id=0;}
 			var state_id=$('.state_id').val();
+			var due_days=$('option:selected', this).attr('default_days');
+			$('.dueDays').val(due_days);
 			if(partyexist=='1')
 			{
 				$('#invoiceReceiptTd1').show();

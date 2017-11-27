@@ -37,49 +37,49 @@ $this->set('title', 'Payment Voucher');
 					</div>
 				</div>
 				<div class="row">
-						<div class="table-responsive">
-							<table id="MainTable" class="table table-condensed table-striped" width="100%">
-								<thead>
-									<tr>
-										<td></td>
-										<th>Particulars</th>
-										<th>Debit</th>
-										<th>Credit</th>
-										<th width="10%"></th>
-									</tr>
-								</thead>
-								<tbody id='MainTbody' class="tab">
-									<tr class="MainTr">
-			<td width="10%" valign="top">
-				<?php 
-				echo $this->Form->input('cr_dr', ['options'=>['Dr'=>'Dr'],'label' => false,'class' => 'form-control input-sm cr_dr', 'readonly'=>'readonly', 'required'=>'required','value'=>'Dr']); ?>
-			</td>
-			<td width="65%" valign="top">
-				<?php echo $this->Form->input('ledger_id', ['empty'=>'--Select--','options'=>@$ledgerOptions,'label' => false,'class' => 'form-control input-sm ledger select2me','required'=>'required']); ?>
-				<div class="window" style="margin:auto;"></div>
-			</td>
-			<td width="10%" valign="top">
-				<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm  debitBox rightAligntextClass numberOnly calculate_total','placeholder'=>'Debit']); ?>
-			</td>
-			<td width="10%" valign="top">
-				<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm creditBox rightAligntextClass numberOnly calculate_total','placeholder'=>'Credit','style'=>'display:none;']); ?>	
-			</td>
-			<td align="center"  width="10%" valign="top">
-				<!--<a class="btn btn-danger delete-tr btn-xs" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>-->
-			</td>
-		</tr>
-								</tbody>
-								<tfoot>
-									<tr style="border-top:double;">
-										<td colspan="2" valign="top" >	
-											<button type="button" class="AddMainRow btn btn-default input-sm"><i class="fa fa-plus"></i> Add row</button>
-											<input type="hidden" id="totalBankCash">
-										</td>
-										<td valign="top"><input type="text" class="form-control input-sm rightAligntextClass noBorder" name="totalMainDr" id="totalMainDr" readonly></td>
-										<td valign="top"><input type="text" class="form-control input-sm rightAligntextClass noBorder" name="totalMainCr" id="totalMainCr" readonly></td>
-										<td></td>
-									</tr>
-								</tfoot>
+					<div class="table-responsive">
+						<table id="MainTable" class="table table-condensed table-striped" width="100%">
+							<thead>
+								<tr>
+									<td></td>
+									<th>Particulars</th>
+									<th>Debit</th>
+									<th>Credit</th>
+									<th width="10%"></th>
+								</tr>
+							</thead>
+							<tbody id='MainTbody' class="tab">
+								<tr class="MainTr">
+									<td width="10%" valign="top">
+										<?php 
+										echo $this->Form->input('cr_dr', ['options'=>['Dr'=>'Dr'],'label' => false,'class' => 'form-control input-sm cr_dr', 'readonly'=>'readonly', 'required'=>'required','value'=>'Dr']); ?>
+									</td>
+									<td width="65%" valign="top">
+										<?php echo $this->Form->input('ledger_id', ['empty'=>'--Select--','options'=>@$ledgerOptions,'label' => false,'class' => 'form-control input-sm ledger select2me','required'=>'required']); ?>
+										<div class="window" style="margin:auto;"></div>
+									</td>
+									<td width="10%" valign="top">
+										<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm  debitBox rightAligntextClass numberOnly calculate_total','placeholder'=>'Debit']); ?>
+									</td>
+									<td width="10%" valign="top">
+										<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm creditBox rightAligntextClass numberOnly calculate_total','placeholder'=>'Credit','style'=>'display:none;']); ?>	
+									</td>
+									<td align="center"  width="10%" valign="top">
+										<!--<a class="btn btn-danger delete-tr btn-xs" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>-->
+									</td>
+								</tr>
+							</tbody>
+							<tfoot>
+								<tr style="border-top:double;">
+									<td colspan="2" valign="top" >	
+										<button type="button" class="AddMainRow btn btn-default input-sm"><i class="fa fa-plus"></i> Add row</button>
+										<input type="hidden" id="totalBankCash">
+									</td>
+									<td valign="top"><input type="text" class="form-control input-sm rightAligntextClass noBorder" name="totalMainDr" id="totalMainDr" readonly></td>
+									<td valign="top"><input type="text" class="form-control input-sm rightAligntextClass noBorder" name="totalMainCr" id="totalMainCr" readonly></td>
+									<td></td>
+								</tr>
+							</tfoot>
 							</table>
 						</div>
 					</div>
@@ -126,10 +126,14 @@ $option_ref[]= ['value'=>'On Account','text'=>'On Account'];
 				<?php 
 				echo $this->Form->input('type_cr_dr', ['options'=>['Dr'=>'Dr','Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm  calculation refDrCr','value'=>'Dr']); ?>
 			</td>
-			
-			<td align="center" valign="top">
-				<a class="delete-tr-ref" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
+			<td width="15%" style="padding-left:0px;" valign="top">
+				<?php 
+				echo $this->Form->input('due_days', ['label' => false,'class' => 'form-control input-sm numberOnly rightAligntextClass dueDays','placeholder'=>'Due Days']);  ?>
 			</td>
+			
+			<td width="5%" align="right" valign="top">
+				<a class="delete-tr-ref" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
+			</td> 
 		</tr>
 	</tbody>
 </table>
@@ -249,6 +253,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 <!-- END PAGE LEVEL SCRIPTS -->
 <?php
 	$kk='<input type="text" class="form-control input-sm ref_name " placeholder="Reference Name">';
+	$dd='<input type="text" class="form-control input-sm rightAligntextClass dueDays " placeholder="Due Days">';
 	
 	$total_input='<input type="text" class="form-control input-sm rightAligntextClass total calculation noBorder" readonly>';
 	$total_type='<input type="text" class="form-control input-sm total_type calculation noBorder" readonly>';
@@ -364,6 +369,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				var type=$(this).val();
 				var currentRefRow=$(this).closest('tr');
 				var ledger_id=$(this).closest('tr.MainTr').find('select.ledger option:selected').val();
+				var due_days=$(this).closest('tr.MainTr').find('select.ledger option:selected').attr('default_days');
 				
 				if(type=='Against'){
 					$(this).closest('tr').find('td:nth-child(2)').html('Loading Ref List...');
@@ -373,12 +379,15 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 						url: url,
 					}).done(function(response) { 
 						currentRefRow.find('td:nth-child(2)').html(response);
+						currentRefRow.find('td:nth-child(5)').html('');
 					});
 				}else if(type=='On Account'){
 					currentRefRow.find('td:nth-child(2)').html('');
+					currentRefRow.find('td:nth-child(5)').html('');
 				}else{
 					currentRefRow.find('td:nth-child(2)').html('".$kk."');
-					
+					currentRefRow.find('td:nth-child(5)').html('".$dd."');
+					currentRefRow.find('td:nth-child(5) input.dueDays').val(due_days);
 				}
 				var SelectedTr=$(this).closest('tr.MainTr');
 				renameRefRows(SelectedTr);
@@ -404,13 +413,15 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			
 			$('.ledger').die().live('change',function(){
 				var openWindow=$(this).find('option:selected').attr('open_window');
-				
+				var due_days=$(this).find('option:selected').attr('default_days');
 				if(openWindow=='party'){
 					var SelectedTr=$(this).closest('tr.MainTr');
 					var windowContainer=$(this).closest('td').find('div.window');
 					windowContainer.html('');
 					windowContainer.html('<table width=90% class=refTbl><tbody></tbody><tfoot><tr style=border-top:double#a5a1a1><td colspan=2><a role=button class=addRefRow>Add Row</a></td><td>$total_input</td><td valign=top>$total_type</td></tr></tfoot></table>');
-					AddRefRow(SelectedTr);
+					AddRefRow(SelectedTr,due_days);
+					
+					
 				}
 				else if(openWindow=='bank'){
 					var SelectedTr=$(this).closest('tr.MainTr')
@@ -514,13 +525,16 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			
 			$('.addRefRow').die().live('click',function(){
 				var SelectedTr=$(this).closest('tr.MainTr');
+				var due_days=SelectedTr.find('td:nth-child(2) select.ledger option:selected').attr('default_days');
 				AddRefRow(SelectedTr);
+				SelectedTr.find('td:nth-child(2) div.window table tbody tr td:nth-child(5) input.dueDays').val(due_days);
 			});
 			
-			function AddRefRow(SelectedTr){
+			function AddRefRow(SelectedTr,due_days){ //alert(c);
 				var refTr=$('#sampleForRef tbody tr').clone();
 				//console.log(refTr);
 				SelectedTr.find('td:nth-child(2) div.window table tbody').append(refTr);
+				SelectedTr.find('td:nth-child(2) div.window table tbody tr td:nth-child(5) input.dueDays').val(due_days);
 				renameRefRows(SelectedTr);
 			}
 			
@@ -553,7 +567,10 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 						$(this).find('td:nth-child(2) select.refList').attr({name:'payment_rows['+row_no+'][reference_details]['+i+'][ref_name]',id:'payment_rows-'+row_no+'-reference_details-'+i+'-ref_name'}).rules('add', 'required');
 					}else if(is_input){
 						$(this).find('td:nth-child(2) input.ref_name').attr({name:'payment_rows['+row_no+'][reference_details]['+i+'][ref_name]',id:'payment_rows-'+row_no+'-reference_details-'+i+'-ref_name'}).rules('add', 'required');
+						
+						$(this).find('td:nth-child(5) input.dueDays').attr({name:'payment_rows['+row_no+'][reference_details]['+i+'][due_days]',id:'payment_rows-'+row_no+'-reference_details-'+i+'-due_days'});
 					}
+					
 					var Dr_Cr=$(this).find('td:nth-child(4) select option:selected').val();
 					if(Dr_Cr=='Dr'){
 						$(this).find('td:nth-child(3) input').attr({name:'payment_rows['+row_no+'][reference_details]['+i+'][debit]',id:'payment_rows-'+row_no+'-reference_details-'+i+'-debit'}).rules('add', 'required');

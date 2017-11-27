@@ -136,7 +136,7 @@ $this->set('title', 'Payment Voucher');
 															
 														</td>
 														
-														<td width="20%" style="padding-right:0px;">
+														<td width="20%" style="padding-right:0px;" valign="top">
 															<?php
 															$value="";
 															$cr_dr="";
@@ -158,19 +158,20 @@ $this->set('title', 'Payment Voucher');
 
 															echo $this->Form->input('payment_rows.'.$i.'.reference_details.'.$j.'.'.$name, ['label' => false,'class' => 'form-control input-sm calculation numberOnly rightAligntextClass','placeholder'=>'Amount','required'=>'required','value'=>$value, 'type'=>'text']); ?>
 														</td>
-														<td width="10%" style="padding-left:0px;">
+														<td width="10%" style="padding-left:0px;" valign="top">
 															<?php 
 															echo $this->Form->input('payment_rows.'.$i.'.reference_details.'.$j.'.type_cr_dr', ['options'=>['Dr'=>'Dr','Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm  calculation refDrCr','value'=>$cr_dr]); ?>
 														</td>
-														
-														<td align="center">
+														<td width="15%" style="padding-left:0px;"valign="top">
+														<?php if($reference_detail->type=='New Ref' || $reference_detail->type=='Advance'){ 
+															echo $this->Form->input('payment_rows.'.$i.'.reference_details.'.$j.'.due_days', ['label' => false,'class' => 'form-control input-sm numberOnly rightAligntextClass dueDays','placeholder'=>'Due Days','value'=>$reference_detail->due_days, 'type'=>'text']); ?><?php } ?>
+														</td> 
+														<td  width="5%" align="right">
 															<a class="delete-tr-ref" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
 														</td>
 													</tr>
 													<?php $j++;} 
 													
-													
-												
 													if($total_amount_dr>$total_amount_cr)
 													{
 														$total = $total_amount_dr-$total_amount_cr;
@@ -186,12 +187,11 @@ $this->set('title', 'Payment Voucher');
 												<tfoot>
 												    <tr class="remove_ref_foot">
 														<td colspan="2"><input type="hidden" id="htotal" value="<?php echo $total;?>">
-													<a role="button" class="addRefRow">Add Row</a>
-													</td>
-			<td>
-			<input type="text" class="form-control input-sm rightAligntextClass total calculation noBorder" name="payment_rows[<?php echo $i;?>][total]" id="payment_rows-<?php echo $i;?>-total" aria-invalid="true" aria-describedby="payment_rows-<?php echo $i;?>-total-error" value="<?php echo $total;?>" readonly>
-			</td>
-														
+														<a role="button" class="addRefRow">Add Row</a>
+														</td>
+														<td>
+														<input type="text" class="form-control input-sm rightAligntextClass total calculation noBorder" name="payment_rows[<?php echo $i;?>][total]" id="payment_rows-<?php echo $i;?>-total" aria-invalid="true" aria-describedby="payment_rows-<?php echo $i;?>-total-error" value="<?php echo $total;?>" readonly>
+														</td>
 														<td><input type="text" class="form-control input-sm total_type calculation noBorder" readonly value="<?php echo @$type;?>" name="payment_rows<?php echo $i;?>reference_details<?php echo $i;?>type_cr_dr"></td>
 													</tr>
 												</tfoot>
@@ -216,10 +216,10 @@ $this->set('title', 'Payment Voucher');
 														<?php }?>
 														
 														
-						<td width="30%" style="<?php echo $style;?>">
+														<td width="30%" style="<?php echo $style;?>">
 															<?php echo $this->Form->input('payment_rows.'.$i.'.cheque_no', ['label' =>false,'class' => 'form-control input-sm cheque_no','placeholder'=>'Cheque No','value'=>$paymentRows->cheque_no]); ?> 
 														</td>
-						<td width="30%" style="<?php echo $style;?>">
+														<td width="30%" style="<?php echo $style;?>">
 															<?php echo $this->Form->input('payment_rows.'.$i.'.cheque_date', ['label' =>false,'class' => 'form-control input-sm date-picker cheque_date ','data-date-format'=>'dd-mm-yyyy','placeholder'=>'Cheque Date','value'=>date("d-m-Y",strtotime($paymentRows->cheque_date)),'type'=>'text']); ?>
 														</td>
 													</tr>
@@ -300,8 +300,11 @@ $this->set('title', 'Payment Voucher');
 				<?php 
 				echo $this->Form->input('type_cr_dr', ['options'=>['Dr'=>'Dr','Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm  calculation refDrCr','value'=>'Dr']); ?>
 			</td>
-			
-			<td align="center" valign="top">
+			<td width="15%" style="padding-left:0px;" valign="top">
+				<?php 
+				echo $this->Form->input('due_days', ['label' => false,'class' => 'form-control input-sm numberOnly rightAligntextClass dueDays','placeholder'=>'Due Days']);  ?>
+			</td>
+			<td width="5%" align="right" valign="top">
 				<a class="delete-tr-ref" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
 			</td>
 		</tr>
@@ -418,6 +421,7 @@ $this->set('title', 'Payment Voucher');
 <!-- END PAGE LEVEL SCRIPTS -->
 <?php
 	$kk='<input type="text" class="form-control input-sm ref_name " placeholder="Reference Name">';
+	$dd='<input type="text" class="form-control input-sm rightAligntextClass dueDays " placeholder="Due Days">';
 	
 	$total_input='<input type="text" class="form-control input-sm rightAligntextClass total calculation noBorder" readonly>';
 	$total_type='<input type="text" class="form-control input-sm total_type calculation noBorder"readonly >';
@@ -535,7 +539,7 @@ $this->set('title', 'Payment Voucher');
 				var type=$(this).val();
 				var currentRefRow=$(this).closest('tr');
 				var ledger_id=$(this).closest('tr.MainTr').find('select.ledger option:selected').val();
-				
+				var due_days=$(this).closest('tr.MainTr').find('select.ledger option:selected').attr('default_days');
 				if(type=='Against'){
 					$(this).closest('tr').find('td:nth-child(2)').html('Loading Ref List...');
 					var url='".$this->Url->build(['controller'=>'ReferenceDetails','action'=>'listRef'])."';
@@ -544,13 +548,16 @@ $this->set('title', 'Payment Voucher');
 						url: url,
 					}).done(function(response) { 
 						currentRefRow.find('td:nth-child(2)').html(response);
+						currentRefRow.find('td:nth-child(5)').html('');
 						renameRefRows(SelectedTr);
 					});
 				}else if(type=='On Account'){
 					currentRefRow.find('td:nth-child(2)').html('');
+					currentRefRow.find('td:nth-child(5)').html('');
 				}else{
 					currentRefRow.find('td:nth-child(2)').html('".$kk."');
-					
+					currentRefRow.find('td:nth-child(5)').html('".$dd."');
+					currentRefRow.find('td:nth-child(5) input.dueDays').val(due_days);
 				}
 				var SelectedTr=$(this).closest('tr.MainTr');
 				renameRefRows(SelectedTr);
@@ -623,7 +630,7 @@ $this->set('title', 'Payment Voucher');
 			}
 			$('.ledger').die().live('change',function(){
 				var openWindow=$(this).find('option:selected').attr('open_window');
-				
+				var due_days=$(this).find('option:selected').attr('default_days');
 				if(openWindow=='party'){
 				    var bankValue=1;
 					var SelectedTr=$(this).closest('tr.MainTr');
@@ -747,15 +754,19 @@ $this->set('title', 'Payment Voucher');
 			
 			$('.addRefRow').die().live('click',function(){
 				var SelectedTr=$(this).closest('tr.MainTr');
+				var due_days=SelectedTr.find('td:nth-child(2) select.ledger option:selected').attr('default_days');
 				AddRefRow(SelectedTr);
+				SelectedTr.find('td:nth-child(2) div.window table tbody tr td:nth-child(5) input.dueDays').val(due_days);
 			});
 			
 			
 			
 			function AddRefRow(SelectedTr){
 				var refTr=$('#sampleForRef tbody tr').clone();
+				var due_days=SelectedTr.find('td:nth-child(2) select.ledger option:selected').attr('default_days');
 				//console.log(refTr);
 				SelectedTr.find('td:nth-child(2) div.window table tbody').append(refTr);
+				SelectedTr.find('td:nth-child(2) div.window table tbody tr td:nth-child(5) input.dueDays').val(due_days);
 				renameRefRows(SelectedTr);
 			}
 			function renameRefRows(SelectedTr){

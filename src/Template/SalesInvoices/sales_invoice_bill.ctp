@@ -160,13 +160,16 @@ $this->set('title', 'Sales Invoice Bill');
 	</tr>
 	
 	<?php
-		
+		$unit_ids=[]; $k=0;
 		foreach($invoiceBills->toArray() as $data){
 		$cgst=0;
 		$sgst=0;
 		$igst=0;
 		$totalAmount=0;
 		$totDis=0;
+		$totalQty=0;
+		$unitQty=[];
+		$unitName=[];
 		$totalQty=0;
 		foreach($data->sales_invoice_rows as $sales_invoice_row){ ?>
 		<tr><td colspan="4" style="border-top:1px dashed;"></td></tr>
@@ -194,7 +197,18 @@ $this->set('title', 'Sales Invoice Bill');
 				$DisVal=$sales_invoice_row->quantity*$sales_invoice_row->rate;
 				$totDis+=$DisVal*$sales_invoice_row->discount_percentage/100;
 			}
-		
+			
+			if($sales_invoice_row->item->unit->special_treatment==0){
+			@$unitQty[$sales_invoice_row->item->unit->id]+=$sales_invoice_row->quantity;
+			@$unitName[$sales_invoice_row->item->unit->id]=$sales_invoice_row->item->unit->name;
+			
+			}else{
+				$k++;
+			@$unitQty[$sales_invoice_row->item->unit->id]=$k;
+			@$unitName[$sales_invoice_row->item->unit->id]=$sales_invoice_row->item->unit->name;
+			}
+			
+			
 			
 		?>
 		<tr>
@@ -208,7 +222,7 @@ $this->set('title', 'Sales Invoice Bill');
 				echo '-';
 			}
 			?></td>
-			<td style="text-align:right;"><?=$sales_invoice_row->quantity ?></td>
+			<td style="text-align:left;font-size:12px;"><?=$sales_invoice_row->quantity ?><?php echo ' ';?><?=$sales_invoice_row->item->unit->name ?></td>
 			<td style="text-align:right;"><?=$sales_invoice_row->rate ?></td>
 		</tr>
 		<tr>
@@ -232,9 +246,16 @@ $this->set('title', 'Sales Invoice Bill');
 			<td></td><td></td>
 		</tr>
 		<?php }?>
-		<?php }} ?>
+		<?php }}   ?>
 		<tr><td colspan="4" style="border-top:1px dashed;"></td></tr>
-		
+		<?php foreach($unitName as $key=>$unit){ ?>
+		<tr>
+			<td style="font-size:14px;">Total quantity in <?php echo $unit; ?></td>
+			<td></td>
+			<td></td>
+			<td style="text-align:right;font-size:14px;"><?php echo number_format($unitQty[$key],2);  ?></td>
+		</tr>
+		<?php } ?>
 		<tr>
 			<td>Total MRP</td>
 			<td></td>
