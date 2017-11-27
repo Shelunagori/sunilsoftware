@@ -34,7 +34,7 @@ $this->set('title', 'Balance Sheet');
 					<table class="table table-bordered">
 						<thead>
 							<tr style="background-color: #c4ffbd;">
-								<td>
+								<td style="width: 50%;">
 									<table width="100%">
 										<tbody>
 											<tr>
@@ -136,6 +136,44 @@ $this->set('title', 'Balance Sheet');
 													<?php 
 													echo abs($GrossProfit); 
 													$RightTotal+=$GrossProfit;
+													?>
+												</td>
+											</tr>
+										</tbody>
+									</table>
+									<?php } ?>
+								</td>
+							</tr>
+							<?php } ?>
+							<?php if($differenceInOpeningBalance!=0){ ?>
+							<tr>
+								<td>
+									<?php if($differenceInOpeningBalance>0){ ?>
+									<table width="100%">
+										<tbody>
+											<tr>
+												<td><span style="color:red;">Difference In Opening Balance</span></td>
+												<td align="right">
+													<?php 
+													echo abs($differenceInOpeningBalance); 
+													$LeftTotal+=abs($differenceInOpeningBalance);
+													?>
+												</td>
+											</tr>
+										</tbody>
+									</table>
+									<?php } ?>
+								</td>
+								<td>
+									<?php if($differenceInOpeningBalance<0){ ?>
+									<table width="100%">
+										<tbody>
+											<tr>
+												<td><span style="color:red;">Difference In Opening Balance</span></td>
+												<td align="right">
+													<?php 
+													echo abs($differenceInOpeningBalance); 
+													$RightTotal+=abs($differenceInOpeningBalance);
 													?>
 												</td>
 											</tr>

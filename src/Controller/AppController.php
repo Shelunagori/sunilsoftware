@@ -209,6 +209,19 @@ class AppController extends Controller
 		$totalCr+=$closingValue;
 		return $totalCr-$totalDr;
 	}
+	
+	public function differenceInOpeningBalance(){
+		$this->loadModel('AccountingEntries');
+		$company_id=$this->Auth->User('session_company_id');
+		$Ledgers=$this->AccountingEntries->find()->where(['AccountingEntries.company_id'=>$company_id, 'AccountingEntries.is_opening_balance'=>'yes']);
+		
+		$output=0;
+		foreach($Ledgers as $Ledger){
+			$output+=$Ledger->debit;
+			$output-=$Ledger->credit;
+		}
+		return $output;
+	}
 
     /**
      * Before render callback.

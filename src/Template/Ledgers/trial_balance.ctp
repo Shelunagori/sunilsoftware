@@ -310,7 +310,7 @@ $this->set('title', 'Trial balance report');
 									{
 										$debit_diff1=$transactionCreditTotal-$transactionDebitTotal;
 									}
-									echo @$debit_diff1;
+									echo round(@$debit_diff1,2);
 								}
 							?>
 							</th>
@@ -318,7 +318,7 @@ $this->set('title', 'Trial balance report');
 							<?php 
 								if(@$coreVariable[fyValidFrom]>$from_date && @$coreVariable[fyValidFrom]<$to_date || @$coreVariable[fyValidFrom]==$from_date || @$coreVariable[fyValidFrom]==$to_date)
 								{
-									echo @$cedit_diff1;
+									echo round(@$cedit_diff1,2);
 								}
 							?>
 							</th>
@@ -327,7 +327,7 @@ $this->set('title', 'Trial balance report');
 							<?php 
 								if(@$coreVariable[fyValidFrom]>$from_date && @$coreVariable[fyValidFrom]<$to_date || @$coreVariable[fyValidFrom]==$from_date || @$coreVariable[fyValidFrom]==$to_date)
 								{
-									echo @$cedit_diff1;
+									echo round(@$cedit_diff1,2);
 								}
 							?></th>
 						</tr>
