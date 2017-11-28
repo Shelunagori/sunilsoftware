@@ -53,7 +53,7 @@ class JournalVouchersController extends AppController
     {
 		$this->viewBuilder()->layout('index_layout');
         $journalVoucher = $this->JournalVouchers->get($id, [
-            'contain' => ['JournalVoucherRows'=>['Ledgers','ReferenceDetails']]
+            'contain' => ['Companies','JournalVoucherRows'=>['Ledgers','ReferenceDetails']]
         ]);
 
         $this->set('journalVoucher', $journalVoucher);

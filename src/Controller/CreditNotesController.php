@@ -52,9 +52,10 @@ class CreditNotesController extends AppController
     {
 		$this->viewBuilder()->layout('index_layout');
 	    $company_id=$this->Auth->User('session_company_id');
-        $creditNotes = $this->CreditNotes->find()->where(['CreditNotes.company_id'=>$company_id, 'CreditNotes.id'=>$id])
-		->contain(['Companies', 'CreditNoteRows'=>['ReferenceDetails', 'Ledgers']]);
-	
+		  $creditNotes = $this->CreditNotes->get($id, [
+            'contain' => ['Companies', 'CreditNoteRows'=>['ReferenceDetails', 'Ledgers']]
+        ]);
+
         $this->set(compact('creditNotes'));
         $this->set('_serialize', ['creditNotes']);
     }

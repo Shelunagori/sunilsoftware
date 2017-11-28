@@ -53,9 +53,10 @@ class DebitNotesController extends AppController
     {
 		$this->viewBuilder()->layout('index_layout');
 	    $company_id=$this->Auth->User('session_company_id');
-        $debitNotes = $this->DebitNotes->find()->where(['DebitNotes.company_id'=>$company_id, 'DebitNotes.id'=>$id])
-		->contain(['Companies', 'DebitNoteRows'=>['ReferenceDetails', 'Ledgers']]);
-	
+		$debitNotes = $this->DebitNotes->get($id, [
+            'contain' => ['Companies', 'DebitNoteRows'=>['ReferenceDetails', 'Ledgers']]
+        ]);
+        
         $this->set(compact('debitNotes'));
         $this->set('_serialize', ['debitNotes']);
     }
