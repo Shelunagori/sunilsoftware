@@ -80,7 +80,7 @@ $this->set('title', 'Overdue Report');
 											<td><?php echo $reference_detail->ledger->name; ?></td>
 											<td class="rightAligntextClass"><?php echo $duebalance;  ?></td>
 											<td><?php 
-											$due_days=$reference_detail->ledger->default_credit_days;
+											$due_days=$reference_detail->due_days;
 											$ref_date = date('Y-m-d',strtotime($reference_detail->transaction_date));
 											$ref_date_add_days= date('Y-m-d', strtotime($ref_date.'+' .$due_days.'days'));
 											$ref_date_create =  date_create($ref_date_add_days );

@@ -71,6 +71,7 @@ $this->set('title', 'Create Sales Invoice');
 							</div>
 						</div>
 						<input type="hidden" name="outOfStock" class="outOfStock" value="0">
+						<input type="hidden" name="due_days" class="dueDays">
 						<input type="hidden" name="company_id" class="customer_id" value="<?php echo $company_id;?>">
 						<input type="hidden" name="location_id" class="location_id" value="<?php echo $location_id;?>">
 						<input type="hidden" name="state_id" class="state_id" value="<?php echo $state_id;?>">
@@ -389,6 +390,8 @@ $this->set('title', 'Create Sales Invoice');
 		$('.party_ledger_id').die().live('change',function(){
 			var customer_state_id=$('option:selected', this).attr('party_state_id');
 			var partyexist=$('option:selected', this).attr('partyexist');
+			var due_days=$('option:selected', this).attr('default_days');
+			$('.dueDays').val(due_days);
 			var state_id=$('.state_id').val();
 			if(partyexist=='1')
 			{

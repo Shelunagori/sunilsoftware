@@ -589,10 +589,10 @@ public function edit($id = null)
 		
         if ($this->request->is(['patch', 'post', 'put'])) {
 		    $transaction_date=date('Y-m-d', strtotime($this->request->data['transaction_date']));
-			$due_days=$this->request->data['due_days'];
 			
             $salesInvoice = $this->SalesInvoices->patchEntity($salesInvoice, $this->request->getData());
             $salesInvoice->transaction_date=$transaction_date;
+			$due_days=$this->request->data['due_days'];
 			
 			if($salesInvoice->invoice_receipt_type=='cash' && $salesInvoice->invoiceReceiptTd==1)
 				{

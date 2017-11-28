@@ -164,7 +164,7 @@ class JournalVouchersController extends AppController
 				$ledgers[]=['text' =>$AllCreditledger->name, 'value' => $AllCreditledger->id ,'open_window' => 'bank'];
 			}
 			else if($AllCreditledger->bill_to_bill_accounting == 'yes'){
-				$ledgers[]=['text' =>$AllCreditledger->name, 'value' => $AllCreditledger->id,'open_window' => 'party' ];
+				$ledgers[]=['text' =>$AllCreditledger->name, 'value' => $AllCreditledger->id,'open_window' => 'party','default_days'=>$AllCreditledger->default_credit_days];
 			}
 			else{
 				$ledgers[]=['text' =>$AllCreditledger->name, 'value' => $AllCreditledger->id,'open_window' => 'no' ];
@@ -311,7 +311,7 @@ class JournalVouchersController extends AppController
 				$ledgers[]=['text' =>$AllCreditledger->name, 'value' => $AllCreditledger->id ,'open_window' => 'bank'];
 			}
 			else if($AllCreditledger->bill_to_bill_accounting == 'yes'){
-				$ledgers[]=['text' =>$AllCreditledger->name, 'value' => $AllCreditledger->id,'open_window' => 'party' ];
+				$ledgers[]=['text' =>$AllCreditledger->name, 'value' => $AllCreditledger->id,'open_window' => 'party','default_days'=>$AllCreditledger->default_credit_days ];
 			}
 			else{
 				$ledgers[]=['text' =>$AllCreditledger->name, 'value' => $AllCreditledger->id,'open_window' => 'no' ];
