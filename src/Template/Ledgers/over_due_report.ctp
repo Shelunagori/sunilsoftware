@@ -81,6 +81,9 @@ $this->set('title', 'Overdue Report');
 											<td class="rightAligntextClass"><?php echo $duebalance;  ?></td>
 											<td><?php 
 											$due_days=$reference_detail->due_days;
+											if(empty($due_days)){
+											$due_days=0;	
+											}
 											$ref_date = date('Y-m-d',strtotime($reference_detail->transaction_date));
 											$ref_date_add_days= date('Y-m-d', strtotime($ref_date.'+' .$due_days.'days'));
 											$ref_date_create =  date_create($ref_date_add_days );
