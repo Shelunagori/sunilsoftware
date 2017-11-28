@@ -502,12 +502,11 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			function renameBankRows(SelectedTr){
 				var row_no=SelectedTr.attr('row_no');
 				SelectedTr.find('td:nth-child(2) div.window table tbody tr').each(function(){
-					
-					var type = $(this).find('td:nth-child(1) select.paymentType option:selected').val(); 
+				var type = $(this).find('td:nth-child(1) select.paymentType option:selected').val(); 
 
-					$(this).find('td:nth-child(1) select.paymentType').attr({name:'payment_rows['+row_no+'][mode_of_payment]',id:'payment_rows-'+row_no+'-mode_of_payment'});
-					$(this).find('td:nth-child(2) input.cheque_no').attr({name:'payment_rows['+row_no+'][cheque_no]',id:'payment_rows-'+row_no+'-cheque_no'});
-					$(this).find('td:nth-child(3) input.cheque_date').attr({name:'payment_rows['+row_no+'][cheque_date]',id:'payment_rows-'+row_no+'-cheque_date'}).datepicker();
+				$(this).find('td:nth-child(1) select.paymentType').attr({name:'payment_rows['+row_no+'][mode_of_payment]',id:'payment_rows-'+row_no+'-mode_of_payment'});
+				$(this).find('td:nth-child(2) input.cheque_no').attr({name:'payment_rows['+row_no+'][cheque_no]',id:'payment_rows-'+row_no+'-cheque_no'});
+				$(this).find('td:nth-child(3) input.cheque_date').attr({name:'payment_rows['+row_no+'][cheque_date]',id:'payment_rows-'+row_no+'-cheque_date'}).datepicker();
 				
 				if(type=='Cheque')
 					{ 
@@ -525,17 +524,15 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			
 			$('.addRefRow').die().live('click',function(){
 				var SelectedTr=$(this).closest('tr.MainTr');
-				var due_days=SelectedTr.find('td:nth-child(2) select.ledger option:selected').attr('default_days');
 				AddRefRow(SelectedTr);
-				SelectedTr.find('td:nth-child(2) div.window table tbody tr td:nth-child(5) input.dueDays').val(due_days);
 			});
 			
 			function AddRefRow(SelectedTr){ //alert(c);
 				var refTr=$('#sampleForRef tbody tr').clone();
 				var due_days=SelectedTr.find('td:nth-child(2) select.ledger option:selected').attr('default_days');
 				//console.log(refTr);
+				refTr.find('td:nth-child(5) input.dueDays').val(due_days);
 				SelectedTr.find('td:nth-child(2) div.window table tbody').append(refTr);
-				SelectedTr.find('td:nth-child(2) div.window table tbody tr td:nth-child(5) input.dueDays').val(due_days);
 				renameRefRows(SelectedTr);
 			}
 			
@@ -603,7 +600,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				 renameMainRows();
 			});
 			
-			$('.calculation').die().live('keyup, change',function()
+			$('.calculation').die().live('keyup,change',function()
 			{ 
 				var SelectedTr=$(this).closest('tr.MainTr');
 				var total_debit=0;var total_credit=0; var remaining=0;

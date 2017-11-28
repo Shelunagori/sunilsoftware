@@ -163,7 +163,7 @@ class SalesVouchersController extends AppController
 				$ledgerDroption[]=['text' =>$ParentLedger->name, 'value' => $ParentLedger->id ,'open_window' => 'bank'];
 			}
 			else if($ParentLedger->bill_to_bill_accounting == 'yes'){
-				$ledgerDroption[]=['text' =>$ParentLedger->name, 'value' => $ParentLedger->id,'open_window' => 'party' ];
+				$ledgerDroption[]=['text' =>$ParentLedger->name, 'value' => $ParentLedger->id,'open_window' => 'party','default_days'=>$ParentLedger->default_credit_days];
 			}
 			else{
 				$ledgerDroption[]=['text' =>$ParentLedger->name, 'value' => $ParentLedger->id,'open_window' => 'no' ];
@@ -191,7 +191,7 @@ class SalesVouchersController extends AppController
 				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id ,'open_window' => 'bank'];
 			}
 			else if($ledger->bill_to_bill_accounting == 'yes'){
-				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id,'open_window' => 'party' ];
+				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id,'open_window' => 'party','default_days'=>$ledger->default_credit_days];
 			}
 			else{
 				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id,'open_window' => 'no' ];
@@ -219,7 +219,7 @@ class SalesVouchersController extends AppController
 				$AllLedgers[]=['text' =>$all_ledger->name, 'value' => $all_ledger->id ,'open_window' => 'bank'];
 			}
 			else if($all_ledger->bill_to_bill_accounting == 'yes'){
-				$AllLedgers[]=['text' =>$all_ledger->name, 'value' => $all_ledger->id,'open_window' => 'party' ];
+				$AllLedgers[]=['text' =>$all_ledger->name, 'value' => $all_ledger->id,'open_window' => 'party','default_days'=>$all_ledger->default_credit_days ];
 			}
 			else{
 				$AllLedgers[]=['text' =>$all_ledger->name, 'value' => $all_ledger->id,'open_window' => 'no' ];
@@ -372,7 +372,7 @@ class SalesVouchersController extends AppController
 				$ledgerDroption[]=['text' =>$ParentLedger->name, 'value' => $ParentLedger->id ,'open_window' => 'bank'];
 			}
 			else if($ParentLedger->bill_to_bill_accounting == 'yes'){
-				$ledgerDroption[]=['text' =>$ParentLedger->name, 'value' => $ParentLedger->id,'open_window' => 'party' ];
+				$ledgerDroption[]=['text' =>$ParentLedger->name, 'value' => $ParentLedger->id,'open_window' => 'party','default_days'=>$ParentLedger->default_credit_days ];
 			}
 			else{
 				$ledgerDroption[]=['text' =>$ParentLedger->name, 'value' => $ParentLedger->id,'open_window' => 'no' ];
@@ -400,7 +400,7 @@ class SalesVouchersController extends AppController
 				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id ,'open_window' => 'bank'];
 			}
 			else if($ledger->bill_to_bill_accounting == 'yes'){
-				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id,'open_window' => 'party' ];
+				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id,'open_window' => 'party','default_days'=>$ledger->default_credit_days];
 			}
 			else{
 				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id,'open_window' => 'no' ];
@@ -427,7 +427,7 @@ class SalesVouchersController extends AppController
 				$AllLedgers[]=['text' =>$all_ledger->name, 'value' => $all_ledger->id ,'open_window' => 'bank'];
 			}
 			else if($all_ledger->bill_to_bill_accounting == 'yes'){
-				$AllLedgers[]=['text' =>$all_ledger->name, 'value' => $all_ledger->id,'open_window' => 'party' ];
+				$AllLedgers[]=['text' =>$all_ledger->name, 'value' => $all_ledger->id,'open_window' => 'party','default_days'=>$all_ledger->default_credit_days];
 			}
 			else{
 				$AllLedgers[]=['text' =>$all_ledger->name, 'value' => $all_ledger->id,'open_window' => 'no' ];

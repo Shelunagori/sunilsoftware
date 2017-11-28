@@ -169,7 +169,7 @@ class PurchaseVouchersController extends AppController
 				$Creditledgers[]=['text' =>$AllCreditledger->name, 'value' => $AllCreditledger->id ,'open_window' => 'bank'];
 			}
 			else if($AllCreditledger->bill_to_bill_accounting == 'yes'){
-				$Creditledgers[]=['text' =>$AllCreditledger->name, 'value' => $AllCreditledger->id,'open_window' => 'party' ];
+				$Creditledgers[]=['text' =>$AllCreditledger->name, 'value' => $AllCreditledger->id,'open_window' => 'party','default_days'=>$AllCreditledger->default_credit_days];
 			}
 			else{
 				$Creditledgers[]=['text' =>$AllCreditledger->name, 'value' => $AllCreditledger->id,'open_window' => 'no' ];
@@ -198,7 +198,7 @@ class PurchaseVouchersController extends AppController
 				$Debitledgers[]=['text' =>$AllDebitledger->name, 'value' => $AllDebitledger->id ,'open_window' => 'bank'];
 			}
 			else if($AllDebitledger->bill_to_bill_accounting == 'yes'){
-				$Debitledgers[]=['text' =>$AllDebitledger->name, 'value' => $AllDebitledger->id,'open_window' => 'party' ];
+				$Debitledgers[]=['text' =>$AllDebitledger->name, 'value' => $AllDebitledger->id,'open_window' => 'party','default_days'=>$AllDebitledger->default_credit_days ];
 			}
 			else{
 				$Debitledgers[]=['text' =>$AllDebitledger->name, 'value' => $AllDebitledger->id,'open_window' => 'no' ];
@@ -226,7 +226,7 @@ class PurchaseVouchersController extends AppController
 				$ledgers[]=['text' =>$Allledger->name, 'value' => $Allledger->id ,'open_window' => 'bank'];
 			}
 			else if($Allledger->bill_to_bill_accounting == 'yes'){
-				$ledgers[]=['text' =>$Allledger->name, 'value' => $Allledger->id,'open_window' => 'party' ];
+				$ledgers[]=['text' =>$Allledger->name, 'value' => $Allledger->id,'open_window' => 'party','default_days'=>$Allledger->default_credit_days ];
 			}
 			else{
 				$ledgers[]=['text' =>$Allledger->name, 'value' => $Allledger->id,'open_window' => 'no' ];
@@ -380,7 +380,7 @@ class PurchaseVouchersController extends AppController
 				$Creditledgers[]=['text' =>$AllCreditledger->name, 'value' => $AllCreditledger->id ,'open_window' => 'bank'];
 			}
 			else if($AllCreditledger->bill_to_bill_accounting == 'yes'){
-				$Creditledgers[]=['text' =>$AllCreditledger->name, 'value' => $AllCreditledger->id,'open_window' => 'party' ];
+				$Creditledgers[]=['text' =>$AllCreditledger->name, 'value' => $AllCreditledger->id,'open_window' => 'party','default_days'=>$AllCreditledger->default_credit_days];
 			}
 			else{
 				$Creditledgers[]=['text' =>$AllCreditledger->name, 'value' => $AllCreditledger->id,'open_window' => 'no' ];
@@ -409,7 +409,7 @@ class PurchaseVouchersController extends AppController
 				$Debitledgers[]=['text' =>$AllDebitledger->name, 'value' => $AllDebitledger->id ,'open_window' => 'bank'];
 			}
 			else if($AllDebitledger->bill_to_bill_accounting == 'yes'){
-				$Debitledgers[]=['text' =>$AllDebitledger->name, 'value' => $AllDebitledger->id,'open_window' => 'party' ];
+				$Debitledgers[]=['text' =>$AllDebitledger->name, 'value' => $AllDebitledger->id,'open_window' => 'party','default_days'=>$AllDebitledger->default_credit_days ];
 			}
 			else{
 				$Debitledgers[]=['text' =>$AllDebitledger->name, 'value' => $AllDebitledger->id,'open_window' => 'no' ];
@@ -437,7 +437,7 @@ class PurchaseVouchersController extends AppController
 				$ledgers[]=['text' =>$Allledger->name, 'value' => $Allledger->id ,'open_window' => 'bank'];
 			}
 			else if($Allledger->bill_to_bill_accounting == 'yes'){
-				$ledgers[]=['text' =>$Allledger->name, 'value' => $Allledger->id,'open_window' => 'party' ];
+				$ledgers[]=['text' =>$Allledger->name, 'value' => $Allledger->id,'open_window' => 'party','default_days'=>$Allledger->default_credit_days ];
 			}
 			else{
 				$ledgers[]=['text' =>$Allledger->name, 'value' => $Allledger->id,'open_window' => 'no' ];

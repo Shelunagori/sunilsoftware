@@ -754,9 +754,8 @@ $this->set('title', 'Payment Voucher');
 			
 			$('.addRefRow').die().live('click',function(){
 				var SelectedTr=$(this).closest('tr.MainTr');
-				var due_days=SelectedTr.find('td:nth-child(2) select.ledger option:selected').attr('default_days');
 				AddRefRow(SelectedTr);
-				SelectedTr.find('td:nth-child(2) div.window table tbody tr td:nth-child(5) input.dueDays').val(due_days);
+				
 			});
 			
 			
@@ -765,8 +764,8 @@ $this->set('title', 'Payment Voucher');
 				var refTr=$('#sampleForRef tbody tr').clone();
 				var due_days=SelectedTr.find('td:nth-child(2) select.ledger option:selected').attr('default_days');
 				//console.log(refTr);
+				refTr.find('td:nth-child(5) input.dueDays').val(due_days);
 				SelectedTr.find('td:nth-child(2) div.window table tbody').append(refTr);
-				SelectedTr.find('td:nth-child(2) div.window table tbody tr td:nth-child(5) input.dueDays').val(due_days);
 				renameRefRows(SelectedTr);
 			}
 			function renameRefRows(SelectedTr){
