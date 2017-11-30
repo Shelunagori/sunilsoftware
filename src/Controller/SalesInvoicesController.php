@@ -99,9 +99,9 @@ class SalesInvoicesController extends AppController
 			$this->viewBuilder()->layout('index_layout');
 		}
 		
-			$company_id=$this->Auth->User('session_company_id');
-			$url=$this->request->here();
-			$url=parse_url($url,PHP_URL_QUERY);
+		$company_id=$this->Auth->User('session_company_id');
+		$url=$this->request->here();
+		$url=parse_url($url,PHP_URL_QUERY);
 	    $from=$this->request->query('from_date');
 		$to=$this->request->query('to_date');
 		
@@ -483,10 +483,49 @@ class SalesInvoicesController extends AppController
 		$items = $this->SalesInvoices->SalesInvoiceRows->Items->find()
 					->where(['Items.company_id'=>$company_id])
 					->contain(['FirstGstFigures', 'SecondGstFigures', 'Units']);
-		$itemOptions=[];
-		foreach($items as $item){
-			$itemOptions[]=['text'=>$item->item_code.' '.$item->name, 'value'=>$item->id,'item_code'=>$item->item_code, 'first_gst_figure_id'=>$item->first_gst_figure_id, 'gst_amount'=>floatval($item->gst_amount), 'sales_rate'=>$item->sales_rate, 'second_gst_figure_id'=>$item->second_gst_figure_id, 'FirstGstFigure'=>$item->FirstGstFigures->tax_percentage, 'SecondGstFigure'=>$item->SecondGstFigures->tax_percentage];
+		$itemLedgers=[];
+		foreach($items->toArray() as $data)
+		{
+			$itemId=$data->id;
+			$query = $this->SalesInvoices->SalesInvoiceRows->Items->ItemLedgers->find()
+			->where(['ItemLedgers.item_id' => $itemId, 'ItemLedgers.company_id' => $company_id]);
+			$totalInCase = $query->newExpr()
+			->addCase(
+				$query->newExpr()->add(['status' => 'In']),
+				$query->newExpr()->add(['quantity']),
+				'integer'
+			);
+		$totalOutCase = $query->newExpr()
+			->addCase(
+				$query->newExpr()->add(['status' => 'out']),
+				$query->newExpr()->add(['quantity']),
+				'integer'
+			);
+		$query->select([
+			'total_in' => $query->func()->sum($totalInCase),
+			'total_out' => $query->func()->sum($totalOutCase),'id','item_id'
+		])
+		->where(['ItemLedgers.item_id' => $itemId, 'ItemLedgers.company_id' => $company_id, 'ItemLedgers.location_id' => $location_id])
+		->group('item_id')
+		->autoFields(true)
+		->contain(['Items'=>['FirstGstFigures', 'SecondGstFigures', 'Units']]);
+        $itemLedgers[] = ($query);
 		}
+		$itemOptions=[];
+		foreach($itemLedgers as $d)
+		{
+			foreach($d as $dd)
+			{
+				$available_stock=$dd->total_in;
+				$stock_issue=$dd->total_out;
+				@$remaining=number_format($available_stock-$stock_issue, 2);
+				if($remaining>0)
+				{
+				$itemOptions[]=['text'=>$dd->item->item_code.' '.$dd->item->name, 'value'=>$dd->item_id,'item_code'=>$dd->item->item_code, 'first_gst_figure_id'=>$dd->item->first_gst_figure_id, 'gst_amount'=>floatval($dd->item->gst_amount), 'sales_rate'=>$dd->item->sales_rate, 'second_gst_figure_id'=>$dd->item->second_gst_figure_id, 'FirstGstFigure'=>$dd->item->FirstGstFigures->tax_percentage, 'SecondGstFigure'=>$dd->item->SecondGstFigures->tax_percentage];
+				}
+			}
+		}
+		
         $partyParentGroups = $this->SalesInvoices->SalesInvoiceRows->Ledgers->AccountingGroups->find()
 						->where(['AccountingGroups.company_id'=>$company_id, 'AccountingGroups.sale_invoice_party'=>'1']);
 		$partyGroups=[];
@@ -1241,9 +1280,47 @@ public function edit($id = null)
 		$items = $this->SalesInvoices->SalesInvoiceRows->Items->find()
 					->where(['Items.company_id'=>$company_id])
 					->contain(['FirstGstFigures', 'SecondGstFigures', 'Units']);
+		$itemLedgers=[];
+		foreach($items->toArray() as $data)
+		{
+			$itemId=$data->id;
+			$query = $this->SalesInvoices->SalesInvoiceRows->Items->ItemLedgers->find()
+			->where(['ItemLedgers.item_id' => $itemId, 'ItemLedgers.company_id' => $company_id]);
+			$totalInCase = $query->newExpr()
+			->addCase(
+				$query->newExpr()->add(['status' => 'In']),
+				$query->newExpr()->add(['quantity']),
+				'integer'
+			);
+		$totalOutCase = $query->newExpr()
+			->addCase(
+				$query->newExpr()->add(['status' => 'out']),
+				$query->newExpr()->add(['quantity']),
+				'integer'
+			);
+		$query->select([
+			'total_in' => $query->func()->sum($totalInCase),
+			'total_out' => $query->func()->sum($totalOutCase),'id','item_id'
+		])
+		->where(['ItemLedgers.item_id' => $itemId, 'ItemLedgers.company_id' => $company_id, 'ItemLedgers.location_id' => $location_id])
+		->group('item_id')
+		->autoFields(true)
+		->contain(['Items'=>['FirstGstFigures', 'SecondGstFigures', 'Units']]);
+        $itemLedgers[] = ($query);
+		}
 		$itemOptions=[];
-		foreach($items as $item){
-			$itemOptions[]=['text'=>$item->item_code.' '.$item->name, 'value'=>$item->id, 'first_gst_figure_id'=>$item->first_gst_figure_id, 'gst_amount'=>floatval($item->gst_amount), 'sales_rate'=>$item->sales_rate, 'second_gst_figure_id'=>$item->second_gst_figure_id, 'FirstGstFigure'=>$item->FirstGstFigures->tax_percentage, 'SecondGstFigure'=>$item->SecondGstFigures->tax_percentage];
+		foreach($itemLedgers as $d)
+		{
+			foreach($d as $dd)
+			{
+				$available_stock=$dd->total_in;
+				$stock_issue=$dd->total_out;
+				@$remaining=number_format($available_stock-$stock_issue, 2);
+				if($remaining>=0)
+				{
+				$itemOptions[]=['text'=>$dd->item->item_code.' '.$dd->item->name, 'value'=>$dd->item_id,'item_code'=>$dd->item->item_code, 'first_gst_figure_id'=>$dd->item->first_gst_figure_id, 'gst_amount'=>floatval($dd->item->gst_amount), 'sales_rate'=>$dd->item->sales_rate, 'second_gst_figure_id'=>$dd->item->second_gst_figure_id, 'FirstGstFigure'=>$dd->item->FirstGstFigures->tax_percentage, 'SecondGstFigure'=>$dd->item->SecondGstFigures->tax_percentage];
+				}
+			}
 		}
 	
         $partyParentGroups = $this->SalesInvoices->SalesInvoiceRows->Ledgers->AccountingGroups->find()

@@ -130,7 +130,7 @@ class SecondTampGrnRecordsController extends AppController
 						$barcode->barcode();
 						$barcode->setType('C128');
 						$barcode->setCode($data_to_encode);
-						$barcode->setSize(40,100);
+						$barcode->setSize(20,100);
 						$barcode->hideCodeType('N');
 							
 						// Generate filename     
@@ -392,6 +392,22 @@ class SecondTampGrnRecordsController extends AppController
 				}else{
 					goto DoNotMarkYesValidToImport;
 				}
+				
+				if(!empty($SecondTampGrnRecord->stock_group)){
+					$stock=$this->SecondTampGrnRecords->Companies->Items->StockGroups->find()
+						->where(['StockGroups.name LIKE'=>'%'.trim($SecondTampGrnRecord->stock_group).'%', 'StockGroups.company_id'=>$company_id])
+						->first();
+					if($stock){
+						$query = $this->SecondTampGrnRecords->query();
+						$query->update()
+							->set(['stock_group_id' => $stock->id])
+							->where(['SecondTampGrnRecords.id' =>$SecondTampGrnRecord->id])
+							->execute();
+						$stock_id= $stock->id;
+					}
+				}else{
+					$stock_id=0;
+				}
 				if(!empty($SecondTampGrnRecord->provided_shade)){
 					$shade=$this->SecondTampGrnRecords->Companies->Items->Shades->find()
 						->where(['Shades.name LIKE'=>'%'.trim($SecondTampGrnRecord->provided_shade).'%', 'Shades.company_id'=>$company_id])
@@ -407,9 +423,6 @@ class SecondTampGrnRecordsController extends AppController
 				}else{
 					$shade_id=0;
 				}
-				
-				
-				
 				
 				
 				if(!empty($SecondTampGrnRecord->provided_shade)){
@@ -529,6 +542,7 @@ class SecondTampGrnRecordsController extends AppController
 				$item->shade_id=$shade_id;
 				$item->size_id=$size_id;
 				$item->description=$SecondTampGrnRecord->description;
+				$item->stock_group_id=$stock_id;
 				$item->sales_rate_update_on=date("Y-m-d",strtotime($transaction_date));
 				$item->location_id=$location_id;
 				//$item->item_code=strtoupper($SecondTampGrnRecord->item_code);
@@ -540,7 +554,7 @@ class SecondTampGrnRecordsController extends AppController
 					$barcode->barcode();
 					$barcode->setType('C128');
 					$barcode->setCode($data_to_encode);
-					$barcode->setSize(40,100);
+					$barcode->setSize(20,100);
 					$barcode->hideCodeType('N');
 						
 					// Generate filename     

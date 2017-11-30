@@ -58,7 +58,11 @@ $this->set('title', 'Sales Voucher');
 						<td width="20" align="center">:</td>
 						<td><?= h(str_pad($salesVoucher->voucher_no, 4, '0', STR_PAD_LEFT)) ?></td>
 					</tr>
-					
+					<tr>
+						<td>Reference No</td>
+						<td width="20" align="center">:</td>
+						<td><?= h($salesVoucher->reference_no) ?></td>
+					</tr>
 				</table>
 			</td>
 			<td width="50%" valign="top" align="right">

@@ -115,7 +115,7 @@ class ItemsController extends AppController
 				$barcode->barcode();
 				$barcode->setType('C128');
 				$barcode->setCode($data_to_encode);
-				$barcode->setSize(40,100);
+				$barcode->setSize(20,100);
 				$barcode->hideCodeType('N');
 					
 				// Generate filename     

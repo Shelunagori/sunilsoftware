@@ -39,7 +39,7 @@
 						<?php if(!empty($arData->shade->name)){?><td>Shade : <?= @$arData->shade->name.' ' ?></td><?php }?>
 					</tr>
 				</table>
-				<div align="center"><?= $this->Html->Image('barcode/'.$arData->id.'.png',['width'=>'130px;','height'=>'25px','style'=>'width:130px;height:25px;']) ?></div>
+				<div align="center"><?= $this->Html->Image('barcode/'.$arData->id.'.png',['width'=>'130px;','height'=>'15px','style'=>'width:130px;height:15px;']) ?><br/><?= $arData->item_code ?></div>
 			</td>
 			<?php
 			

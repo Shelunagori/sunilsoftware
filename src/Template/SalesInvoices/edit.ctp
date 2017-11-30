@@ -395,6 +395,8 @@ foreach($partyOptions as $partyOption)
 		var sales_rate=$('option:selected', this).attr('sales_rate');
 		$(this).closest('tr').find('.gst_amount').val(gst_amount);
 		$(this).closest('tr').find('.rate').val(sales_rate);
+		$(this).closest('tr').find('.exactQty').val(0);
+		
 		var itemId=$(this).val();
 		var url='".$this->Url->build(["controller" => "SalesInvoices", "action" => "ajaxItemQuantity"])."';
 		url=url+'/'+itemId
@@ -950,6 +952,8 @@ foreach($partyOptions as $partyOption)
 			if(!existingQty){ existingQty=0; }
 			StockInput[item_id] = quantity+existingQty;
 			StockDB[item_id] = stock;
+			
+			
 		});
 		
 		var c=1;
@@ -960,6 +964,8 @@ foreach($partyOptions as $partyOption)
 				c=0;
 			}
 		});
+		
+		
 		
 		if(c==0){
 			alert('Error: Stock is going in minus.');

@@ -58,7 +58,11 @@ $this->set('title', 'Purchase Voucher');
 						<td width="20" align="center">:</td>
 						<td><?= h(str_pad($purchaseVoucher->voucher_no, 4, '0', STR_PAD_LEFT)) ?></td>
 					</tr>
-					
+					<tr>
+						<td>Supplier Invoice No</td>
+						<td width="20" align="center">:</td>
+						<td><?= h($purchaseVoucher->supplier_invoice_no) ?></td>
+					</tr>
 				</table>
 			</td>
 			<td width="50%" valign="top" align="right">
@@ -67,6 +71,11 @@ $this->set('title', 'Purchase Voucher');
 						<td>Transaction Date</td>
 						<td width="20" align="center">:</td>
 						<td><?= h(date("d-m-Y",strtotime($purchaseVoucher->transaction_date))) ?></td>
+					</tr>
+					<tr>
+						<td>Supplier Invoice Date</td>
+						<td width="20" align="center">:</td>
+						<td><?= h(date("d-m-Y",strtotime($purchaseVoucher->supplier_invoice_date))) ?></td>
 					</tr>
 				</table>
 			</td>
