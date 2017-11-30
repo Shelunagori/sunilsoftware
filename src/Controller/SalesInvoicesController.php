@@ -190,7 +190,7 @@ class SalesInvoicesController extends AppController
 		$location_id=$this->Auth->User('session_location_id');
 		$stateDetails=$this->Auth->User('session_company');
 		$state_id=$stateDetails->state_id;
-		
+		$due_days=0;
 		$roundOffId = $this->SalesInvoices->SalesInvoiceRows->Ledgers->find()
 		->where(['Ledgers.company_id'=>$company_id, 'Ledgers.round_off'=>1])->first();
 		$Voucher_no = $this->SalesInvoices->find()->select(['voucher_no'])->where(['SalesInvoices.company_id'=>$company_id])->order(['voucher_no' => 'DESC'])->first();
@@ -204,6 +204,7 @@ class SalesInvoicesController extends AppController
 		} 		
         if ($this->request->is('post')) {
 		    $transaction_date=date('Y-m-d', strtotime($this->request->data['transaction_date']));
+			$due_days=$this->request->data['due_days']; 
             $salesInvoice = $this->SalesInvoices->patchEntity($salesInvoice, $this->request->getData());
             $salesInvoice->transaction_date=$transaction_date;
 			$Voucher_no = $this->SalesInvoices->find()->select(['voucher_no'])->where(['SalesInvoices.company_id'=>$company_id])->order(['voucher_no' => 'DESC'])->first();
@@ -279,7 +280,7 @@ class SalesInvoicesController extends AppController
 					  if($refLedgerId->bill_to_bill_accounting=='yes')
 						{
 						        $refData1 = $this->SalesInvoices->Receipts->ReceiptRows->ReferenceDetails->query();
-								$refData1->insert(['company_id','ledger_id','type', 'ref_name', 'debit', 'sales_invoice_id','transaction_date'])
+								$refData1->insert(['company_id','ledger_id','type', 'ref_name', 'debit', 'sales_invoice_id','due_days','transaction_date'])
 										->values([
 										'company_id' => $salesInvoice->company_id,
 										'ledger_id' => $salesInvoice->party_ledger_id,
@@ -287,6 +288,7 @@ class SalesInvoicesController extends AppController
 										'ref_name' => $voucher_no,
 										'debit' => $salesInvoice->amount_after_tax,
 										'sales_invoice_id' => $salesInvoice->id,
+										'due_days' => $due_days,
 										'transaction_date' => $salesInvoice->transaction_date
 										])
 					  ->execute();
@@ -338,7 +340,7 @@ class SalesInvoicesController extends AppController
 					  if($refLedgerId->bill_to_bill_accounting=='yes')
 						{
 						        $refData1 = $this->SalesInvoices->Receipts->ReceiptRows->ReferenceDetails->query();
-								$refData1->insert(['company_id','ledger_id','type', 'ref_name', 'debit', 'sales_invoice_id','transaction_date'])
+								$refData1->insert(['company_id','ledger_id','type', 'ref_name', 'debit', 'sales_invoice_id','due_days','transaction_date'])
 										->values([
 										'company_id' => $salesInvoice->company_id,
 										'ledger_id' => $salesInvoice->party_ledger_id,
@@ -346,6 +348,7 @@ class SalesInvoicesController extends AppController
 										'ref_name' => $voucher_no,
 										'debit' => $salesInvoice->amount_after_tax,
 										'sales_invoice_id' => $salesInvoice->id,
+										'due_days'=>$due_days,
 										'transaction_date' => $salesInvoice->transaction_date
 										])
 					  ->execute();
@@ -562,7 +565,7 @@ class SalesInvoicesController extends AppController
 		else{
 			$receiptAccountLedgersName='0';
 		}
-			$partyOptions[]=['text' =>str_pad(@$Partyledger->customer->customer_id, 4, '0', STR_PAD_LEFT).' - '.$Partyledger->name, 'value' => $Partyledger->id ,'party_state_id'=>@$Partyledger->customer->state_id, 'partyexist'=>$receiptAccountLedgersName, 'billToBillAccounting'=>$Partyledger->bill_to_bill_accounting];
+			$partyOptions[]=['text' =>str_pad(@$Partyledger->customer->customer_id, 4, '0', STR_PAD_LEFT).' - '.$Partyledger->name, 'value' => $Partyledger->id ,'party_state_id'=>@$Partyledger->customer->state_id, 'partyexist'=>$receiptAccountLedgersName, 'billToBillAccounting'=>$Partyledger->bill_to_bill_accounting,'default_days'=>$Partyledger->default_credit_days];
 		}
 		
 		$accountLedgers = $this->SalesInvoices->SalesInvoiceRows->Ledgers->AccountingGroups->find()->where(['AccountingGroups.sale_invoice_sales_account'=>1,'AccountingGroups.company_id'=>$company_id])->first();
@@ -614,6 +617,7 @@ public function edit($id = null)
 		$stateDetails=$this->Auth->User('session_company');
 		$location_id=$this->Auth->User('session_location_id');
 		$state_id=$stateDetails->state_id;
+		$due_days=0;
 		$roundOffId = $this->SalesInvoices->SalesInvoiceRows->Ledgers->find()
 		->where(['Ledgers.company_id'=>$company_id, 'Ledgers.round_off'=>1])->first();
 		$Voucher_no = $this->SalesInvoices->find()->select(['voucher_no'])->where(['company_id'=>$company_id])->order(['voucher_no' => 'DESC'])->first();
@@ -775,6 +779,7 @@ public function edit($id = null)
 										'ledger_id' => $salesInvoice->party_ledger_id,
 										'type' => 'New Ref',
 										'debit' => '0',
+										'due_days'=>$due_days,
 										'sales_invoice_id' => $salesInvoice->id])
 						->where(['ReferenceDetails.company_id'=>$company_id, 'ReferenceDetails.sales_invoice_id'=>$salesInvoice->id])
 						->execute();
@@ -798,7 +803,7 @@ public function edit($id = null)
 					  if($refLedgerId->bill_to_bill_accounting=='yes')
 						      {
 						        $refData1 = $this->SalesInvoices->Receipts->ReceiptRows->ReferenceDetails->query();
-								$refData1->insert(['company_id','ledger_id','type', 'ref_name', 'debit','sales_invoice_id','transaction_date'])
+								$refData1->insert(['company_id','ledger_id','type', 'ref_name', 'debit','sales_invoice_id','due_days','transaction_date'])
 										->values([
 										'company_id' => $salesInvoice->company_id,
 										'ledger_id' => $salesInvoice->party_ledger_id,
@@ -895,9 +900,7 @@ public function edit($id = null)
 						   $receiptRowCrId = $this->SalesInvoices->Receipts->ReceiptRows->find()->select(['id'])->where(['ReceiptRows.company_id'=>$company_id,'ReceiptRows.receipt_id'=>$receiptId->id, 'ReceiptRows.cr_dr'=>'Cr'])->first();
 						   $receiptRowDrId = $this->SalesInvoices->Receipts->ReceiptRows->find()->select(['id'])->where(['ReceiptRows.company_id'=>$company_id,'ReceiptRows.receipt_id'=>$receiptId->id, 'ReceiptRows.cr_dr'=>'Dr'])->first();
 						   
-						  
-						   
-							  if($refLedgerId->bill_to_bill_accounting=='yes')
+							if($refLedgerId->bill_to_bill_accounting=='yes')
 								  {
 								$refData1 = $this->SalesInvoices->Receipts->ReceiptRows->ReferenceDetails->query();
 								$refData1->update()
@@ -929,6 +932,7 @@ public function edit($id = null)
 											'ledger_id' => $salesInvoice->party_ledger_id,
 											'type' => 'New Ref',
 											'debit' => 0,
+											'due_days'=>$due_days,
 											'sales_invoice_id' => $salesInvoice->id])
 								->where(['ReferenceDetails.company_id'=>$company_id, 'ReferenceDetails.sales_invoice_id'=>$salesInvoice->id])
 								->execute();
@@ -951,7 +955,7 @@ public function edit($id = null)
 						 if($refLedgerId->bill_to_bill_accounting=='yes')
 						      {
 						        $refData1 = $this->SalesInvoices->Receipts->ReceiptRows->ReferenceDetails->query();
-								$refData1->insert(['company_id','ledger_id','type', 'ref_name', 'debit', 'sales_invoice_id','transaction_date'])
+								$refData1->insert(['company_id','ledger_id','type', 'ref_name', 'debit', 'sales_invoice_id','due_days','transaction_date'])
 										->values([
 										'company_id' => $salesInvoice->company_id,
 										'ledger_id' => $salesInvoice->party_ledger_id,
@@ -1048,7 +1052,7 @@ public function edit($id = null)
 						{
 						
 						        $refData1 = $this->SalesInvoices->Receipts->ReceiptRows->ReferenceDetails->query();
-								$refData1->insert(['company_id','ledger_id','type', 'ref_name', 'debit', 'sales_invoice_id','transaction_date'])
+								$refData1->insert(['company_id','ledger_id','type', 'ref_name', 'debit', 'sales_invoice_id','due_days','transaction_date'])
 										->values([
 										'company_id' => $salesInvoice->company_id,
 										'ledger_id' => $salesInvoice->party_ledger_id,
@@ -1106,19 +1110,20 @@ public function edit($id = null)
 											'ledger_id' => $salesInvoice->party_ledger_id,
 											'type' => 'New Ref',
 											'debit' => 0,
+											'due_days'=>$due_days,
 											'sales_invoice_id' => $salesInvoice->id])
 								->where(['ReferenceDetails.company_id'=>$company_id, 'ReferenceDetails.sales_invoice_id'=>$salesInvoice->id])
 								->execute();
 								}
 						}
-						else{
+					else{
 						
 				    $refLedgerId = $this->SalesInvoices->SalesInvoiceRows->Ledgers->find()
 						->where(['Ledgers.id' =>$salesInvoice->party_ledger_id,'Ledgers.company_id'=>$company_id])->first();
 					  if($refLedgerId->bill_to_bill_accounting=='yes')
 						{
 						        $refData1 = $this->SalesInvoices->Receipts->ReceiptRows->ReferenceDetails->query();
-								$refData1->insert(['company_id','ledger_id','type', 'ref_name', 'debit', 'sales_invoice_id','transaction_date'])
+								$refData1->insert(['company_id','ledger_id','type', 'ref_name', 'debit', 'sales_invoice_id','due_days','transaction_date'])
 										->values([
 										'company_id' => $salesInvoice->company_id,
 										'ledger_id' => $salesInvoice->party_ledger_id,
@@ -1132,7 +1137,7 @@ public function edit($id = null)
 						}
 				    }
 			
-			}
+				}
 			}
 			
 			
