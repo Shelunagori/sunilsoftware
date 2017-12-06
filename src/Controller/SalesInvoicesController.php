@@ -1042,15 +1042,18 @@ public function edit($id = null)
 					$accountEntry->receipt_id                 = $receiptId->id;
 					$accountEntry->receipt_row_id             = 0;
 					$this->SalesInvoices->Receipts->AccountingEntries->save($accountEntry);
-					  
-					  
-					  
-					   $receiptRowCrId = $this->SalesInvoices->Receipts->ReceiptRows->find()->select(['id'])->where(['ReceiptRows.company_id'=>$company_id,'ReceiptRows.receipt_id'=>$receiptId->id, 'ReceiptRows.cr_dr'=>'Cr'])->first();
+					 
+						$receiptRowCrId = $this->SalesInvoices->Receipts->ReceiptRows->find()->select(['id'])->where(['ReceiptRows.company_id'=>$company_id,'ReceiptRows.receipt_id'=>$receiptId->id, 'ReceiptRows.cr_dr'=>'Cr'])->first();
 					   $receiptRowDrId = $this->SalesInvoices->Receipts->ReceiptRows->find()->select(['id'])->where(['ReceiptRows.company_id'=>$company_id,'ReceiptRows.receipt_id'=>$receiptId->id, 'ReceiptRows.cr_dr'=>'Dr'])->first();
 					  
 					  if($refLedgerId->bill_to_bill_accounting=='yes')
 						{
-						
+							$refExist = $this->SalesInvoices->Receipts->ReceiptRows->ReferenceDetails->find()->select(['id'])->where(['ReferenceDetails.company_id'=>$company_id,'ReferenceDetails.sales_invoice_id'=>$salesInvoice->id]);
+							if($refExist){
+								 $deleteRef = $this->SalesInvoices->Receipts->ReceiptRows->ReferenceDetails->query();
+								$deleteRefResult = $deleteRef->delete()
+									->where(['sales_invoice_id' => $salesInvoice->id])
+									->execute();
 						        $refData1 = $this->SalesInvoices->Receipts->ReceiptRows->ReferenceDetails->query();
 								$refData1->insert(['company_id','ledger_id','type', 'ref_name', 'debit', 'sales_invoice_id','due_days','transaction_date'])
 										->values([
@@ -1077,7 +1080,7 @@ public function edit($id = null)
 										'transaction_date' => $salesInvoice->transaction_date])
 					  ->execute();
 						}
-						
+						}	
 				    }
 					
 			else if($salesInvoice->invoice_receipt_type=='credit' && $salesInvoice->invoiceReceiptTd==1)

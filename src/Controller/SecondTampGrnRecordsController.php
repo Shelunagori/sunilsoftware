@@ -395,21 +395,30 @@ class SecondTampGrnRecordsController extends AppController
 				
 				
 				if(!empty($SecondTampGrnRecord->stock_group)){
-					$stock=$this->SecondTampGrnRecords->Companies->Items->StockGroups->find()
+					if(strtolower(trim($SecondTampGrnRecord->stock_group)) == 'primary' ){
+						$stock_id=0;	
+					}
+					else{
+						$stock=$this->SecondTampGrnRecords->Companies->Items->StockGroups->find()
 						->where(['StockGroups.name LIKE'=>'%'.trim($SecondTampGrnRecord->stock_group).'%', 'StockGroups.company_id'=>$company_id])
 						->first();
-					if($stock){
+						if($stock){
 						$query = $this->SecondTampGrnRecords->query();
 						$query->update()
 							->set(['stock_group_id' => $stock->id])
 							->where(['SecondTampGrnRecords.id' =>$SecondTampGrnRecord->id])
 							->execute();
 						$stock_id= $stock->id;
-					}
-					else
-					{
-					$stock_id=0;
-					}
+						}
+						else
+						{
+						$stock_entry = $this->SecondTampGrnRecords->Companies->Items->StockGroups->newEntity();
+						$stock_entry->name = $SecondTampGrnRecord->stock_group;
+						$stock_entry->company_id = $company_id;
+						$result_entry=$this->SecondTampGrnRecords->Companies->Items->StockGroups->save($stock_entry);
+						$stock_id =$result_entry->id;
+						}
+				}
 				}else{
 					$stock_id=0;
 				}
@@ -431,7 +440,7 @@ class SecondTampGrnRecordsController extends AppController
 				}
 				
 				
-				if(!empty($SecondTampGrnRecord->provided_shade)){
+				if(!empty($SecondTampGrnRecord->provided_size)){
 					$size=$this->SecondTampGrnRecords->Companies->Items->Sizes->find()
 						->where(['Sizes.name LIKE'=>'%'.trim($SecondTampGrnRecord->provided_size).'%', 'Sizes.company_id'=>$company_id])
 						->first();
