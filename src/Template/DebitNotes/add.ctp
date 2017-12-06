@@ -511,9 +511,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			
 			function AddBankRow(SelectedTr){
 				var bankTr=$('#sampleForBank tbody tr').clone();
-				var due_days=SelectedTr.find('td:nth-child(2) select.ledger option:selected').attr('default_days');
-				//console.log(refTr);
-				refTr.find('td:nth-child(5) input.dueDays').val(due_days);
+				
 				SelectedTr.find('td:nth-child(2) div.window table tbody').append(bankTr);
 				renameBankRows(SelectedTr);
 			}
@@ -549,7 +547,10 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			
 			function AddRefRow(SelectedTr){
 				var refTr=$('#sampleForRef tbody tr').clone();
+				
+				var due_days=SelectedTr.find('td:nth-child(2) select.ledger option:selected').attr('default_days');
 				//console.log(refTr);
+				refTr.find('td:nth-child(5) input.dueDays').val(due_days);
 				SelectedTr.find('td:nth-child(2) div.window table tbody').append(refTr);
 				renameRefRows(SelectedTr);
 			}

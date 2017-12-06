@@ -138,7 +138,7 @@ $option_ref[]= ['value'=>'On Account','text'=>'On Account'];
 			</td>
 			<td width="15%" style="padding-left:0px;" valign="top">
 				<?php 
-				echo $this->Form->input('due_days', ['label' => false,'class' => 'form-control input-sm numberOnly rightAligntextClass dueDays','placeholder'=>'Due Days','title'=>'Due Days']);  ?>
+				echo $this->Form->input('due_days', ['label' => false,'class' => 'form-control input-sm numberOnly rightAligntextClass dueDays','placeholder'=>'Due Days','title'=>'Due Days','value'=>0]);  ?>
 			</td>
 			<td width="5%" align="right" valign="top">
 				<a class="delete-tr-ref calculation" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
@@ -201,7 +201,7 @@ $option_ref[]= ['value'=>'On Account','text'=>'On Account'];
 
 <?php
 	$kk='<input type="text" class="form-control input-sm ref_name " placeholder="Reference Name">';
-	$dd='<input type="text" class="form-control input-sm rightAligntextClass dueDays " placeholder="Due Days">';
+	$dd='<input type="text" class="form-control input-sm rightAligntextClass dueDays " placeholder="Due Days" value=0>';
 	$total_input='<input type="text" class="form-control input-sm rightAligntextClass total calculation noBorder" readonly>';
 	$total_type='<input type="text" class="form-control input-sm total_type calculation noBorder" readonly>';
 	

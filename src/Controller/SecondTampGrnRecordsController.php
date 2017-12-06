@@ -361,7 +361,7 @@ class SecondTampGrnRecordsController extends AppController
 		if($SecondTampGrnRecords->count()==0){
 			goto Bottom;
 		}
-		$shade_id=0; $size_id=0;
+		$shade_id=0; $size_id=0; $stock_id=0;
 		foreach($SecondTampGrnRecords as $SecondTampGrnRecord){
 			
 			$item=$this->SecondTampGrnRecords->Companies->Items->find()
@@ -393,6 +393,7 @@ class SecondTampGrnRecordsController extends AppController
 					goto DoNotMarkYesValidToImport;
 				}
 				
+				
 				if(!empty($SecondTampGrnRecord->stock_group)){
 					$stock=$this->SecondTampGrnRecords->Companies->Items->StockGroups->find()
 						->where(['StockGroups.name LIKE'=>'%'.trim($SecondTampGrnRecord->stock_group).'%', 'StockGroups.company_id'=>$company_id])
@@ -405,9 +406,14 @@ class SecondTampGrnRecordsController extends AppController
 							->execute();
 						$stock_id= $stock->id;
 					}
+					else
+					{
+					$stock_id=0;
+					}
 				}else{
 					$stock_id=0;
 				}
+				
 				if(!empty($SecondTampGrnRecord->provided_shade)){
 					$shade=$this->SecondTampGrnRecords->Companies->Items->Shades->find()
 						->where(['Shades.name LIKE'=>'%'.trim($SecondTampGrnRecord->provided_shade).'%', 'Shades.company_id'=>$company_id])

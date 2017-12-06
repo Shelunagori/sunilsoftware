@@ -366,11 +366,8 @@ if($supplier_state_id== $state_id){
 					$(this).closest('tr').find('.discount').val(disAmt);
 				}else{
 					var disAmt=(amount*discount)/100;
-					
 					disAmt=round(disAmt,2);
 					$(this).closest('tr').find('.discountAmount').val(disAmt);
-					total_dis=total_dis+disAmt;
-					
 				}
 		forward_total_amount();
 	});
@@ -392,7 +389,7 @@ if($supplier_state_id== $state_id){
 					var pnfAmt=(amount*pnf)/100;
 					pnfAmt=round(pnfAmt,2);
 					$(this).closest('tr').find('.pnfAmount').val(pnfAmt);
-					total_pnf=total_pnf+pnfAmt;
+					//total_pnf=total_pnf+pnfAmt;
 				}
 		forward_total_amount();
 	});

@@ -51,7 +51,7 @@ $this->set('title', 'Create Supplier');
 									?>
 								</div>
 								</div>
-								<div class="col-md-2" style="padding-left: 0px;padding-right:0;">
+								<div class="col-md-4" style="padding-left: 0px;padding-right:0;">
 							    <label style="visibility:hidden;">s</label>
 								<?php $option =[['value'=>'Dr','text'=>'Dr'],['value'=>'Cr','text'=>'Cr']];
 									echo $this->Form->control('debit_credit',['id'=>'cr_dr','class'=>'form-control input-sm cr_dr','label'=>false, 'options' => $option,'value'=>'creditor']);
@@ -65,7 +65,7 @@ $this->set('title', 'Create Supplier');
 								</div>
 								<div class="form-group default_credit_days_div" >
 								<label>Default Credit Days</label>
-									<?php echo $this->Form->control('default_credit_days',['class'=>'form-control input-sm default_credit_days','placeholder'=>'Default Credit Days','label'=>false]); ?>
+									<?php echo $this->Form->control('default_credit_days',['class'=>'form-control input-sm default_credit_days','placeholder'=>'Default Credit Days','label'=>false,'value'=>0]); ?>
 								</div>
 							</div>
 							<div class="col-md-6">
@@ -134,7 +134,7 @@ $option_ref[]= ['value'=>'On Account','text'=>'On Account'];
 			</td>
 			<td width="15%" style="padding-left:0px;" valign="top">
 				<?php 
-				echo $this->Form->input('due_days', ['label' => false,'class' => 'form-control input-sm numberOnly rightAligntextClass dueDays','placeholder'=>'Due Days']);  ?>
+				echo $this->Form->input('due_days', ['label' => false,'class' => 'form-control input-sm numberOnly rightAligntextClass dueDays','placeholder'=>'Due Days','value'=>0]);  ?>
 			</td>
 			<td width="5%" align="right" valign="top">
 				<a class="delete-tr-ref" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
@@ -196,7 +196,7 @@ $option_ref[]= ['value'=>'On Account','text'=>'On Account'];
 
 <?php
 	$kk='<input type="text" class="form-control input-sm ref_name " placeholder="Reference Name">';
-	$dd='<input type="text" class="form-control input-sm rightAligntextClass dueDays " placeholder="Due Days">';
+	$dd='<input type="text" class="form-control input-sm rightAligntextClass dueDays " placeholder="Due Days" value=0>';
 	$total_input='<input type="text" class="form-control input-sm rightAligntextClass total calculation noBorder" readonly>';
 	$total_type='<input type="text" class="form-control input-sm total_type calculation noBorder" readonly>';
 	
