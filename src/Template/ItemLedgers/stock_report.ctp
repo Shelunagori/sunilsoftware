@@ -70,7 +70,9 @@ $this->set('title', 'Sales Return Report');
 						</thead>
 						<tbody><?php $sno = 1; 
 							
-								  foreach ($stockGroups as $stockGroup): ?>
+								  foreach ($stockGroups as $stockGroup): 
+								  if($stock_total_qty[$stockGroup->id]>0){
+								  ?>
 									
 										<tr >
 											<td><?php echo $stockGroup->name; ?></td>
@@ -80,7 +82,7 @@ $this->set('title', 'Sales Return Report');
 										
 											
 										</tr>
-								<?php endforeach ?>
+								  <?php } endforeach ?>
 						</tbody>
 					</table>
 				</div>				

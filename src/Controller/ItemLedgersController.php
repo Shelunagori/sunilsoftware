@@ -221,7 +221,6 @@ class ItemLedgersController extends AppController
 			}
 		
 		}
-		pr($stock_item);
 		
 		return $stock_item;
 		}	
