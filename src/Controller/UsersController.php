@@ -36,6 +36,7 @@ class UsersController extends AppController
 				]);
 				$user->session_company_id=$user->company_users[0]->company_id;
 				$user->session_location_id=$user->company_users[0]->location_id;
+				$userid=$user->id;
 				unset($user->company_users);
 				$company=$this->Users->CompanyUsers->Companies->get($user->session_company_id, [
 					'contain' => ['FinancialYears'=>function($q){
@@ -52,6 +53,7 @@ class UsersController extends AppController
 				$user->fyValidTo=$fyValidTo;
 				unset($company->financial_years);
 				$user->session_company=$company;
+				$user->id=$userid;
 				$user->location_name=$location_name;
                 $this->Auth->setUser($user);
 				return $this->redirect(['controller'=>'Users','action' => 'Dashboard']);
