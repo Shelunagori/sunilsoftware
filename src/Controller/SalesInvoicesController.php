@@ -18,17 +18,25 @@ class SalesInvoicesController extends AppController
      *
      * @return \Cake\Http\Response|void
      */
-    public function index()
+    public function index($status = Null)
     {
 		$this->viewBuilder()->layout('index_layout');
 		$company_id=$this->Auth->User('session_company_id');
 		$search=$this->request->query('search');
+		if(!empty($status))
+		{
+			$where = $status;
+		}
+		else
+		{
+			$where = '';
+		}
 		
 		
 		$this->paginate = [
             'contain' => ['Companies', 'PartyLedgers', 'SalesLedgers']
         ];
-		$salesInvoices = $this->paginate($this->SalesInvoices->find()->where(['SalesInvoices.company_id'=>$company_id])->where([
+		$salesInvoices = $this->paginate($this->SalesInvoices->find()->where(['SalesInvoices.company_id'=>$company_id])->where(['SalesInvoices.status'=>$where])->where([
 		'OR' => [
             'SalesInvoices.voucher_no' => $search,
             // ...
@@ -41,7 +49,7 @@ class SalesInvoicesController extends AppController
 			'SalesInvoices.amount_after_tax' => $search
         ]]));
 	
-        $this->set(compact('salesInvoices','search'));
+        $this->set(compact('salesInvoices','search','status'));
         $this->set('_serialize', ['salesInvoices']);
     }
 	
@@ -1741,4 +1749,51 @@ public function edit($id = null)
 		$this->set(compact('sales_return','SalesInvoice'));
 		//exit;
 	}
+	
+	
+	public function cancel($id = null)
+    {
+		// $this->request->allowMethod(['post', 'delete']);
+        $salesInvoice = $this->SalesInvoices->get($id);
+		$company_id=$this->Auth->User('session_company_id');
+		//pr($salesInvoice);exit;
+		$salesInvoice->status='cancel';
+        if ($this->SalesInvoices->save($salesInvoice)) {
+			$receipt = $this->SalesInvoices->Receipts->find()->where(['Receipts.sales_invoice_id' => $id])->first();
+			if($receipt){
+			$receipt_id=$receipt->id;
+			//$receipt_rows= $this->SalesInvoices->Receipts->ReceiptRows->find()->where(['ReceiptRows.receipt_id' => $receipt_id,'ReceiptRows.cr_dr' =>'Cr'])->first();
+			//$receipt_row_id=$receipt_rows->id;
+			//if($receipt_row_id){
+				$refData1 = $this->SalesInvoices->Receipts->ReceiptRows->ReferenceDetails->query();
+								$refData1->update()
+								->set([
+											'type' => 'New Ref'
+											])
+								->where(['ReferenceDetails.company_id'=>$company_id, 'ReferenceDetails.receipt_id'=>$receipt_id,'ReferenceDetails.type'=>'Against'])
+								->execute();
+				$deleteRefDetails = $this->SalesInvoices->Receipts->ReceiptRows->ReferenceDetails->query();
+				$deleteRef = $deleteRefDetails->delete()
+					->where(['sales_invoice_id' => $salesInvoice->id])
+					->execute();
+				$deleteAccountEntries = $this->SalesInvoices->AccountingEntries->query();
+				$result = $deleteAccountEntries->delete()
+				->where(['AccountingEntries.sales_invoice_id' => $id])
+				->execute();
+			}
+			$deleteItemLedger = $this->SalesInvoices->ItemLedgers->query();
+				$deleteResult = $deleteItemLedger->delete()
+					->where(['sales_invoice_id' => $salesInvoice->id])
+					->execute();
+				$deleteAccountEntries = $this->SalesInvoices->AccountingEntries->query();
+				$result = $deleteAccountEntries->delete()
+				->where(['AccountingEntries.sales_invoice_id' => $id])
+				->execute();
+            $this->Flash->success(__('The Sales Invoice has been cancelled.'));
+        } else {
+            $this->Flash->error(__('The Sales Invoice could not be deleted. Please, try again.'));
+        }
+
+        return $this->redirect(['action' => 'index']);
+    }
 }

@@ -526,4 +526,33 @@ class PurchaseInvoicesController extends AppController
 		$this->set(compact('PurchaseInvoiceStatus','PurchaseInvoice'));
 		
 	}
+	
+	public function cancel($id = null)
+    {
+		// $this->request->allowMethod(['post', 'delete']);
+        $PurchaseInvoice = $this->PurchaseInvoices->get($id);
+		$company_id=$this->Auth->User('session_company_id');
+		//pr($salesInvoice);exit;
+		$PurchaseInvoice->status='cancel';
+        if ($this->PurchaseInvoices->save($PurchaseInvoice)) {
+				$query = $this->PurchaseInvoices->Grns->query();
+				$query->update()
+					->set(['status'=>'Pending'])
+					->where(['Grns.id' => $PurchaseInvoice->grn_id])
+					->execute();
+				$deleteRefDetails = $this->PurchaseInvoices->ReferenceDetails->query();
+				$deleteRef = $deleteRefDetails->delete()
+					->where(['ReferenceDetails.purchase_invoice_id' => $PurchaseInvoice->id])
+					->execute();
+				$deleteAccountEntries = $this->PurchaseInvoices->AccountingEntries->query();
+				$result = $deleteAccountEntries->delete()
+				->where(['AccountingEntries.purchase_invoice_id' => $PurchaseInvoice->id])
+				->execute();
+			  $this->Flash->success(__('The Purchase Invoice has been cancelled.'));
+        } else {
+            $this->Flash->error(__('The Purchase Invoice could not be cancelled. Please, try again.'));
+        }
+
+        return $this->redirect(['action' => 'index']);
+    }
 }
