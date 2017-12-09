@@ -37,6 +37,7 @@ $this->set('title', 'Sales Voucher List');
 								<th scope="col"><?= $this->Paginator->sort('voucher_no') ?></th>
 								<th scope="col"><?= $this->Paginator->sort('transaction_date') ?></th>
 								<th scope="col"><?= $this->Paginator->sort('reference_no') ?></th>
+								<th scope="col"><?= $this->Paginator->sort('status') ?></th>
 								<th scope="col" class="actions"><?= __('Actions') ?></th>
 							</tr>
 						</thead>
@@ -47,11 +48,15 @@ $this->set('title', 'Sales Voucher List');
 									<td><?= h(str_pad($salesVoucher->voucher_no, 4, '0', STR_PAD_LEFT)) ?></td>
 									<td><?= h(date("d-m-Y",strtotime($salesVoucher->transaction_date))) ?></td>
 									<td><?= h($salesVoucher->reference_no) ?></td>
+									<td><?= h($salesVoucher->status) ?></td>
 									<td class="actions">
 										<?= $this->Html->link(__('View'), ['action' => 'view', $salesVoucher->id]) ?>
 										<?php if (in_array("30", $userPages)){?>
 										<?= $this->Html->link(__('Edit'), ['action' => 'edit', $salesVoucher->id]) ?>
 										<?php }?>
+										<?php if($salesVoucher->status != 'cancel'){ ?>
+										<?= $this->Form->postLink(__('Cancel'), ['action' => 'cancel', $salesVoucher->id], ['style'=>'color:red;','confirm' => __('Are you sure you want to cancel # {0}?',h(str_pad($salesVoucher->voucher_no, 3, '0', STR_PAD_LEFT)))]) ?>
+									<?php } ?>
 									</td>
 								</tr>
 							<?php endforeach; ?>

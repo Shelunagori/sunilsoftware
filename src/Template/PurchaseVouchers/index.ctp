@@ -37,6 +37,7 @@ $this->set('title', 'Purchase Vouchers');
 								<th scope="col"><?= $this->Paginator->sort('transaction_date') ?></th>
 								<th scope="col"><?= $this->Paginator->sort('supplier_invoice_no') ?></th>
 								<th scope="col"><?= $this->Paginator->sort('supplier_invoice_date') ?></th>
+								<th scope="col"><?= $this->Paginator->sort('status') ?></th>
 								<th scope="col" class="actions"><?= __('Actions') ?></th>
 							</tr>
 						</thead>
@@ -53,11 +54,15 @@ $this->set('title', 'Purchase Vouchers');
 										   }
 									?>
 								</td>
+								<td><?= h($purchaseVoucher->status) ?></td>
 								<td class="actions">
 									<?= $this->Html->link(__('View'), ['action' => 'view', $purchaseVoucher->id]) ?>
 									<?php if (in_array("33", $userPages)){?>
 									<?= $this->Html->link(__('Edit'), ['action' => 'edit', $purchaseVoucher->id]) ?>
 									<?php }?>
+									<?php if($purchaseVoucher->status != 'cancel'){ ?>
+										<?= $this->Form->postLink(__('Cancel'), ['action' => 'cancel', $purchaseVoucher->id], ['style'=>'color:red;','confirm' => __('Are you sure you want to cancel # {0}?',h(str_pad($purchaseVoucher->voucher_no, 3, '0', STR_PAD_LEFT)))]) ?>
+									<?php } ?>
 								</td>
 							</tr>
 							<?php endforeach; ?>

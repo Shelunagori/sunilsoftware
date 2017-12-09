@@ -67,7 +67,7 @@ $this->set('title', 'Bank Reconciliation');
 								<td><?php if(($AccountingEntrie->cheque_date == '01-01-1970') || ($AccountingEntrie->cheque_date == 'NULL')){ 
 									echo " ";
 								}else{ echo date("d-m-Y",strtotime($AccountingEntrie->cheque_date)); }?></td>
-								<td width="15%"><?php echo $this->Form->input('reconciliation_date', ['type' => 'text','label' => false,'class' => 'form-control input-sm date-picker reconciliation_date','data-date-format' => 'dd-mm-yyyy','data-date-start-date'=>@$coreVariable[fyValidFrom],'data-date-end-date'=>@$coreVariable[fyValidTo],'placeholder' => 'Reconcilation Date','ledger_id'=>$AccountingEntrie->id,'required']); ?></td>
+								<td width="15%"><?php echo $this->Form->input('reconciliation_date', ['type' => 'text','label' => false,'class' => 'form-control input-sm date-picker reconciliation_date','data-date-format' => 'dd-mm-yyyy','data-date-start-date'=>@$AccountingEntrie->transaction_date,'data-date-end-date'=>@$coreVariable[fyValidTo],'placeholder' => 'Reconcilation Date','ledger_id'=>$AccountingEntrie->id]); ?></td>
 								<td><?php if($AccountingEntrie->debit>0){?><?=$AccountingEntrie->debit ?><?php } ?></td>
 								<td><?php if($AccountingEntrie->credit>0){ ?><?=$AccountingEntrie->credit ?><?php } ?></td>
 								<td><button type="button" accentry_id=<?php echo $AccountingEntrie->id ?> class="btn btn-primary btn-sm subdate"><i class="fa fa-arrow-right" ></i></button></td>
