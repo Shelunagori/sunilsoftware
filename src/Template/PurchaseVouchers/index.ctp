@@ -55,7 +55,9 @@ $this->set('title', 'Purchase Vouchers');
 								</td>
 								<td class="actions">
 									<?= $this->Html->link(__('View'), ['action' => 'view', $purchaseVoucher->id]) ?>
+									<?php if (in_array("33", $userPages)){?>
 									<?= $this->Html->link(__('Edit'), ['action' => 'edit', $purchaseVoucher->id]) ?>
+									<?php }?>
 								</td>
 							</tr>
 							<?php endforeach; ?>

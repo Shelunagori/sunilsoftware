@@ -49,7 +49,9 @@ $this->set('title', 'Sales Voucher List');
 									<td><?= h($salesVoucher->reference_no) ?></td>
 									<td class="actions">
 										<?= $this->Html->link(__('View'), ['action' => 'view', $salesVoucher->id]) ?>
+										<?php if (in_array("30", $userPages)){?>
 										<?= $this->Html->link(__('Edit'), ['action' => 'edit', $salesVoucher->id]) ?>
+										<?php }?>
 									</td>
 								</tr>
 							<?php endforeach; ?>

@@ -47,7 +47,12 @@ $this->set('title', 'Payment Voucher List');
 									<td><?= h(date("d-m-Y",strtotime($payment->transaction_date))) ?></td>
 									<td class="actions">
 										<?= $this->Html->link(__('View'), ['action' => 'view', $payment->id]) ?>
+										
+										<?php if (in_array("45", $userPages)){?>
 										<?= $this->Html->link(__('Edit'), ['action' => 'edit', $payment->id]) ?>
+										<?php }?>
+										
+										
 										<!-- <?= $this->Form->postLink(__('Delete'), ['action' => 'delete', $payment->id], ['confirm' => __('Are you sure you want to delete # {0}?', $payment->id)]) ?> -->
 									</td>
 								</tr>

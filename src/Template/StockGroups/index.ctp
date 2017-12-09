@@ -43,7 +43,9 @@ $this->set('title', 'Stock Groups');
 							<td><?= h($stockGroup->name) ?></td>
 							<td><?= $stockGroup->has('parent_stock_group') ? $this->Html->link($stockGroup->parent_stock_group->name, ['controller' => 'StockGroups', 'action' => 'view', $stockGroup->parent_stock_group->id]) : '' ?></td>
 							<td class="actions">
+							<?php if (in_array("57", $userPages)){?>
 								<?= $this->Html->link(__('Edit'), ['action' => 'edit', $stockGroup->id]) ?>
+								<?php }?>
 							</td>
 						</tr>
 						<?php endforeach; ?>

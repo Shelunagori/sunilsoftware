@@ -30,7 +30,9 @@ $this->set('title', 'Size');
 							<td><?php echo $i; ?></td>
 							<td><?= h($size->name) ?></td>
 							<td class="actions">
+							<?php if (in_array("69", $userPages)){?>
 								<?= $this->Html->link(__('Edit'), ['action' => 'edit', $size->id]) ?>
+								<?php}?>
 							</td>
 						</tr>
 						<?php endforeach; ?>

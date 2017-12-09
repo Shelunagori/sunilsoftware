@@ -29,8 +29,9 @@ $this->set('title', 'Shades');
 						<tr>
 							<td><?php echo $i; ?></td>
 							<td><?= h($shade->name) ?></td>
-							<td class="actions">
+							<td class="actions"><?php if (in_array("63", $userPages)){?>
 								<?= $this->Html->link(__('Edit'), ['action' => 'edit', $shade->id]) ?>
+							<?php }?>
 							</td>
 						</tr>
 						<?php endforeach; ?>

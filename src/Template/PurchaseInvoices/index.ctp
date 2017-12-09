@@ -53,7 +53,9 @@ $this->set('title', 'Purchase Invoice List');
 								
 								<td class="actions">
 									<?= $this->Html->link(__('View '), ['action' => 'view', $purchaseInvoice->id],['escape'=>false,'target'=>'_blank']) ?>
-									<?= $this->Html->link(__('Edit'), ['action' => 'edit', $purchaseInvoice->id]) ?>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+									<?php if (in_array("12", $userPages)){?>
+									<?= $this->Html->link(__('Edit'), ['action' => 'edit', $purchaseInvoice->id]) ?>
+									<?php }?>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 								</td>
 							</tr>
 							<?php endforeach; ?>

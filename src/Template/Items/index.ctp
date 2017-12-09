@@ -51,7 +51,9 @@ $this->set('title', 'Items');
 								<td><?= $item->unit->name ?></td>
 								<td><?= h($item->hsn_code) ?></td>
 								<td class="actions">
+								<?php if (in_array("60", $userPages)){?>
 									<?= $this->Html->link(__('Edit'), ['action' => 'edit', $item->id]) ?>
+									<?php }?>
 								</td>
 							</tr>
 							<?php endforeach; ?>

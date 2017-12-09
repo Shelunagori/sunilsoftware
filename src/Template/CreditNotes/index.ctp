@@ -47,7 +47,9 @@ $this->set('title', 'Credit Note Voucher');
 									<td><?= h(date("d-m-Y",strtotime($credit_note->transaction_date))) ?></td>
 									<td class="actions">
 										<?= $this->Html->link(__('View'), ['action' => 'view', $credit_note->id]) ?>
+										<?php if (in_array("36", $userPages)){?>
 										<?= $this->Html->link(__('Edit'), ['action' => 'edit', $credit_note->id]) ?>
+										<?php }?>
 										<!--<?= $this->Form->postLink(__('Delete'), ['action' => 'delete', $credit_note->id], ['confirm' => __('Are you sure you want to delete # {0}?', $credit_note->id)]) ?> -->
 									</td>
 								</tr>

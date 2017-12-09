@@ -49,7 +49,9 @@ $this->set('title', 'Journal Vouchers List');
 									<td><?= h($journalVoucher->reference_no) ?></td>
 									<td class="actions">
 										<?= $this->Html->link(__('View'), ['action' => 'view', $journalVoucher->id]) ?>
+										<?php if (in_array("48", $userPages)){?>
 										<?= $this->Html->link(__('Edit'), ['action' => 'edit', $journalVoucher->id]) ?>
+										<?php }?>
 									</td>
 								</tr>
 							<?php endforeach; ?>
