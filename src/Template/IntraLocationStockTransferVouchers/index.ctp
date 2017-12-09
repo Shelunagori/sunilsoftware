@@ -34,7 +34,7 @@
 						<?php echo $this->Html->link('Approved',['controller'=>'IntraLocationStockTransferVouchers','action' => 'index/Approved'],['escape'=>false,'class'=>$class2,'style'=>'padding: 1px 5px;']); ?>&nbsp;
 					<?php  ?>
 					
-				</div>
+			</div>
 			<div class="portlet-body">
 				<div class="table-responsive">
 					<?php $page_no=$this->Paginator->current('intraLocationStockTransferVoucher'); $page_no=($page_no-1)*20; ?>

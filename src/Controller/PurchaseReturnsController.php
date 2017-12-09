@@ -307,4 +307,35 @@ class PurchaseReturnsController extends AppController
 
         return $this->redirect(['action' => 'index']);
     }
+	
+	public function cancel($id = null)
+    {
+		// $this->request->allowMethod(['post', 'delete']);
+        $purchaseReturn = $this->PurchaseReturns->get($id);
+		$company_id=$this->Auth->User('session_company_id');
+		//pr($salesInvoice);exit;
+		$purchaseReturn->status='cancel';
+        if ($this->PurchaseReturns->save($purchaseReturn)) {
+			
+				$deleteRefDetails = $this->PurchaseReturns->ReferenceDetails->query();
+				$deleteRef = $deleteRefDetails->delete()
+					->where(['ReferenceDetails.purchase_return_id' => $purchaseReturn->id])
+					->execute();
+				$deleteAccountEntries = $this->PurchaseReturns->AccountingEntries->query();
+				$result = $deleteAccountEntries->delete()
+				->where(['AccountingEntries.purchase_return_id' => $purchaseReturn->id])
+				->execute();
+			
+			$deleteItemLedger = $this->PurchaseReturns->ItemLedgers->query();
+				$deleteResult = $deleteItemLedger->delete()
+					->where(['ItemLedgers.purchase_return_id' => $purchaseReturn->id])
+					->execute();
+				
+            $this->Flash->success(__('The Purchase Return has been cancelled.'));
+        } else {
+            $this->Flash->error(__('The Purchase Return could not be cancelled. Please, try again.'));
+        }
+
+        return $this->redirect(['action' => 'index']);
+    }
 }

@@ -37,6 +37,7 @@ $this->set('title', 'Purchase Return List');
 								<th scope="col"><?= $this->Paginator->sort('voucher_no') ?></th>
 									<th scope="col"><?= $this->Paginator->sort('purchase_invoice_voucher_no') ?></th>
 								<th scope="col"><?= $this->Paginator->sort('transaction_date') ?></th>
+								<th scope="col"><?= $this->Paginator->sort('status') ?></th>
 							
 								<th scope="col" class="actions"><?= __('Actions') ?></th>
 							</tr>
@@ -48,9 +49,12 @@ $this->set('title', 'Purchase Return List');
 								<td><?= h('#'.str_pad($purchaseReturn->voucher_no, 4, '0', STR_PAD_LEFT)) ?></td>
 								<td><?= h('#'.str_pad($purchaseReturn->purchase_invoice->voucher_no, 4, '0', STR_PAD_LEFT)) ?></td>
 								<td><?= h($purchaseReturn->transaction_date) ?></td>
-								
+								<td><?= h($purchaseReturn->status) ?></td>
 								<td class="actions">
-									<?= $this->Html->link(__('View '), ['action' => 'view', $purchaseReturn->id],['escape'=>false,'target'=>'_blank']) ?>
+									<?= $this->Html->link(__('View '), ['action' => 'view', $purchaseReturn->id],['escape'=>false,'target'=>'_blank']) ?>&nbsp;&nbsp;
+									<?php if($purchaseReturn->status != 'cancel'){ ?>
+									<?= $this->Form->postLink(__('Cancel'), ['action' => 'cancel', $purchaseReturn->id], ['style'=>'color:red;','confirm' => __('Are you sure you want to cancel # {0}?',h(str_pad($purchaseReturn->voucher_no, 3, '0', STR_PAD_LEFT)))]) ?>
+									<?php } ?>
 								</td>
 							</tr>
 							<?php endforeach; ?>

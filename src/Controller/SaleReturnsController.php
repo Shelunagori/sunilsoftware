@@ -18,12 +18,19 @@ class SaleReturnsController extends AppController
      *
      * @return \Cake\Http\Response|void
      */
-	 public function index()
+	 public function index($status= null)
     {
 		$this->viewBuilder()->layout('index_layout');
 		$company_id=$this->Auth->User('session_company_id');
 		$search=$this->request->query('search');
-		
+		if(!empty($status))
+		{
+			$where = $status;
+		}
+		else
+		{
+			$where = '';
+		}
         $saleReturns = $this->paginate($this->SaleReturns->find()->contain(['Companies',  'SalesLedgers', 'PartyLedgers', 'Locations', 'SalesInvoices'])->where(['SaleReturns.company_id'=>$company_id])->where([
 		'OR' => [
             'SalesInvoices.voucher_no' => $search,
@@ -37,7 +44,7 @@ class SaleReturnsController extends AppController
 			'SaleReturns.amount_after_tax' => $search
         ]]));
 		//pr($saleReturns); exit;
-        $this->set(compact('saleReturns','search'));
+        $this->set(compact('saleReturns','search','status'));
         $this->set('_serialize', ['saleReturns']);
     }
  /**
@@ -439,4 +446,35 @@ class SaleReturnsController extends AppController
 		$this->set(compact('saleReturn','taxable_type','sale_return_rows','partyCustomerid'));
         $this->set('_serialize', ['saleReturn']);
     }	
+	
+	public function cancel($id = null)
+    {
+		// $this->request->allowMethod(['post', 'delete']);
+        $salesReturn = $this->SaleReturns->get($id);
+		$company_id=$this->Auth->User('session_company_id');
+		//pr($salesInvoice);exit;
+		$salesReturn->status='cancel';
+        if ($this->SaleReturns->save($salesReturn)) {
+			
+				$deleteRefDetails = $this->SaleReturns->ReferenceDetails->query();
+				$deleteRef = $deleteRefDetails->delete()
+					->where(['ReferenceDetails.sale_return_id' => $salesReturn->id])
+					->execute();
+				$deleteAccountEntries = $this->SaleReturns->SalesInvoices->AccountingEntries->query();
+				$result = $deleteAccountEntries->delete()
+				->where(['AccountingEntries.sale_return_id' => $salesReturn->id])
+				->execute();
+			
+			$deleteItemLedger = $this->SaleReturns->SalesInvoices->ItemLedgers->query();
+				$deleteResult = $deleteItemLedger->delete()
+					->where(['ItemLedgers.sale_return_id' => $salesReturn->id])
+					->execute();
+				
+            $this->Flash->success(__('The Sales Return has been cancelled.'));
+        } else {
+            $this->Flash->error(__('The Sales Return could not be cancelled. Please, try again.'));
+        }
+
+        return $this->redirect(['action' => 'index']);
+    }
 }
