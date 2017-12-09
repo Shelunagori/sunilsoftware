@@ -93,6 +93,9 @@ $this->set('title', 'Sales Invoice List');
 								<td><?= h($salesInvoice->transaction_date) ?></td>
 								<td class="rightAligntextClass"><?= h($salesInvoice->amount_after_tax) ?></td>
 								<td class="actions">
+
+									<?php if (in_array("4", $userPages)){?>
+									<?= $this->Html->link(__('Edit'), ['action' => 'edit', $salesInvoice->id]) ?><?php }?>&nbsp;&nbsp;
 									<?= $this->Html->link(__('View Bill'), ['action' => 'sales_invoice_bill', $salesInvoice->id],['escape'=>false,'target'=>'_blank']) ?>&nbsp;&nbsp;
 									<?php if($salesInvoice->status != 'cancel'){ ?>
 									<?= $this->Html->link(__('Edit'), ['action' => 'edit', $salesInvoice->id]) ?>&nbsp;&nbsp;

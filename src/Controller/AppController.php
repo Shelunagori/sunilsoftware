@@ -103,7 +103,6 @@ class AppController extends Controller
 			$this->viewBuilder()->layout('index_layout');
 			$this -> render('/Error/pageNotFound'); 
 		}
-		
         /*
          * Enable the following components for recommended CakePHP security settings.
          * see http://book.cakephp.org/3.0/en/controllers/components/security.html
@@ -131,10 +130,8 @@ class AppController extends Controller
 					->where(['id' => $contraVoucher->id])
 					->execute();
 			}
-			
 		}
 	}
-	
 	public function StockValuation(){
 		$this->loadModel('ItemLedgers');
 		$company_id=$this->Auth->User('session_company_id');

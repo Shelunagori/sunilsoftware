@@ -50,7 +50,9 @@ $this->set('title', 'Suppliers');
 							<td><?= h($supplier->email) ?></td>
 							<td><?= h($supplier->mobile) ?></td>
 							<td class="actions">
+							<?php if (in_array("81", $userPages)){?>
 								<?= $this->Html->link(__('Edit'), ['action' => 'edit', $supplier->id]) ?>
+							<?php }?>
 							</td>	
 						</tr>
 						<?php endforeach; ?>

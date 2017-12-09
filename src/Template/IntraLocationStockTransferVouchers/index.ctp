@@ -75,11 +75,17 @@
                     <?= $this->Html->link(__('View'), ['action' => @$view, $intraLocationStockTransferVoucher->id]) ?>
 					<?php if(($status=='approved') && ($intraLocationStockTransferVoucher->transfer_to_location_id == $location_id)){ ?>
 						
+					<?php if (in_array("17", $userPages)){?>
 					<?=	 $this->Html->link(__('Edit'), ['action' => 'editApproved', $intraLocationStockTransferVoucher->id]); ?>
+					<?php }?>
 					 <?php }
 					 
 					if(($status=='pending' || $status=="" || $status!='approved')&&($intraLocationStockTransferVoucher->transfer_from_location_id==$location_id)){ ?>
+					
+					<?php if (in_array("17", $userPages)){?>
 					<?= $this->Html->link(__('Edit'), ['action' => 'edit', $intraLocationStockTransferVoucher->id]); ?>
+					<?php } ?>
+					
 					<?php } ?>
 					<?php if(($status=='pending' || $status=="" || $status!='approved') && ($intraLocationStockTransferVoucher->transfer_to_location_id==$location_id)){ ?>
 					<?= $this->Html->link(__('Approve'), ['action' => 'Approved', $intraLocationStockTransferVoucher->id]); } ?>

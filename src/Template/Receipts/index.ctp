@@ -54,7 +54,11 @@ $this->set('title', 'Receipt List');
 								<td class="actions">
 								
 								<?php if($receipt->sales_invoice_id==0){?>
-									<?= $this->Html->link(__('Edit'), ['action' => 'edit', $receipt->id]) ?>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+								
+								<?php if (in_array("42", $userPages)){?>
+									<?= $this->Html->link(__('Edit'), ['action' => 'edit', $receipt->id]) ?>
+									<?php }?>
+									&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 									<?php }?>
 									
 									<?= $this->Html->link(__('View'), ['action' => 'view', $receipt->id]) ?>

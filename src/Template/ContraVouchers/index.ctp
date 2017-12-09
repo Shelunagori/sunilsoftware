@@ -49,7 +49,11 @@ $this->set('title', 'Contra Voucher List');
 									<td><?= h($contraVoucher->reference_no) ?></td>
 									<td class="actions">
 										<?= $this->Html->link(__('View'), ['action' => 'view', $contraVoucher->id]) ?>
+										
+										<?php if (in_array("51", $userPages)){?>
 										<?= $this->Html->link(__('Edit'), ['action' => 'edit', $contraVoucher->id]) ?>
+										<?php }?>
+										
 									</td>
 								</tr>
 							<?php endforeach; ?>

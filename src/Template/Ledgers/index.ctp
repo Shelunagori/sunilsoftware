@@ -46,10 +46,15 @@ $this->set('title', 'Ledgers');
 							<td class="actions">
 								<?php if(!empty($ledger->customer_id))
 								{ ?>
+								<?php if (in_array("75", $userPages)){?>
 									<?= $this->Html->link(__('Edit'), ['controller'=> 'customers' ,'action' => 'edit', $ledger->customer_id]) ?>
+									<?php }?>
 								<?php }
 								else if(!empty($ledger->supplier_id)){ ?>
+								
+								<?php if (in_array("75", $userPages)){?>
 								<?= $this->Html->link(__('Edit'), ['controller'=> 'suppliers' ,'action' => 'edit', $ledger->supplier_id]) ?>
+								<?php }?>
 								<?php } else { ?>
 								<?= $this->Html->link(__('Edit'), ['action' => 'edit', $ledger->id]) ?><?php } ?>
 							</td>

@@ -30,7 +30,9 @@ $this->set('title', 'Unit');
 							<td><?php echo $i; ?></td>
 							<td><?= h($Unit->name) ?></td>
 							<td class="actions">
+							<?php if (in_array("66", $userPages)){?>
 								<?= $this->Html->link(__('Edit'), ['action' => 'edit', $Unit->id]) ?>
+								<?php }?>
 							</td>
 						</tr>
 						<?php endforeach; ?>

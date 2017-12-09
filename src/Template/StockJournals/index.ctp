@@ -48,7 +48,9 @@ $this->set('title', 'Stock Journals');
 								<td><?= $stockJournal->reference_no ?></td>
 								<td class="actions">
 									<?= $this->Html->link(__('View'), ['action' => 'view', $stockJournal->id]) ?>
+									<?php if (in_array("54", $userPages)){?>
 									<?= $this->Html->link(__('Edit'), ['action' => 'edit', $stockJournal->id]) ?>
+									<?php }?>
 								</td>
 							</tr>
 							<?php endforeach; ?>

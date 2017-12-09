@@ -46,8 +46,9 @@ $this->set('title', 'Accounting Groups');
 							<td><?= h($accountingGroup->name) ?></td>
 							<td><?= h(@$accountingGroup->parent_accounting_group->name)  ?></td>
 							<td class="actions">
+							<?php if (in_array("72", $userPages)){?>
 							<?= $this->Html->link(__('Edit'), ['action' => 'edit', $accountingGroup->id]) ?>
-							</td>
+							<?php }?></td>
 						</tr>
 						<?php endforeach; ?>
 					</tbody>
