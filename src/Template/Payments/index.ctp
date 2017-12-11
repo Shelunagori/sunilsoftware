@@ -49,12 +49,12 @@ $this->set('title', 'Payment Voucher List');
 									<td class=""><?= h($payment->status) ?></td>
 									<td class="actions">
 										<?= $this->Html->link(__('View'), ['action' => 'view', $payment->id]) ?>
-										<?php if ($payment->status=='cancel'){?>
+										<?php if ($payment->status!='cancel'){?>
 										<?php if (in_array("45", $userPages)){?>
 										<?= $this->Html->link(__('Edit'), ['action' => 'edit', $payment->id]) ?>
 										<?php }?>
 										&nbsp;&nbsp;
-									<?= $this->Form->postLink(__('Cancel Bill'), ['action' => 'cancel', $payment->id], ['style'=>'color:red;','confirm' => __('Are you sure you want to cancel # {0}?',h(str_pad($payment->voucher_no, 3, '0', STR_PAD_LEFT)))]) ?>&nbsp;&nbsp;
+									<?= $this->Form->postLink(__('Cancel'), ['action' => 'cancel', $payment->id], ['style'=>'color:red;','confirm' => __('Are you sure you want to cancel # {0}?',h(str_pad($payment->voucher_no, 3, '0', STR_PAD_LEFT)))]) ?>&nbsp;&nbsp;
 									<?php }?>
 										
 										<!-- <?= $this->Form->postLink(__('Delete'), ['action' => 'delete', $payment->id], ['confirm' => __('Are you sure you want to delete # {0}?', $payment->id)]) ?> -->
