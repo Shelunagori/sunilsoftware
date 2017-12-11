@@ -341,4 +341,38 @@ class JournalVouchersController extends AppController
 
         return $this->redirect(['action' => 'index']);
     }
+	public function cancel($id = null)
+    {
+		// $this->request->allowMethod(['post', 'delete']);
+        $JournalVouchers = $this->JournalVouchers->get($id);
+		$company_id=$this->Auth->User('session_company_id');
+		//pr($salesInvoice);exit;
+		$JournalVouchers->status='cancel';
+        if ($this->JournalVouchers->save($JournalVouchers)) {
+				$refData1 = $this->JournalVouchers->JournalVoucherRows->ReferenceDetails->query();
+								$refData1->update()
+								->set([
+											'type' => 'New Ref'
+											])
+								->where(['ReferenceDetails.company_id'=>$company_id, 'ReferenceDetails.journal_voucher_id'=>$id,'ReferenceDetails.type'=>'Against'])
+								->execute();	
+				$deleteRefDetails = $this->JournalVouchers->JournalVoucherRows->ReferenceDetails->query();
+				$deleteRef = $deleteRefDetails->delete()
+					->where(['journal_voucher_id' => $id])
+					->execute();
+				$deleteAccountEntries = $this->JournalVouchers->AccountingEntries->query();
+				$result = $deleteAccountEntries->delete()
+				->where(['AccountingEntries.journal_voucher_id' => $id])
+				->execute();
+			/* $deleteItemLedger = $this->Receipts->ReceiptRows->ItemLedgers->query();
+				$deleteResult = $deleteItemLedger->delete()
+					->where(['receipt_id' => $id])
+					->execute(); */
+            $this->Flash->success(__('The Sales Invoice has been cancelled.'));
+        } else {
+            $this->Flash->error(__('The Sales Invoice could not be deleted. Please, try again.'));
+        }
+
+        return $this->redirect(['action' => 'index']);
+    }
 }

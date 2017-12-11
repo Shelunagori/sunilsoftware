@@ -37,6 +37,7 @@ $this->set('title', 'Journal Vouchers List');
 								<th scope="col"><?= $this->Paginator->sort('voucher_no') ?></th>
 								<th scope="col"><?= $this->Paginator->sort('transaction_date') ?></th>
 								<th scope="col"><?= $this->Paginator->sort('reference_no') ?></th>
+								<th scope="col"><?= $this->Paginator->sort('Status') ?></th>
 								<th scope="col" class="actions"><?= __('Actions') ?></th>
 							</tr>
 						</thead>
@@ -47,11 +48,13 @@ $this->set('title', 'Journal Vouchers List');
 									<td><?= h(str_pad($journalVoucher->voucher_no, 4, '0', STR_PAD_LEFT)) ?></td>
 									<td><?= h(date("d-m-Y",strtotime($journalVoucher->transaction_date))) ?></td>
 									<td><?= h($journalVoucher->reference_no) ?></td>
+									<td class=""><?= h($journalVoucher->status) ?></td>
 									<td class="actions">
 										<?= $this->Html->link(__('View'), ['action' => 'view', $journalVoucher->id]) ?>
 										<?php if (in_array("48", $userPages)){?>
 										<?= $this->Html->link(__('Edit'), ['action' => 'edit', $journalVoucher->id]) ?>
 										<?php }?>
+										<?= $this->Form->postLink(__('Cancel Bill'), ['action' => 'cancel', $journalVoucher->id], ['style'=>'color:red;','confirm' => __('Are you sure you want to cancel # {0}?',h(str_pad($journalVoucher->voucher_no, 3, '0', STR_PAD_LEFT)))]) ?>
 									</td>
 								</tr>
 							<?php endforeach; ?>

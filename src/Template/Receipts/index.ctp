@@ -37,6 +37,7 @@ $this->set('title', 'Receipt List');
 								<th scope="col"><?= $this->Paginator->sort('voucher_no') ?></th>
 								<th scope="col"><?= $this->Paginator->sort('transaction_date') ?></th>
 								<th scope="col"><?= $this->Paginator->sort('Narration') ?></th>
+								<th scope="col"><?= $this->Paginator->sort('Status') ?></th>
 								<th scope="col" class="actions"><?= __('Actions') ?></th>
 							</tr>
 						</thead>
@@ -51,6 +52,7 @@ $this->set('title', 'Receipt List');
 								<td><?= h(str_pad($receipt->voucher_no, 4, '0', STR_PAD_LEFT)) ?></td>
 								<td><?= h($transaction_date) ?></td>
 								<td class=""><?= h($receipt->narration) ?></td>
+								<td class=""><?= h($receipt->status) ?></td>
 								<td class="actions">
 								
 								<?php if($receipt->sales_invoice_id==0){?>
@@ -60,7 +62,8 @@ $this->set('title', 'Receipt List');
 									<?php }?>
 									&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 									<?php }?>
-									
+									&nbsp;&nbsp;
+									<?= $this->Form->postLink(__('Cancel Bill'), ['action' => 'cancel', $receipt->id], ['style'=>'color:red;','confirm' => __('Are you sure you want to cancel # {0}?',h(str_pad($receipt->voucher_no, 3, '0', STR_PAD_LEFT)))]) ?>&nbsp;&nbsp;
 									<?= $this->Html->link(__('View'), ['action' => 'view', $receipt->id]) ?>
 								</td>
 							</tr>

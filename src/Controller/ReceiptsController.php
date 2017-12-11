@@ -467,4 +467,40 @@ class ReceiptsController extends AppController
 
         return $this->redirect(['action' => 'index']);
     }
+	
+	
+	public function cancel($id = null)
+    {
+		// $this->request->allowMethod(['post', 'delete']);
+        $Receipts = $this->Receipts->get($id);
+		$company_id=$this->Auth->User('session_company_id');
+		//pr($salesInvoice);exit;
+		$Receipts->status='cancel';
+        if ($this->Receipts->save($Receipts)) {
+				$refData1 = $this->Receipts->ReceiptRows->ReferenceDetails->query();
+								$refData1->update()
+								->set([
+											'type' => 'New Ref'
+											])
+								->where(['ReferenceDetails.company_id'=>$company_id, 'ReferenceDetails.receipt_id'=>$id,'ReferenceDetails.type'=>'Against'])
+								->execute();
+				$deleteRefDetails = $this->Receipts->ReceiptRows->ReferenceDetails->query();
+				$deleteRef = $deleteRefDetails->delete()
+					->where(['receipt_id' => $id])
+					->execute();
+				$deleteAccountEntries = $this->Receipts->AccountingEntries->query();
+				$result = $deleteAccountEntries->delete()
+				->where(['AccountingEntries.receipt_id' => $id])
+				->execute();
+			/* $deleteItemLedger = $this->Receipts->ReceiptRows->ItemLedgers->query();
+				$deleteResult = $deleteItemLedger->delete()
+					->where(['receipt_id' => $id])
+					->execute(); */
+            $this->Flash->success(__('The Sales Invoice has been cancelled.'));
+        } else {
+            $this->Flash->error(__('The Sales Invoice could not be deleted. Please, try again.'));
+        }
+
+        return $this->redirect(['action' => 'index']);
+    }
 }
