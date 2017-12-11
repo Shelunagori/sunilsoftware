@@ -40,7 +40,7 @@ $this->set('title', 'User Rights');
 					</div>
 					</div>
 					<br><br>
-				<div class="row">
+				<div class="row showButtons" style="display:none">
 						<div class="col-md-12">
 							<div class="form-group">
 							<div class="col-md-6"></div>
@@ -123,6 +123,8 @@ $this->set('title', 'User Rights');
 			//alert(response);
 				//var fetch=$.parseJSON(response);
 				$('.userData').html(response);
+				$('.showButtons').show();
+				
 			});	
 			});
 			
