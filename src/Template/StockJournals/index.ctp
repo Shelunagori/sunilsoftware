@@ -50,10 +50,12 @@ $this->set('title', 'Stock Journals');
 								<td class=""><?= h($stockJournal->status) ?></td>
 								<td class="actions">
 									<?= $this->Html->link(__('View'), ['action' => 'view', $stockJournal->id]) ?>
+									<?php if ($stockJournal->status=='cancel'){?>
 									<?php if (in_array("54", $userPages)){?>
 									<?= $this->Html->link(__('Edit'), ['action' => 'edit', $stockJournal->id]) ?>
 									<?php }?>
 									<?= $this->Form->postLink(__('Cancel Bill'), ['action' => 'cancel', $stockJournal->id], ['style'=>'color:red;','confirm' => __('Are you sure you want to cancel # {0}?',h(str_pad($stockJournal->voucher_no, 3, '0', STR_PAD_LEFT)))]) ?>
+									<?php }?>
 								</td>
 							</tr>
 							<?php endforeach; ?>
