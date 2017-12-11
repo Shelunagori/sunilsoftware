@@ -344,33 +344,28 @@ class JournalVouchersController extends AppController
 	public function cancel($id = null)
     {
 		// $this->request->allowMethod(['post', 'delete']);
-        $JournalVouchers = $this->JournalVouchers->get($id);
+        $journalVoucher = $this->JournalVouchers->get($id, [
+            'contain' => ['JournalVoucherRows'=>['ReferenceDetails']]
+        ]);
+		$journal_voucher_row_ids=[];
+		foreach($journalVoucher->journal_voucher_rows as $journal_voucher_row){
+			$journal_voucher_row_ids[]=$journal_voucher_row->id;
+		}
 		$company_id=$this->Auth->User('session_company_id');
-		//pr($salesInvoice);exit;
-		$JournalVouchers->status='cancel';
-        if ($this->JournalVouchers->save($JournalVouchers)) {
-				$refData1 = $this->JournalVouchers->JournalVoucherRows->ReferenceDetails->query();
-								$refData1->update()
-								->set([
-											'type' => 'New Ref'
-											])
-								->where(['ReferenceDetails.company_id'=>$company_id, 'ReferenceDetails.journal_voucher_id'=>$id,'ReferenceDetails.type'=>'Against'])
-								->execute();	
+		$journalVoucher->status='cancel';
+        if ($this->JournalVouchers->save($journalVoucher)) {
+			
 				$deleteRefDetails = $this->JournalVouchers->JournalVoucherRows->ReferenceDetails->query();
 				$deleteRef = $deleteRefDetails->delete()
-					->where(['journal_voucher_id' => $id])
+					->where(['ReferenceDetails.journal_voucher_row_id IN' => $journal_voucher_row_ids])
 					->execute();
 				$deleteAccountEntries = $this->JournalVouchers->AccountingEntries->query();
 				$result = $deleteAccountEntries->delete()
-				->where(['AccountingEntries.journal_voucher_id' => $id])
+				->where(['AccountingEntries.journal_voucher_id' => $journalVoucher->id])
 				->execute();
-			/* $deleteItemLedger = $this->Receipts->ReceiptRows->ItemLedgers->query();
-				$deleteResult = $deleteItemLedger->delete()
-					->where(['receipt_id' => $id])
-					->execute(); */
-            $this->Flash->success(__('The Sales Invoice has been cancelled.'));
+			$this->Flash->success(__('The Journal Voucher has been cancelled.'));
         } else {
-            $this->Flash->error(__('The Sales Invoice could not be deleted. Please, try again.'));
+            $this->Flash->error(__('The Journal Voucher could not be cancelled. Please, try again.'));
         }
 
         return $this->redirect(['action' => 'index']);

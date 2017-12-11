@@ -471,36 +471,30 @@ class ReceiptsController extends AppController
 	
 	public function cancel($id = null)
     {
-		// $this->request->allowMethod(['post', 'delete']);
-        $Receipts = $this->Receipts->get($id);
+		 $Receipts = $this->Receipts->get($id, [
+            'contain' => ['ReceiptRows'=>['ReferenceDetails']]
+        ]);
 		$company_id=$this->Auth->User('session_company_id');
-		//pr($salesInvoice);exit;
 		$Receipts->status='cancel';
+		$receipt_row_ids=[];
+		foreach($Receipts->receipt_rows as $receipt_row){
+			$receipt_row_ids[]=$receipt_row->id;
+		}
+		
         if ($this->Receipts->save($Receipts)) {
-				$refData1 = $this->Receipts->ReceiptRows->ReferenceDetails->query();
-								$refData1->update()
-								->set([
-											'type' => 'New Ref'
-											])
-								->where(['ReferenceDetails.company_id'=>$company_id, 'ReferenceDetails.receipt_id'=>$id,'ReferenceDetails.type'=>'Against'])
-								->execute();
-				$deleteRefDetails = $this->Receipts->ReceiptRows->ReferenceDetails->query();
+			$deleteRefDetails = $this->Receipts->ReceiptRows->ReferenceDetails->query();
 				$deleteRef = $deleteRefDetails->delete()
-					->where(['receipt_id' => $id])
+					->where(['ReferenceDetails.receipt_row_id IN' => $receipt_row_ids])
 					->execute();
-				$deleteAccountEntries = $this->Receipts->AccountingEntries->query();
+				$deleteAccountEntries = $this->Receipts->ReceiptRows->query();
 				$result = $deleteAccountEntries->delete()
-				->where(['AccountingEntries.receipt_id' => $id])
+				->where(['AccountingEntries.receipt_id' => $Receipts->id])
 				->execute();
-			/* $deleteItemLedger = $this->Receipts->ReceiptRows->ItemLedgers->query();
-				$deleteResult = $deleteItemLedger->delete()
-					->where(['receipt_id' => $id])
-					->execute(); */
-            $this->Flash->success(__('The Sales Invoice has been cancelled.'));
+				
+            $this->Flash->success(__('The Receipt has been cancelled.'));
         } else {
-            $this->Flash->error(__('The Sales Invoice could not be deleted. Please, try again.'));
+            $this->Flash->error(__('The Receipt could not be deleted. Please, try again.'));
         }
-
         return $this->redirect(['action' => 'index']);
     }
 }

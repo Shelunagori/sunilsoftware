@@ -37,6 +37,7 @@ $this->set('title', 'Contra Voucher List');
 								<th scope="col"><?= $this->Paginator->sort('voucher_no') ?></th>
 								<th scope="col"><?= $this->Paginator->sort('transaction_date') ?></th>
 								<th scope="col"><?= $this->Paginator->sort('reference_no') ?></th>
+								<th scope="col"><?= $this->Paginator->sort('Status') ?></th>
 								<th scope="col" class="actions"><?= __('Actions') ?></th>
 							</tr>
 						</thead>
@@ -47,12 +48,15 @@ $this->set('title', 'Contra Voucher List');
 									<td><?= h(str_pad($contraVoucher->voucher_no, 4, '0', STR_PAD_LEFT)) ?></td>
 									<td><?= h(date("d-m-Y",strtotime($contraVoucher->transaction_date))) ?></td>
 									<td><?= h($contraVoucher->reference_no) ?></td>
+									<td class=""><?= h($contraVoucher->status) ?></td>
 									<td class="actions">
 										<?= $this->Html->link(__('View'), ['action' => 'view', $contraVoucher->id]) ?>
 										
 										<?php if (in_array("51", $userPages)){?>
 										<?= $this->Html->link(__('Edit'), ['action' => 'edit', $contraVoucher->id]) ?>
 										<?php }?>
+										
+										<?= $this->Form->postLink(__('Cancel Bill'), ['action' => 'cancel', $contraVoucher->id], ['style'=>'color:red;','confirm' => __('Are you sure you want to cancel # {0}?',h(str_pad($contraVoucher->voucher_no, 3, '0', STR_PAD_LEFT)))]) ?>
 										
 									</td>
 								</tr>

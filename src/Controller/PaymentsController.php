@@ -413,34 +413,29 @@ class PaymentsController extends AppController
     }
 	public function cancel($id = null)
     {
-		// $this->request->allowMethod(['post', 'delete']);
-        $Payments = $this->Payments->get($id);
+		 $Payments = $this->Payments->get($id, [
+            'contain' => ['PaymentRows'=>['ReferenceDetails']]
+        ]);
 		$company_id=$this->Auth->User('session_company_id');
-		//pr($salesInvoice);exit;
 		$Payments->status='cancel';
+		$payment_row_ids=[];
+		foreach($Payments->payment_rows as $payment_row){
+			$payment_row_ids[]=$payment_row->id;
+		}
+		
         if ($this->Payments->save($Payments)) {
-				$refData1 = $this->Payments->PaymentRows->ReferenceDetails->query();
-								$refData1->update()
-								->set([
-											'type' => 'New Ref'
-											])
-								->where(['ReferenceDetails.company_id'=>$company_id, 'ReferenceDetails.payment_id'=>$id,'ReferenceDetails.type'=>'Against'])
-								->execute();
-				$deleteRefDetails = $this->Payments->PaymentRows->ReferenceDetails->query();
+			$deleteRefDetails = $this->Payments->PaymentRows->ReferenceDetails->query();
 				$deleteRef = $deleteRefDetails->delete()
-					->where(['payment_id' => $id])
+					->where(['ReferenceDetails.payment_row_id IN' => $payment_row_ids])
 					->execute();
-				$deleteAccountEntries = $this->Payments->AccountingEntries->query();
+				$deleteAccountEntries = $this->Payments->PaymentRows->query();
 				$result = $deleteAccountEntries->delete()
-				->where(['AccountingEntries.payment_id' => $id])
+				->where(['AccountingEntries.payment_id' => $Payments->id])
 				->execute();
-			/* $deleteItemLedger = $this->Receipts->ReceiptRows->ItemLedgers->query();
-				$deleteResult = $deleteItemLedger->delete()
-					->where(['receipt_id' => $id])
-					->execute(); */
-            $this->Flash->success(__('The Sales Invoice has been cancelled.'));
+				
+            $this->Flash->success(__('The Payment has been cancelled.'));
         } else {
-            $this->Flash->error(__('The Sales Invoice could not be deleted. Please, try again.'));
+            $this->Flash->error(__('The Payment could not be deleted. Please, try again.'));
         }
 
         return $this->redirect(['action' => 'index']);

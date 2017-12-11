@@ -263,4 +263,32 @@ class ContraVouchersController extends AppController
 
         return $this->redirect(['action' => 'index']);
     }
+	public function cancel($id = null)
+    {
+        $contraVoucher = $this->ContraVouchers->get($id, [
+            'contain' => ['ContraVoucherRows'=>['ReferenceDetails']]
+        ]);
+		$contra_voucher_row_ids=[];
+		foreach($contraVoucher->contra_voucher_rows as $contra_voucher_row){
+			$contra_voucher_row_ids[]=$contra_voucher_row->id;
+		}
+		$company_id=$this->Auth->User('session_company_id');
+		$contraVoucher->status='cancel';
+        if ($this->ContraVouchers->save($contraVoucher)) {
+			
+				$deleteRefDetails = $this->ContraVouchers->ContraVoucherRows->ReferenceDetails->query();
+				$deleteRef = $deleteRefDetails->delete()
+					->where(['ReferenceDetails.contra_voucher_row_id IN' => $contra_voucher_row_ids])
+					->execute();
+				$deleteAccountEntries = $this->ContraVouchers->AccountingEntries->query();
+				$result = $deleteAccountEntries->delete()
+				->where(['AccountingEntries.contra_voucher_id' => $contraVoucher->id])
+				->execute();
+			$this->Flash->success(__('The Contra Voucher has been cancelled.'));
+        } else {
+            $this->Flash->error(__('The Contra Voucher could not be cancelled. Please, try again.'));
+        }
+
+        return $this->redirect(['action' => 'index']);
+    }
 }

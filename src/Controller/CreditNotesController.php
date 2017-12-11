@@ -540,7 +540,6 @@ class CreditNotesController extends AppController
 
         return $this->redirect(['action' => 'index']);
     }
-	
 	public function cancel($id = null)
     {
 		// $this->request->allowMethod(['post', 'delete']);
