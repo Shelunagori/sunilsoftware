@@ -73,7 +73,7 @@ if($supplier_state_id== $state_id){
 					</div><br>
 						<input type="hidden" name="state_id" class="state_id" value="<?php echo $state_id;?>">
 						<input type="hidden" name="is_interstate" id="is_interstate" value="<?php echo $is_interstate;?>">
-						
+						<input type="hidden" name="due_days" class="dueDays" value=0>
 					<div class="row">
 						<div class="col-md-3">
 							<div class="form-group">
@@ -288,8 +288,8 @@ if($supplier_state_id== $state_id){
 
 <?php
 	$js="
-	
-		
+			var due_days=$('select[name=supplier_ledger_id] :selected').attr('default_days');
+			$('.dueDays').val(due_days);
 			var supplier_state_id=$('.supplier_state_id').val();
 			var state_id=$('.state_id').val();
 			if(supplier_state_id!=state_id)

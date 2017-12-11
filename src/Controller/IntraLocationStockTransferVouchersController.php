@@ -503,4 +503,26 @@ class IntraLocationStockTransferVouchersController extends AppController
 
         return $this->redirect(['action' => 'index']);
     }
+	
+		public function cancel($id = null)
+    {
+		// $this->request->allowMethod(['post', 'delete']);
+        $intraLocationStockTransferVoucher = $this->IntraLocationStockTransferVouchers->get($id);
+		$company_id=$this->Auth->User('session_company_id');
+		//pr($salesInvoice);exit;
+		$intraLocationStockTransferVoucher->cancel_status='cancel';
+		
+        if ($this->IntraLocationStockTransferVouchers->save($intraLocationStockTransferVoucher)) {
+			$deleteItemLedger = $this->IntraLocationStockTransferVouchers->ItemLedgers->query();
+				$deleteResult = $deleteItemLedger->delete()
+					->where(['ItemLedgers.intra_location_stock_transfer_voucher_id' => $intraLocationStockTransferVoucher->id])
+					->execute();
+				
+            $this->Flash->success(__('The intra location stock transfer voucher has been cancelled.'));
+        } else {
+            $this->Flash->error(__('The intra location stock transfer voucher could not be cancelled. Please, try again.'));
+        }
+
+        return $this->redirect(['action' => 'index']);
+    }
 }

@@ -49,9 +49,10 @@ $this->set('title', 'Debit Note Voucher');
 									<td><?= h($debit_note->status) ?></td>
 									<td class="actions">
 										<?= $this->Html->link(__('View'), ['action' => 'view', $debit_note->id]) ?>
+										<?php if($debit_note->status != 'cancel'){ ?>
 										<?php if (in_array("39", $userPages)){?>
 										<?= $this->Html->link(__('Edit'), ['action' => 'edit', $debit_note->id]) ?><?php } ?>
-										<?php if($debit_note->status != 'cancel'){ ?>
+										
 										<?= $this->Form->postLink(__('Cancel'), ['action' => 'cancel', $debit_note->id], ['style'=>'color:red;','confirm' => __('Are you sure you want to cancel # {0}?',h(str_pad($debit_note->voucher_no, 3, '0', STR_PAD_LEFT)))]) ?>
 									
 										<?php } ?>

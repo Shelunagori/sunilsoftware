@@ -93,6 +93,7 @@ class PurchaseInvoicesController extends AppController
         if ($this->request->is('post')) {
             $purchaseInvoice = $this->PurchaseInvoices->patchEntity($purchaseInvoice, $this->request->getData());
 			$purchaseInvoice->transaction_date = date("Y-m-d",strtotime($this->request->getData()['transaction_date']));
+			$due_days=$this->request->data['due_days']; 
 			$Voucher_no = $this->PurchaseInvoices->find()->select(['voucher_no'])->where(['company_id'=>$company_id])->order(['voucher_no' => 'DESC'])->first();
 			if($Voucher_no)
 			{
@@ -215,6 +216,7 @@ class PurchaseInvoicesController extends AppController
 					$ReferenceDetail->type='New Ref';
 					$ReferenceDetail->ref_name='PI'.$purchaseInvoice->voucher_no;
 					$ReferenceDetail->purchase_invoice_id=$purchaseInvoice->id;
+					$ReferenceDetail->due_days = $due_days;
 					$this->PurchaseInvoices->ReferenceDetails->save($ReferenceDetail);
 				}
 				  
@@ -256,7 +258,7 @@ class PurchaseInvoicesController extends AppController
 		$partyOptions=[];
 		foreach($Partyledgers as $Partyledger){ 
 			//pr($Partyledger->supplier->state_id);
-			$partyOptions[]=['text' =>$Partyledger->name, 'value' => $Partyledger->id,'state_id'=>$Partyledger->supplier->state_id];
+			$partyOptions[]=['text' =>$Partyledger->name, 'value' => $Partyledger->id,'state_id'=>$Partyledger->supplier->state_id,'default_days'=>$Partyledger->default_credit_days];
 		}
 		
 		$accountLedgers = $this->PurchaseInvoices->Grns->GrnRows->Ledgers->AccountingGroups->find()->where(['AccountingGroups.purchase_invoice_purchase_account'=>1,'AccountingGroups.company_id'=>$company_id])->first();

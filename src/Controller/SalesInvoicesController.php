@@ -23,7 +23,7 @@ class SalesInvoicesController extends AppController
 		$this->viewBuilder()->layout('index_layout');
 		$company_id=$this->Auth->User('session_company_id');
 		$search=$this->request->query('search');
-		if(!empty($status))
+		/* if(!empty($status))
 		{
 			$where = $status;
 		}
@@ -31,12 +31,12 @@ class SalesInvoicesController extends AppController
 		{
 			$where = '';
 		}
-		
+		 */
 		
 		$this->paginate = [
             'contain' => ['Companies', 'PartyLedgers', 'SalesLedgers']
         ];
-		$salesInvoices = $this->paginate($this->SalesInvoices->find()->where(['SalesInvoices.company_id'=>$company_id])->where(['SalesInvoices.status'=>$where])->where([
+		$salesInvoices = $this->paginate($this->SalesInvoices->find()->where(['SalesInvoices.company_id'=>$company_id])->where([
 		'OR' => [
             'SalesInvoices.voucher_no' => $search,
             // ...
