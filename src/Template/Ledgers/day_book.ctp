@@ -109,7 +109,7 @@ $this->set('title', 'Day Book');
 								<td>
 								<?= $paymentLedger->voucher_type?>
 								</td>
-								<td class=""><?= $this->Html->link(__(h(str_pad($paymentLedger->voucher_id, 4, '0', STR_PAD_LEFT))), array('controller' => $paymentLedger->hlink, 'action' => $paymentLedger->haction, $paymentLedger->voucher_id)) ?></td>
+								<td class=""><?= $this->Html->link(__(h(str_pad($paymentLedger->voucher_no, 4, '0', STR_PAD_LEFT))), array('controller' => $paymentLedger->hlink, 'action' => $paymentLedger->haction, $paymentLedger->voucher_id)) ?></td>
 						        <td style="text-align:right"><?php if(!empty($paymentLedger->debit)){ ?><?=$paymentLedger->debit ?><?php } ?></td>
 								<td style="text-align:right"><?php if(!empty($paymentLedger->credit)){ ?><?=$paymentLedger->credit ?><?php } ?></td>
 							</tr>

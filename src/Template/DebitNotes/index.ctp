@@ -36,6 +36,7 @@ $this->set('title', 'Debit Note Voucher');
 								<th scope="col"><?= __('Sr') ?></th>
 								<th scope="col"><?= $this->Paginator->sort('voucher_no') ?></th>
 								<th scope="col"><?= $this->Paginator->sort('transaction_date') ?></th>
+								<th scope="col"><?= $this->Paginator->sort('status') ?></th>
 								<th scope="col" class="actions"><?= __('Actions') ?></th>
 							</tr>
 						</thead>
@@ -45,11 +46,15 @@ $this->set('title', 'Debit Note Voucher');
 									<td><?= h(++$page_no) ?></td>
 									<td><?= h(str_pad($debit_note->voucher_no, 4, '0', STR_PAD_LEFT)) ?></td>
 									<td><?= h(date("d-m-Y",strtotime($debit_note->transaction_date))) ?></td>
+									<td><?= h($debit_note->status) ?></td>
 									<td class="actions">
 										<?= $this->Html->link(__('View'), ['action' => 'view', $debit_note->id]) ?>
 										<?php if (in_array("39", $userPages)){?>
-										<?= $this->Html->link(__('Edit'), ['action' => 'edit', $debit_note->id]) ?>
-										<?php }?>
+										<?= $this->Html->link(__('Edit'), ['action' => 'edit', $debit_note->id]) ?><?php } ?>
+										<?php if($debit_note->status != 'cancel'){ ?>
+										<?= $this->Form->postLink(__('Cancel'), ['action' => 'cancel', $debit_note->id], ['style'=>'color:red;','confirm' => __('Are you sure you want to cancel # {0}?',h(str_pad($debit_note->voucher_no, 3, '0', STR_PAD_LEFT)))]) ?>
+									
+										<?php } ?>
 										<!--<?= $this->Form->postLink(__('Delete'), ['action' => 'delete', $debit_note->id], ['confirm' => __('Are you sure you want to delete # {0}?', $debit_note->id)]) ?>-->
 									</td>
 								</tr>

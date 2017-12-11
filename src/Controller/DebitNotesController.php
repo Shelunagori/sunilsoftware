@@ -542,4 +542,33 @@ class DebitNotesController extends AppController
 
         return $this->redirect(['action' => 'index']);
     }
+	public function cancel($id = null)
+    {
+		// $this->request->allowMethod(['post', 'delete']);
+        $debitNote = $this->DebitNotes->get($id, [
+            'contain' => ['DebitNoteRows'=>['ReferenceDetails']]
+        ]);
+		$debit_note_row_ids=[];
+		foreach($debitNote->debit_note_rows as $debit_note_row){
+			$debit_note_row_ids[]=$debit_note_row->id;
+		}
+		$company_id=$this->Auth->User('session_company_id');
+		$debitNote->status='cancel';
+        if ($this->DebitNotes->save($debitNote)) {
+			
+				$deleteRefDetails = $this->DebitNotes->DebitNoteRows->ReferenceDetails->query();
+				$deleteRef = $deleteRefDetails->delete()
+					->where(['ReferenceDetails.debit_note_row_id IN' => $debit_note_row_ids])
+					->execute();
+				$deleteAccountEntries = $this->DebitNotes->AccountingEntries->query();
+				$result = $deleteAccountEntries->delete()
+				->where(['AccountingEntries.debit_note_id' => $debitNote->id])
+				->execute();
+			$this->Flash->success(__('The Debit Notes has been cancelled.'));
+        } else {
+            $this->Flash->error(__('The Debit Notes could not be cancelled. Please, try again.'));
+        }
+
+        return $this->redirect(['action' => 'index']);
+    }
 }

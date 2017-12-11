@@ -457,4 +457,36 @@ class SalesVouchersController extends AppController
 
         return $this->redirect(['action' => 'index']);
     }
+	public function cancel($id = null)
+    {
+		// $this->request->allowMethod(['post', 'delete']);
+        $salesVoucher = $this->SalesVouchers->get($id, [
+            'contain' => ['SalesVoucherRows'=>['ReferenceDetails']]
+        ]);
+		$sales_voucher_row_ids=[];
+		foreach($salesVoucher->sales_voucher_rows as $sales_voucher_row){
+			$sales_voucher_row_ids[]=$sales_voucher_row->id;
+		}
+		$company_id=$this->Auth->User('session_company_id');
+		$salesVoucher->status='cancel';
+        if ($this->SalesVouchers->save($salesVoucher)) {
+			
+				$deleteRefDetails = $this->SalesVouchers->SalesVoucherRows->ReferenceDetails->query();
+				$deleteRef = $deleteRefDetails->delete()
+					->where(['ReferenceDetails.sales_voucher_row_id IN' => $sales_voucher_row_ids])
+					->execute();
+				$deleteAccountEntries = $this->SalesVouchers->AccountingEntries->query();
+				$result = $deleteAccountEntries->delete()
+				->where(['AccountingEntries.sales_voucher_id' => $salesVoucher->id])
+				->execute();
+			
+			
+				
+            $this->Flash->success(__('The Sales Vouchers has been cancelled.'));
+        } else {
+            $this->Flash->error(__('The Sales Vouchers could not be cancelled. Please, try again.'));
+        }
+
+        return $this->redirect(['action' => 'index']);
+    }
 }

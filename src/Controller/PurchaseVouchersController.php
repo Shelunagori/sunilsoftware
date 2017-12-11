@@ -467,4 +467,34 @@ class PurchaseVouchersController extends AppController
 
         return $this->redirect(['action' => 'index']);
     }
+	
+	public function cancel($id = null)
+    {
+		// $this->request->allowMethod(['post', 'delete']);
+        $purchaseVoucher = $this->PurchaseVouchers->get($id, [
+            'contain' => ['PurchaseVoucherRows'=>['ReferenceDetails']]
+        ]);
+		$purchase_voucher_row_ids=[];
+		foreach($purchaseVoucher->purchase_voucher_rows as $purchase_voucher_row){
+			$purchase_voucher_row_ids[]=$purchase_voucher_row->id;
+		}
+		$company_id=$this->Auth->User('session_company_id');
+		$purchaseVoucher->status='cancel';
+        if ($this->PurchaseVouchers->save($purchaseVoucher)) {
+			
+				$deleteRefDetails = $this->PurchaseVouchers->PurchaseVoucherRows->ReferenceDetails->query();
+				$deleteRef = $deleteRefDetails->delete()
+					->where(['ReferenceDetails.purchase_voucher_row_id IN' => $purchase_voucher_row_ids])
+					->execute();
+				$deleteAccountEntries = $this->PurchaseVouchers->AccountingEntries->query();
+				$result = $deleteAccountEntries->delete()
+				->where(['AccountingEntries.purchase_voucher_id' => $purchaseVoucher->id])
+				->execute();
+			$this->Flash->success(__('The Purchase Vouchers has been cancelled.'));
+        } else {
+            $this->Flash->error(__('The Purchase Vouchers could not be cancelled. Please, try again.'));
+        }
+
+        return $this->redirect(['action' => 'index']);
+    }
 }

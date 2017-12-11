@@ -540,4 +540,34 @@ class CreditNotesController extends AppController
 
         return $this->redirect(['action' => 'index']);
     }
+	
+	public function cancel($id = null)
+    {
+		// $this->request->allowMethod(['post', 'delete']);
+        $creditNote = $this->CreditNotes->get($id, [
+            'contain' => ['CreditNoteRows'=>['ReferenceDetails']]
+        ]);
+		$debit_note_row_ids=[];
+		foreach($creditNote->credit_note_rows as $credit_note_row){
+			$credit_note_row_ids[]=$credit_note_row->id;
+		}
+		$company_id=$this->Auth->User('session_company_id');
+		$creditNote->status='cancel';
+        if ($this->CreditNotes->save($creditNote)) {
+			
+				$deleteRefDetails = $this->CreditNotes->CreditNoteRows->ReferenceDetails->query();
+				$deleteRef = $deleteRefDetails->delete()
+					->where(['ReferenceDetails.credit_note_row_id IN' => $credit_note_row_ids])
+					->execute();
+				$deleteAccountEntries = $this->CreditNotes->AccountingEntries->query();
+				$result = $deleteAccountEntries->delete()
+				->where(['AccountingEntries.credit_note_id' => $creditNote->id])
+				->execute();
+			$this->Flash->success(__('The Credit Notes has been cancelled.'));
+        } else {
+            $this->Flash->error(__('The Credit Notes could not be cancelled. Please, try again.'));
+        }
+
+        return $this->redirect(['action' => 'index']);
+    }
 }
