@@ -467,8 +467,6 @@ class ReceiptsController extends AppController
 
         return $this->redirect(['action' => 'index']);
     }
-	
-	
 	public function cancel($id = null)
     {
 		 $Receipts = $this->Receipts->get($id, [
@@ -486,7 +484,7 @@ class ReceiptsController extends AppController
 				$deleteRef = $deleteRefDetails->delete()
 					->where(['ReferenceDetails.receipt_row_id IN' => $receipt_row_ids])
 					->execute();
-				$deleteAccountEntries = $this->Receipts->ReceiptRows->query();
+				$deleteAccountEntries = $this->Receipts->AccountingEntries->query();
 				$result = $deleteAccountEntries->delete()
 				->where(['AccountingEntries.receipt_id' => $Receipts->id])
 				->execute();

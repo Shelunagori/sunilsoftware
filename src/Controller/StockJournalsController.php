@@ -230,16 +230,23 @@ class StockJournalsController extends AppController
      * @return \Cake\Http\Response|null Redirects to index.
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
-    public function delete($id = null)
+    public function cancel($id = null)
     {
-        $this->request->allowMethod(['post', 'delete']);
-        $stockJournal = $this->StockJournals->get($id);
-        if ($this->StockJournals->delete($stockJournal)) {
-            $this->Flash->success(__('The stock journal has been deleted.'));
+		$stockJournals = $this->StockJournals->get($id);
+		$company_id=$this->Auth->User('session_company_id');
+		$stockJournals->status='cancel';
+		
+        if ($this->StockJournals->save($stockJournals)) {
+			
+				$deleteItemLedgers = $this->StockJournals->ItemLedgers->query();
+				$result = $deleteItemLedgers->delete()
+				->where(['ItemLedgers.stock_journal_id' => $stockJournals->id])
+				->execute();
+				
+            $this->Flash->success(__('The Stock Journal has been cancelled.'));
         } else {
-            $this->Flash->error(__('The stock journal could not be deleted. Please, try again.'));
+            $this->Flash->error(__('The Stock Journal could not be deleted. Please, try again.'));
         }
-
         return $this->redirect(['action' => 'index']);
     }
 }

@@ -428,7 +428,7 @@ class PaymentsController extends AppController
 				$deleteRef = $deleteRefDetails->delete()
 					->where(['ReferenceDetails.payment_row_id IN' => $payment_row_ids])
 					->execute();
-				$deleteAccountEntries = $this->Payments->PaymentRows->query();
+				$deleteAccountEntries = $this->Payments->AccountingEntries->query();
 				$result = $deleteAccountEntries->delete()
 				->where(['AccountingEntries.payment_id' => $Payments->id])
 				->execute();

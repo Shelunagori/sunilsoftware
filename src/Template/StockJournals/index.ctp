@@ -36,6 +36,7 @@ $this->set('title', 'Stock Journals');
 								<th scope="col"><?= $this->Paginator->sort('transaction_date') ?></th>
 								<th scope="col"><?= $this->Paginator->sort('voucher_no') ?></th>
 								<th scope="col"><?= $this->Paginator->sort('reference_no') ?></th>
+								<th scope="col"><?= $this->Paginator->sort('Status') ?></th>
 								<th scope="col" class="actions"><?= __('Actions') ?></th>
 							</tr>
 						</thead>
@@ -46,11 +47,13 @@ $this->set('title', 'Stock Journals');
 								<td><?= h($stockJournal->transaction_date) ?></td>
 								<td><?= h('#'.str_pad($stockJournal->voucher_no, 4, '0', STR_PAD_LEFT)) ?></td>
 								<td><?= $stockJournal->reference_no ?></td>
+								<td class=""><?= h($stockJournal->status) ?></td>
 								<td class="actions">
 									<?= $this->Html->link(__('View'), ['action' => 'view', $stockJournal->id]) ?>
 									<?php if (in_array("54", $userPages)){?>
 									<?= $this->Html->link(__('Edit'), ['action' => 'edit', $stockJournal->id]) ?>
 									<?php }?>
+									<?= $this->Form->postLink(__('Cancel Bill'), ['action' => 'cancel', $stockJournal->id], ['style'=>'color:red;','confirm' => __('Are you sure you want to cancel # {0}?',h(str_pad($stockJournal->voucher_no, 3, '0', STR_PAD_LEFT)))]) ?>
 								</td>
 							</tr>
 							<?php endforeach; ?>
