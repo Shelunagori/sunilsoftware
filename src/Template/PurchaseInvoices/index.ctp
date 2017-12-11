@@ -39,8 +39,6 @@ $this->set('title', 'Purchase Invoice List');
 								<th scope="col"><?= $this->Paginator->sort('grn_voucher_no') ?></th>
 								<th scope="col"><?= $this->Paginator->sort('supplier_ledger') ?></th>
 								<th scope="col"><?= $this->Paginator->sort('transaction_date') ?></th>
-								<th scope="col"><?= $this->Paginator->sort('status') ?></th>
-								
 								<th scope="col" class="actions"><?= __('Actions') ?></th>
 							</tr>
 						</thead>
@@ -52,16 +50,14 @@ $this->set('title', 'Purchase Invoice List');
 								<td><?= h('#'.str_pad($purchaseInvoice->grn->voucher_no, 4, '0', STR_PAD_LEFT)) ?></td>
 								<td><?= h($purchaseInvoice->supplier_ledger->name) ?></td>
 								<td><?= h($purchaseInvoice->transaction_date) ?></td>
-								<td><?= h($purchaseInvoice->status) ?></td>
 								<td class="actions">
-
-								<?= $this->Html->link(__('View '), ['action' => 'view', $purchaseInvoice->id],['escape'=>false,'target'=>'_blank']) ?>&nbsp;&nbsp;
+									<?= $this->Html->link(__('View '), ['action' => 'view', $purchaseInvoice->id],['escape'=>false,'target'=>'_blank']) ?>&nbsp;&nbsp;
 									<?php if (in_array("12", $userPages)){?>
 									<?= $this->Html->link(__('Edit'), ['action' => 'edit', $purchaseInvoice->id]) ?>
 									<?php }?>&nbsp;&nbsp;
-									<?php if($purchaseInvoice->status != 'cancel'){ ?>
+									<!--<?php if($purchaseInvoice->status != 'cancel'){ ?>
 									<?= $this->Form->postLink(__('Cancel'), ['action' => 'cancel', $purchaseInvoice->id], ['style'=>'color:red;','confirm' => __('Are you sure you want to cancel # {0}?',h(str_pad($purchaseInvoice->voucher_no, 3, '0', STR_PAD_LEFT)))]) ?>
-									<?php } ?>
+									<?php } ?>-->
 								</td>
 							</tr>
 							<?php endforeach; ?>

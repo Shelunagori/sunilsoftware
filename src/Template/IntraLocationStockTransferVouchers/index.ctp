@@ -46,6 +46,7 @@
 								<th scope="col"><?= $this->Paginator->sort('transaction_date') ?></th>
 								<th scope="col"><?= $this->Paginator->sort('Transfer From Location') ?></th>
 								<th scope="col"><?= $this->Paginator->sort('Transfer To Location') ?></th>
+								<th scope="col"><?= $this->Paginator->sort('Status') ?></th>
                 <th scope="col" class="actions"><?= __('Actions') ?></th>
             </tr>
         </thead>
@@ -60,6 +61,7 @@
 				<td><?= h($intraLocationStockTransferVoucher->transaction_date) ?></td>
                 <td><?= h($intraLocationStockTransferVoucher->TransferFromLocations->name) ?></td>
                 <td><?= h($intraLocationStockTransferVoucher->TransferToLocations->name) ?></td>
+				<td><?= h($intraLocationStockTransferVoucher->cancel_status) ?></td>
                <td class="actions">
 			        <?php
 						if($status=='approved')
@@ -73,22 +75,26 @@
 						
 					?>
                     <?= $this->Html->link(__('View'), ['action' => @$view, $intraLocationStockTransferVoucher->id]) ?>
+					 <?php if($intraLocationStockTransferVoucher->cancel_status != 'cancel'){ ?>
 					<?php if(($status=='approved') && ($intraLocationStockTransferVoucher->transfer_to_location_id == $location_id)){ ?>
 						
 					<?php if (in_array("17", $userPages)){?>
 					<?=	 $this->Html->link(__('Edit'), ['action' => 'editApproved', $intraLocationStockTransferVoucher->id]); ?>
 					<?php }?>
-					 <?php }
-					 
+					 <?php }  ?>
+					<?= $this->Form->postLink(__('Cancel'), ['action' => 'cancel', $intraLocationStockTransferVoucher->id], ['style'=>'color:red;','confirm' => __('Are you sure you want to cancel # {0}?',h(str_pad($intraLocationStockTransferVoucher->voucher_no, 3, '0', STR_PAD_LEFT)))]) ?>
+					<?php
 					if(($status=='pending' || $status=="" || $status!='approved')&&($intraLocationStockTransferVoucher->transfer_from_location_id==$location_id)){ ?>
 					
 					<?php if (in_array("17", $userPages)){?>
 					<?= $this->Html->link(__('Edit'), ['action' => 'edit', $intraLocationStockTransferVoucher->id]); ?>
 					<?php } ?>
 					
-					<?php } ?>
+					 <?php } }?>
+					<?php if($intraLocationStockTransferVoucher->cancel_status != 'cancel'){ ?>
 					<?php if(($status=='pending' || $status=="" || $status!='approved') && ($intraLocationStockTransferVoucher->transfer_to_location_id==$location_id)){ ?>
 					<?= $this->Html->link(__('Approve'), ['action' => 'Approved', $intraLocationStockTransferVoucher->id]); } ?>
+					<?php } ?>
                 </td>
             </tr>
             <?php $i++; endforeach; ?>

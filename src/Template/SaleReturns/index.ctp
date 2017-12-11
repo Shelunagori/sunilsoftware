@@ -38,7 +38,6 @@ $this->set('title', 'Sales Invoice List');
 								<th scope="col"><?= $this->Paginator->sort('party_ledger_id') ?></th>
 								<th scope="col"><?= $this->Paginator->sort('transaction_date') ?></th>
 								<th scope="col"><?= $this->Paginator->sort('amount_after_tax') ?></th>
-								<th scope="col">Status</th>
 								<th scope="col" class="actions"><?= __('Actions') ?></th>
 							</tr>
 						</thead>
@@ -74,12 +73,12 @@ $this->set('title', 'Sales Invoice List');
 								<td><?= h($saleReturn->party_ledger->name) ?></td>
 								<td><?= h($saleReturn->transaction_date) ?></td>
 								<td class="rightAligntextClass"><?= h($saleReturn->amount_after_tax) ?></td>
-								<td><?= h($saleReturn->status) ?></td>
+								
 								<td class="actions">
 									<?= $this->Html->link(__('View Bill '), ['action' => 'sale_return_bill', $saleReturn->id],['escape'=>false,'target'=>'_blank']) ?>&nbsp;&nbsp;
-									<?php if($saleReturn->status != 'cancel'){ ?>
+									<!--<?php if($saleReturn->status != 'cancel'){ ?>
 									<?= $this->Form->postLink(__('Cancel Bill'), ['action' => 'cancel', $saleReturn->id], ['style'=>'color:red;','confirm' => __('Are you sure you want to cancel # {0}?',h(str_pad($saleReturn->voucher_no, 3, '0', STR_PAD_LEFT)))]) ?>
-									<?php } ?>
+									<?php } ?>-->
 								</td>
 							</tr>
 							<?php endforeach; ?>

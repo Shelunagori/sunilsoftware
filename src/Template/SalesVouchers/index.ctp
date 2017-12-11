@@ -51,10 +51,10 @@ $this->set('title', 'Sales Voucher List');
 									<td><?= h($salesVoucher->status) ?></td>
 									<td class="actions">
 										<?= $this->Html->link(__('View'), ['action' => 'view', $salesVoucher->id]) ?>
+										<?php if($salesVoucher->status != 'cancel'){ ?>
 										<?php if (in_array("30", $userPages)){?>
 										<?= $this->Html->link(__('Edit'), ['action' => 'edit', $salesVoucher->id]) ?>
 										<?php }?>
-										<?php if($salesVoucher->status != 'cancel'){ ?>
 										<?= $this->Form->postLink(__('Cancel'), ['action' => 'cancel', $salesVoucher->id], ['style'=>'color:red;','confirm' => __('Are you sure you want to cancel # {0}?',h(str_pad($salesVoucher->voucher_no, 3, '0', STR_PAD_LEFT)))]) ?>
 									<?php } ?>
 									</td>

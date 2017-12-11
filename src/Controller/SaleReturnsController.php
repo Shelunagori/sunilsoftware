@@ -23,15 +23,7 @@ class SaleReturnsController extends AppController
 		$this->viewBuilder()->layout('index_layout');
 		$company_id=$this->Auth->User('session_company_id');
 		$search=$this->request->query('search');
-		if(!empty($status))
-		{
-			$where = $status;
-		}
-		else
-		{
-			$where = '';
-		}
-        $saleReturns = $this->paginate($this->SaleReturns->find()->contain(['Companies',  'SalesLedgers', 'PartyLedgers', 'Locations', 'SalesInvoices'])->where(['SaleReturns.company_id'=>$company_id])->where([
+		 $saleReturns = $this->paginate($this->SaleReturns->find()->contain(['Companies',  'SalesLedgers', 'PartyLedgers', 'Locations', 'SalesInvoices'])->where(['SaleReturns.company_id'=>$company_id])->where([
 		'OR' => [
             'SalesInvoices.voucher_no' => $search,
             // ...
