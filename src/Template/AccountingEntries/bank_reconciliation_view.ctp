@@ -1,15 +1,41 @@
 <?php
+$url_excel="/?".$url; 
 /**
  * @Author: PHP Poets IT Solutions Pvt. Ltd.
  */
 $this->set('title', 'Bank Reconciliation');
 ?>
+
+
+<?php
+	if($status=='excel'){
+		$date= date("d-m-Y"); 
+	$time=date('h:i:a',time());
+
+	$filename="BankReconciliation_report_".$date.'_'.$time;
+	//$from_date=date('d-m-Y',strtotime($from_date));
+	//$to_date=date('d-m-Y',strtotime($to_date));
+	
+	header ("Expires: 0");
+	header ("Last-Modified: " . gmdate("D,d M YH:i:s") . " GMT");
+	header ("Cache-Control: no-cache, must-revalidate");
+	header ("Pragma: no-cache");
+	header ("Content-type: application/vnd.ms-excel");
+	header ("Content-Disposition: attachment; filename=".$filename.".xls");
+	header ("Content-Description: Generated Report" ); 
+	}
+
+ ?>
 <div class="row">
 	<div class="col-md-12">
 		<div class="portlet light bordered">
 			<div class="portlet-title">
+			<?php if($status!='excel'){ ?>
 				<div class="caption">
 					<i class="fa fa-cogs"></i>Bank Reconciliation
+				</div>
+				<div class="actions">
+					<?php echo $this->Html->link( '<i class="fa fa-file-excel-o"></i> Excel', '/accounting-entries/bankReconciliationView/'.@$url_excel.'&status=excel',['class' =>'btn btn-sm green tooltips pull-right','target'=>'_blank','escape'=>false,'data-original-title'=>'Download as excel']); ?>
 				</div>
 			</div>
 			<div class="portlet-body">
@@ -26,12 +52,14 @@ $this->set('title', 'Bank Reconciliation');
 							</div>
 							<div class="col-md-3">
 								<span class="input-group-btn">
-								<button class="btn blue" type="submit">Go</button>
+								<button class="btn btn-sm blue" type="submit">Go</button>
 								</span>
 							</div>	
 						</div>
 				</form>
+				<?php } ?>
 				<?php if($ledger_id){ ?>
+				<br/>
 				<div class="row">
 					<table class="table table-condensed table-hover table-bordered">
 						<thead>
@@ -147,7 +175,7 @@ $this->set('title', 'Bank Reconciliation');
 			
 				var url='".$this->Url->build(["controller" => "AccountingEntries", "action" => "reconciliationDateUpdate"])."';
 				url=url+'/'+accounting_entry_id+'/'+reconciliation_date,
-				alert(url);
+				
 				$.ajax({
 					url: url,
 				}).done(function(response) { 

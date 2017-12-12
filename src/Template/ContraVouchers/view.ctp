@@ -80,22 +80,13 @@ $this->set('title', 'Contra Voucher');
 				<th><?= __('Dr') ?></th>
 				<th><?= __('Cr') ?></th>
 			</tr>
-			<?php foreach($contraVouchercontra_voucher_rows as $contra_voucher_row)
+			<?php foreach($contraVoucher->contra_voucher_rows as $contra_voucher_row)
 				{ 
 					@$total_debit+=$contra_voucher_row->debit;
 					@$total_credit+=$contra_voucher_row->credit; ?>
 					<tr>
 					<td colspan="3" style="text-align:left"><b><?=$contra_voucher_row->ledger->name?></b>
-						<div class="window" style="margin:auto;"><table width="50%">
-							<?php foreach($contra_voucher_row->reference_details as $refdata)
-							{?><tr>
-							<td style="text-align:left"><?=$refdata->type?></td>
-							<td style="text-align:left"><?=$refdata->ref_name?></td>
-							<?php if($refdata->debit){ ?>
-							<td class="rightAligntextClass"><?=$refdata->debit?> Dr</td><?php } else {?>
-							<td class="rightAligntextClass"><?=$refdata->credit?> Cr</td><?php } ?></tr>
-							<?php } ?></table>
-						</div>
+						
 					</td>
 					<td ><?=$contra_voucher_row->debit?></td>
 					<td><?=$contra_voucher_row->credit?></td>

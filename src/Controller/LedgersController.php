@@ -603,18 +603,32 @@ class LedgersController extends AppController
 		
 		//purchasereturn
 		@$purchaseReturnLedgers=$this->Ledgers->AccountingEntries->find()
-		->where(['AccountingEntries.company_id'=>$company_id,'AccountingEntries.transaction_date >='=>$from_date, 'AccountingEntries.transaction_date <='=>$to_date,'AccountingEntries.purchase_return_id >'=>0,'AccountingEntries.debit >'=>0])->contain(['Ledgers'])
+		->where(['AccountingEntries.company_id'=>$company_id,'AccountingEntries.transaction_date >='=>$from_date, 'AccountingEntries.transaction_date <='=>$to_date,'AccountingEntries.purchase_return_id >'=>0,'AccountingEntries.debit >'=>0])->contain(['Ledgers','PurchaseReturns'])
 		->group('AccountingEntries.purchase_return_id')
 		->autoFields(true);
 		foreach($purchaseReturnLedgers->toArray() as $data)
 		{
 		$data->voucher_id=$data->purchase_return_id;
+		$data->voucher_no=$data->purchase_return->voucher_no;
 		$data->voucher_type='Purchase Returns';
 		$data->hlink='PurchaseReturns';
 		$data->haction='View';
 		}
+		//contra voucher
+		@$contraLedgers=$this->Ledgers->AccountingEntries->find()
+		->where(['AccountingEntries.company_id'=>$company_id,'AccountingEntries.transaction_date >='=>$from_date, 'AccountingEntries.transaction_date <='=>$to_date,'AccountingEntries.contra_voucher_id >'=>0,'AccountingEntries.debit >'=>0])->contain(['Ledgers','ContraVouchers'])
+		->group('AccountingEntries.contra_voucher_id')
+		->autoFields(true);
+		foreach($contraLedgers->toArray() as $data)
+		{
+		$data->voucher_id=$data->contra_voucher_id;
+		$data->voucher_no=$data->contra_voucher->voucher_no;
+		$data->voucher_type='Contra Voucher';
+		$data->hlink='ContraVouchers';
+		$data->haction='Edit';
+		}
 		
-		$day_book=array_merge([$salesInvoiceLedgers->toArray(),$purchaseInvoiceLedgers->toArray(),$paymentLedgers->toArray(),$receiptLedgers->toArray(),$creditNoteLedgers->toArray(),$debitNoteLedgers->toArray(),$journalVoucherLedgers->toArray(),$saleReturnLedgers->toArray(),$salesVoucherLedgers->toArray(),$purchaseVoucherLedgers->toArray(),$purchaseReturnLedgers->toArray()]);
+		$day_book=array_merge([$salesInvoiceLedgers->toArray(),$purchaseInvoiceLedgers->toArray(),$paymentLedgers->toArray(),$receiptLedgers->toArray(),$creditNoteLedgers->toArray(),$debitNoteLedgers->toArray(),$journalVoucherLedgers->toArray(),$saleReturnLedgers->toArray(),$salesVoucherLedgers->toArray(),$purchaseVoucherLedgers->toArray(),$purchaseReturnLedgers->toArray(),$contraLedgers->toArray()]);
 		
 		$this->set(compact('day_book','from_date','to_date','url','status'));
         $this->set('_serialize', ['day_book']);

@@ -51,11 +51,11 @@ $this->set('title', 'Journal Vouchers List');
 									<td class=""><?= h($journalVoucher->status) ?></td>
 									<td class="actions">
 										<?= $this->Html->link(__('View'), ['action' => 'view', $journalVoucher->id]) ?>
-										<?php if ($journalVoucher->status=='cancel'){?>
+										<?php if ($journalVoucher->status!='cancel'){?>
 										<?php if (in_array("48", $userPages)){?>
 										<?= $this->Html->link(__('Edit'), ['action' => 'edit', $journalVoucher->id]) ?>
 										<?php }?>
-										<?= $this->Form->postLink(__('Cancel Bill'), ['action' => 'cancel', $journalVoucher->id], ['style'=>'color:red;','confirm' => __('Are you sure you want to cancel # {0}?',h(str_pad($journalVoucher->voucher_no, 3, '0', STR_PAD_LEFT)))]) ?>
+										<?= $this->Form->postLink(__('Cancel'), ['action' => 'cancel', $journalVoucher->id], ['style'=>'color:red;','confirm' => __('Are you sure you want to cancel # {0}?',h(str_pad($journalVoucher->voucher_no, 3, '0', STR_PAD_LEFT)))]) ?>
 										<?php }?>
 									</td>
 								</tr>

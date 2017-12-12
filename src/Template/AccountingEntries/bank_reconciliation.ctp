@@ -11,6 +11,9 @@ $this->set('title', 'Bank Reconciliation');
 				<div class="caption">
 					<i class="fa fa-cogs"></i>Bank Reconciliation
 				</div>
+				<div class="actions">
+					<?php echo $this->Html->link('Bank Reconciliation View', '/accounting-entries/bankReconciliationView?from_date='.@$coreVariable["fyValidFrom"].'&to_date='.@$coreVariable["fyValidTo"],['escape' => false, 'class' =>'btn btn-sm green tooltips pull-right']); ?>
+				</div>
 			</div>
 			<div class="portlet-body">
 				<form method="get">
@@ -176,7 +179,7 @@ $this->set('title', 'Bank Reconciliation');
 				
 				var url='".$this->Url->build(["controller" => "AccountingEntries", "action" => "reconciliationDateUpdate"])."';
 				url=url+'/'+accounting_entry_id+'/'+reconciliation_date,
-				alert(url);
+				
 				$.ajax({
 					url: url,
 				}).done(function(response) { 

@@ -266,7 +266,7 @@ class ContraVouchersController extends AppController
 	public function cancel($id = null)
     {
         $contraVoucher = $this->ContraVouchers->get($id, [
-            'contain' => ['ContraVoucherRows'=>['ReferenceDetails']]
+            'contain' => ['ContraVoucherRows']
         ]);
 		$contra_voucher_row_ids=[];
 		foreach($contraVoucher->contra_voucher_rows as $contra_voucher_row){
@@ -276,11 +276,7 @@ class ContraVouchersController extends AppController
 		$contraVoucher->status='cancel';
         if ($this->ContraVouchers->save($contraVoucher)) {
 			
-				$deleteRefDetails = $this->ContraVouchers->ContraVoucherRows->ReferenceDetails->query();
-				$deleteRef = $deleteRefDetails->delete()
-					->where(['ReferenceDetails.contra_voucher_row_id IN' => $contra_voucher_row_ids])
-					->execute();
-				$deleteAccountEntries = $this->ContraVouchers->AccountingEntries->query();
+			$deleteAccountEntries = $this->ContraVouchers->AccountingEntries->query();
 				$result = $deleteAccountEntries->delete()
 				->where(['AccountingEntries.contra_voucher_id' => $contraVoucher->id])
 				->execute();

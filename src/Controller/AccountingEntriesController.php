@@ -115,7 +115,7 @@ class AccountingEntriesController extends AppController
 		}
 		
 		$query=$this->AccountingEntries->find();
-		$query->select(['ledger_id','totalDebit' => $query->func()->sum('AccountingEntries.debit'),'totalCredit' => $query->func()->sum('AccountingEntries.debit')])
+		$query->select(['ledger_id','totalDebit' => $query->func()->sum('AccountingEntries.debit'),'totalCredit' => $query->func()->sum('AccountingEntries.credit')])
 				->group('AccountingEntries.ledger_id')
 				->where(['AccountingEntries.company_id'=>$company_id])
 				->contain(['Ledgers'=>function($q){
@@ -165,12 +165,12 @@ class AccountingEntriesController extends AppController
 		}
 		
 		if($ledger_id){
-			$AccountingEntries=$this->AccountingEntries->find()->contain(['PurchaseVouchers'=>['PurchaseVoucherRows'=>['Ledgers']],'Payments'=>['PaymentRows'=>['Ledgers']],'SalesVouchers'=>['SalesVoucherRows'=>['Ledgers']],'Receipts'=>['ReceiptRows'=>['Ledgers']],'ContraVouchers'=>['ContraVoucherRows'=>['Ledgers']],'CreditNotes'=>['CreditNoteRows'=>['Ledgers']],'DebitNotes'=>['DebitNoteRows'=>['Ledgers']]])->where(['AccountingEntries.transaction_date <='=>$to_date,'AccountingEntries.ledger_id'=>$ledger_id,'AccountingEntries.reconciliation_date'=>'','AccountingEntries.company_id'=>$company_id]);
+			$AccountingEntries=$this->AccountingEntries->find()->contain(['PurchaseVouchers'=>['PurchaseVoucherRows'=>['Ledgers']],'Payments'=>['PaymentRows'=>['Ledgers']],'SalesVouchers'=>['SalesVoucherRows'=>['Ledgers']],'Receipts'=>['ReceiptRows'=>['Ledgers']],'ContraVouchers'=>['ContraVoucherRows'=>['Ledgers']],'CreditNotes'=>['CreditNoteRows'=>['Ledgers']],'DebitNotes'=>['DebitNoteRows'=>['Ledgers']]])->where(['AccountingEntries.transaction_date <='=>$to_date,'AccountingEntries.ledger_id'=>$ledger_id,'AccountingEntries.reconciliation_date'=>'0000-00-00','AccountingEntries.company_id'=>$company_id]);
 		
 			$query=$this->AccountingEntries->find();
 			$query->select(['ledger_id','totalDebit' => $query->func()->sum('AccountingEntries.debit'),'totalCredit' => $query->func()->sum('AccountingEntries.credit')])
 				->group('AccountingEntries.ledger_id')
-				->where(['AccountingEntries.company_id'=>$company_id,'AccountingEntries.transaction_date <='=>$to_date,'AccountingEntries.reconciliation_date !='=>'','AccountingEntries.ledger_id'=>$ledger_id])->orWhere(['AccountingEntries.company_id'=>$company_id,'AccountingEntries.transaction_date <='=>$to_date,'AccountingEntries.reconciliation_date'=>'','AccountingEntries.ledger_id'=>$ledger_id,'AccountingEntries.is_opening_balance'=>'yes']);
+				->where(['AccountingEntries.company_id'=>$company_id,'AccountingEntries.transaction_date <='=>$to_date,'AccountingEntries.reconciliation_date !='=>'0000-00-00','AccountingEntries.ledger_id'=>$ledger_id])->orWhere(['AccountingEntries.company_id'=>$company_id,'AccountingEntries.transaction_date <='=>$to_date,'AccountingEntries.reconciliation_date'=>'0000-00-00','AccountingEntries.ledger_id'=>$ledger_id,'AccountingEntries.is_opening_balance'=>'yes']);
 				$BankEnteries=$query->first();
 				$bank_credit=0; $bank_debit=0;
 				@$bank_remaining=$BankEnteries->totalDebit-$BankEnteries->totalCredit;
@@ -283,6 +283,14 @@ class AccountingEntriesController extends AppController
 	public function bankReconciliationView()
     {
 		$this->viewBuilder()->layout('index_layout');
+		$status=$this->request->query('status'); 
+		if(!empty($status)){ 
+			$this->viewBuilder()->layout('');	
+		}else{ 
+			$this->viewBuilder()->layout('index_layout');
+		}
+		$url=$this->request->here();
+		$url=parse_url($url,PHP_URL_QUERY);
         $company_id=$this->Auth->User('session_company_id');
 		$from_date=$this->request->query('from_date');
 		$to_date=$this->request->query('to_date');
@@ -299,7 +307,7 @@ class AccountingEntriesController extends AppController
 			$to_date="";
 		}
 		if($ledger_id){
-			$AccountingEntries=$this->AccountingEntries->find()->contain(['PurchaseVouchers'=>['PurchaseVoucherRows'=>['Ledgers']],'Payments'=>['PaymentRows'=>['Ledgers']],'SalesVouchers'=>['SalesVoucherRows'=>['Ledgers']],'Receipts'=>['ReceiptRows'=>['Ledgers']],'ContraVouchers'=>['ContraVoucherRows'=>['Ledgers']],'CreditNotes'=>['CreditNoteRows'=>['Ledgers']],'DebitNotes'=>['DebitNoteRows'=>['Ledgers']]])->where(['AccountingEntries.transaction_date >='=>$from_date,'AccountingEntries.transaction_date <='=>$to_date,'AccountingEntries.ledger_id'=>$ledger_id,'AccountingEntries.reconciliation_date !=' =>'','AccountingEntries.company_id'=>$company_id]);
+			$AccountingEntries=$this->AccountingEntries->find()->contain(['PurchaseVouchers'=>['PurchaseVoucherRows'=>['Ledgers']],'Payments'=>['PaymentRows'=>['Ledgers']],'SalesVouchers'=>['SalesVoucherRows'=>['Ledgers']],'Receipts'=>['ReceiptRows'=>['Ledgers']],'ContraVouchers'=>['ContraVoucherRows'=>['Ledgers']],'CreditNotes'=>['CreditNoteRows'=>['Ledgers']],'DebitNotes'=>['DebitNoteRows'=>['Ledgers']]])->where(['AccountingEntries.transaction_date >='=>$from_date,'AccountingEntries.transaction_date <='=>$to_date,'AccountingEntries.ledger_id'=>$ledger_id,'AccountingEntries.reconciliation_date !=' =>'0000-00-00','AccountingEntries.company_id'=>$company_id]);
 		
 			
 		foreach($AccountingEntries as $data){
@@ -394,7 +402,7 @@ class AccountingEntriesController extends AppController
 		foreach($Bankledgers as $Bankledger){
 		$bankOptions[]=['text' =>@$Bankledger->name, 'value' => $Bankledger->id];
 		}
-		$this->set(compact('from_date','to_date','ledger_id','bankOptions','AccountingEntries'));
+		$this->set(compact('from_date','to_date','ledger_id','bankOptions','AccountingEntries','url','status'));
 	}
     /**
      * View method
