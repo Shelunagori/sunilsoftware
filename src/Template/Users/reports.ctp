@@ -61,7 +61,7 @@ $this->set('title', 'Report Setup');
 				<?php if (in_array("24", $userPages)){?>
 					<div class="col-md-6">
 						<div class="list-group">
-							<?php echo $this->Html->link('Bank Reconciliation', '/accounting-entries/bankReconciliation?from_date='.@$coreVariable["fyValidFrom"].'&to_date='.@$coreVariable["fyValidTo"],['escape' => false, 'class'=>'list-group-item']); ?>
+							<?php echo $this->Html->link('Bank Reconciliation Add', '/accounting-entries/bankReconciliation?from_date='.@$coreVariable["fyValidFrom"].'&to_date='.@$coreVariable["fyValidTo"],['escape' => false, 'class'=>'list-group-item']); ?>
 						</div>
 					</div><?php }?>
 					<?php if (in_array("25", $userPages)){?>
