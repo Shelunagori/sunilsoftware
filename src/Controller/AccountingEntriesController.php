@@ -138,7 +138,7 @@ class AccountingEntriesController extends AppController
 			}
 		}
 		$GrossProfit= $this->GrossProfit($from_date,$to_date);
-		$closingValue= $this->StockValuation();
+		$closingValue= $this->StockValuationWithDate2($to_date);
 		$differenceInOpeningBalance= $this->differenceInOpeningBalance();
 		$this->set(compact('from_date','to_date', 'groupForPrint', 'GrossProfit', 'closingValue', 'differenceInOpeningBalance'));
 		
