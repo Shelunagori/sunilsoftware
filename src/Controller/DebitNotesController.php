@@ -87,6 +87,7 @@ class DebitNotesController extends AppController
 					}
 				}
 			}
+			//pr($debitNote);exit;
 		//transaction date for debit note code close here--
 
 		if ($this->DebitNotes->save($debitNote)) {
@@ -326,11 +327,11 @@ class DebitNotesController extends AppController
 			}
 			$this->DebitNotes->DebitNoteRows->ReferenceDetails->deleteAll(['ReferenceDetails.debit_note_row_id IN'=>$orignaldebit_note_ids]);
 			
-			$query_update = $this->DebitNotes->DebitNoteRows->query();
+			/* $query_update = $this->DebitNotes->DebitNoteRows->query();
 					$query_update->update()
 					->set(['mode_of_payment' => '', 'cheque_no' => '', 'cheque_date' => ''])
 					->where(['debit_note_id' => $debitNote->id])
-					->execute();
+					->execute(); */
 			//GET ORIGINAL DATA AND DELETE REFERENCE DATA//
 			
 		

@@ -357,6 +357,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			{	var SelectedTr=$(this).closest('tr.MainTr');
 				$(this).closest('tr').remove();
 				renameMainRows();
+				renameBankRows(SelectedTr);
 				renameRefRows(SelectedTr);
 			});
 			
@@ -450,6 +451,8 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 					windowContainer.html('');
 				}
 				renameMainRows();
+				renameBankRows(SelectedTr);
+
 			});
 			
 			$('.AddMainRow').die().live('click',function(){ 
@@ -521,7 +524,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				var row_no=SelectedTr.attr('row_no');
 				SelectedTr.find('td:nth-child(2) div.window table tbody tr').each(function(){
 					
-					var type = SelectedTr.find('td:nth-child(1) select.paymentType option:selected').val(); 
+					var type = $(this).find('td:nth-child(1) select.paymentType option:selected').val(); 
 					
 					$(this).find('td:nth-child(1) select.paymentType').attr({name:'credit_note_rows['+row_no+'][mode_of_payment]',id:'credit_note_rows-'+row_no+'-mode_of_payment'});
 					$(this).find('td:nth-child(2) input.cheque_no').attr({name:'credit_note_rows['+row_no+'][cheque_no]',id:'credit_note_rows-'+row_no+'-cheque_no'});

@@ -86,6 +86,11 @@ class PurchaseVouchersController extends AppController
 			$purchaseVoucher = $this->PurchaseVouchers->patchEntity($purchaseVoucher, $this->request->getData(), [
 							'associated' => ['PurchaseVoucherRows','PurchaseVoucherRows.ReferenceDetails']
 						]);
+						
+				//pr($purchaseVoucher);exit;		
+						
+						
+						
 			if(!empty($purchaseVoucher->supplier_invoice_date))
 			{
 				$purchaseVoucher->supplier_invoice_date = date("Y-m-d",strtotime($purchaseVoucher->supplier_invoice_date));
@@ -101,7 +106,7 @@ class PurchaseVouchersController extends AppController
 					}
 				}
 			}
-			//pr($purchaseVoucher);exit;
+			
 			if ($this->PurchaseVouchers->save($purchaseVoucher)) 
 			{
 				foreach($purchaseVoucher->purchase_voucher_rows as $purchase_voucher_row)

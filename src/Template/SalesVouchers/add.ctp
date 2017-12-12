@@ -483,6 +483,8 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 					var windowContainer=$(this).closest('td').find('div.window');
 					windowContainer.html('');
 				}
+				renameMainRows();
+				renameBankRows(SelectedTr);
 			});
 			
 			$('.AddMainRow').die().live('click',function(){ 

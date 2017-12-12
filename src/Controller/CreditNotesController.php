@@ -87,6 +87,7 @@ class CreditNotesController extends AppController
 					}
 				}
 			}
+			//pr($creditNote);exit;
 			//transaction date for credit note code close here--
 		 
             if ($this->CreditNotes->save($creditNote)) {
@@ -324,11 +325,11 @@ class CreditNotesController extends AppController
 				$orignalCreditNote_ids[]=$originalCreditNote_rows->id;
 			}
 			$this->CreditNotes->CreditNoteRows->ReferenceDetails->deleteAll(['ReferenceDetails.credit_note_row_id IN'=>$orignalCreditNote_ids]);
-			$query_update = $this->CreditNotes->CreditNoteRows->query();
+			/* $query_update = $this->CreditNotes->CreditNoteRows->query();
 					$query_update->update()
 					->set(['mode_of_payment' => '', 'cheque_no' => '', 'cheque_date' => ''])
 					->where(['credit_note_id' => $creditNote->id])
-					->execute();
+					->execute(); */
 			//GET ORIGINAL DATA AND DELETE REFERENCE DATA//
 			//exit;
 		

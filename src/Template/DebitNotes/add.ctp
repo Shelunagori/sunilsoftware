@@ -356,6 +356,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			{	var SelectedTr=$(this).closest('tr.MainTr');
 				$(this).closest('tr').remove();
 				renameMainRows();
+				renameBankRows(SelectedTr);
 				renameRefRows(SelectedTr);
 			});
 			
@@ -449,6 +450,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 					windowContainer.html('');
 				}
 					renameMainRows();
+					renameBankRows(SelectedTr);
 			});
 			
 			$('.AddMainRow').die().live('click',function(){ 
