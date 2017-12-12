@@ -38,7 +38,8 @@ class AccountingEntriesController extends AppController
 		$from_date = date("Y-m-d",strtotime($from_date));
 		$to_date= date("Y-m-d",strtotime($to_date));
 		
-		$AccountingGroups=$this->AccountingEntries->Ledgers->AccountingGroups->find()->where(['AccountingGroups.nature_of_group_id IN'=>[3,4],'AccountingGroups.company_id'=>$company_id]);
+		$AccountingGroups=$this->AccountingEntries->Ledgers->AccountingGroups->find()
+		->where(['AccountingGroups.nature_of_group_id IN'=>[3,4],'AccountingGroups.company_id'=>$company_id]);
 		$Groups=[];
 		foreach($AccountingGroups as $AccountingGroup){
 			$Groups[$AccountingGroup->id]['ids'][]=$AccountingGroup->id;
@@ -57,9 +58,9 @@ class AccountingEntriesController extends AppController
 		}
 		
 		$query=$this->AccountingEntries->find();
-		$query->select(['ledger_id','totalDebit' => $query->func()->sum('AccountingEntries.debit'),'totalCredit' => $query->func()->sum('AccountingEntries.debit')])
+		$query->select(['ledger_id','totalDebit' => $query->func()->sum('AccountingEntries.debit'),'totalCredit' => $query->func()->sum('AccountingEntries.credit')])
 				->group('AccountingEntries.ledger_id')
-				->where(['AccountingEntries.company_id'=>$company_id])
+				->where(['AccountingEntries.company_id'=>$company_id,'AccountingEntries.transaction_date >='=>$from_date, 'AccountingEntries.transaction_date <='=>$to_date])
 				->contain(['Ledgers'=>function($q){
 					return $q->select(['Ledgers.accounting_group_id','Ledgers.id']);
 				}]);
@@ -67,7 +68,6 @@ class AccountingEntriesController extends AppController
 			return $q->where(['Ledgers.accounting_group_id IN' => $AllGroups]);
 		});
 		$balanceOfLedgers=$query;
-		
 		$groupForPrint=[];
 		foreach($balanceOfLedgers as $balanceOfLedger){
 			foreach($Groups as $primaryGroup=>$Group){
@@ -80,9 +80,8 @@ class AccountingEntriesController extends AppController
 				@$groupForPrint[$primaryGroup]['nature']=$Group['nature'];
 			}
 		}
-		
 		$openingValue= $this->StockValuationWithDate($from_date);
-		$closingValue= $this->StockValuation();
+		$closingValue= $this->StockValuationWithDate2($to_date);
 		$this->set(compact('from_date','to_date', 'groupForPrint', 'closingValue', 'openingValue'));
 		
     }
