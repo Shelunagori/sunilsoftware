@@ -255,6 +255,10 @@ class PurchaseVouchersController extends AppController
         $purchaseVoucher = $this->PurchaseVouchers->get($id, [
             'contain' => ['PurchaseVoucherRows'=>['Ledgers','ReferenceDetails']]
         ]);
+		
+		
+		
+		
 		$company_id=$this->Auth->User('session_company_id');
 		$originalPurchaseVoucher=$purchaseVoucher;
         if ($this->request->is(['patch', 'post', 'put'])) {
@@ -267,10 +271,27 @@ class PurchaseVouchersController extends AppController
 			$this->PurchaseVouchers->PurchaseVoucherRows->ReferenceDetails->deleteAll(['ReferenceDetails.purchase_voucher_row_id IN'=>$orignalPurchase_voucher_row_ids]);
 			//GET ORIGINAL DATA AND DELETE REFERENCE DATA//
 			
+			/* $query_update = $this->PurchaseVouchers->PurchaseVoucherRows->query();
+					$query_update->update()
+					->set(['mode_of_payment' => '', 'cheque_no' => '', 'cheque_date' => ''])
+					->where(['purchase_voucher_id' => $purchaseVoucher->id])
+					->execute(); */
+			
+			
             $purchaseVoucher = $this->PurchaseVouchers->patchEntity($purchaseVoucher, $this->request->getData());
 			$purchaseVoucher = $this->PurchaseVouchers->patchEntity($purchaseVoucher, $this->request->getData(), [
 							'associated' => ['PurchaseVoucherRows','PurchaseVoucherRows.ReferenceDetails']
 						]);
+						
+						  
+						
+						//pr($purchaseVoucher->toArray());exit;
+			
+						
+						
+						
+						
+						
 			if(!empty($purchaseVoucher->supplier_invoice_date))
 			{
 				$purchaseVoucher->supplier_invoice_date = date("Y-m-d",strtotime($purchaseVoucher->supplier_invoice_date));
