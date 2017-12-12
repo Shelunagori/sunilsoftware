@@ -256,7 +256,7 @@ class AppController extends Controller
 		$query=$this->AccountingEntries->find();
 		$query->select(['ledger_id','totalDebit' => $query->func()->sum('AccountingEntries.debit'),'totalCredit' => $query->func()->sum('AccountingEntries.credit')])
 				->group('AccountingEntries.ledger_id')
-				->where(['AccountingEntries.company_id'=>$company_id])
+				->where(['AccountingEntries.company_id'=>$company_id,'AccountingEntries.transaction_date >='=>$from_date, 'AccountingEntries.transaction_date <='=>$to_date])
 				->contain(['Ledgers'=>function($q){
 					return $q->select(['Ledgers.accounting_group_id','Ledgers.id']);
 				}]);
@@ -271,8 +271,13 @@ class AppController extends Controller
 			$totalCr+=$balanceOfLedger->totalCredit;
 		}
 		
-		$openingValue= $this->StockValuationWithDate($from_date);
-		$closingValue= $this->StockValuation();
+		$company_id=$this->Auth->User('session_company_id');
+		
+		$this->loadModel('Companies');
+		$Company=$this->Companies->get($company_id);
+		
+		$openingValue= $this->StockValuationWithDate($Company->books_beginning_from);
+		$closingValue= $this->StockValuationWithDate2($to_date);
 		
 		$totalDr+=$openingValue;
 		$totalCr+=$closingValue;
@@ -288,6 +293,13 @@ class AppController extends Controller
 		foreach($Ledgers as $Ledger){
 			$output+=$Ledger->debit;
 			$output-=$Ledger->credit;
+		}
+		
+		$this->loadModel('ItemLedgers');
+		$ItemLedgers=$this->ItemLedgers->find()->where(['ItemLedgers.company_id'=>$company_id, 'ItemLedgers.is_opening_balance'=> 'yes']);
+		
+		foreach($ItemLedgers as $ItemLedger){
+			$output+=$ItemLedger->quantity*$ItemLedger->rate;
 		}
 		return $output;
 	}
