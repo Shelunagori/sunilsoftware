@@ -228,8 +228,17 @@ class LedgersController extends AppController
 	
 	public function trialBalance($id = null)
     {
+		
 		$this->viewBuilder()->layout('index_layout');
 		$ledger    = $this->Ledgers->newEntity();
+		$status=$this->request->query('status'); 
+		if(!empty($status)){ 
+			$this->viewBuilder()->layout('');	
+		}else{ 
+			$this->viewBuilder()->layout('index_layout');
+		}
+		$url=$this->request->here();
+		$url=parse_url($url,PHP_URL_QUERY);
 		$company_id=$this->Auth->User('session_company_id');
 		
 		$from_date = $this->request->query('from_date');
@@ -294,7 +303,7 @@ class LedgersController extends AppController
 		
 		
 		
-		$this->set(compact('ledger','from_date','to_date','TrialBalances','totalDebit'));
+		$this->set(compact('ledger','from_date','to_date','TrialBalances','totalDebit','status','url'));
         $this->set('_serialize', ['ledger']);
     }
 	

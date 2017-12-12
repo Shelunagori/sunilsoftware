@@ -239,7 +239,7 @@ class PaymentsController extends AppController
 			$payment = $this->Payments->patchEntity($payment, $this->request->getData(), [
 							'associated' => ['PaymentRows','PaymentRows.ReferenceDetails']
 						]);
-
+		
 			//transaction date for payment code start here--
 			foreach($payment->payment_rows as $payment_row)
 			{
