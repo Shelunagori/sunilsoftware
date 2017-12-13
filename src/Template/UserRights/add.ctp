@@ -32,12 +32,9 @@ $this->set('title', 'User Rights');
 								</div>
 						</div>
 					</div>
-					<div class="row">
-					<div class="col-md-12">
-					<div class="form-group userData">
 					
-					</div>
-					</div>
+					<div class="userData loading">
+					
 					</div>
 					<br><br>
 				<div class="row showButtons" style="display:none">
@@ -113,6 +110,7 @@ $this->set('title', 'User Rights');
 	$(document).ready(function(){
 		$('.getUser').die().live('change',function(){ 
 		var userid=$(this).val();
+		$('.loading').html('loading...');
 			var url='".$this->Url->build(["controller" => "UserRights", "action" => "ajaxUserRights"])."';
 			url=url+'/'+userid
 			$.ajax({
@@ -121,6 +119,7 @@ $this->set('title', 'User Rights');
 				//dataType: 'text'
 			}).done(function(response) {
 			//alert(response);
+			    $('.loading').val();
 				//var fetch=$.parseJSON(response);
 				$('.userData').html(response);
 				$('.showButtons').show();
@@ -186,12 +185,21 @@ $this->set('title', 'User Rights');
 	}";
 	
 	
+	
 	$js.="
 	$(document).ready(function() {
 	$('.quantity,.discount,.dis_amount').keypress(function(event) {
 			if ( event.which == 45 || event.which == 189 ) {
 			event.preventDefault();
 		}
-		}); });";
+		}); });
+		
+		function checkValidation()
+	{
+	        $('.submit').attr('disabled','disabled');
+	        $('.submit').text('Submiting...');
+    }
+		
+		";
 echo $this->Html->scriptBlock($js, array('block' => 'scriptBottom')); 
 ?>

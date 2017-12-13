@@ -92,15 +92,387 @@ class UserRightsController extends AppController
 					echo '
 					<div class="row"><div class="col-md-12"><div class="col-md-4"><h3 style="color:#000; font-size:15px; font-family:georgia"><input type="checkbox" class="checkAll" name="" value="" id="checkAll">Check All</h3></div></div></div>';
 					
+					            echo "<div class='row' style='color:#acb3b9; font-size:15px; font-family:georgia'><div class='col-md-12'><div class='form-group'><div class='col-md-6' style='color:#acb3b9; font-size:15px; font-family:georgia'><fieldset><legend>Dashboard</legend>";
 								 foreach($userData->toArray() as $data)
 								{ 
 							        if(!empty(@$data->user_rights[0]->page_id))
 									{?><?php $ckd='checked';?>
 									<?php } else {?>
-									<?php $ckd=' ';  ?>
+									<?php $ckd='  ';  ?>
 									<?php } 
-										echo "<div class='col-md-4 list-group-item' style='color:#acb3b9; font-size:15px; font-family:georgia'><input type='checkbox' name='page_id[]' value=".$data['id']." ".$ckd.">".$data['controller_name']." / ".$data['action']."</div>";
+										if($data['module_name']=='Dashboard'){echo "<input type='checkbox' name='page_id[]' value=".$data['id']." ".$ckd.">&nbsp;".$data['page_name']."";
+										}
 							    }
+								echo "</fieldset></div>";
+								
+								echo "<div class='col-md-6'><fieldset><legend>Sales Invoice</legend>";
+								 foreach($userData->toArray() as $data)
+								{ 
+							        if(!empty(@$data->user_rights[0]->page_id))
+									{?><?php $ckd='checked';?>
+									<?php } else {?>
+									<?php $ckd='  ';  ?>
+									<?php } 
+										if($data['module_name']=='Sales Invoice'){echo "<input type='checkbox' name='page_id[]' value=".$data['id']." ".$ckd.">&nbsp;".$data['page_name']."";
+										}
+							    }
+								echo "</fieldset></div></div></div></div><br>";
+								
+					/////////
+								echo "<div class='row' style='color:#acb3b9; font-size:15px; font-family:georgia'><div class='col-md-12'><div class='form-group'><div class='col-md-6' style='color:#acb3b9; font-size:15px; font-family:georgia'><fieldset><legend>Sales Return</legend>";
+								 foreach($userData->toArray() as $data)
+								{ 
+							        if(!empty(@$data->user_rights[0]->page_id))
+									{?><?php $ckd='checked';?>
+									<?php } else {?>
+									<?php $ckd='  ';  ?>
+									<?php } 
+										if($data['module_name']=='Sales Return'){echo "<input type='checkbox' name='page_id[]' value=".$data['id']." ".$ckd.">&nbsp;".$data['page_name']."";
+										}
+							    }
+								echo "</fieldset></div>";
+								
+								echo "<div class='col-md-6'><fieldset><legend>Grn</legend>";
+								 foreach($userData->toArray() as $data)
+								{ 
+							        if(!empty(@$data->user_rights[0]->page_id))
+									{?><?php $ckd='checked';?>
+									<?php } else {?>
+									<?php $ckd='  ';  ?>
+									<?php } 
+										if($data['module_name']=='Grn'){echo "<input type='checkbox' name='page_id[]' value=".$data['id']." ".$ckd.">&nbsp;".$data['page_name']."";
+										}
+							    }
+								echo "</fieldset></div></div></div></div><br>";
+								
+								/////////
+								echo "<div class='row' style='color:#acb3b9; font-size:15px; font-family:georgia'><div class='col-md-12'><div class='form-group'><div class='col-md-6' style='color:#acb3b9; font-size:15px; font-family:georgia'><fieldset><legend>Purchase Invoice</legend>";
+								 foreach($userData->toArray() as $data)
+								{ 
+							        if(!empty(@$data->user_rights[0]->page_id))
+									{?><?php $ckd='checked';?>
+									<?php } else {?>
+									<?php $ckd='  ';  ?>
+									<?php } 
+										if($data['module_name']=='Purchase Invoice'){echo "<input type='checkbox' name='page_id[]' value=".$data['id']." ".$ckd.">&nbsp;".$data['page_name']."";
+										}
+							    }
+								echo "</fieldset></div>";
+								
+								echo "<div class='col-md-6'><fieldset><legend>Purchase Return</legend>";
+								 foreach($userData->toArray() as $data)
+								{ 
+							        if(!empty(@$data->user_rights[0]->page_id))
+									{?><?php $ckd='checked';?>
+									<?php } else {?>
+									<?php $ckd='  ';  ?>
+									<?php } 
+										if($data['module_name']=='Purchase Return'){echo "<input type='checkbox' name='page_id[]' value=".$data['id']." ".$ckd.">&nbsp;".$data['page_name']."";
+										}
+							    }
+								echo "</fieldset></div></div></div></div><br>";
+						
+								
+								/////////
+								echo "<div class='row' style='color:#acb3b9; font-size:15px; font-family:georgia'><div class='col-md-12'><div class='form-group'><div class='col-md-6' style='color:#acb3b9; font-size:15px; font-family:georgia'><fieldset><legend>Intra Location Transfer</legend>";
+								 foreach($userData->toArray() as $data)
+								{ 
+							        if(!empty(@$data->user_rights[0]->page_id))
+									{?><?php $ckd='checked';?>
+									<?php } else {?>
+									<?php $ckd='  ';  ?>
+									<?php } 
+										if($data['module_name']=='Intra Location Transfer'){echo "<input type='checkbox' name='page_id[]' value=".$data['id']." ".$ckd.">&nbsp;".$data['page_name']."";
+										}
+							    }
+								echo "</fieldset></div>";
+								
+								echo "<div class='col-md-6'><fieldset><legend>Generate Item Barcode</legend>";
+								 foreach($userData->toArray() as $data)
+								{ 
+							        if(!empty(@$data->user_rights[0]->page_id))
+									{?><?php $ckd='checked';?>
+									<?php } else {?>
+									<?php $ckd='  ';  ?>
+									<?php } 
+										if($data['module_name']=='Generate Item Barcode'){echo "<input type='checkbox' name='page_id[]' value=".$data['id']." ".$ckd.">&nbsp;".$data['page_name']."";
+										}
+							    }
+								echo "</fieldset></div></div></div></div><br>";
+
+								
+								/////////
+								echo "<div class='row' style='color:#acb3b9; font-size:15px; font-family:georgia'><div class='col-md-12'><div class='form-group'><div class='col-md-12' style='color:#acb3b9; font-size:15px; font-family:georgia'><fieldset><legend>Report</legend>";
+								 foreach($userData->toArray() as $data)
+								{ 
+							        if(!empty(@$data->user_rights[0]->page_id))
+									{?><?php $ckd='checked';?>
+									<?php } else {?>
+									<?php $ckd='  ';  ?>
+									<?php } 
+										if($data['module_name']=='Report'){echo "<input type='checkbox' name='page_id[]' value=".$data['id']." ".$ckd.">&nbsp;".$data['page_name']."&nbsp;";
+										}
+							    }
+								echo "</fieldset></div></div></div></div><br>";
+								
+								/////////
+								echo "<div class='row' style='color:#acb3b9; font-size:15px; font-family:georgia'><div class='col-md-12'><div class='form-group'><div class='col-md-6' style='color:#acb3b9; font-size:15px; font-family:georgia'><fieldset><legend>Sales Voucher</legend>";
+								 foreach($userData->toArray() as $data)
+								{ 
+							        if(!empty(@$data->user_rights[0]->page_id))
+									{?><?php $ckd='checked';?>
+									<?php } else {?>
+									<?php $ckd='  ';  ?>
+									<?php } 
+										if($data['module_name']=='Sales Voucher'){echo "<input type='checkbox' name='page_id[]' value=".$data['id']." ".$ckd.">&nbsp;".$data['page_name']."";
+										}
+							    }
+								echo "</fieldset></div>";
+								
+								echo "<div class='col-md-6'><fieldset><legend>Purchase Voucher</legend>";
+								 foreach($userData->toArray() as $data)
+								{ 
+							        if(!empty(@$data->user_rights[0]->page_id))
+									{?><?php $ckd='checked';?>
+									<?php } else {?>
+									<?php $ckd='  ';  ?>
+									<?php } 
+										if($data['module_name']=='Purchase Voucher'){echo "<input type='checkbox' name='page_id[]' value=".$data['id']." ".$ckd.">&nbsp;".$data['page_name']."";
+										}
+							    }
+								echo "</fieldset></div></div></div></div><br>";
+
+								
+								/////////
+								echo "<div class='row' style='color:#acb3b9; font-size:15px; font-family:georgia'><div class='col-md-12'><div class='form-group'><div class='col-md-6' style='color:#acb3b9; font-size:15px; font-family:georgia'><fieldset><legend>Credit Note Voucher</legend>";
+								 foreach($userData->toArray() as $data)
+								{ 
+							        if(!empty(@$data->user_rights[0]->page_id))
+									{?><?php $ckd='checked';?>
+									<?php } else {?>
+									<?php $ckd='  ';  ?>
+									<?php } 
+										if($data['module_name']=='Credit Note Voucher'){echo "<input type='checkbox' name='page_id[]' value=".$data['id']." ".$ckd.">&nbsp;".$data['page_name']."";
+										}
+							    }
+								echo "</fieldset></div>";
+								
+								echo "<div class='col-md-6'><fieldset><legend>Debit Note Voucher</legend>";
+								 foreach($userData->toArray() as $data)
+								{ 
+							        if(!empty(@$data->user_rights[0]->page_id))
+									{?><?php $ckd='checked';?>
+									<?php } else {?>
+									<?php $ckd='  ';  ?>
+									<?php } 
+										if($data['module_name']=='Debit Note Voucher'){echo "<input type='checkbox' name='page_id[]' value=".$data['id']." ".$ckd.">&nbsp;".$data['page_name']."";
+										}
+							    }
+								echo "</fieldset></div></div></div></div><br>";
+								
+								
+								/////////
+								echo "<div class='row' style='color:#acb3b9; font-size:15px; font-family:georgia'><div class='col-md-12'><div class='form-group'><div class='col-md-6' style='color:#acb3b9; font-size:15px; font-family:georgia'><fieldset><legend>Receipt Voucher</legend>";
+								 foreach($userData->toArray() as $data)
+								{ 
+							        if(!empty(@$data->user_rights[0]->page_id))
+									{?><?php $ckd='checked';?>
+									<?php } else {?>
+									<?php $ckd='  ';  ?>
+									<?php } 
+										if($data['module_name']=='Receipt Voucher'){echo "<input type='checkbox' name='page_id[]' value=".$data['id']." ".$ckd.">&nbsp;".$data['page_name']."";
+										}
+							    }
+								echo "</fieldset></div>";
+								
+								echo "<div class='col-md-6'><fieldset><legend>Payment Voucher</legend>";
+								 foreach($userData->toArray() as $data)
+								{ 
+							        if(!empty(@$data->user_rights[0]->page_id))
+									{?><?php $ckd='checked';?>
+									<?php } else {?>
+									<?php $ckd='  ';  ?>
+									<?php } 
+										if($data['module_name']=='Payment Voucher'){echo "<input type='checkbox' name='page_id[]' value=".$data['id']." ".$ckd.">&nbsp;".$data['page_name']."";
+										}
+							    }
+								echo "</fieldset></div></div></div></div><br>";
+
+								/////////
+								echo "<div class='row' style='color:#acb3b9; font-size:15px; font-family:georgia'><div class='col-md-12'><div class='form-group'><div class='col-md-6' style='color:#acb3b9; font-size:15px; font-family:georgia'><fieldset><legend>Journal Voucher</legend>";
+								 foreach($userData->toArray() as $data)
+								{ 
+							        if(!empty(@$data->user_rights[0]->page_id))
+									{?><?php $ckd='checked';?>
+									<?php } else {?>
+									<?php $ckd='  ';  ?>
+									<?php } 
+										if($data['module_name']=='Journal Voucher'){echo "<input type='checkbox' name='page_id[]' value=".$data['id']." ".$ckd.">&nbsp;".$data['page_name']."";
+										}
+							    }
+								echo "</fieldset></div>";
+								
+								echo "<div class='col-md-6'><fieldset><legend>Contra Voucher</legend>";
+								 foreach($userData->toArray() as $data)
+								{ 
+							        if(!empty(@$data->user_rights[0]->page_id))
+									{?><?php $ckd='checked';?>
+									<?php } else {?>
+									<?php $ckd='  ';  ?>
+									<?php } 
+										if($data['module_name']=='Contra Voucher'){echo "<input type='checkbox' name='page_id[]' value=".$data['id']." ".$ckd.">&nbsp;".$data['page_name']."";
+										}
+							    }
+								echo "</fieldset></div></div></div></div><br>";
+								
+								/////////
+								echo "<div class='row' style='color:#acb3b9; font-size:15px; font-family:georgia'><div class='col-md-12'><div class='form-group'><div class='col-md-6' style='color:#acb3b9; font-size:15px; font-family:georgia'><fieldset><legend>Stock Journal Voucher</legend>";
+								 foreach($userData->toArray() as $data)
+								{ 
+							        if(!empty(@$data->user_rights[0]->page_id))
+									{?><?php $ckd='checked';?>
+									<?php } else {?>
+									<?php $ckd='  ';  ?>
+									<?php } 
+										if($data['module_name']=='Stock Journal Voucher'){echo "<input type='checkbox' name='page_id[]' value=".$data['id']." ".$ckd.">&nbsp;".$data['page_name']."";
+										}
+							    }
+								echo "</fieldset></div>";
+								
+								echo "<div class='col-md-6'><fieldset><legend>Stock Group</legend>";
+								 foreach($userData->toArray() as $data)
+								{ 
+							        if(!empty(@$data->user_rights[0]->page_id))
+									{?><?php $ckd='checked';?>
+									<?php } else {?>
+									<?php $ckd='  ';  ?>
+									<?php } 
+										if($data['module_name']=='Stock Group'){echo "<input type='checkbox' name='page_id[]' value=".$data['id']." ".$ckd.">&nbsp;".$data['page_name']."";
+										}
+							    }
+								echo "</fieldset></div></div></div></div><br>";
+								
+								/////////
+								echo "<div class='row' style='color:#acb3b9; font-size:15px; font-family:georgia'><div class='col-md-12'><div class='form-group'><div class='col-md-6' style='color:#acb3b9; font-size:15px; font-family:georgia'><fieldset><legend>Item</legend>";
+								 foreach($userData->toArray() as $data)
+								{ 
+							        if(!empty(@$data->user_rights[0]->page_id))
+									{?><?php $ckd='checked';?>
+									<?php } else {?>
+									<?php $ckd='  ';  ?>
+									<?php } 
+										if($data['module_name']=='Item'){echo "<input type='checkbox' name='page_id[]' value=".$data['id']." ".$ckd.">&nbsp;".$data['page_name']."";
+										}
+							    }
+								echo "</fieldset></div>";
+								
+								echo "<div class='col-md-6'><fieldset><legend>Shades</legend>";
+								 foreach($userData->toArray() as $data)
+								{ 
+							        if(!empty(@$data->user_rights[0]->page_id))
+									{?><?php $ckd='checked';?>
+									<?php } else {?>
+									<?php $ckd='  ';  ?>
+									<?php } 
+										if($data['module_name']=='Shades'){echo "<input type='checkbox' name='page_id[]' value=".$data['id']." ".$ckd.">&nbsp;".$data['page_name']."";
+										}
+							    }
+								echo "</fieldset></div></div></div></div><br>";
+								
+								/////////
+								echo "<div class='row' style='color:#acb3b9; font-size:15px; font-family:georgia'><div class='col-md-12'><div class='form-group'><div class='col-md-6' style='color:#acb3b9; font-size:15px; font-family:georgia'><fieldset><legend>Unit</legend>";
+								 foreach($userData->toArray() as $data)
+								{ 
+							        if(!empty(@$data->user_rights[0]->page_id))
+									{?><?php $ckd='checked';?>
+									<?php } else {?>
+									<?php $ckd='  ';  ?>
+									<?php } 
+										if($data['module_name']=='Unit'){echo "<input type='checkbox' name='page_id[]' value=".$data['id']." ".$ckd.">&nbsp;".$data['page_name']."";
+										}
+							    }
+								echo "</fieldset></div>";
+								
+								echo "<div class='col-md-6'><fieldset><legend>Size</legend>";
+								 foreach($userData->toArray() as $data)
+								{ 
+							        if(!empty(@$data->user_rights[0]->page_id))
+									{?><?php $ckd='checked';?>
+									<?php } else {?>
+									<?php $ckd='  ';  ?>
+									<?php } 
+										if($data['module_name']=='Size'){echo "<input type='checkbox' name='page_id[]' value=".$data['id']." ".$ckd.">&nbsp;".$data['page_name']."";
+										}
+							    }
+								echo "</fieldset></div></div></div></div><br>";
+								
+								/////////
+								echo "<div class='row' style='color:#acb3b9; font-size:15px; font-family:georgia'><div class='col-md-12'><div class='form-group'><div class='col-md-6' style='color:#acb3b9; font-size:15px; font-family:georgia'><fieldset><legend>Accounting Group</legend>";
+								 foreach($userData->toArray() as $data)
+								{ 
+							        if(!empty(@$data->user_rights[0]->page_id))
+									{?><?php $ckd='checked';?>
+									<?php } else {?>
+									<?php $ckd='  ';  ?>
+									<?php } 
+										if($data['module_name']=='Accounting Group'){echo "<input type='checkbox' name='page_id[]' value=".$data['id']." ".$ckd.">&nbsp;".$data['page_name']."";
+										}
+							    }
+								echo "</fieldset></div>";
+								
+								echo "<div class='col-md-6'><fieldset><legend>Ledgers</legend>";
+								 foreach($userData->toArray() as $data)
+								{ 
+							        if(!empty(@$data->user_rights[0]->page_id))
+									{?><?php $ckd='checked';?>
+									<?php } else {?>
+									<?php $ckd='  ';  ?>
+									<?php } 
+										if($data['module_name']=='Ledgers'){echo "<input type='checkbox' name='page_id[]' value=".$data['id']." ".$ckd.">&nbsp;".$data['page_name']."";
+										}
+							    }
+								echo "</fieldset></div></div></div></div><br>";
+								
+								/////////
+								echo "<div class='row' style='color:#acb3b9; font-size:15px; font-family:georgia'><div class='col-md-12'><div class='form-group'><div class='col-md-6' style='color:#acb3b9; font-size:15px; font-family:georgia'><fieldset><legend>Customer</legend>";
+								 foreach($userData->toArray() as $data)
+								{ 
+							        if(!empty(@$data->user_rights[0]->page_id))
+									{?><?php $ckd='checked';?>
+									<?php } else {?>
+									<?php $ckd='  ';  ?>
+									<?php } 
+										if($data['module_name']=='Customer'){echo "<input type='checkbox' name='page_id[]' value=".$data['id']." ".$ckd.">&nbsp;".$data['page_name']."";
+										}
+							    }
+								echo "</fieldset></div>";
+								
+								echo "<div class='col-md-6'><fieldset><legend>Supplier</legend>";
+								 foreach($userData->toArray() as $data)
+								{ 
+							        if(!empty(@$data->user_rights[0]->page_id))
+									{?><?php $ckd='checked';?>
+									<?php } else {?>
+									<?php $ckd='  ';  ?>
+									<?php } 
+										if($data['module_name']=='Supplier'){echo "<input type='checkbox' name='page_id[]' value=".$data['id']." ".$ckd.">&nbsp;".$data['page_name']."";
+										}
+							    }
+								echo "</fieldset></div></div></div></div><br>";
+								
+								/////////
+								echo "<div class='row' style='color:#acb3b9; font-size:15px; font-family:georgia'><div class='col-md-12'><div class='form-group'><div class='col-md-6' style='color:#acb3b9; font-size:15px; font-family:georgia'><fieldset><legend>User Rights</legend>";
+								 foreach($userData->toArray() as $data)
+								{ 
+							        if(!empty(@$data->user_rights[0]->page_id))
+									{?><?php $ckd='checked';?>
+									<?php } else {?>
+									<?php $ckd='  ';  ?>
+									<?php } 
+										if($data['module_name']=='User Rights'){echo "<input type='checkbox' name='page_id[]' value=".$data['id']." ".$ckd.">&nbsp;".$data['page_name']."";
+										}
+							    }
+								echo "</fieldset></div></div></div></div>";
 						exit;
 }
 
