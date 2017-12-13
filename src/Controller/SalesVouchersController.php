@@ -256,6 +256,11 @@ class SalesVouchersController extends AppController
 			}
 			$this->SalesVouchers->SalesVoucherRows->ReferenceDetails->deleteAll(['ReferenceDetails.sales_voucher_row_id IN'=>$orignalSales_voucher_row_ids]);
 			//GET ORIGINAL DATA AND DELETE REFERENCE DATA//
+			$query_update = $this->SalesVouchers->SalesVoucherRows->query();
+					$query_update->update()
+					->set(['mode_of_payment' => '', 'cheque_no' => '', 'cheque_date' => ''])
+					->where(['sales_voucher_id' => $salesVoucher->id])
+					->execute();
 			
 			$this->request->data['transaction_date'] = date("Y-m-d",strtotime($this->request->getData()['transaction_date']));
            

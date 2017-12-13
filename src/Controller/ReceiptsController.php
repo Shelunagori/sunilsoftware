@@ -231,12 +231,12 @@ class ReceiptsController extends AppController
 			
 			//GET ORIGINAL DATA AND DELETE REFERENCE DATA//
 			
-			/* $query_update = $this->Receipts->ReceiptRows->query();
+			 $query_update = $this->Receipts->ReceiptRows->query();
 					$query_update->update()
 					->set(['mode_of_payment' => '', 'cheque_no' => '', 'cheque_date' => ''])
 					->where(['receipt_id' => $receipt->id])
 					->execute();
-					 */
+					
 		$receipt = $this->Receipts->patchEntity($receipt, $this->request->getData(),['associated' => ['ReceiptRows','ReceiptRows.ReferenceDetails']]);
 
 		
