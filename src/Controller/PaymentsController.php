@@ -217,110 +217,7 @@ class PaymentsController extends AppController
         $payment = $this->Payments->get($id, [
             'contain' => ['PaymentRows'=>['ReferenceDetails']]
         ]);
-		
-		
-		$originalPayment=$payment;
-        if ($this->request->is(['patch', 'post', 'put'])) {
-		
-		//GET ORIGINAL DATA AND DELETE REFERENCE DATA//
-			$orignalPayment_ids=[];
-			foreach($originalPayment->payment_rows as $originalPayment_rows){
-				$orignalPayment_ids[]=$originalPayment_rows->id;
-			}
-			$this->Payments->PaymentRows->ReferenceDetails->deleteAll(['ReferenceDetails.payment_row_id IN'=>$orignalPayment_ids]);
-			$query_update = $this->Payments->PaymentRows->query();
-					$query_update->update()
-					->set(['mode_of_payment' => '', 'cheque_no' => '', 'cheque_date' => ''])
-					->where(['payment_id' => $payment->id])
-					->execute();
-			//GET ORIGINAL DATA AND DELETE REFERENCE DATA//
-			
-		
-			$payment = $this->Payments->patchEntity($payment, $this->request->getData(), [
-							'associated' => ['PaymentRows','PaymentRows.ReferenceDetails']
-						]);
-		
-			//transaction date for payment code start here--
-			foreach($payment->payment_rows as $payment_row)
-			{
-				if(!empty($payment_row->reference_details))
-				{
-					foreach($payment_row->reference_details as $reference_detail)
-					{
-						$reference_detail->transaction_date = $payment->transaction_date;
-					}
-				}
-			}
-            if ($this->Payments->save($payment)) {
-			
-			$query_delete = $this->Payments->AccountingEntries->query();
-					$query_delete->delete()
-					->where(['payment_id' => $payment->id,'company_id'=>$company_id])
-					->execute();
-					
-			foreach($payment->payment_rows as $payment_row)
-				{
-					$accountEntry = $this->Payments->AccountingEntries->newEntity();
-					$accountEntry->ledger_id                  = $payment_row->ledger_id;
-					$accountEntry->debit                      = @$payment_row->debit;
-					$accountEntry->credit                     = @$payment_row->credit;
-					$accountEntry->transaction_date           = $payment->transaction_date;
-					$accountEntry->company_id                 = $company_id;
-					$accountEntry->payment_id                 = $payment->id;
-					$accountEntry->payment_row_id             = $payment_row->id;
-					$this->Payments->AccountingEntries->save($accountEntry);
-				}
-				
-				
-                $this->Flash->success(__('The payment has been updated.'));
-				$this->repairRef();
-
-                return $this->redirect(['action' => 'index']);
-            }
-            $this->Flash->error(__('The payment could not be saved. Please, try again.'));
-        }
-		
-		$refDropDown =[];
-		foreach($payment->payment_rows as $payment_row)
-		{
-			if(!empty($payment_row->reference_details))
-			{
-				foreach($payment_row->reference_details as $referenceDetailRows)
-				{
-					@$ref_details_name[]=$referenceDetailRows->ref_name;
-				}
-				$query = $this->Payments->PaymentRows->ReferenceDetails->find();
-				$query->select(['total_debit' => $query->func()->sum('ReferenceDetails.debit'),'total_credit' => $query->func()->sum('ReferenceDetails.credit')])
-				->where(['ReferenceDetails.ledger_id'=>$payment_row->ledger_id,'ReferenceDetails.type !='=>'On Account'])
-				->group(['ReferenceDetails.ref_name'])
-				->autoFields(true);
-				$referenceDetails=$query;
-				$option=[];
-				foreach($referenceDetails as $referenceDetail){
-					$remider=$referenceDetail->total_debit-$referenceDetail->total_credit;
-					if($remider>0){
-						$bal=abs($remider).' Dr';
-					}else if($remider<0){
-						$bal=abs($remider).' Cr';
-					}
-					if($referenceDetail->total_debit!=$referenceDetail->total_credit  || in_array($referenceDetail->ref_name,$ref_details_name)){
-						$option[] =['text' =>$referenceDetail->ref_name.' ('.$bal.')', 'value' => $referenceDetail->ref_name];
-					}
-				}
-				$refDropDown[$payment_row->id] = $option;
-			}
-		}
-       $Voucher = $this->Payments->find()->select(['voucher_no'])->where(['company_id'=>$company_id])->order(['voucher_no' => 'DESC'])->first();
-		if($Voucher)
-		{
-			$voucher_no=$Voucher->voucher_no+1;
-		}
-		else
-		{ 
-			$voucher_no=1;
-		} 
-		
-		//bank group
+			//bank group
 		$bankParentGroups = $this->Payments->PaymentRows->Ledgers->AccountingGroups->find()
 						->where(['AccountingGroups.company_id'=>$company_id, 'AccountingGroups.bank'=>'1']);
 						
@@ -370,6 +267,120 @@ class PaymentsController extends AppController
 		$partyLedgers = $this->Payments->PaymentRows->Ledgers->find()
 		->where(['Ledgers.accounting_group_id IN' =>$partyGroups,'Ledgers.company_id'=>$company_id]);
 		
+		
+		$originalPayment=$payment;
+        if ($this->request->is(['patch', 'post', 'put'])) {
+		
+		//GET ORIGINAL DATA AND DELETE REFERENCE DATA//
+			$orignalPayment_ids=[];
+			foreach($originalPayment->payment_rows as $originalPayment_rows){
+				$orignalPayment_ids[]=$originalPayment_rows->id;
+			}
+			$this->Payments->PaymentRows->ReferenceDetails->deleteAll(['ReferenceDetails.payment_row_id IN'=>$orignalPayment_ids]);
+			/*$query_update = $this->Payments->PaymentRows->query();
+					$query_update->update()
+					->set(['mode_of_payment' => '', 'cheque_no' => '', 'cheque_date' => ''])
+					->where(['payment_id' => $originalPayment->id])
+					->execute();*/
+			//GET ORIGINAL DATA AND DELETE REFERENCE DATA//
+			$payment = $this->Payments->patchEntity($payment, $this->request->getData(), [
+							'associated' => ['PaymentRows','PaymentRows.ReferenceDetails']
+						]);
+		
+			//transaction date for payment code start here--
+			foreach($payment->payment_rows as $payment_row)
+			{
+
+				if(!empty($payment_row->reference_details))
+				{
+					foreach($payment_row->reference_details as $reference_detail)
+					{
+						$reference_detail->transaction_date = $payment->transaction_date;
+					}
+				}
+			}
+            if ($this->Payments->save($payment)) {
+			
+			$query_delete = $this->Payments->AccountingEntries->query();
+					$query_delete->delete()
+					->where(['payment_id' => $payment->id,'company_id'=>$company_id])
+					->execute();
+					
+			foreach($payment->payment_rows as $payment_row)
+				{
+						foreach($partyLedgers as $ledger){
+							if(!in_array($ledger->accounting_group_id,$bankGroups)){
+								if($ledger->id == $payment_row->ledger_id)
+								{
+									$query_update = $this->Payments->PaymentRows->query();
+										$query_update->update()
+										->set(['mode_of_payment' => '', 'cheque_no' => '', 'cheque_date' => ''])
+										->where(['id' => $payment_row->id])
+										->execute();
+								}
+							}
+						}
+						
+					$accountEntry = $this->Payments->AccountingEntries->newEntity();
+					$accountEntry->ledger_id                  = $payment_row->ledger_id;
+					$accountEntry->debit                      = @$payment_row->debit;
+					$accountEntry->credit                     = @$payment_row->credit;
+					$accountEntry->transaction_date           = $payment->transaction_date;
+					$accountEntry->company_id                 = $company_id;
+					$accountEntry->payment_id                 = $payment->id;
+					$accountEntry->payment_row_id             = $payment_row->id;
+					$this->Payments->AccountingEntries->save($accountEntry);
+				}
+				
+                $this->Flash->success(__('The payment has been updated.'));
+				$this->repairRef();
+
+                return $this->redirect(['action' => 'index']);
+            }
+            $this->Flash->error(__('The payment could not be saved. Please, try again.'));
+        }
+		
+		$refDropDown =[];
+		foreach($payment->payment_rows as $payment_row)
+		{
+			if(!empty($payment_row->reference_details))
+			{
+				foreach($payment_row->reference_details as $referenceDetailRows)
+				{
+					@$ref_details_name[]=$referenceDetailRows->ref_name;
+				}
+				$query = $this->Payments->PaymentRows->ReferenceDetails->find();
+				$query->select(['total_debit' => $query->func()->sum('ReferenceDetails.debit'),'total_credit' => $query->func()->sum('ReferenceDetails.credit')])
+				->where(['ReferenceDetails.ledger_id'=>$payment_row->ledger_id,'ReferenceDetails.type !='=>'On Account'])
+				->group(['ReferenceDetails.ref_name'])
+				->autoFields(true);
+				$referenceDetails=$query;
+				$option=[];
+				foreach($referenceDetails as $referenceDetail){
+					$remider=$referenceDetail->total_debit-$referenceDetail->total_credit;
+					if($remider>0){
+						$bal=abs($remider).' Dr';
+					}else if($remider<0){
+						$bal=abs($remider).' Cr';
+					}
+					if($referenceDetail->total_debit!=$referenceDetail->total_credit  || in_array($referenceDetail->ref_name,$ref_details_name)){
+						$option[] =['text' =>$referenceDetail->ref_name.' ('.$bal.')', 'value' => $referenceDetail->ref_name];
+					}
+				}
+				$refDropDown[$payment_row->id] = $option;
+			}
+		}
+       $Voucher = $this->Payments->find()->select(['voucher_no'])->where(['company_id'=>$company_id])->order(['voucher_no' => 'DESC'])->first();
+		if($Voucher)
+		{
+			$voucher_no=$Voucher->voucher_no+1;
+		}
+		else
+		{ 
+			$voucher_no=1;
+		} 
+		
+	
 		//$ledgers = $this->Payments->PaymentRows->Ledgers->find()->where(['company_id'=>$company_id]);
 		foreach($partyLedgers as $ledger){
 			if(in_array($ledger->accounting_group_id,$bankGroups)){

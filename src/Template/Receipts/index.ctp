@@ -63,9 +63,7 @@ $this->set('title', 'Receipt List');
 								<?php if (in_array("42", $userPages)){?>
 									<?= $this->Html->link(__('Edit'), ['action' => 'edit', $receipt->id]) ?>
 									<?php }?>
-									&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 									
-									&nbsp;&nbsp;
 									<?= $this->Form->postLink(__('Cancel'), ['action' => 'cancel', $receipt->id], ['style'=>'color:red;','confirm' => __('Are you sure you want to cancel # {0}?',h(str_pad($receipt->voucher_no, 3, '0', STR_PAD_LEFT)))]) ?>&nbsp;&nbsp;
 									<?php }?>
 									<?php }?>

@@ -199,11 +199,7 @@ class JournalVouchersController extends AppController
 			}
 			$this->JournalVouchers->JournalVoucherRows->ReferenceDetails->deleteAll(['ReferenceDetails.journal_voucher_row_id IN'=>$orignalJournal_voucher_row_ids]);
 			//GET ORIGINAL DATA AND DELETE REFERENCE DATA//
-			$query_update = $this->JournalVouchers->JournalVoucherRows->query();
-					$query_update->update()
-					->set(['mode_of_payment' => '', 'cheque_no' => '', 'cheque_date' => ''])
-					->where(['journal_voucher_id' => $journalVoucher->id])
-					->execute(); 
+			
             $journalVoucher = $this->JournalVouchers->patchEntity($journalVoucher, $this->request->getData());
 			
 			$journalVoucher = $this->JournalVouchers->patchEntity($journalVoucher, $this->request->getData(), [

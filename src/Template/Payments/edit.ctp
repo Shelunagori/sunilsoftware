@@ -199,7 +199,8 @@ $this->set('title', 'Payment Voucher');
 												
 											<?php } ?>
 											<?php
-											if(!empty($paymentRows->mode_of_payment)){
+												if(empty($paymentRows->reference_details) && (!empty($paymentRows->mode_of_payment))){
+											
 											?>
 											<table width='90%'>
 												<tbody>
@@ -604,7 +605,7 @@ $this->set('title', 'Payment Voucher');
 			}
 			
 			
-			$(document).ready(ledgerShow);
+			//$(document).ready(ledgerShow);
 			function ledgerShow()
 			{
 			    $('#MainTable tbody#MainTbody tr.MainTr').each(function(){

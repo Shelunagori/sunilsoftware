@@ -206,7 +206,8 @@ $this->set('title', 'Credit Note Voucher');
 												
 											<?php } ?>
 											<?php
-											if(!empty($creditNoteRows->mode_of_payment)){
+											if(empty($creditNoteRows->reference_details) && (!empty($creditNoteRows->mode_of_payment))){
+											
 											?>
 											<table width='90%'>
 												<tbody>
@@ -612,7 +613,7 @@ $this->set('title', 'Credit Note Voucher');
 			}
 			
 			
-			$(document).ready(ledgerShow);
+			//$(document).ready(ledgerShow);
 			function ledgerShow()
 			{
 			    $('#MainTable tbody#MainTbody tr.MainTr').each(function(){

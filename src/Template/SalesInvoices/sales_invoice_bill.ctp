@@ -272,7 +272,7 @@ $this->set('title', 'Sales Invoice Bill');
 		
 		<?php } if(!empty($data->round_off)) {?>
 		<tr>
-		<td>Round Off </td>
+		<td>Round off </td>
 			<td></td>
 			<td></td>
 			<td style="text-align:right;"><?php echo $data->round_off;  ?></td>
@@ -285,7 +285,7 @@ $this->set('title', 'Sales Invoice Bill');
 			<td style="text-align:right;"><b><?php echo number_format($data->amount_after_tax, 2);  ?></b></td>
 		</tr>
 		<tr>
-		<td colspan="4" style="font-size:14px;"><b>Amount In words: </b> <?php echo $this->NumberWords->convert_number_to_words($data->amount_after_tax); ?> </td>
+		<td colspan="4" style="font-size:14px;"><b>Amount In words: </b> <?php echo $this->NumberWords->convert_number_to_words($data->amount_after_tax); ?><?php echo ' only'; ?> </td>
 		</tr>		
 </tbody></table>
 <table width="100%" border="" style="font-size:12px; border-collapse: collapse; margin-top:15px; border-style:dashed">
