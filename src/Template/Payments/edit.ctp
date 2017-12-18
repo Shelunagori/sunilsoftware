@@ -189,17 +189,17 @@ $this->set('title', 'Payment Voucher');
 														<td colspan="2"><input type="hidden" id="htotal" value="<?php echo $total;?>">
 														<a role="button" class="addRefRow">Add Row</a>
 														</td>
-														<td>
+														<td valign="top">
 														<input type="text" class="form-control input-sm rightAligntextClass total calculation noBorder" name="payment_rows[<?php echo $i;?>][total]" id="payment_rows-<?php echo $i;?>-total" aria-invalid="true" aria-describedby="payment_rows-<?php echo $i;?>-total-error" value="<?php echo $total;?>" readonly>
 														</td>
-														<td><input type="text" class="form-control input-sm total_type calculation noBorder" readonly value="<?php echo @$type;?>" name="payment_rows<?php echo $i;?>reference_details<?php echo $i;?>type_cr_dr"></td>
+														<td valign="top"><input type="text" class="form-control input-sm total_type calculation noBorder" readonly value="<?php echo @$type;?>" name="payment_rows<?php echo $i;?>reference_details<?php echo $i;?>type_cr_dr"></td>
 													</tr>
 												</tfoot>
 												</table>
 												
 											<?php } ?>
 											<?php
-												if(empty($paymentRows->reference_details) && (!empty($paymentRows->mode_of_payment))){
+												if(!empty($paymentRows->mode_of_payment)){
 											
 											?>
 											<table width='90%'>

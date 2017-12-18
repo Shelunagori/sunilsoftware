@@ -299,6 +299,7 @@ class PaymentsController extends AppController
 					}
 				}
 			}
+			pr($payment->toArray()); 
             if ($this->Payments->save($payment)) {
 			
 			$query_delete = $this->Payments->AccountingEntries->query();
