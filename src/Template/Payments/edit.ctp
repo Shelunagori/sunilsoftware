@@ -803,6 +803,7 @@ $this->set('title', 'Payment Voucher');
 							$(this).find('td:nth-child(2) select.refList').attr({name:'payment_rows['+row_no+'][reference_details]['+i+'][ref_name]',id:'payment_rows-'+row_no+'-reference_details-'+i+'-ref_name'}).rules('add', 'required');
 						}else if(is_input){
 							$(this).find('td:nth-child(2) input.ref_name').attr({name:'payment_rows['+row_no+'][reference_details]['+i+'][ref_name]',id:'payment_rows-'+row_no+'-reference_details-'+i+'-ref_name'}).rules('add', 'required');
+							$(this).find('td:nth-child(5) input.dueDays').attr({name:'payment_rows['+row_no+'][reference_details]['+i+'][due_days]',id:'payment_rows-'+row_no+'-reference_details-'+i+'-due_days'});
 						}
 						var Dr_Cr=$(this).find('td:nth-child(4) select option:selected').val();
 						if(Dr_Cr=='Dr'){
