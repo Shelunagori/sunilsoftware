@@ -303,6 +303,75 @@ class AppController extends Controller
 		}
 		return $output;
 	}
+	
+	public function groupBalance($group_id,$date){
+		$company_id=$this->Auth->User('session_company_id');
+		$this->loadModel('AccountingGroups');
+						
+		$allGroups=[];
+		$accountingGroups = $this->AccountingGroups->find('children', ['for' => $group_id])->toArray();
+		$allGroups[]=$group_id;
+		foreach($accountingGroups as $accountingGroup){
+			$allGroups[]=$accountingGroup->id;
+		}
+		
+		$this->loadModel('Ledgers');
+		$Ledgers=$this->Ledgers->find()->where(['Ledgers.accounting_group_id IN'=>$allGroups]);
+		$balance=0;
+		foreach($Ledgers as $Ledger){
+			$balance+=$this->ledgerBalance($Ledger->id,date('Y-m-d',strtotime($date)));
+		}
+		return $balance;
+	}
+	
+	public function ledgerBalance($ledger_id,$date){
+		$company_id=$this->Auth->User('session_company_id');
+		$this->loadModel('AccountingEntries');
+		$query=$this->AccountingEntries->find();
+		$query->select(['ledger_id','totalDebit' => $query->func()->sum('AccountingEntries.debit'),'totalCredit' => $query->func()->sum('AccountingEntries.credit')])
+		->where(['AccountingEntries.company_id'=>$company_id, 'AccountingEntries.transaction_date <='=>$date, 'AccountingEntries.ledger_id'=>$ledger_id]);
+		$query=$query->toArray();
+		$balance=$query[0]->totalDebit-$query[0]->totalCredit;
+		return $balance;
+	}
+	
+	public function closingBalance($item_id,$date){
+		$company_id=$this->Auth->User('session_company_id');
+		$this->loadModel('ItemLedgers');
+		$ItemLedgers=$this->ItemLedgers->find()->where(['ItemLedgers.item_id'=>$item_id, 'ItemLedgers.company_id'=>$company_id, 'ItemLedgers.transaction_date <='=>$date])->order(['ItemLedgers.transaction_date'=>'ASC']);
+		
+		$stockArray=[];
+		foreach($ItemLedgers as $ItemLedger){
+			if($ItemLedger->status=="in" && $ItemLedger->intra_location_stock_transfer_voucher_id==null){
+				for($q=0; $q<($ItemLedger->quantity*100); $q++){
+					$stockArray[]=$ItemLedger->rate;
+				}
+			}
+		}
+		foreach($ItemLedgers as $ItemLedger){
+			if($ItemLedger->status=="out" && $ItemLedger->intra_location_stock_transfer_voucher_id==null){
+				$stockArray=array_slice($stockArray, $ItemLedger->quantity*100);
+			}
+		}
+		$StockQty=[];
+		foreach($ItemLedgers as $ItemLedger){
+			if($ItemLedger->status=="in"){
+				@$StockQty[$ItemLedger->location_id]+=@$ItemLedger->quantity;
+			}else if($ItemLedger->status=="out"){
+				@$StockQty[$ItemLedger->location_id]-=@$ItemLedger->quantity;
+			}
+		}
+		
+		$value=0;
+		if(sizeof($stockArray)>0){
+			foreach($stockArray as $stockRate){
+				$value+=$stockRate;
+			}
+		}
+		
+		
+		return $output=['value'=>$value,'StockQty'=>$StockQty];
+	}
 
     /**
      * Before render callback.

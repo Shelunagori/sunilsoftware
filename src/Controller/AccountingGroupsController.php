@@ -131,4 +131,33 @@ class AccountingGroupsController extends AppController
 
         return $this->redirect(['action' => 'index']);
     }
+	
+	public function summary(){
+		$AccountingGroupId = $this->request->query('accounting-group-id');
+		$from_date         = $this->request->query('from-date');
+		$to_date           = $this->request->query('to-date');
+		
+		$this->viewBuilder()->layout('index_layout');
+		$company_id=$this->Auth->User('session_company_id');
+		
+		if($AccountingGroupId){
+			$subGroups=$this->AccountingGroups->find()->where(['AccountingGroups.parent_id'=>$AccountingGroupId]);
+			
+			$subGroupBalances=[];
+			foreach($subGroups as $subGroup){
+				$subGroupBalances[$subGroup->id]=$this->groupBalance($subGroup->id,date('Y-m-d',strtotime($to_date)));
+			}
+			
+			$Ledgers=$this->AccountingGroups->Ledgers->find()->where(['Ledgers.accounting_group_id'=>$AccountingGroupId]);
+			
+			$ledgerBalances=[];
+			foreach($Ledgers as $Ledger){
+				$ledgerBalances[$Ledger->id]=$this->ledgerBalance($Ledger->id,date('Y-m-d',strtotime($to_date)));
+			}
+		}
+		$AccountingGroups=$this->AccountingGroups->find('list')
+							->where(['AccountingGroups.company_id'=>$company_id])
+							->order(['AccountingGroups.Name'=>'ASC']);
+		$this->set(compact('AccountingGroups', 'AccountingGroupId', 'from_date', 'to_date', 'subGroups', 'Ledgers', 'ledgerBalances', 'subGroupBalances'));
+	}
 }

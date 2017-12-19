@@ -514,4 +514,6 @@ class AccountingEntriesController extends AppController
 
         return $this->redirect(['action' => 'index']);
     }
+	
+	
 }
