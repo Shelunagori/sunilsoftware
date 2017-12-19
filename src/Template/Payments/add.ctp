@@ -414,9 +414,10 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			
 			$('.ledger').die().live('change',function(){
 				var openWindow=$(this).find('option:selected').attr('open_window');
-				var due_days=$(this).find('option:selected').attr('default_days');
+				//var due_days=$(this).find('option:selected').attr('default_days');
 				if(openWindow=='party'){
 					var SelectedTr=$(this).closest('tr.MainTr');
+					var due_days=SelectedTr.find('td:nth-child(2) select.ledger option:selected').attr('default_days');
 					var windowContainer=$(this).closest('td').find('div.window');
 					windowContainer.html('');
 					windowContainer.html('<table width=90% class=refTbl><tbody></tbody><tfoot><tr style=border-top:double#a5a1a1><td colspan=2><a role=button class=addRefRow>Add Row</a></td><td>$total_input</td><td valign=top>$total_type</td></tr></tfoot></table>');
@@ -436,7 +437,6 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 					windowContainer.html('');
 				}
 				renameMainRows();
-				renameBankRows(SelectedTr);
 			});
 			
 			$('.AddMainRow').die().live('click',function(){ 

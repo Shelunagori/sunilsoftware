@@ -631,10 +631,12 @@ $this->set('title', 'Payment Voucher');
 			}
 			$('.ledger').die().live('change',function(){
 				var openWindow=$(this).find('option:selected').attr('open_window');
-				var due_days=$(this).find('option:selected').attr('default_days');
+				//var due_days=$(this).find('option:selected').attr('default_days');
 				if(openWindow=='party'){
 				    var bankValue=1;
 					var SelectedTr=$(this).closest('tr.MainTr');
+					
+					var due_days=SelectedTr.find('td:nth-child(2) select.ledger option:selected').attr('default_days');
 					SelectedTr.find('.BankValueDefine').val(bankValue);
                     var windowContainer=$(this).closest('td').find('div.window');
 					windowContainer.html('');
