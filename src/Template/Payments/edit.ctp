@@ -684,7 +684,7 @@ $this->set('title', 'Payment Voucher');
 					var is_cash_bank=$(this).find('td:nth-child(2) option:selected').attr('bank_and_cash');
 					$(this).find('td:nth-child(1) select.cr_dr').attr({name:'payment_rows['+i+'][cr_dr]',id:'payment_rows-'+i+'-cr_dr'});
 					
-	$(this).find('td:nth-child(2) input.BankValueDefine').attr({name:'payment_rows['+i+'][BankDefination]',id:'payment_rows-'+i+'-BankDefination'});
+					$(this).find('td:nth-child(2) input.BankValueDefine').attr({name:'payment_rows['+i+'][BankDefination]',id:'payment_rows-'+i+'-BankDefination'});
 					
 					$(this).find('td:nth-child(2) select.ledger').attr({name:'payment_rows['+i+'][ledger_id]',id:'payment_rows-'+i+'-ledger_id'}).select2();
 					$(this).find('td:nth-child(3) input.debitBox').attr({name:'payment_rows['+i+'][debit]',id:'payment_rows-'+i+'-debit'});

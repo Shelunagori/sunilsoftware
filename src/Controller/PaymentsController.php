@@ -283,10 +283,12 @@ class PaymentsController extends AppController
 					->where(['payment_id' => $originalPayment->id])
 					->execute();*/
 			//GET ORIGINAL DATA AND DELETE REFERENCE DATA//
+			
+			
 			$payment = $this->Payments->patchEntity($payment, $this->request->getData(), [
 							'associated' => ['PaymentRows','PaymentRows.ReferenceDetails']
 						]);
-		
+			pr($payment->toArray()); exit;
 			//transaction date for payment code start here--
 			foreach($payment->payment_rows as $payment_row)
 			{
@@ -299,7 +301,6 @@ class PaymentsController extends AppController
 					}
 				}
 			}
-			pr($payment->toArray()); 
             if ($this->Payments->save($payment)) {
 			
 			$query_delete = $this->Payments->AccountingEntries->query();
