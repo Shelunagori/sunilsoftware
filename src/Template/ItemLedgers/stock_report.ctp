@@ -62,6 +62,10 @@ $this->set('title', 'Sales Return Report');
 						<thead>
 							<tr>
 								<th scope="col"> Particulars </th>
+								<?php foreach ($locations as $location){ ?>
+								<th scope="col"><?php echo $location->name; ?></th>
+								
+								<?php } ?>
 								<th scope="col">Quantity</th>
 								<th scope="col">Rate</th>
 								<th scope="col">Value</th>
@@ -71,18 +75,33 @@ $this->set('title', 'Sales Return Report');
 						<tbody><?php $sno = 1; 
 							
 								  foreach ($stockGroups as $stockGroup): 
-								  if($stock_total_qty[$stockGroup->id]>0){
 								  ?>
-									
-										<tr >
+									<tr >
 											<td><?php echo $stockGroup->name; ?></td>
-											<td><?php echo $stock_total_qty[$stockGroup->id]; ?></td>
-											<td><?php echo $stock_total_rate[$stockGroup->id]; ?></td>
-											<td><?php echo $stock_total_rate[$stockGroup->id] * $stock_total_qty[$stockGroup->id]; ?></td>
+											<?php foreach ($locations as $location){ ?>
+											<td><?php echo $stock_quantity[$location->id][$stockGroup->id]; ?></td>
+											<?php } ?>
+											<td></td>
+											<td></td>
+											<td></td>
 										
 											
 										</tr>
-								  <?php } endforeach ?>
+								  <?php  endforeach ?>
+								<?php  foreach ($items_main as $item_main):  ?>
+								<tr >
+											<td><?php echo $item_main->name; ?></td>
+											<?php foreach ($locations as $location){ ?>
+											<td></td>
+											<?php } ?>
+											<td></td>
+											<td></td>
+											<td></td>
+										
+											
+										</tr>
+								  <?php  endforeach ?>
+								 
 						</tbody>
 					</table>
 				</div>				

@@ -202,7 +202,8 @@ $this->set('title', 'Receipt Voucher');
 												
 											<?php } ?>
 											<?php
-											if(!empty($receiptRows->mode_of_payment)){
+											if(empty($receiptRows->reference_details) && (!empty($receiptRows->mode_of_payment))){
+											
 											?>
 											<table width='90%'>
 												<tbody>
@@ -609,7 +610,7 @@ $this->set('title', 'Receipt Voucher');
 			});
 			}
 			
-			$(document).ready(ledgerShow);
+			//$(document).ready(ledgerShow);
 			function ledgerShow()
 			{
 			    $('#MainTable tbody#MainTbody tr.MainTr').each(function(){

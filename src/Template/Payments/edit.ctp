@@ -189,17 +189,18 @@ $this->set('title', 'Payment Voucher');
 														<td colspan="2"><input type="hidden" id="htotal" value="<?php echo $total;?>">
 														<a role="button" class="addRefRow">Add Row</a>
 														</td>
-														<td>
+														<td valign="top">
 														<input type="text" class="form-control input-sm rightAligntextClass total calculation noBorder" name="payment_rows[<?php echo $i;?>][total]" id="payment_rows-<?php echo $i;?>-total" aria-invalid="true" aria-describedby="payment_rows-<?php echo $i;?>-total-error" value="<?php echo $total;?>" readonly>
 														</td>
-														<td><input type="text" class="form-control input-sm total_type calculation noBorder" readonly value="<?php echo @$type;?>" name="payment_rows<?php echo $i;?>reference_details<?php echo $i;?>type_cr_dr"></td>
+														<td valign="top"><input type="text" class="form-control input-sm total_type calculation noBorder" readonly value="<?php echo @$type;?>" name="payment_rows<?php echo $i;?>reference_details<?php echo $i;?>type_cr_dr"></td>
 													</tr>
 												</tfoot>
 												</table>
 												
 											<?php } ?>
 											<?php
-											if(!empty($paymentRows->mode_of_payment)){
+												if(!empty($paymentRows->mode_of_payment)){
+											
 											?>
 											<table width='90%'>
 												<tbody>
@@ -604,7 +605,7 @@ $this->set('title', 'Payment Voucher');
 			}
 			
 			
-			$(document).ready(ledgerShow);
+			//$(document).ready(ledgerShow);
 			function ledgerShow()
 			{
 			    $('#MainTable tbody#MainTbody tr.MainTr').each(function(){
@@ -683,7 +684,7 @@ $this->set('title', 'Payment Voucher');
 					var is_cash_bank=$(this).find('td:nth-child(2) option:selected').attr('bank_and_cash');
 					$(this).find('td:nth-child(1) select.cr_dr').attr({name:'payment_rows['+i+'][cr_dr]',id:'payment_rows-'+i+'-cr_dr'});
 					
-	$(this).find('td:nth-child(2) input.BankValueDefine').attr({name:'payment_rows['+i+'][BankDefination]',id:'payment_rows-'+i+'-BankDefination'});
+					$(this).find('td:nth-child(2) input.BankValueDefine').attr({name:'payment_rows['+i+'][BankDefination]',id:'payment_rows-'+i+'-BankDefination'});
 					
 					$(this).find('td:nth-child(2) select.ledger').attr({name:'payment_rows['+i+'][ledger_id]',id:'payment_rows-'+i+'-ledger_id'}).select2();
 					$(this).find('td:nth-child(3) input.debitBox').attr({name:'payment_rows['+i+'][debit]',id:'payment_rows-'+i+'-debit'});
