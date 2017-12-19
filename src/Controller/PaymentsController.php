@@ -101,6 +101,7 @@ class PaymentsController extends AppController
 				}
 			}
 			//transaction date for payment code close here-- 
+			
 			if ($this->Payments->save($payment)) {
 			foreach($payment->payment_rows as $payment_row)
 				{
@@ -217,7 +218,7 @@ class PaymentsController extends AppController
         $payment = $this->Payments->get($id, [
             'contain' => ['PaymentRows'=>['ReferenceDetails']]
         ]);
-			//bank group
+		//bank group
 		$bankParentGroups = $this->Payments->PaymentRows->Ledgers->AccountingGroups->find()
 						->where(['AccountingGroups.company_id'=>$company_id, 'AccountingGroups.bank'=>'1']);
 						
@@ -269,9 +270,10 @@ class PaymentsController extends AppController
 		
 		
 		$originalPayment=$payment;
-        if ($this->request->is(['patch', 'post', 'put'])) {
 		
-		//GET ORIGINAL DATA AND DELETE REFERENCE DATA//
+        if ($this->request->is(['patch', 'post', 'put'])) {
+			//pr($this->request->getData()); exit;
+			//GET ORIGINAL DATA AND DELETE REFERENCE DATA//
 			$orignalPayment_ids=[];
 			foreach($originalPayment->payment_rows as $originalPayment_rows){
 				$orignalPayment_ids[]=$originalPayment_rows->id;
@@ -301,6 +303,7 @@ class PaymentsController extends AppController
 					}
 				}
 			}
+			//pr($payment); exit;
             if ($this->Payments->save($payment)) {
 			
 			$query_delete = $this->Payments->AccountingEntries->query();

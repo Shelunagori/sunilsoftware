@@ -576,10 +576,11 @@ $this->set('title', 'Payment Voucher');
 					$(this).closest('tr').find('.debitBox').show();
 					$(this).closest('tr').find('.creditBox').hide();
 				}
+
 				renameMainRows();
 				
-				var SelectedTr=$(this).closest('tr.MainTr');
-				renameRefRows(SelectedTr);
+				//var SelectedTr=$(this).closest('tr.MainTr');
+				//renameRefRows(SelectedTr);
 			});
 			
 			hideShow();
@@ -682,7 +683,7 @@ $this->set('title', 'Payment Voucher');
 				$('#MainTable tbody#MainTbody tr.MainTr').each(function(){
 					$(this).attr('row_no',i);
 					var cr_dr=$(this).find('td:nth-child(1) select.cr_dr option:selected').val();
-					
+					$(this).find('td:nth-child(1) input[type=hidden]').attr({name:'payment_rows['+i+'][id]',id:'payment_rows-'+i+'-id'});
 					var is_cash_bank=$(this).find('td:nth-child(2) option:selected').attr('bank_and_cash');
 					$(this).find('td:nth-child(1) select.cr_dr').attr({name:'payment_rows['+i+'][cr_dr]',id:'payment_rows-'+i+'-cr_dr'});
 					
@@ -791,26 +792,26 @@ $this->set('title', 'Payment Voucher');
 				SelectedTr.find('input.transaction_date_ref').val(Ref_date);
 				var row_no=SelectedTr.attr('row_no');
 				if(SelectedTr.find('td:nth-child(2) div.window table tbody tr').length>0){
-				SelectedTr.find('td:nth-child(2) div.window table tbody tr').each(function(){
-					$(this).find('td:nth-child(1) input.companyIdContainer').attr({name:'payment_rows['+row_no+'][reference_details]['+i+'][company_id]',id:'payment_rows-'+row_no+'-reference_details-'+i+'-company_id'});
-					$(this).find('td:nth-child(1) input.ledgerIdContainer').attr({name:'payment_rows['+row_no+'][reference_details]['+i+'][ledger_id]',id:'payment_rows-'+row_no+'-reference_details-'+i+'-ledger_id'});
-					$(this).find('td:nth-child(1) input.transaction_date_ref').attr({name:'payment_rows['+row_no+'][reference_details]['+i+'][transaction_date]',id:'payment_rows-'+row_no+'-reference_details-'+i+'-transaction_date'});
-					$(this).find('td:nth-child(1) select.refType').attr({name:'payment_rows['+row_no+'][reference_details]['+i+'][type]',id:'payment_rows-'+row_no+'-reference_details-'+i+'-type'});
-					var is_select=$(this).find('td:nth-child(2) select.refList').length;
-					var is_input=$(this).find('td:nth-child(2) input.ref_name').length;
-					if(is_select){
-						$(this).find('td:nth-child(2) select.refList').attr({name:'payment_rows['+row_no+'][reference_details]['+i+'][ref_name]',id:'payment_rows-'+row_no+'-reference_details-'+i+'-ref_name'}).rules('add', 'required');
-					}else if(is_input){
-						$(this).find('td:nth-child(2) input.ref_name').attr({name:'payment_rows['+row_no+'][reference_details]['+i+'][ref_name]',id:'payment_rows-'+row_no+'-reference_details-'+i+'-ref_name'}).rules('add', 'required');
-					}
-					var Dr_Cr=$(this).find('td:nth-child(4) select option:selected').val();
-					if(Dr_Cr=='Dr'){
-						$(this).find('td:nth-child(3) input').attr({name:'payment_rows['+row_no+'][reference_details]['+i+'][debit]',id:'payment_rows-'+row_no+'-reference_details-'+i+'-debit'}).rules('add', 'required');
-					}else{
-						$(this).find('td:nth-child(3) input').attr({name:'payment_rows['+row_no+'][reference_details]['+i+'][credit]',id:'payment_rows-'+row_no+'-reference_details-'+i+'-credit'}).rules('add', 'required');
-					}
-					i++;
-				});
+					SelectedTr.find('td:nth-child(2) div.window table tbody tr').each(function(){
+						$(this).find('td:nth-child(1) input.companyIdContainer').attr({name:'payment_rows['+row_no+'][reference_details]['+i+'][company_id]',id:'payment_rows-'+row_no+'-reference_details-'+i+'-company_id'});
+						$(this).find('td:nth-child(1) input.ledgerIdContainer').attr({name:'payment_rows['+row_no+'][reference_details]['+i+'][ledger_id]',id:'payment_rows-'+row_no+'-reference_details-'+i+'-ledger_id'});
+						$(this).find('td:nth-child(1) input.transaction_date_ref').attr({name:'payment_rows['+row_no+'][reference_details]['+i+'][transaction_date]',id:'payment_rows-'+row_no+'-reference_details-'+i+'-transaction_date'});
+						$(this).find('td:nth-child(1) 	select.refType').attr({name:'payment_rows['+row_no+'][reference_details]['+i+'][type]',id:'payment_rows-'+row_no+'-reference_details-'+i+'-type'});
+						var is_select=$(this).find('td:nth-child(2) select.refList').length;
+						var is_input=$(this).find('td:nth-child(2) input.ref_name').length;
+						if(is_select){
+							$(this).find('td:nth-child(2) select.refList').attr({name:'payment_rows['+row_no+'][reference_details]['+i+'][ref_name]',id:'payment_rows-'+row_no+'-reference_details-'+i+'-ref_name'}).rules('add', 'required');
+						}else if(is_input){
+							$(this).find('td:nth-child(2) input.ref_name').attr({name:'payment_rows['+row_no+'][reference_details]['+i+'][ref_name]',id:'payment_rows-'+row_no+'-reference_details-'+i+'-ref_name'}).rules('add', 'required');
+						}
+						var Dr_Cr=$(this).find('td:nth-child(4) select option:selected').val();
+						if(Dr_Cr=='Dr'){
+							$(this).find('td:nth-child(3) input').attr({name:'payment_rows['+row_no+'][reference_details]['+i+'][debit]',id:'payment_rows-'+row_no+'-reference_details-'+i+'-debit'}).rules('add', 'required');
+						}else{
+							$(this).find('td:nth-child(3) input').attr({name:'payment_rows['+row_no+'][reference_details]['+i+'][credit]',id:'payment_rows-'+row_no+'-reference_details-'+i+'-credit'}).rules('add', 'required');
+						}
+						i++;
+					});
 				var total_type=SelectedTr.find('td:nth-child(2) div.window table.refTbl tfoot tr td:nth-child(3) input.total_type').val();
 					if(total_type=='Dr'){
 					 eqlClass=eqlClassDr;
