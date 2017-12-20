@@ -285,7 +285,9 @@ $this->set('title', 'Create Sales Invoice');
 			</td>
 			<td align="center">
 				<a class="btn btn-danger delete-tr btn-xs dlt" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
-				<?php echo $this->Form->input('is_gst_excluded', ['label' => false,'class' => 'form-control input-sm is_gst_excluded', 'type'=>'checkbox']); ?>
+				<?php echo $this->Form->input('is_gst_excluded1', ['label' => false,'class' => 'form-control input-sm is_gst_excluded', 'type'=>'checkbox']); ?>
+				<?php echo $this->Form->input('is_gst_excluded', ['label' => false,'class' => 'form-control input-sm is_gstvalue_excluded', 'type'=>'hidden']); ?>
+				
 			</td>
 		</tr>
 	</tbody>
@@ -486,6 +488,7 @@ $this->set('title', 'Create Sales Invoice');
 			$(this).find('.gst_figure_id').attr({name:'sales_invoice_rows['+i+'][gst_figure_id]',id:'sales_invoice_rows['+i+'][gst_figure_id]'});
 
 			$(this).find('.discountAmount').attr({name:'sales_invoice_rows['+i+'][net_amount]',id:'sales_invoice_rows['+i+'][net_amount]'});
+			$(this).find('.is_gstvalue_excluded').attr({name:'sales_invoice_rows['+i+'][is_gst_excluded]',id:'sales_invoice_rows['+i+'][is_gst_excluded]'});
 			$(this).find('.gstValue').attr({name:'sales_invoice_rows['+i+'][gst_value]',id:'sales_invoice_rows['+i+'][gst_value]'});
 			
 			// if(i==0)
@@ -533,8 +536,10 @@ $this->set('title', 'Create Sales Invoice');
 			var length=$(this).find('.is_gst_excluded:checked').length;
 			if(length==1){
 				isExcludingCalculation=1;
+				$(this).find('.is_gstvalue_excluded').val(1);
 			}else{
 				isExcludingCalculation=0;
+				$(this).find('.is_gstvalue_excluded').val(0);
 			}
 			if(!isExcludingCalculation){ isExcludingCalculation=0; }
 			
@@ -600,8 +605,9 @@ $this->set('title', 'Create Sales Invoice');
 				}
 				$(this).find('.discountAmount').val(netValue);
 				gstValue = netValue-amountAfterDicsount;
-				
+				$(this).find('.gstValue').val(gstValue);
 				gstAmount = amountAfterDicsount;
+				
 			}else{
 				$(this).find('.discountAmount').val(amountAfterDicsount);
 				var netValuePerQty=amountAfterDicsount/quantity;
@@ -632,6 +638,7 @@ $this->set('title', 'Create Sales Invoice');
 				
 				gstValue = amountAfterDicsount-TaxableValue;
 				gstAmount = TaxableValue;
+				$(this).find('.gstValue').val(gstValue);
 			}
 			
 			
