@@ -9,6 +9,9 @@ $this->set('title', 'Create Sales Invoice');
     pointer-events: none;
     opacity: 0.7;
 }
+.checkbox{
+	margin:0px;
+}
 </style>
 <form method="GET" id="barcodeFrom">
 	<div class="row">
@@ -265,10 +268,10 @@ $this->set('title', 'Create Sales Invoice');
 				<?php echo $this->Form->input('rate', ['label' => false,'class' => 'form-control input-sm calculation rate rightAligntextClass','required'=>'required','placeholder'=>'Rate', 'readonly'=>'readonly', 'tabindex'=>'-1']); ?>
 			</td>
 			<td>
-				<?php echo $this->Form->input('discount_percentage', ['label' => false,'class' => 'form-control input-sm calculation discount numberOnly rightAligntextClass','placeholder'=>'Dis.','value'=>0]); ?>	
+				<?php echo $this->Form->input('discount_percentage', ['label' => false,'class' => 'form-control input-sm discount discalculation numberOnly rightAligntextClass','placeholder'=>'Dis.','value'=>0]); ?>	
 			</td>
 			<td>
-				<?php echo $this->Form->input('discount', ['label' => false,'class' => 'form-control input-sm discalculation dis_amount numberOnly rightAligntextClass','placeholder'=>'Dis.','value'=>0]); ?>	
+				<?php echo $this->Form->input('discount', ['label' => false,'class' => 'form-control input-sm calculation dis_amount numberOnly rightAligntextClass','placeholder'=>'Dis.','value'=>0]); ?>	
 			</td>
 			
 			<td>
@@ -282,6 +285,7 @@ $this->set('title', 'Create Sales Invoice');
 			</td>
 			<td align="center">
 				<a class="btn btn-danger delete-tr btn-xs dlt" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
+				<?php echo $this->Form->input('is_gst_excluded', ['label' => false,'class' => 'form-control input-sm is_gst_excluded', 'type'=>'checkbox']); ?>
 			</td>
 		</tr>
 	</tbody>
@@ -460,6 +464,8 @@ $this->set('title', 'Create Sales Invoice');
 	{
 		var tr=$('#sample_table tbody tr.main_tr').clone();
 		$('#main_table tbody#main_tbody').append(tr);
+		var test = $('input[type=radio]:not(.toggle),input[type=checkbox]:not(.toggle)');
+		if (test) { test.uniform(); }
 		rename_rows();
 		forward_total_amount();
 	}
@@ -494,10 +500,7 @@ $this->set('title', 'Create Sales Invoice');
 	{
 		forward_total_amount();
 	});
-	$('.discalculation').die().live('blur',function()
-	{
-		reverse_total_amount();
-	});
+	
 	
 	$('.itembarcode').die().keypress(function(e)
 	{
@@ -505,8 +508,11 @@ $this->set('title', 'Create Sales Invoice');
         return false;
 	});
 	
-	function forward_total_amount()
-	{
+	$('.is_gst_excluded').die().live('click',function(){
+		forward_total_amount();
+	});
+	function forward_total_amount(){
+		var isExcludingCalculation;
 		var total  = 0;
 		var gst_amount  = 0;
 		var gst_value  = 0;
@@ -522,82 +528,115 @@ $this->set('title', 'Create Sales Invoice');
 		var exactgstvalue=0;
 		var totDiscounts=0;
 		var convertDiscount=0;
-		$('#main_table tbody#main_tbody tr.main_tr').each(function()
-		{
+		$('#main_table tbody#main_tbody tr.main_tr').each(function(){
+			
+			var length=$(this).find('.is_gst_excluded:checked').length;
+			if(length==1){
+				isExcludingCalculation=1;
+			}else{
+				isExcludingCalculation=0;
+			}
+			if(!isExcludingCalculation){ isExcludingCalculation=0; }
+			
 			var outdata=$(this).closest('tr').find('.outStock').val();
 			if(!outdata){outdata=0;}
-			outOfStockValue=parseFloat(outOfStockValue)+parseFloat(outdata);
-
-			var fetchQuantity  = $(this).find('.quantity').val();
-			if(!fetchQuantity){fetchQuantity=0;}
-			var quantity=round(fetchQuantity,2);
+			var outOfStockValue=parseFloat(outOfStockValue)+parseFloat(outdata);
+			$('.outOfStock').val(outOfStockValue);
+			
+			var quantity  = $(this).find('.quantity').val();
+			if(!quantity){quantity=0;}
+			var quantity=round(quantity,2);
 			
 			var rate  = parseFloat($(this).find('.rate').val());
 			if(!rate){rate=0;}
 			var rate=round(rate,2);
 			
-			var totamount = quantity*rate;
-			var totamount=round(totamount,2);
+			var amount=quantity*rate;
+			if(!amount){amount=0;}
+			var amount=round(amount,2);
+			$(this).find('.totamount').val(amount);
 			
-			$(this).find('.totamount').val(totamount);
-			   
-			var discount  = parseFloat($(this).find('.discount').val());
-			if(!discount){discount=0;}
-			var discount=round(discount,3);
-			
-			var discountValue=(discount*totamount)/100;
-			var discountValue=round(discountValue,3);
-			var convertDiscount=round(discountValue,2);
+			var discountValue=$(this).find('.dis_amount').val();
+			var discountValue=round(discountValue,2);
 			totDiscounts=round(parseFloat(totDiscounts)+parseFloat(discountValue), 2);
 			
-			var discountAmount=totamount-discountValue;
-			var discountAmount=round(discountAmount,2);
-			$(this).find('.dis_amount').val(convertDiscount);
-		
-
-			if(!discountAmount){discountAmount=0;}
-				$(this).find('.discountAmount').val(discountAmount);
-				var gst_ietmamount  = $(this).find('.gst_amount').val();
-				var discountAmount  = $(this).find('.discountAmount').val();
-				var item_gst_amount=discountAmount/quantity;
+			var amountAfterDicsount=amount-discountValue;
+			if(!amountAfterDicsount){amountAfterDicsount=0;}
+			var amountAfterDicsount=round(amountAfterDicsount,2);
 			
-			if(item_gst_amount<=gst_ietmamount)
-			{
-				var first_gst_figure_tax_percentage=$('option:selected', this).attr('FirstGstFigure');
-				var first_gst_figure_tax_name=$('option:selected', this).attr('FirstGstFigure');
-				var first_gst_figure_id=$('option:selected', this).attr('first_gst_figure_id');
+			var discountPercentage=discountValue*100/amount;
+			var discountPercentage=round(discountPercentage,3);
+			$(this).find('.discount').val(discountPercentage);
+			
+			var gstComparableAmount  = $(this).find('.gst_amount').val();
+			
+			if(isExcludingCalculation==1){
+				$(this).find('.gstAmount').val(amountAfterDicsount);
+				var first_gst_figure_tax_percentage=parseFloat($('option:selected', this).attr('FirstGstFigure'));
+				
+				var netValue=amountAfterDicsount*(100+first_gst_figure_tax_percentage)/100;
+				if(!netValue){netValue=0;}
+				var netValue=round(netValue,2);
+				var netValuePerQty=netValue/quantity;
+				if(netValuePerQty<=gstComparableAmount){
+					var first_gst_figure_tax_name=$('option:selected', this).attr('FirstGstFigure');
+					var first_gst_figure_id=$('option:selected', this).attr('first_gst_figure_id');
+						
+					$(this).closest('tr').find('.gst_figure_id').val(first_gst_figure_id);
+					$(this).closest('tr').find('.gst_figure_tax_percentage').val(first_gst_figure_tax_percentage);
+					$(this).closest('tr').find('.gst_figure_tax_name').val(first_gst_figure_tax_name);
+				}else{
+					var second_gst_figure_tax_percentage=parseFloat($('option:selected', this).attr('SecondGstFigure'));
+					var second_gst_figure_tax_name=$('option:selected', this).attr('SecondGstFigure');
+					var second_gst_figure_id=$('option:selected', this).attr('second_gst_figure_id');
+
+					var netValue=amountAfterDicsount*(100+second_gst_figure_tax_percentage)/100;
+					if(!netValue){netValue=0;}
+					var netValue=round(netValue,2);
 					
-				$(this).closest('tr').find('.gst_figure_id').val(first_gst_figure_id);
-				$(this).closest('tr').find('.gst_figure_tax_percentage').val(first_gst_figure_tax_percentage);
-				$(this).closest('tr').find('.gst_figure_tax_name').val(first_gst_figure_tax_name);
-			}
-			else if(item_gst_amount>gst_ietmamount)
-			{
-				var second_gst_figure_tax_percentage=$('option:selected', this).attr('SecondGstFigure');
-				var second_gst_figure_tax_name=$('option:selected', this).attr('SecondGstFigure');
-				var second_gst_figure_id=$('option:selected', this).attr('second_gst_figure_id');
+					$(this).closest('tr').find('.gst_figure_id').val(second_gst_figure_id);
+					$(this).closest('tr').find('.gst_figure_tax_percentage').val(second_gst_figure_tax_percentage);
+					$(this).closest('tr').find('.gst_figure_tax_name').val(second_gst_figure_tax_name);
+				}
+				$(this).find('.discountAmount').val(netValue);
+				gstValue = netValue-amountAfterDicsount;
+				
+				gstAmount = amountAfterDicsount;
+			}else{
+				$(this).find('.discountAmount').val(amountAfterDicsount);
+				var netValuePerQty=amountAfterDicsount/quantity;
+				if(netValuePerQty<=gstComparableAmount){
+					var first_gst_figure_tax_percentage=parseFloat($('option:selected', this).attr('FirstGstFigure'));
+					var first_gst_figure_tax_name=$('option:selected', this).attr('FirstGstFigure');
+					var first_gst_figure_id=$('option:selected', this).attr('first_gst_figure_id');
+						
+					$(this).closest('tr').find('.gst_figure_id').val(first_gst_figure_id);
+					$(this).closest('tr').find('.gst_figure_tax_percentage').val(first_gst_figure_tax_percentage);
+					$(this).closest('tr').find('.gst_figure_tax_name').val(first_gst_figure_tax_name);
+					
+					var TaxableValue=amountAfterDicsount/(100+first_gst_figure_tax_percentage)*100;
+				}else if(netValuePerQty>gstComparableAmount){
+					var second_gst_figure_tax_percentage=parseFloat($('option:selected', this).attr('SecondGstFigure'));
+					var second_gst_figure_tax_name=$('option:selected', this).attr('SecondGstFigure');
+					var second_gst_figure_id=$('option:selected', this).attr('second_gst_figure_id');
 
-				$(this).closest('tr').find('.gst_figure_id').val(second_gst_figure_id);
-				$(this).closest('tr').find('.gst_figure_tax_percentage').val(second_gst_figure_tax_percentage);
-				$(this).closest('tr').find('.gst_figure_tax_name').val(second_gst_figure_tax_name);
+					$(this).closest('tr').find('.gst_figure_id').val(second_gst_figure_id);
+					$(this).closest('tr').find('.gst_figure_tax_percentage').val(second_gst_figure_tax_percentage);
+					$(this).closest('tr').find('.gst_figure_tax_name').val(second_gst_figure_tax_name);
+					
+					var TaxableValue=amountAfterDicsount/(100+second_gst_figure_tax_percentage)*100;
+				}
+				if(!TaxableValue){TaxableValue=0;}
+				var TaxableValue=round(TaxableValue,2);
+				$(this).find('.gstAmount').val(TaxableValue);
+				
+				gstValue = amountAfterDicsount-TaxableValue;
+				gstAmount = TaxableValue;
 			}
 			
-			$(this).find('.discountvalue').val(discountValue);
 			
-			var gst_figure_tax_percentage  = parseFloat($(this).find('.gst_figure_tax_percentage').val());
-			if(!gst_figure_tax_percentage){gst_figure_tax_percentage=0;}
-			var discountAmount  = parseFloat($(this).find('.discountAmount').val());
-			if(!discountAmount){discountAmount=0;}
-			var divideValue=100;
-			var divideval=divideValue+gst_figure_tax_percentage;
-			var gstAmount=(discountAmount*100)/divideval;
-			var gstValue=parseFloat((gstAmount*gst_figure_tax_percentage/100).toFixed(2));
-			$(this).find('.gstAmount').val(gstAmount.toFixed(2));
-			$(this).find('.gstValue').val(gstValue);
-
-			var gstValue  = parseFloat($(this).find('.gstValue').val());
-			var gstAmount  = parseFloat($(this).find('.gstAmount').val());
 			var is_interstate  = parseFloat($('#is_interstate').val());
+			
 			if(is_interstate=='0')
 			{
 			     exactgstvalue=round(gstValue/2,2);
@@ -634,7 +673,9 @@ $this->set('title', 'Create Sales Invoice');
 				round_of=parseFloat(total)-parseFloat(roundOff1);
 				isRoundofType='0';
 			}
+			
 		});
+		
 		$('.amount_after_tax').val(roundOff1.toFixed(2));
 		$('.amount_before_tax').val(gst_amount.toFixed(2));
 		$('.add_cgst').val(newsgst);
@@ -643,144 +684,39 @@ $this->set('title', 'Create Sales Invoice');
 		$('.roundValue').val(round_of.toFixed(2));
 		$('.isRoundofType').val(isRoundofType);
 		$('.outOfStock').val(outOfStockValue);
-		$('.toalDiscount').val(totDiscounts);		
+		$('.toalDiscount').val(totDiscounts);
 		rename_rows();
-		
 	}
 	
-	
-	function reverse_total_amount()
+	$('.discalculation').die().live('blur',function()
 	{
-			var total  = 0;
-			var gst_amount  = 0;
-			var gst_value  = 0;
-			var s_cgst_value=0;
-			var roundOff1=0;
-			var round_of=0;
-			var isRoundofType=0;
-			var igst_value=0;
-			var outOfStockValue=0;
-			var s_igst=0;
-			var newsgst=0;
-			var newigst=0;
-			var exactgstvalue=0;
-			var totDiscounts=0;
-			var convertDiscount=0;
-			$('#main_table tbody#main_tbody tr.main_tr').each(function()
-			{
-				var outdata=$(this).closest('tr').find('.outStock').val();
-				if(!outdata){outdata=0;}
-				outOfStockValue=parseFloat(outOfStockValue)+parseFloat(outdata);
-
-				var fetchQuantity  = $(this).find('.quantity').val();
-				var quantity=round(fetchQuantity,2);
-				if(!quantity){quantity=0;}
-				var rate  = parseFloat($(this).find('.rate').val());
-				if(!rate){rate=0;}
-				var totamount = quantity*rate;
-				$(this).find('.totamount').val(totamount);
-				   
-				var dis_amount  = parseFloat($(this).find('.dis_amount').val());
-				if(!dis_amount){dis_amount=0;}
-				
-					var discountValue=dis_amount;
-					totDiscounts=round(parseFloat(totDiscounts)+parseFloat(discountValue), 2);
-					var discountAmount=totamount-discountValue;
-					var convertDiscount=round((dis_amount*100)/totamount, 3);
-					$(this).find('.discount').val(convertDiscount);
-			
-
-				if(!discountAmount){discountAmount=0;}
-					$(this).find('.discountAmount').val(discountAmount.toFixed(2));
-					var gst_ietmamount  = $(this).find('.gst_amount').val();
-					var discountAmount  = $(this).find('.discountAmount').val();
-					var item_gst_amount=discountAmount/quantity;
-				
-				if(item_gst_amount<=gst_ietmamount)
-				{
-					var first_gst_figure_tax_percentage=$('option:selected', this).attr('FirstGstFigure');
-					var first_gst_figure_tax_name=$('option:selected', this).attr('FirstGstFigure');
-					var first_gst_figure_id=$('option:selected', this).attr('first_gst_figure_id');
-						
-					$(this).closest('tr').find('.gst_figure_id').val(first_gst_figure_id);
-					$(this).closest('tr').find('.gst_figure_tax_percentage').val(first_gst_figure_tax_percentage);
-					$(this).closest('tr').find('.gst_figure_tax_name').val(first_gst_figure_tax_name);
-				}
-				else if(item_gst_amount>gst_ietmamount)
-				{
-					var second_gst_figure_tax_percentage=$('option:selected', this).attr('SecondGstFigure');
-					var second_gst_figure_tax_name=$('option:selected', this).attr('SecondGstFigure');
-					var second_gst_figure_id=$('option:selected', this).attr('second_gst_figure_id');
-
-					$(this).closest('tr').find('.gst_figure_id').val(second_gst_figure_id);
-					$(this).closest('tr').find('.gst_figure_tax_percentage').val(second_gst_figure_tax_percentage);
-					$(this).closest('tr').find('.gst_figure_tax_name').val(second_gst_figure_tax_name);
-				}
-				
-				$(this).find('.discountvalue').val(discountValue.toFixed(2));
-				
-				var gst_figure_tax_percentage  = parseFloat($(this).find('.gst_figure_tax_percentage').val());
-				if(!gst_figure_tax_percentage){gst_figure_tax_percentage=0;}
-				var discountAmount  = parseFloat($(this).find('.discountAmount').val());
-				if(!discountAmount){discountAmount=0;}
-				var divideValue=100;
-				var divideval=divideValue+gst_figure_tax_percentage;
-				var gstAmount=(discountAmount*100)/divideval;
-				var gstValue=parseFloat((gstAmount*gst_figure_tax_percentage/100).toFixed(2));
-				$(this).find('.gstAmount').val(gstAmount.toFixed(2));
-				$(this).find('.gstValue').val(gstValue);
-
-				var gstValue  = parseFloat($(this).find('.gstValue').val());
-				var gstAmount  = parseFloat($(this).find('.gstAmount').val());
-				var is_interstate  = parseFloat($('#is_interstate').val());
-				if(is_interstate=='0')
-				{
-					 exactgstvalue=round(gstValue/2,2);
-					 $(this).find('.exactgst_value').val(exactgstvalue);
-					var add_cgst  = $(this).find('.exactgst_value').val();
-					if(!add_cgst){add_cgst=0;}
-					//alert(add_cgst);
-					newsgst=round(parseFloat(newsgst)+parseFloat(add_cgst), 2);
-					gst_amount=parseFloat(gst_amount.toFixed(2))+parseFloat(gstAmount.toFixed(2));
-					total=gst_amount+newsgst+newsgst;
-					roundOff1=Math.round(total);
-				}else{
-					 exactgstvalue=round(gstValue,2);
-					 $(this).find('.exactgst_value').val(exactgstvalue);
-					var add_igst  = parseFloat($(this).find('.exactgst_value').val());
-					if(!add_igst){add_igst=0;}
-					newigst=round(parseFloat(newigst)+parseFloat(add_igst), 2);
-					gst_amount=parseFloat(gst_amount.toFixed(2))+parseFloat(gstAmount.toFixed(2));
-					total=gst_amount+newigst;
-					roundOff1=Math.round(total);
-				}
-				if(total<roundOff1)
-				{
-					round_of=parseFloat(roundOff1)-parseFloat(total);
-					isRoundofType='0';
-				}
-				if(total>roundOff1)
-				{
-					round_of=parseFloat(roundOff1)-parseFloat(total);
-					isRoundofType='1';
-				}
-				if(total==roundOff1)
-				{
-					round_of=parseFloat(total)-parseFloat(roundOff1);
-					isRoundofType='0';
-				}
-			});
-			$('.amount_after_tax').val(roundOff1.toFixed(2));
-			$('.amount_before_tax').val(gst_amount.toFixed(2));
-			$('.add_cgst').val(newsgst);
-			$('.add_sgst').val(newsgst);
-			$('.add_igst').val(newigst);					
-			$('.roundValue').val(round_of.toFixed(2));
-			$('.isRoundofType').val(isRoundofType);
-			$('.outOfStock').val(outOfStockValue);
-			$('.toalDiscount').val(totDiscounts);		
-			rename_rows();
-		}
+		var currentObj=$(this);
+		reverse_total_amount(currentObj);
+	});
+	
+	function reverse_total_amount(currentObj){
+		var qty=currentObj.closest('.main_tr').find('.quantity').val();
+		if(!qty){qty=0;}
+		var qty=round(qty,2);
+		
+		var rate=currentObj.closest('.main_tr').find('.rate').val();
+		if(!rate){rate=0;}
+		var rate=round(rate,2);
+		
+		var totalAmount=qty*rate;
+		
+		var discountPer=currentObj.closest('.main_tr').find('.discalculation').val();
+		if(!discountPer){discountPer=0;}
+		var discountPer=round(discountPer,3);
+		
+		var DiscountValue=(totalAmount*discountPer)/100;
+		if(!DiscountValue){DiscountValue=0;}
+		var DiscountValue=round(DiscountValue,2);
+		
+		currentObj.closest('.main_tr').find('.dis_amount').val(DiscountValue);
+		
+		forward_total_amount();
+	}
 	
 	
 	
