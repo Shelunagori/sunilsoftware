@@ -285,7 +285,7 @@ $this->set('title', 'Create Sales Invoice');
 			</td>
 			<td align="center">
 				<a class="btn btn-danger delete-tr btn-xs dlt" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
-				<?php echo $this->Form->input('is_gst_excluded1', ['label' => false,'class' => 'form-control input-sm is_gst_excluded', 'type'=>'checkbox']); ?>
+				<?php echo $this->Form->input('is_gst_excluded1', ['label' => false,'class' => 'form-control input-sm is_gst_excluded tooltips', 'type'=>'checkbox', 'data-placement'=>'top', 'data-original-title'=>'Excluded GST?']); ?>
 				<?php echo $this->Form->input('is_gst_excluded', ['label' => false,'class' => 'form-control input-sm is_gstvalue_excluded', 'type'=>'hidden']); ?>
 				
 			</td>
@@ -468,6 +468,7 @@ $this->set('title', 'Create Sales Invoice');
 		$('#main_table tbody#main_tbody').append(tr);
 		var test = $('input[type=radio]:not(.toggle),input[type=checkbox]:not(.toggle)');
 		if (test) { test.uniform(); }
+		$('.tooltips').tooltip();
 		rename_rows();
 		forward_total_amount();
 	}

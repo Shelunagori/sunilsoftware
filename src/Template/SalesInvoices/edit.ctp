@@ -196,7 +196,7 @@ foreach($partyOptions as $partyOption)
 										$value='0';
 									}
 									?>
-									<?php echo $this->Form->input('is_gst_excluded1', ['label' => false,'class' => 'form-control input-sm is_gst_excluded', 'type'=>'checkbox', 'checked'=>$checked]); ?>
+									<?php echo $this->Form->input('is_gst_excluded1', ['label' => false,'class' => 'form-control input-sm is_gst_excluded tooltips', 'type'=>'checkbox', 'data-placement'=>'top', 'data-original-title'=>'Excluded GST?', 'checked'=>$checked]); ?>
 									<?php echo $this->Form->input('is_gst_excluded', ['label' => false,'class' => 'form-control input-sm is_gstvalue_excluded', 'type'=>'hidden', 'value'=>$value]); ?>
 								</td>
 							</tr>
@@ -388,7 +388,7 @@ foreach($partyOptions as $partyOption)
 			</td>
 			<td align="center">
 				<a class="btn btn-danger delete-tr btn-xs" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
-				<?php echo $this->Form->input('is_gst_excluded1', ['label' => false,'class' => 'form-control input-sm is_gst_excluded', 'type'=>'checkbox']); ?>
+				<?php echo $this->Form->input('is_gst_excluded1', ['label' => false,'class' => 'form-control input-sm is_gst_excluded tooltips', 'type'=>'checkbox', 'data-placement'=>'top', 'data-original-title'=>'Excluded GST?']); ?>
 				<?php echo $this->Form->input('is_gst_excluded', ['label' => false,'class' => 'form-control input-sm is_gstvalue_excluded', 'type'=>'hidden']); ?>
 			</td>
 		</tr>
@@ -540,6 +540,7 @@ foreach($partyOptions as $partyOption)
 		$('#main_table tbody#main_tbody').append(tr);
 		var test = $('input[type=radio]:not(.toggle),input[type=checkbox]:not(.toggle)');
 		if (test) { test.uniform(); }
+		$('.tooltips').tooltip();
 		rename_rows();
 		forward_total_amount();
 	}
@@ -867,7 +868,7 @@ foreach($partyOptions as $partyOption)
 		$('.outOfStock').val(outOfStockValue);
 		$('.toalDiscount').val(totDiscounts);
 		rename_rows();
-		reverse_total_amount(currentObj);
+		//reverse_total_amount(currentObj);
 	}
 	
 	$('.discalculation').die().live('blur',function()
