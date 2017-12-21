@@ -78,7 +78,7 @@ $this->set('title', 'Overdue Report');
 											<td><?php echo $reference_detail->transaction_date; ?></td>
 											<td><?= $this->Html->link($reference_detail->ref_name, ['controller' => 'ReferenceDetails', 'action' => 'details', $reference_detail->ledger_id,$reference_detail->ref_name]) ?></td>
 											<td><?php echo $reference_detail->ledger->name; ?></td>
-											<td class="rightAligntextClass"><?php echo $duebalance;  ?></td>
+											<td class="rightAligntextClass"><?php echo $this->Money->moneyFormatIndia($duebalance);  ?></td>
 											<td><?php 
 											$due_days=$reference_detail->due_days;
 											if(empty($due_days)){

@@ -225,7 +225,7 @@ $this->set('title', 'Account Ledger report');
 								<?php 
 									if(!empty($AccountingLedger->credit))
 									{
-										echo number_format($AccountingLedger->credit, 2); 
+										echo $this->Money->moneyFormatIndia($AccountingLedger->credit); 
 										$total_credit +=round($AccountingLedger->credit,2);
 									}else
 									{
@@ -240,8 +240,8 @@ $this->set('title', 'Account Ledger report');
 						<tfoot>
 							<tr>
 								<td scope="col" colspan="3" style="text-align:right";><b>Total</b></td>
-								<td scope="col" style="text-align:right";><?php echo number_format(@$total_debit, 2);?></td>
-								<td scope="col" style="text-align:right";><?php echo number_format(@$total_credit, 2);?></td>
+								<td scope="col" style="text-align:right";><?php echo $this->Money->moneyFormatIndia(@$total_debit, 2);?></td>
+								<td scope="col" style="text-align:right";><?php echo $this->Money->moneyFormatIndia(@$total_credit);?></td>
 							</tr>
 							<tr>
 								<td scope="col" colspan="4" style="text-align:right";><b>Closing Balance</b></td>
@@ -263,7 +263,7 @@ $this->set('title', 'Account Ledger report');
 									else{
 									@$closing_bal_type='';	
 									}
-									echo number_format(round(abs($closingBalance),2),2); echo ' '.$closing_bal_type;
+									echo $this->Money->moneyFormatIndia(round(abs($closingBalance),2)); echo ' '.$closing_bal_type;
 								?>
 								</b></td>
 								

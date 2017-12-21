@@ -78,7 +78,7 @@ $this->set('title', 'Profit & Loss Statement');
 													<td><?php echo $groupForPrintRow['name']; ?></td>
 													<td align="right">
 														<?php if($groupForPrintRow['balance']!=0){
-															echo abs($groupForPrintRow['balance']);
+															echo $this->Money->moneyFormatIndia(abs($groupForPrintRow['balance']));
 															$LeftTotal+=abs($groupForPrintRow['balance']);
 														} ?>
 													</td>
@@ -96,7 +96,7 @@ $this->set('title', 'Profit & Loss Statement');
 													<td>Opening Stock</td>
 													<td align="right">
 														<?php 
-														echo $openingValue;
+														echo $this->Money->moneyFormatIndia($openingValue);
 														$RightTotal+=$openingValue;
 														?>
 													</td>
@@ -108,7 +108,7 @@ $this->set('title', 'Profit & Loss Statement');
 													<td><?php echo $groupForPrintRow['name']; ?></td>
 													<td align="right">
 														<?php if($groupForPrintRow['balance']!=0){
-															echo abs($groupForPrintRow['balance']); 
+															echo $this->Money->moneyFormatIndia(abs($groupForPrintRow['balance'])); 
 															$RightTotal+=abs($groupForPrintRow['balance']); 
 														} ?>
 													</td>
@@ -119,7 +119,7 @@ $this->set('title', 'Profit & Loss Statement');
 													<td>Closing Stock</td>
 													<td align="right">
 														<?php 
-														echo $closingValue; 
+														echo $this->Money->moneyFormatIndia($closingValue); 
 														$RightTotal+=$closingValue; 
 														?>
 													</td>
@@ -138,7 +138,7 @@ $this->set('title', 'Profit & Loss Statement');
 											<tr>
 												<td>Gross Profit</td>
 												<td align="right">
-													<?php echo $totalDiff; $LeftTotal+=$totalDiff; ?>
+													<?php echo $this->Money->moneyFormatIndia($totalDiff); $LeftTotal+=$totalDiff; ?>
 												</td>
 											</tr>
 										</tbody>
@@ -152,7 +152,7 @@ $this->set('title', 'Profit & Loss Statement');
 											<tr>
 												<td>Gross Loss</td>
 												<td align="right">
-													<?php echo abs($totalDiff); $RightTotal+=abs($totalDiff); ?>
+													<?php echo $this->Money->moneyFormatIndia(abs($totalDiff)); $RightTotal+=abs($totalDiff); ?>
 												</td>
 											</tr>
 										</tbody>
@@ -168,7 +168,7 @@ $this->set('title', 'Profit & Loss Statement');
 										<tbody>
 											<tr>
 												<td><b>Total</b></td>
-												<td align="right"><b><?php echo $LeftTotal; ?></b></td>
+												<td align="right"><b><?php echo $this->Money->moneyFormatIndia($LeftTotal); ?></b></td>
 											</tr>
 										</tbody>
 									</table>
@@ -178,7 +178,7 @@ $this->set('title', 'Profit & Loss Statement');
 										<tbody>
 											<tr>
 												<td><b>Total</b></td>
-												<td align="right"><b><?php echo $RightTotal; ?></b></td>
+												<td align="right"><b><?php echo $this->Money->moneyFormatIndia($RightTotal); ?></b></td>
 											</tr>
 										</tbody>
 									</table>

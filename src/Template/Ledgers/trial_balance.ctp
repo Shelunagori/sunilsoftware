@@ -120,7 +120,7 @@ $this->set('title', 'Trial balance report');
 										<td scope="col"><?php echo @$TrialBalance->ledger->name;?></td>
 										<td scope="col" align="right">
 										<?php
-										    echo number_format($TrialBalance->debit_opening_balance, 2);
+										    echo $this->Money->moneyFormatIndia($TrialBalance->debit_opening_balance);
 											$closing_debit +=round($TrialBalance->debit_opening_balance,2);
 											$openingBalanceDebitTotal +=round($TrialBalance->debit_opening_balance,2);
 										?>
@@ -129,32 +129,32 @@ $this->set('title', 'Trial balance report');
 										<?php 
 											$closing_credit +=round($TrialBalance->credit_opening_balance,2);
 											$openingBalanceCreditTotal +=round($TrialBalance->credit_opening_balance,2);
-											echo number_format($TrialBalance->credit_opening_balance, 2);
+											echo $this->Money->moneyFormatIndia($TrialBalance->credit_opening_balance);
 										?>
 										</td>
 										<td scope="col" align="right">
 										<?php
 											$closing_debit +=round($TrialBalance->debit_transaction,2);
 											$transactionDebitTotal +=round($TrialBalance->debit_transaction,2);
-											echo number_format($TrialBalance->debit_transaction, 2);
+											echo $this->Money->moneyFormatIndia($TrialBalance->debit_transaction);
 										?>
 										</td>
 										<td scope="col" align="right">
 										<?php 
 											$closing_credit +=round($TrialBalance->credit_transaction,2);
 											$transactionCreditTotal +=round($TrialBalance->credit_transaction,2);
-										    echo number_format($TrialBalance->credit_transaction, 2);
+										    echo $this->Money->moneyFormatIndia($TrialBalance->credit_transaction);
 										?>
 										</td>
 										<td scope="col" align="right">
 										<?php
-											echo number_format(@$closing_debit, 2);
+											echo $this->Money->moneyFormatIndia(@$closing_debit);
 											$closingBalanceDebitTotal +=round($closing_debit,2);
 										?>
 										</td>
 										<td scope="col" align="right">
 										<?php 
-											echo number_format(@$closing_credit,2);
+											echo $this->Money->moneyFormatIndia(@$closing_credit);
 											$closingBalanceCreditTotal +=round($closing_credit,2);
 										?>
 										</td>
@@ -171,7 +171,7 @@ $this->set('title', 'Trial balance report');
 							<?php 
 								if(!empty($openingBalanceDebitTotal))
 								{
-									echo number_format(@$openingBalanceDebitTotal, 2);
+									echo $this->Money->moneyFormatIndia(@$openingBalanceDebitTotal);
 									$total1 =@$openingBalanceDebitTotal;
 								}
 							?>
@@ -180,8 +180,7 @@ $this->set('title', 'Trial balance report');
 							<?php 
 								if(!empty($openingBalanceCreditTotal))
 								{
-									
-									echo number_format(@$openingBalanceCreditTotal, 2);
+									echo $this->Money->moneyFormatIndia(@$openingBalanceCreditTotal);
 									$total2 =@$openingBalanceCreditTotal;
 								}
 							?>
@@ -190,16 +189,16 @@ $this->set('title', 'Trial balance report');
 							<?php 
 								if(!empty($transactionDebitTotal))
 								{
-									echo number_format(@$transactionDebitTotal, 2);
+									echo $this->Money->moneyFormatIndia(@$transactionDebitTotal);
 									@$total3 =@$transactionDebitTotal;
-								}
+								}				
 							?>
 							</th>
 							<th scope="col" style="text-align:right";>
 							<?php
 								if(!empty($transactionCreditTotal))
 								{
-									echo number_format(@$transactionCreditTotal, 2);
+									echo $this->Money->moneyFormatIndia(@$transactionCreditTotal);
 									$total4 =@$transactionCreditTotal;
 								}
 							?>
@@ -208,7 +207,7 @@ $this->set('title', 'Trial balance report');
 							<?php 
 								if(!empty($closingBalanceDebitTotal))
 								{
-									echo number_format(@$closingBalanceDebitTotal, 2);
+									echo $this->Money->moneyFormatIndia(@$closingBalanceDebitTotal);
 									$total5 =@$closingBalanceDebitTotal;
 								}
 							?>
@@ -217,7 +216,7 @@ $this->set('title', 'Trial balance report');
 							<?php 
 								if(!empty($closingBalanceCreditTotal))
 								{
-									echo number_format(@$closingBalanceCreditTotal, 2);
+									echo $this->Money->moneyFormatIndia(@$closingBalanceCreditTotal);
 									$total6 =@$closingBalanceCreditTotal;
 								}
 							?>
@@ -232,7 +231,7 @@ $this->set('title', 'Trial balance report');
 								{
 									if($totalDebit>0)
 									{ 
-									   echo number_format(@$totalDebit, 2);
+									   echo $this->Money->moneyFormatIndia(@$totalDebit);
 											$openingBalanceDebitTotal +=round($totalDebit,2);
 											$total1 +=$totalDebit;
 									}
@@ -245,7 +244,7 @@ $this->set('title', 'Trial balance report');
 								{
 									if($totalDebit<0)
 									{
-									   echo number_format(@$totalDebit, 2);
+									   echo $this->Money->moneyFormatIndia(@$totalDebit);
 									   $openingBalanceCreditTotal +=round($totalDebit,2);
 									   $total2 +=$totalDebit;
 									}
@@ -259,7 +258,7 @@ $this->set('title', 'Trial balance report');
 								  { 
 									if($totalDebit>0)
 									{
-										echo number_format(@$totalDebit, 2);
+										echo $this->Money->moneyFormatIndia(@$totalDebit);
 										$transactionDebitTotal +=round($totalDebit,2);
 										@$total3 +=$totalDebit;
 									}
@@ -273,7 +272,7 @@ $this->set('title', 'Trial balance report');
 								{
 									if($totalDebit<0)
 									{
-										echo number_format(@$totalDebit, 2);
+										echo $this->Money->moneyFormatIndia(@$totalDebit);
 										$transactionCreditTotal +=round($totalDebit,2);
 										$total4 +=$totalDebit;
 									}
@@ -287,7 +286,7 @@ $this->set('title', 'Trial balance report');
 								  { 
 									if($totalDebit>0)
 									{
-										echo number_format(@$totalDebit, 2);
+										echo $this->Money->moneyFormatIndia(@$totalDebit);
 										//$transactionDebitTotal +=round($totalDebit,2);
 										@$total5 +=$totalDebit;
 									}
@@ -311,7 +310,7 @@ $this->set('title', 'Trial balance report');
 									{
 										$debit_diff =@$openingBalanceCreditTotal-$openingBalanceDebitTotal;
 									}
-									echo number_format(@$debit_diff, 2);
+									echo $this->Money->moneyFormatIndia(@$debit_diff);
 								}
 							?>
 							</th>
@@ -319,7 +318,7 @@ $this->set('title', 'Trial balance report');
 							<?php 
 								if(@$coreVariable[fyValidFrom]<$from_date)
 								{
-									echo number_format(@$cedit_diff, 2);
+									echo $this->Money->moneyFormatIndia(@$cedit_diff);
 								}
 							?>
 							</th>
@@ -335,7 +334,7 @@ $this->set('title', 'Trial balance report');
 									{
 										$debit_diff1=$transactionCreditTotal-$transactionDebitTotal;
 									}
-									echo round(@$debit_diff1,2);
+									echo $this->Money->moneyFormatIndia(round(@$debit_diff1,2));
 								}
 							?>
 							</th>
@@ -343,7 +342,7 @@ $this->set('title', 'Trial balance report');
 							<?php 
 								if(@$coreVariable[fyValidFrom]>$from_date && @$coreVariable[fyValidFrom]<$to_date || @$coreVariable[fyValidFrom]==$from_date || @$coreVariable[fyValidFrom]==$to_date)
 								{
-									echo round(@$cedit_diff1,2);
+									echo $this->Money->moneyFormatIndia(round(@$cedit_diff1,2));
 								}
 							?>
 							</th>
@@ -352,7 +351,7 @@ $this->set('title', 'Trial balance report');
 							<?php 
 								if(@$coreVariable[fyValidFrom]>$from_date && @$coreVariable[fyValidFrom]<$to_date || @$coreVariable[fyValidFrom]==$from_date || @$coreVariable[fyValidFrom]==$to_date)
 								{
-									echo round(@$cedit_diff1,2);
+									echo $this->Money->moneyFormatIndia(round(@$cedit_diff1,2));
 								}
 							?></th>
 						</tr>
@@ -360,32 +359,32 @@ $this->set('title', 'Trial balance report');
 							<th scope="col">Total</th>
 							<th scope="col" style="text-align:right";>
 							<?php 
-								echo number_format(@$total1+@$debit_diff, 2);
+								echo $this->Money->moneyFormatIndia(@$total1+@$debit_diff);
 							?>
 							</th>
 							<th scope="col" style="text-align:right";>
 							<?php 
-								echo number_format(@$total2+@$cedit_diff, 2);
+								echo $this->Money->moneyFormatIndia(@$total2+@$cedit_diff);
 							?>
 							</th>
 							<th scope="col" style="text-align:right";>
 							<?php 
-								echo number_format(@$total3+@$debit_diff1, 2);
+								echo $this->Money->moneyFormatIndia(@$total3+@$debit_diff1);
 							?>
 							</th>
 							<th scope="col" style="text-align:right";>
 							<?php
-								echo number_format(@$total4+@$cedit_diff1, 2);
+								echo $this->Money->moneyFormatIndia(@$total4+@$cedit_diff1);
 							?>
 							</th>
 							<th scope="col" style="text-align:right";>
 							<?php 
-								echo number_format(@$total5, 2);
+								echo $this->Money->moneyFormatIndia(@$total5);
 							?>
 							</th>
 							<th scope="col" style="text-align:right";>
 							<?php 
-								echo number_format(@$total6+@$cedit_diff1, 2);
+								echo $this->Money->moneyFormatIndia(@$total6+@$cedit_diff1);
 							?>
 							</th>
 						</tr>
