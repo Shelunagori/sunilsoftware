@@ -4,4 +4,6 @@
  */
 
 $this->set('title', 'Dashboard');
+
+echo $this->Money->moneyFormatIndia('13364230.36');
 ?>
