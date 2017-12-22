@@ -563,6 +563,7 @@ $this->set('title', 'Debit Note Voucher');
 			$('.refDrCr').die().live('change',function(){
 				var SelectedTr=$(this).closest('tr.MainTr');
 				renameRefRows(SelectedTr);
+				calculation(SelectedTr);
 			});
 			
 			$('.refType').die().live('change',function(){
