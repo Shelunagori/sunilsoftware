@@ -341,7 +341,10 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			$('.delete-tr-ref').die().live('click',function() 
 			{	var SelectedTr=$(this).closest('tr.MainTr');
 				$(this).closest('tr').remove();
+				calculation(SelectedTr);
 				renameMainRows();
+				renameRefRows(SelectedTr);
+				
 			});
 			
 			$('.paymentType').die().live('change',function(){
@@ -609,25 +612,39 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			{ 
 				 renameMainRows();
 			});
-			
-			$('.calculation').die().live('keyup, change',function()
+			$('.calculation').die().live('keyup',function()
 			{ 
 				var SelectedTr=$(this).closest('tr.MainTr');
-				var total_debit=0;var total_credit=0; var remaining=0;
+				calculation(SelectedTr);
+				
+			});
+			$('.calculation').die().live('change',function()
+			{ 
+				var SelectedTr=$(this).closest('tr.MainTr');
+				calculation(SelectedTr);
+				
+			});
+			function calculation(SelectedTr)
+			{
+				var total_debit=0;var total_credit=0; var remaining=0; var i=0;
 				SelectedTr.find('td:nth-child(2) div.window table tbody tr').each(function(){
-					var Dr_Cr=$(this).find('td:nth-child(4) select option:selected').val();
-					var amt= parseFloat($(this).find('td:nth-child(3) input').val());
-					if(!amt){ amt=0; }
+				var Dr_Cr=$(this).find('td:nth-child(4) select option:selected').val();
+				//console.log(Dr_Cr);
+				var amt= parseFloat($(this).find('td:nth-child(3) input').val());
+				if(!amt){amt=0; }
 					if(Dr_Cr=='Dr'){
 						total_debit=round(total_debit+amt, 2);
+						
 					}
 					else if(Dr_Cr=='Cr'){
 						total_credit=round(total_credit+amt, 2);
+						//console.log(total_credit);
 					}
 					
-					remaining=round(total_debit-total_credit,2);
+					remaining=round(total_debit-total_credit, 2);
 					
 					if(remaining>0){
+						//console.log(remaining);
 						$(this).closest('table').find(' tfoot td:nth-child(2) input.total').val(remaining);
 						$(this).closest('table').find(' tfoot td:nth-child(3) input.total_type').val('Dr');
 					}
@@ -637,12 +654,15 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 						$(this).closest('table').find(' tfoot td:nth-child(3) input.total_type').val('Cr');
 					}
 					else{
-						$(this).closest('table').find(' tfoot td:nth-child(2) input.total').val('0');
-						$(this).closest('table').find(' tfoot td:nth-child(3) input.total_type').val('');	
+					$(this).closest('table').find(' tfoot td:nth-child(2) input.total').val('0');
+					$(this).closest('table').find(' tfoot td:nth-child(3) input.total_type').val('');	
 					}
+					
 				});
 				renameRefRows(SelectedTr);
-			});
+					
+				i++;
+			}
 			
 			ComponentsPickers.init();	
 		});

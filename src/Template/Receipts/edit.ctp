@@ -506,6 +506,8 @@ $this->set('title', 'Receipt Voucher');
 			$('.delete-tr-ref').die().live('click',function() 
 			{	var SelectedTr=$(this).closest('tr.MainTr');
 				$(this).closest('tr').remove();
+				renameRefRows(SelectedTr);
+				calculation(SelectedTr);
 				renameMainRows();
 			});
 			
