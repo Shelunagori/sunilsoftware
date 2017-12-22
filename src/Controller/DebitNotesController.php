@@ -332,7 +332,7 @@ class DebitNotesController extends AppController
             if ($this->DebitNotes->save($debitNote)) {
 			$query_delete = $this->DebitNotes->AccountingEntries->query();
 					$query_delete->delete()
-					->where(['credit_note_id' => $debitNote->id,'company_id'=>$company_id])
+					->where(['debit_note_id' => $debitNote->id,'company_id'=>$company_id])
 					->execute();
 			
 			foreach($debitNote->debit_note_rows as $debit_note_row)

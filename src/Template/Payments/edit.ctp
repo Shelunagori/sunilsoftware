@@ -168,7 +168,7 @@ $this->set('title', 'Payment Voucher');
 															echo $this->Form->input('payment_rows.'.$i.'.reference_details.'.$j.'.due_days', ['label' => false,'class' => 'form-control input-sm numberOnly rightAligntextClass dueDays','title'=>'Due Days','value'=>$reference_detail->due_days, 'type'=>'text']); ?><?php } ?>
 														</td> 
 														<td  width="5%" align="right">
-															<a class="delete-tr-ref" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
+															<a class="delete-tr-ref calculation" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
 														</td>
 													</tr>
 													<?php $j++;} 
@@ -190,10 +190,10 @@ $this->set('title', 'Payment Voucher');
 														<td colspan="2"><input type="hidden" id="htotal" value="<?php echo $total;?>">
 														<a role="button" class="addRefRow">Add Row</a>
 														</td>
-														<td>
+														<td valign="top">
 														<input type="text" class="form-control input-sm rightAligntextClass total calculation noBorder" name="payment_rows[<?php echo $i;?>][total]" id="payment_rows-<?php echo $i;?>-total" aria-invalid="true" aria-describedby="payment_rows-<?php echo $i;?>-total-error" value="<?php echo $total;?>" readonly>
 														</td>
-														<td><input type="text" class="form-control input-sm total_type calculation noBorder" readonly value="<?php echo @$type;?>" name="payment_rows<?php echo $i;?>reference_details<?php echo $i;?>type_cr_dr"></td>
+														<td valign="top"><input type="text" class="form-control input-sm total_type calculation noBorder" readonly value="<?php echo @$type;?>" name="payment_rows<?php echo $i;?>reference_details<?php echo $i;?>type_cr_dr"></td>
 													</tr>
 												</tfoot>
 												</table>
@@ -505,6 +505,8 @@ $this->set('title', 'Payment Voucher');
 			{	var SelectedTr=$(this).closest('tr.MainTr');
 				$(this).closest('tr').remove();
 				renameMainRows();
+				renameRefRows(SelectedTr);
+				calculation(SelectedTr);
 			});
 			
 			$('.paymentType').die().live('change',function(){
@@ -530,6 +532,7 @@ $this->set('title', 'Payment Voucher');
 			$('.refDrCr').die().live('change',function(){
 				var SelectedTr=$(this).closest('tr.MainTr');
 				renameRefRows(SelectedTr);
+				calculation(SelectedTr);
 			});
 			
 			$('.refType').die().live('change',function(){
@@ -633,7 +636,7 @@ $this->set('title', 'Payment Voucher');
 					SelectedTr.find('.BankValueDefine').val(bankValue);
                     var windowContainer=$(this).closest('td').find('div.window');
 					windowContainer.html('');
-					windowContainer.html('<table width=90% class=refTbl><tbody></tbody><tfoot><tr style=border-top:double#a5a1a1><td colspan=2><a role=button class=addRefRow>Add Row</a></td><td>$total_input</td><td>$total_type</td></tr></tfoot></table>');
+					windowContainer.html('<table width=90% class=refTbl><tbody></tbody><tfoot><tr style=border-top:double#a5a1a1><td colspan=2><a role=button class=addRefRow>Add Row</a></td><td valign=top>$total_input</td><td valign=top>$total_type</td></tr></tfoot></table>');
 					AddRefRow(SelectedTr);
 				}
 				else if(openWindow=='bank'){

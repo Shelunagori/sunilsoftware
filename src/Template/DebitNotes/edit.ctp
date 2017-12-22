@@ -202,11 +202,11 @@ $this->set('title', 'Debit Note Voucher');
 														<td colspan="2"><input type="hidden" id="htotal" value="<?php echo $total;?>">
 														<a role="button" class="addRefRow">Add Row</a>
 														</td>
-														<td>
+														<td valign= "top">
 														<input type="text" class="form-control input-sm rightAligntextClass total calculation noBorder" name="debit_note_rows[<?php echo $i;?>][total]" id="debit_note_rows-<?php echo $i;?>-total" aria-invalid="true" aria-describedby="debit_note_rows-<?php echo $i;?>-total-error" value="<?php echo $total;?>" readonly>
 														</td>
 																									
-														<td><input type="text" class="form-control input-sm total_type calculation noBorder" readonly value="<?php echo @$type;?>" name="debit_note_rows<?php echo $i;?>reference_details<?php echo $i;?>type_cr_dr"></td>
+														<td valign= "top"><input type="text" class="form-control input-sm total_type calculation noBorder" readonly value="<?php echo @$type;?>" name="debit_note_rows<?php echo $i;?>reference_details<?php echo $i;?>type_cr_dr"></td>
 													</tr>
 												</tfoot>
 												</table>
@@ -668,7 +668,7 @@ $this->set('title', 'Debit Note Voucher');
 					SelectedTr.find('.BankValueDefine').val(bankValue);
                     var windowContainer=$(this).closest('td').find('div.window');
 					windowContainer.html('');
-					windowContainer.html('<table width=90% class=refTbl><tbody></tbody><tfoot><tr style=border-top:double#a5a1a1><td colspan=2><a role=button class=addRefRow>Add Row</a></td><td>$total_input</td><td>$total_type</td></tr></tfoot></table>');
+					windowContainer.html('<table width=90% class=refTbl><tbody></tbody><tfoot><tr style=border-top:double#a5a1a1><td colspan=2><a role=button class=addRefRow>Add Row</a></td><td valign=top>$total_input</td><td valign=top>$total_type</td></tr></tfoot></table>');
 					AddRefRow(SelectedTr);
 				}
 				else if(openWindow=='bank'){
