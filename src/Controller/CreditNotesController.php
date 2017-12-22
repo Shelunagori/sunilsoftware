@@ -283,39 +283,7 @@ class CreditNotesController extends AppController
             'contain' => ['CreditNoteRows'=>['ReferenceDetails']]
         ]);
 		$company_id=$this->Auth->User('session_company_id');
-		
-		$refDropDown =[];
-		foreach($creditNote->credit_note_rows as $credit_note_row)
-		{
-			if(!empty($credit_note_row->reference_details))
-			{
-				$query = $this->CreditNotes->CreditNoteRows->ReferenceDetails->find();
-				$query->select(['total_debit' => $query->func()->sum('ReferenceDetails.debit'),'total_credit' => $query->func()->sum('ReferenceDetails.credit')])
-				->where(['ReferenceDetails.ledger_id'=>$credit_note_row->ledger_id,'ReferenceDetails.type !='=>'On Account'])
-				->group(['ReferenceDetails.ref_name'])
-				->autoFields(true);
-				$referenceDetails=$query;
-				$option=[];
-				foreach($referenceDetails as $referenceDetail){
-					$remider=$referenceDetail->total_debit-$referenceDetail->total_credit;
-					if($remider>0){
-						$bal=abs($remider).' Dr';
-					}else if($remider<0){
-						$bal=abs($remider).' Cr';
-					}
-					if($referenceDetail->total_debit!=$referenceDetail->total_credit){
-						$option[] =['text' =>$referenceDetail->ref_name.' ('.$bal.')', 'value' => $referenceDetail->ref_name];
-						 
-					}
-				}
-				$refDropDown[$credit_note_row->id] = $option;
-			}
-		}
-		
-		
-		
-		
-		
+
 		$originalcreditNote=$creditNote;
         if ($this->request->is('put','patch','post')) {
 		
@@ -324,14 +292,20 @@ class CreditNotesController extends AppController
 			foreach($originalcreditNote->credit_note_rows as $originalCreditNote_rows){
 				$orignalCreditNote_ids[]=$originalCreditNote_rows->id;
 			}
-			$this->CreditNotes->CreditNoteRows->ReferenceDetails->deleteAll(['ReferenceDetails.credit_note_row_id IN'=>$orignalCreditNote_ids]);
-			 /* $query_update = $this->CreditNotes->CreditNoteRows->query();
+			
+		$this->CreditNotes->CreditNoteRows->ReferenceDetails->deleteAll(['ReferenceDetails.credit_note_row_id IN'=>$orignalCreditNote_ids]);
+			$query_update = $this->CreditNotes->CreditNoteRows->query();
 					$query_update->update()
 					->set(['mode_of_payment' => '', 'cheque_no' => '', 'cheque_date' => ''])
 					->where(['credit_note_id' => $creditNote->id])
-					->execute();  */
+					->execute();
+				
 			//GET ORIGINAL DATA AND DELETE REFERENCE DATA//
 			//exit;
+		
+			 $creditNote = $this->CreditNotes->get($id, [
+            'contain' => ['CreditNoteRows'=>['ReferenceDetails']]
+        ]);
 		
 		
 			$creditNote = $this->CreditNotes->patchEntity($creditNote, $this->request->getData(),['associated' => ['CreditNoteRows','CreditNoteRows.ReferenceDetails']]);
@@ -339,8 +313,6 @@ class CreditNotesController extends AppController
 			$creditNote->transaction_date=date('Y-m-d',strtotime($tdate));
 		 
 		 
-		// pr($creditNote->toArray());
-		// exit;
 		 
 			//transaction date for credit note code start here--
 			foreach($creditNote->credit_note_rows as $credit_note_row)
@@ -369,8 +341,8 @@ class CreditNotesController extends AppController
 					$accountEntry->credit                     = @$credit_note_row->credit;
 					$accountEntry->transaction_date           = $creditNote->transaction_date;
 					$accountEntry->company_id                 = $company_id;
-					$accountEntry->credit_note_id                 = $creditNote->id;
-					$accountEntry->credit_note_row_id             = $credit_note_row->id;
+					$accountEntry->credit_note_id             = $creditNote->id;
+					$accountEntry->credit_note_row_id         = $credit_note_row->id;
 					$this->CreditNotes->AccountingEntries->save($accountEntry);
 				}
 
@@ -382,6 +354,34 @@ class CreditNotesController extends AppController
             $this->Flash->error(__('The Credit Note could not be saved. Please, try again.'));
         }
 		
+				
+		$refDropDown =[];
+		foreach($creditNote->credit_note_rows as $credit_note_row)
+		{
+			if(!empty($credit_note_row->reference_details))
+			{
+				$query = $this->CreditNotes->CreditNoteRows->ReferenceDetails->find();
+				$query->select(['total_debit' => $query->func()->sum('ReferenceDetails.debit'),'total_credit' => $query->func()->sum('ReferenceDetails.credit')])
+				->where(['ReferenceDetails.ledger_id'=>$credit_note_row->ledger_id,'ReferenceDetails.type !='=>'On Account'])
+				->group(['ReferenceDetails.ref_name'])
+				->autoFields(true);
+				$referenceDetails=$query;
+				$option=[];
+				foreach($referenceDetails as $referenceDetail){
+					$remider=$referenceDetail->total_debit-$referenceDetail->total_credit;
+					if($remider>0){
+						$bal=abs($remider).' Dr';
+					}else if($remider<0){
+						$bal=abs($remider).' Cr';
+					}
+					if($referenceDetail->total_debit!=$referenceDetail->total_credit){
+						$option[] =['text' =>$referenceDetail->ref_name.' ('.$bal.')', 'value' => $referenceDetail->ref_name];
+						 
+					}
+				}
+				$refDropDown[$credit_note_row->id] = $option;
+			}
+		}
 		
 		//frst row options
 		$bankParentGroups = $this->CreditNotes->CreditNoteRows->Ledgers->AccountingGroups->find()
@@ -422,7 +422,6 @@ class CreditNotesController extends AppController
 		
 		foreach($partyParentGroups as $partyParentGroup)
 		{
-			
 			$partyChildGroups = $this->CreditNotes->CreditNoteRows->Ledgers->AccountingGroups->find('children', ['for' => $partyParentGroup->id]);
 			$partyGroups[]=$partyParentGroup->id;
 			foreach($partyChildGroups as $partyChildGroup){

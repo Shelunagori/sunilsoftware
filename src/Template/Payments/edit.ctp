@@ -8,6 +8,9 @@ $this->set('title', 'Payment Voucher');
 .noBorder{
 	border:none;
 }
+.table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
+     vertical-align: top !important; 
+}
 </style>
 
 <div class="row">
@@ -69,7 +72,7 @@ $this->set('title', 'Payment Voucher');
 									<tr class="MainTr" row_no="<?php echo $i;?>">
 										<td width="10%">
 											<?php 
-											echo $this->Form->input('payment_rows.'.$i.'.id',['value'=>$paymentRows->id]);
+											echo $this->Form->input('payment_rows.'.$i.'.id',['value'=>$paymentRows->id,'class'=>'hidden']);
 											
 												if($i==0)
 											{
@@ -116,8 +119,6 @@ $this->set('title', 'Payment Voucher');
 															echo $this->Form->input('payment_rows.'.$i.'.reference_details.'.$j.'.company_id', ['type'=>'hidden','label' => false,'class' => 'form-control input-sm companyIdContainer','value'=>$reference_detail->company_id]); ?>
 															
 															<?php 
-															echo $this->Form->input('payment_rows.'.$i.'.reference_details.'.$j.'.transaction_date', ['type'=>'hidden','label' => false,'class' => 'form-control input-sm companyIdContainer','value'=> date('d-m-Y', strtotime($reference_detail->transaction_date))]); ?>
-															<?php 
 															echo $this->Form->input('payment_rows.'.$i.'.reference_details.'.$j.'.type', ['options'=>$option_ref,'label' => false,'class' => 'form-control input-sm refType','required'=>'required','value'=>$reference_detail->type]); ?>
 														</td>
 														
@@ -160,11 +161,11 @@ $this->set('title', 'Payment Voucher');
 														</td>
 														<td width="10%" style="padding-left:0px;" valign="top">
 															<?php 
-															echo $this->Form->input('payment_rows.'.$i.'.reference_details.'.$j.'.type_cr_dr', ['options'=>['Dr'=>'Dr','Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm  calculation refDrCr','value'=>$cr_dr]); ?>
+															echo $this->Form->input('type_cr_dr', ['options'=>['Dr'=>'Dr','Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm  calculation refDrCr','value'=>$cr_dr]); ?>
 														</td>
 														<td width="15%" style="padding-left:0px;"valign="top">
 														<?php if($reference_detail->type=='New Ref' || $reference_detail->type=='Advance'){ 
-															echo $this->Form->input('payment_rows.'.$i.'.reference_details.'.$j.'.due_days', ['label' => false,'class' => 'form-control input-sm numberOnly rightAligntextClass dueDays','placeholder'=>'Due Days','value'=>$reference_detail->due_days, 'type'=>'text']); ?><?php } ?>
+															echo $this->Form->input('payment_rows.'.$i.'.reference_details.'.$j.'.due_days', ['label' => false,'class' => 'form-control input-sm numberOnly rightAligntextClass dueDays','title'=>'Due Days','value'=>$reference_detail->due_days, 'type'=>'text']); ?><?php } ?>
 														</td> 
 														<td  width="5%" align="right">
 															<a class="delete-tr-ref" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
@@ -189,18 +190,17 @@ $this->set('title', 'Payment Voucher');
 														<td colspan="2"><input type="hidden" id="htotal" value="<?php echo $total;?>">
 														<a role="button" class="addRefRow">Add Row</a>
 														</td>
-														<td valign="top">
+														<td>
 														<input type="text" class="form-control input-sm rightAligntextClass total calculation noBorder" name="payment_rows[<?php echo $i;?>][total]" id="payment_rows-<?php echo $i;?>-total" aria-invalid="true" aria-describedby="payment_rows-<?php echo $i;?>-total-error" value="<?php echo $total;?>" readonly>
 														</td>
-														<td valign="top"><input type="text" class="form-control input-sm total_type calculation noBorder" readonly value="<?php echo @$type;?>" name="payment_rows<?php echo $i;?>reference_details<?php echo $i;?>type_cr_dr"></td>
+														<td><input type="text" class="form-control input-sm total_type calculation noBorder" readonly value="<?php echo @$type;?>" name="payment_rows<?php echo $i;?>reference_details<?php echo $i;?>type_cr_dr"></td>
 													</tr>
 												</tfoot>
 												</table>
 												
 											<?php } ?>
 											<?php
-												if(!empty($paymentRows->mode_of_payment)){
-											
+											if(!empty($paymentRows->mode_of_payment)){
 											?>
 											<table width='90%'>
 												<tbody>
@@ -286,7 +286,6 @@ $this->set('title', 'Payment Voucher');
 			<td width="20%" valign="top"> 
 				<input type="hidden" class="ledgerIdContainer" />
 				<input type="hidden" class="companyIdContainer" />
-				<input type="hidden" class="transaction_date_ref" />
 				<?php 
 				echo $this->Form->input('type', ['options'=>$option_ref,'label' => false,'class' => 'form-control input-sm refType','required'=>'required']); ?>
 			</td>
@@ -506,8 +505,6 @@ $this->set('title', 'Payment Voucher');
 			{	var SelectedTr=$(this).closest('tr.MainTr');
 				$(this).closest('tr').remove();
 				renameMainRows();
-				renameRefRows(SelectedTr);
-				calculation(SelectedTr);
 			});
 			
 			$('.paymentType').die().live('change',function(){
@@ -576,11 +573,8 @@ $this->set('title', 'Payment Voucher');
 					$(this).closest('tr').find('.debitBox').show();
 					$(this).closest('tr').find('.creditBox').hide();
 				}
-
 				renameMainRows();
 				
-				//var SelectedTr=$(this).closest('tr.MainTr');
-				//renameRefRows(SelectedTr);
 			});
 			
 			hideShow();
@@ -606,7 +600,7 @@ $this->set('title', 'Payment Voucher');
 			}
 			
 			
-			//$(document).ready(ledgerShow);
+			$(document).ready(ledgerShow);
 			function ledgerShow()
 			{
 			    $('#MainTable tbody#MainTbody tr.MainTr').each(function(){
@@ -632,12 +626,10 @@ $this->set('title', 'Payment Voucher');
 			}
 			$('.ledger').die().live('change',function(){
 				var openWindow=$(this).find('option:selected').attr('open_window');
-				//var due_days=$(this).find('option:selected').attr('default_days');
+				var due_days=$(this).find('option:selected').attr('default_days');
 				if(openWindow=='party'){
 				    var bankValue=1;
 					var SelectedTr=$(this).closest('tr.MainTr');
-					
-					var due_days=SelectedTr.find('td:nth-child(2) select.ledger option:selected').attr('default_days');
 					SelectedTr.find('.BankValueDefine').val(bankValue);
                     var windowContainer=$(this).closest('td').find('div.window');
 					windowContainer.html('');
@@ -683,7 +675,7 @@ $this->set('title', 'Payment Voucher');
 				$('#MainTable tbody#MainTbody tr.MainTr').each(function(){
 					$(this).attr('row_no',i);
 					var cr_dr=$(this).find('td:nth-child(1) select.cr_dr option:selected').val();
-					$(this).find('td:nth-child(1) input[type=hidden]').attr({name:'payment_rows['+i+'][id]',id:'payment_rows-'+i+'-id'});
+					$(this).find('td:nth-child(1) input.hidden').attr({name:'payment_rows['+i+'][id]',id:'payment_rows-'+i+'-id'});
 					var is_cash_bank=$(this).find('td:nth-child(2) option:selected').attr('bank_and_cash');
 					$(this).find('td:nth-child(1) select.cr_dr').attr({name:'payment_rows['+i+'][cr_dr]',id:'payment_rows-'+i+'-cr_dr'});
 					
@@ -694,18 +686,18 @@ $this->set('title', 'Payment Voucher');
 					$(this).find('td:nth-child(4) input.creditBox').attr({name:'payment_rows['+i+'][credit]',id:'payment_rows-'+i+'-credit'});
 					
 					if(cr_dr=='Dr'){
-						//$(this).find('td:nth-child(3) input.debitBox').rules('add', 'required');
-						//$(this).find('td:nth-child(4) input.creditBox').rules('remove');
-						//$(this).find('td:nth-child(4) span.help-block-error').remove();
+						$(this).find('td:nth-child(3) input.debitBox').rules('add', 'required');
+						$(this).find('td:nth-child(4) input.creditBox').rules('remove', 'required');
+						$(this).find('td:nth-child(4) span.help-block-error').remove();
 						var debit_amt=parseFloat($(this).find('td:nth-child(3) input.debitBox').val());
 						if(!debit_amt){
 							debit_amt=0;
 						}
 						main_debit=round(main_debit+debit_amt, 2);
 					}else{
-						//$(this).find('td:nth-child(3) input.debitBox').rules('remove');
-						//$(this).find('td:nth-child(3) span.help-block-error').remove();
-						//$(this).find('td:nth-child(4) input.creditBox').rules('add', 'required');
+						$(this).find('td:nth-child(3) input.debitBox').rules('remove', 'required');
+						$(this).find('td:nth-child(3) span.help-block-error').remove();
+						$(this).find('td:nth-child(4) input.creditBox').rules('add', 'required');
 						var credit_amt=parseFloat($(this).find('td:nth-child(4) input.creditBox').val());
 						if(!credit_amt){
 							credit_amt=0;
@@ -716,6 +708,14 @@ $this->set('title', 'Payment Voucher');
 						}
 					}
 					i++;
+					var type=$(this).find('td:nth-child(2) option:selected').attr('open_window'); 
+					var SelectedTr=$(this).closest('tr.MainTr');
+					if(type=='party'){
+						renameRefRows(SelectedTr);
+					}
+					if(type=='bank'){
+						renameBankRows(SelectedTr);
+					}
 				});
 				$('#MainTable tfoot tr td:nth-child(2) input#totalMainDr').val(round(main_debit,2));
 				$('#MainTable tfoot tr td:nth-child(3) input#totalMainCr').val(round(main_credit,2));
@@ -774,7 +774,6 @@ $this->set('title', 'Payment Voucher');
 			}
 			function renameRefRows(SelectedTr){
 				var i=0;
-				var Ref_date=$('.transaction_date').val();
 				
 				var ledger_id=SelectedTr.find('td:nth-child(2) select.ledger').val();
 				
@@ -789,30 +788,29 @@ $this->set('title', 'Payment Voucher');
 				
 				SelectedTr.find('input.ledgerIdContainer').val(ledger_id);
 				SelectedTr.find('input.companyIdContainer').val(".$company_id.");
-				SelectedTr.find('input.transaction_date_ref').val(Ref_date);
 				var row_no=SelectedTr.attr('row_no');
 				if(SelectedTr.find('td:nth-child(2) div.window table tbody tr').length>0){
-					SelectedTr.find('td:nth-child(2) div.window table tbody tr').each(function(){
-						$(this).find('td:nth-child(1) input.companyIdContainer').attr({name:'payment_rows['+row_no+'][reference_details]['+i+'][company_id]',id:'payment_rows-'+row_no+'-reference_details-'+i+'-company_id'});
-						$(this).find('td:nth-child(1) input.ledgerIdContainer').attr({name:'payment_rows['+row_no+'][reference_details]['+i+'][ledger_id]',id:'payment_rows-'+row_no+'-reference_details-'+i+'-ledger_id'});
-						$(this).find('td:nth-child(1) input.transaction_date_ref').attr({name:'payment_rows['+row_no+'][reference_details]['+i+'][transaction_date]',id:'payment_rows-'+row_no+'-reference_details-'+i+'-transaction_date'});
-						$(this).find('td:nth-child(1) 	select.refType').attr({name:'payment_rows['+row_no+'][reference_details]['+i+'][type]',id:'payment_rows-'+row_no+'-reference_details-'+i+'-type'});
-						var is_select=$(this).find('td:nth-child(2) select.refList').length;
-						var is_input=$(this).find('td:nth-child(2) input.ref_name').length;
-						if(is_select){
-							$(this).find('td:nth-child(2) select.refList').attr({name:'payment_rows['+row_no+'][reference_details]['+i+'][ref_name]',id:'payment_rows-'+row_no+'-reference_details-'+i+'-ref_name'}).rules('add', 'required');
-						}else if(is_input){
-							$(this).find('td:nth-child(2) input.ref_name').attr({name:'payment_rows['+row_no+'][reference_details]['+i+'][ref_name]',id:'payment_rows-'+row_no+'-reference_details-'+i+'-ref_name'}).rules('add', 'required');
-							$(this).find('td:nth-child(5) input.dueDays').attr({name:'payment_rows['+row_no+'][reference_details]['+i+'][due_days]',id:'payment_rows-'+row_no+'-reference_details-'+i+'-due_days'});
-						}
-						var Dr_Cr=$(this).find('td:nth-child(4) select option:selected').val();
-						if(Dr_Cr=='Dr'){
-							$(this).find('td:nth-child(3) input').attr({name:'payment_rows['+row_no+'][reference_details]['+i+'][debit]',id:'payment_rows-'+row_no+'-reference_details-'+i+'-debit'}).rules('add', 'required');
-						}else{
-							$(this).find('td:nth-child(3) input').attr({name:'payment_rows['+row_no+'][reference_details]['+i+'][credit]',id:'payment_rows-'+row_no+'-reference_details-'+i+'-credit'}).rules('add', 'required');
-						}
-						i++;
-					});
+				SelectedTr.find('td:nth-child(2) div.window table tbody tr').each(function(){
+					$(this).find('td:nth-child(1) input.companyIdContainer').attr({name:'payment_rows['+row_no+'][reference_details]['+i+'][company_id]',id:'payment_rows-'+row_no+'-reference_details-'+i+'-company_id'});
+					$(this).find('td:nth-child(1) input.ledgerIdContainer').attr({name:'payment_rows['+row_no+'][reference_details]['+i+'][ledger_id]',id:'payment_rows-'+row_no+'-reference_details-'+i+'-ledger_id'});
+					
+					$(this).find('td:nth-child(1) select.refType').attr({name:'payment_rows['+row_no+'][reference_details]['+i+'][type]',id:'payment_rows-'+row_no+'-reference_details-'+i+'-type'});
+					var is_select=$(this).find('td:nth-child(2) select.refList').length;
+					var is_input=$(this).find('td:nth-child(2) input.ref_name').length;
+					if(is_select){
+						$(this).find('td:nth-child(2) select.refList').attr({name:'payment_rows['+row_no+'][reference_details]['+i+'][ref_name]',id:'payment_rows-'+row_no+'-reference_details-'+i+'-ref_name'}).rules('add', 'required');
+					}else if(is_input){
+						$(this).find('td:nth-child(2) input.ref_name').attr({name:'payment_rows['+row_no+'][reference_details]['+i+'][ref_name]',id:'payment_rows-'+row_no+'-reference_details-'+i+'-ref_name'}).rules('add', 'required');
+						$(this).find('td:nth-child(5) input.dueDays').attr({name:'payment_rows['+row_no+'][reference_details]['+i+'][due_days]',id:'payment_rows-'+row_no+'-reference_details-'+i+'-due_days'});
+					}
+					var Dr_Cr=$(this).find('td:nth-child(4) select option:selected').val();
+					if(Dr_Cr=='Dr'){
+						$(this).find('td:nth-child(3) input').attr({name:'payment_rows['+row_no+'][reference_details]['+i+'][debit]',id:'payment_rows-'+row_no+'-reference_details-'+i+'-debit'}).rules('add', 'required');
+					}else{
+						$(this).find('td:nth-child(3) input').attr({name:'payment_rows['+row_no+'][reference_details]['+i+'][credit]',id:'payment_rows-'+row_no+'-reference_details-'+i+'-credit'}).rules('add', 'required');
+					}
+					i++;
+				});
 				var total_type=SelectedTr.find('td:nth-child(2) div.window table.refTbl tfoot tr td:nth-child(3) input.total_type').val();
 					if(total_type=='Dr'){
 					 eqlClass=eqlClassDr;

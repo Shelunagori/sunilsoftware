@@ -8,6 +8,9 @@ $this->set('title', 'Receipt Voucher');
 .noBorder{
 	border:none;
 }
+.table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
+     vertical-align: top !important; 
+}
 </style>
 <div class="row">
 	<div class="col-md-12">
@@ -114,7 +117,6 @@ $option_ref[]= ['value'=>'On Account','text'=>'On Account'];
 			<td width="20%" valign="top"> 
 				<input type="hidden" class="ledgerIdContainer" />
 				<input type="hidden" class="companyIdContainer" />
-				<input type="hidden" class="transaction_date_ref" />
 				<?php 
 				echo $this->Form->input('type', ['options'=>$option_ref,'label' => false,'class' => 'form-control input-sm refType','required'=>'required']); ?>
 			</td>
@@ -131,7 +133,7 @@ $option_ref[]= ['value'=>'On Account','text'=>'On Account'];
 			</td>
 			<td width="15%" style="padding-left:0px;" valign="top">
 				<?php 
-				echo $this->Form->input('due_days', ['label' => false,'class' => 'form-control input-sm numberOnly rightAligntextClass dueDays','placeholder'=>'Due Days']);  ?>
+				echo $this->Form->input('due_days', ['label' => false,'class' => 'form-control input-sm numberOnly rightAligntextClass dueDays','title'=>'Due Days']);  ?>
 			</td>
 			<td width="5%" align="right" valign="top">
 				<a class="delete-tr-ref" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
@@ -340,8 +342,6 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			{	var SelectedTr=$(this).closest('tr.MainTr');
 				$(this).closest('tr').remove();
 				renameMainRows();
-				renameBankRows(SelectedTr);
-				renameRefRows(SelectedTr);
 			});
 			
 			$('.paymentType').die().live('change',function(){
@@ -433,9 +433,6 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 					$(this).closest('tr').find('.creditBox').hide();
 				}
 				renameMainRows();
-				
-				var SelectedTr=$(this).closest('tr.MainTr');
-				renameRefRows(SelectedTr);
 			});
 			
 			$('.AddMainRow').die().live('click',function(){ 
@@ -485,7 +482,14 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 						
 					}
 					i++;
-
+					var type=$(this).find('td:nth-child(2) option:selected').attr('open_window'); 
+					var SelectedTr=$(this).closest('tr.MainTr');
+					if(type=='party'){
+						renameRefRows(SelectedTr);
+					}
+					if(type=='bank'){
+						renameBankRows(SelectedTr);
+					}
 				});
 				$('#MainTable tfoot tr td:nth-child(2) input#totalMainDr').val(main_debit);
 				$('#MainTable tfoot tr td:nth-child(3) input#totalMainCr').val(main_credit);
@@ -546,7 +550,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			
 			function renameRefRows(SelectedTr){
 				var i=0;
-				var Ref_date=$('.transaction_date').val();
+				
 				var ledger_id=SelectedTr.find('td:nth-child(2) select.ledger').val();
 				var cr_dr=SelectedTr.find('td:nth-child(1) select.cr_dr option:selected').val();
 				if(cr_dr=='Dr'){
@@ -559,13 +563,12 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				
 				SelectedTr.find('input.ledgerIdContainer').val(ledger_id);
 				SelectedTr.find('input.companyIdContainer').val(".$company_id.");
-				SelectedTr.find('input.transaction_date_ref').val(Ref_date);
 				var row_no=SelectedTr.attr('row_no');
 				if(SelectedTr.find('td:nth-child(2) div.window table tbody tr').length>0){
 				SelectedTr.find('td:nth-child(2) div.window table tbody tr').each(function(){
 					$(this).find('td:nth-child(1) input.companyIdContainer').attr({name:'receipt_rows['+row_no+'][reference_details]['+i+'][company_id]',id:'receipt_rows-'+row_no+'-reference_details-'+i+'-company_id'});
 					$(this).find('td:nth-child(1) input.ledgerIdContainer').attr({name:'receipt_rows['+row_no+'][reference_details]['+i+'][ledger_id]',id:'receipt_rows-'+row_no+'-reference_details-'+i+'-ledger_id'});
-					$(this).find('td:nth-child(1) input.transaction_date_ref').attr({name:'receipt_rows['+row_no+'][reference_details]['+i+'][transaction_date]',id:'receipt_rows-'+row_no+'-reference_details-'+i+'-transaction_date'});
+					
 					$(this).find('td:nth-child(1) select.refType').attr({name:'receipt_rows['+row_no+'][reference_details]['+i+'][type]',id:'receipt_rows-'+row_no+'-reference_details-'+i+'-type'});
 					var is_select=$(this).find('td:nth-child(2) select.refList').length;
 					var is_input=$(this).find('td:nth-child(2) input.ref_name').length;

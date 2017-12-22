@@ -8,6 +8,9 @@ $this->set('title', 'Sales Voucher');
 .noBorder{
 	border:none;
 }
+.table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
+     vertical-align: top !important; 
+}
 </style>
 <?php
 $option_ref[]= ['value'=>'New Ref','text'=>'New Ref'];
@@ -169,7 +172,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 														</td>
 														<td width="15%" style="padding-left:0px;"valign="top">
 														<?php if($reference_detail->type=='New Ref' || $reference_detail->type=='Advance'){ 
-															echo $this->Form->input('sales_voucher_rows.'.$i.'.reference_details.'.$j.'.due_days', ['label' => false,'class' => 'form-control input-sm numberOnly rightAligntextClass dueDays','placeholder'=>'Due Days','value'=>$reference_detail->due_days, 'type'=>'text']); ?><?php } ?>
+															echo $this->Form->input('sales_voucher_rows.'.$i.'.reference_details.'.$j.'.due_days', ['label' => false,'class' => 'form-control input-sm numberOnly rightAligntextClass dueDays','title'=>'Due Days','value'=>$reference_detail->due_days, 'type'=>'text']); ?><?php } ?>
 														</td> 
 														<td  width="5%" align="right">
 															<a class="ref_delete" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
@@ -278,8 +281,8 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 										<td colspan="2" >	
 											<button type="button" class="AddMainRow btn btn-default input-sm"><i class="fa fa-plus"></i> Add row</button>
 										</td>
-										<td><input type="text" class="form-control input-sm rightAligntextClass total_debit" placeholder="Total Debit" id="totalMainDr" name="totalMainDr" value="<?php echo $salesVoucher->totalMainDr;?>" readonly></td>
-										<td><input type="text" class="form-control input-sm rightAligntextClass total_credit" placeholder="Total Credit" id="totalMainCr" name="totalMainCr" value="<?php echo $salesVoucher->totalMainCr;?>" readonly></td>
+										<td valign="top"><input type="text" class="form-control input-sm rightAligntextClass total_debit" placeholder="Total Debit" id="totalMainDr" name="totalMainDr" value="<?php echo $salesVoucher->totalMainDr;?>" readonly></td>
+										<td valign="top"><input type="text" class="form-control input-sm rightAligntextClass total_credit" placeholder="Total Credit" id="totalMainCr" name="totalMainCr" value="<?php echo $salesVoucher->totalMainCr;?>" readonly></td>
 									</tr>
 								</tfoot>
 							</table>
@@ -324,7 +327,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			</td>
 			<td width="15%" style="padding-left:0px;" valign="top">
 				<?php 
-				echo $this->Form->input('due_days', ['label' => false,'class' => 'form-control input-sm numberOnly rightAligntextClass dueDays','placeholder'=>'Due Days']);  ?>
+				echo $this->Form->input('due_days', ['label' => false,'class' => 'form-control input-sm numberOnly rightAligntextClass dueDays','placeholder'=>'Due Days','title'=>'Due Days']);  ?>
 			</td>
 			<td width="5%" align="right" valign="top">
 				<a class="ref_delete" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
@@ -563,11 +566,12 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			
 			$('.delete-tr').die().live('click',function() 
 			{
+				$(this).closest('tr').find('input').val('');
 				$(this).closest('tr').remove();
 				renameMainRows();
 				var SelectedTr=$(this).closest('tr.MainTr');
-				renameBankRows(SelectedTr);
-				renameRefRows(SelectedTr);
+				//renameBankRows(SelectedTr);
+				//renameRefRows(SelectedTr);
 				calc();
 			});
 			
@@ -604,7 +608,6 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 					currentRefRow.find('td:nth-child(5)').html('".$dd."');
 					currentRefRow.find('td:nth-child(5) input.dueDays').val(due_days);
 				}
-				var SelectedTr=$(this).closest('tr.MainTr');
 				renameRefRows(SelectedTr);
 			});
 			

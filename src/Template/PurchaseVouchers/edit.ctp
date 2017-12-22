@@ -8,6 +8,9 @@ $this->set('title', 'Purchase Voucher');
 .noBorder{
 	border:none;
 }
+.table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
+     vertical-align: top !important; 
+}
 </style>
 <?php
 $option_ref[]= ['value'=>'New Ref','text'=>'New Ref'];
@@ -174,7 +177,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 														</td>
 														<td width="15%" style="padding-left:0px;"valign="top">
 														<?php if($reference_detail->type=='New Ref' || $reference_detail->type=='Advance'){ 
-															echo $this->Form->input('purchase_voucher_rows.'.$i.'.reference_details.'.$j.'.due_days', ['label' => false,'class' => 'form-control input-sm numberOnly rightAligntextClass dueDays','placeholder'=>'Due Days','value'=>$reference_detail->due_days, 'type'=>'text']); ?><?php } ?>
+															echo $this->Form->input('purchase_voucher_rows.'.$i.'.reference_details.'.$j.'.due_days', ['label' => false,'class' => 'form-control input-sm numberOnly rightAligntextClass dueDays','title'=>'Due Days','value'=>$reference_detail->due_days, 'type'=>'text']); ?><?php } ?>
 														</td> 
 														<td  width="5%" align="right">
 															<a class="ref_delete" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
@@ -571,9 +574,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				$(this).closest('tr').remove();
 				renameMainRows();
 				calc();
-				var SelectedTr=$(this).closest('tr.MainTr');
-				renameBankRows(SelectedTr);
-				renameRefRows(SelectedTr);
+				
 			});
 			
 			$('.ref_delete').die().live('click',function() 

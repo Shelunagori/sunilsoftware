@@ -8,6 +8,9 @@ $this->set('title', 'Debit Note Voucher');
 .noBorder{
 	border:none;
 }
+.table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
+     vertical-align: top !important; 
+
 </style>
 <div class="row">
 	<div class="col-md-12">
@@ -149,7 +152,7 @@ $option_ref[]= ['value'=>'On Account','text'=>'On Account'];
 				echo $this->Form->input('type_cr_dr', ['options'=>['Dr'=>'Dr','Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm  calculation refDrCr','value'=>'Dr']); ?>
 			<td width="15%" style="padding-left:0px;" valign="top">
 				<?php 
-				echo $this->Form->input('due_days', ['label' => false,'class' => 'form-control input-sm numberOnly rightAligntextClass dueDays','placeholder'=>'Due Days']);  ?>
+				echo $this->Form->input('due_days', ['label' => false,'class' => 'form-control input-sm numberOnly rightAligntextClass dueDays','title'=>'Due Days']);  ?>
 			</td>
 			<td width="5%" align="right" valign="top">
 				<a class="delete-tr-ref" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
@@ -356,7 +359,6 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			{	var SelectedTr=$(this).closest('tr.MainTr');
 				$(this).closest('tr').remove();
 				renameMainRows();
-				renameBankRows(SelectedTr);
 				renameRefRows(SelectedTr);
 			});
 			
@@ -424,8 +426,6 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				}
 				renameMainRows();
 				
-				var SelectedTr=$(this).closest('tr.MainTr');
-				renameRefRows(SelectedTr);
 			});
 			
 			$('.ledger').die().live('change',function(){
@@ -450,7 +450,6 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 					windowContainer.html('');
 				}
 					renameMainRows();
-					renameBankRows(SelectedTr);
 			});
 			
 			$('.AddMainRow').die().live('click',function(){ 
@@ -500,6 +499,16 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 						
 					}
 					i++;
+					var type=$(this).find('td:nth-child(2) option:selected').attr('open_window'); 
+					
+					var SelectedTr=$(this).closest('tr.MainTr');
+					if(type=='party'){
+						renameRefRows(SelectedTr);
+					}
+					if(type=='bank'){
+						renameBankRows(SelectedTr);
+					}
+					
 				});
 				$('#MainTable tfoot tr td:nth-child(2) input#totalMainDr').val(main_debit);
 				$('#MainTable tfoot tr td:nth-child(3) input#totalMainCr').val(main_credit);

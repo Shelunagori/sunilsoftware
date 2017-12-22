@@ -8,6 +8,10 @@ $this->set('title', 'Contra Voucher');
 .noBorder{
 	border:none;
 }
+
+.table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
+     vertical-align: top !important; 
+}
 </style>
 <div class="row">
 	<div class="col-md-12">
@@ -344,10 +348,8 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			{
 				var SelectedTr=$(this).closest('tr.MainTr');
 				$(this).closest('tr').remove();
-				calc();
 				renameMainRows();
-				renameBankRows(SelectedTr);
-				renameRefRows(SelectedTr);
+					calc();
 				
 			});
 			
@@ -447,6 +449,16 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 					$(this).find('td:nth-child(3) input.debitBox').attr({name:'contra_voucher_rows['+i+'][debit]',id:'contra_voucher_rows-'+i+'-debit'});
 					$(this).find('td:nth-child(4) input.creditBox').attr({name:'contra_voucher_rows['+i+'][credit]',id:'contra_voucher_rows-'+i+'-credit'});
 					i++;
+					var type=$(this).find('td:nth-child(2) option:selected').attr('open_window'); 
+					
+					var SelectedTr=$(this).closest('tr.MainTr');
+					if(type=='party'){
+						renameRefRows(SelectedTr);
+					}
+					if(type=='bank'){
+						renameBankRows(SelectedTr);
+					}
+					
 				});
 			}
 			

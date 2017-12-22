@@ -173,6 +173,14 @@ class ContraVouchersController extends AppController
 		$company_id=$this->Auth->User('session_company_id');
         $this->request->data['company_id'] =$company_id;
         if ($this->request->is(['patch', 'post', 'put'])) {
+			$query_update = $this->ContraVouchers->ContraVoucherRows->query();
+							$query_update->update()
+							->set(['mode_of_payment' => '', 'cheque_no' => '', 'cheque_date' => ''])
+							->where(['contra_voucher_id' => $contraVoucher->id])
+							->execute();
+			 $contraVoucher = $this->ContraVouchers->get($id, [
+            'contain' => ['ContraVoucherRows']
+        ]);
 			$this->request->data['transaction_date'] = date("Y-m-d",strtotime($this->request->getData()['transaction_date']));
             $contraVoucher = $this->ContraVouchers->patchEntity($contraVoucher, $this->request->getData());
 			//pr($contraVoucher);exit;

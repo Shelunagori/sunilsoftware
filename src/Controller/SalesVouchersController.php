@@ -240,6 +240,7 @@ class SalesVouchersController extends AppController
      */
     public function edit($id = null)
     {
+		
 		$this->viewBuilder()->layout('index_layout');
 		$company_id=$this->Auth->User('session_company_id');
         $this->request->data['company_id'] =$company_id;
@@ -254,13 +255,17 @@ class SalesVouchersController extends AppController
 			foreach($originalSalesVoucher->sales_voucher_rows as $originalSales_voucher_rows){
 				$orignalSales_voucher_row_ids[]=$originalSales_voucher_rows->id;
 			}
-			$this->SalesVouchers->SalesVoucherRows->ReferenceDetails->deleteAll(['ReferenceDetails.sales_voucher_row_id IN'=>$orignalSales_voucher_row_ids]);
-			//GET ORIGINAL DATA AND DELETE REFERENCE DATA//
 			$query_update = $this->SalesVouchers->SalesVoucherRows->query();
-					$query_update->update()
-					->set(['mode_of_payment' => '', 'cheque_no' => '', 'cheque_date' => ''])
-					->where(['sales_voucher_id' => $salesVoucher->id])
-					->execute();
+							$query_update->update()
+							->set(['mode_of_payment' => '', 'cheque_no' => '', 'cheque_date' => ''])
+							->where(['sales_voucher_id' => $salesVoucher->id])
+							->execute();
+			 $salesVoucher = $this->SalesVouchers->get($id, [
+            'contain' => ['SalesVoucherRows'=>['ReferenceDetails']]
+        ]);
+			$this->SalesVouchers->SalesVoucherRows->ReferenceDetails->deleteAll(['ReferenceDetails.sales_voucher_row_id IN'=>$orignalSales_voucher_row_ids]);
+			
+			//GET ORIGINAL DATA AND DELETE REFERENCE DATA//
 			
 			$this->request->data['transaction_date'] = date("Y-m-d",strtotime($this->request->getData()['transaction_date']));
            
@@ -280,7 +285,7 @@ class SalesVouchersController extends AppController
 					}
 				}
 			}
-			
+			//ppr($salesVoucher->toArray()); exit;
 			if ($this->SalesVouchers->save($salesVoucher)) {
 				$query_delete = $this->SalesVouchers->AccountingEntries->query();
 					$query_delete->delete()
@@ -308,6 +313,7 @@ class SalesVouchersController extends AppController
             $this->Flash->error(__('The sales voucher could not be saved. Please, try again.'));
 		
         }
+		
 		
 		$refDropDown =[];
 		foreach($salesVoucher->sales_voucher_rows as $sales_voucher_row)
@@ -370,7 +376,6 @@ class SalesVouchersController extends AppController
 			}
 		}
 		$ParentLedgers = $this->SalesVouchers->SalesVoucherRows->Ledgers->find()->where(['Ledgers.accounting_group_id IN' =>$Groups]);
-		
 		$ledgerDroption =[];
 		foreach($ParentLedgers as $ParentLedger){
 		if(in_array($ParentLedger->accounting_group_id,$bankGroups)){

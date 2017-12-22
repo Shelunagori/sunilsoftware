@@ -281,62 +281,34 @@ class DebitNotesController extends AppController
      */
      public function edit($id = null)
     {
-	
+		
         $this->viewBuilder()->layout('index_layout');
         $debitNote = $this->DebitNotes->get($id, [
             'contain' => ['DebitNoteRows'=>['ReferenceDetails']]
         ]);
 		$company_id=$this->Auth->User('session_company_id');
 		
-		$refDropDown =[];
-		foreach($debitNote->debit_note_rows as $debit_note_row)
-		{
-			if(!empty($debit_note_row->reference_details))
-			{
-				$query = $this->DebitNotes->DebitNoteRows->ReferenceDetails->find();
-				$query->select(['total_debit' => $query->func()->sum('ReferenceDetails.debit'),'total_credit' => $query->func()->sum('ReferenceDetails.credit')])
-				->where(['ReferenceDetails.ledger_id'=>$debit_note_row->ledger_id,'ReferenceDetails.type !='=>'On Account'])
-				->group(['ReferenceDetails.ref_name'])
-				->autoFields(true);
-				$referenceDetails=$query;
-				$option=[];
-				foreach($referenceDetails as $referenceDetail){
-					$remider=$referenceDetail->total_debit-$referenceDetail->total_credit;
-					if($remider>0){
-						$bal=abs($remider).' Dr';
-					}else if($remider<0){
-						$bal=abs($remider).' Cr';
-					}
-					if($referenceDetail->total_debit!=$referenceDetail->total_credit){
-						$option[] =['text' =>$referenceDetail->ref_name.' ('.$bal.')', 'value' => $referenceDetail->ref_name];
-						 
-					}
-				}
-				$refDropDown[$debit_note_row->id] = $option;
-			}
-		}
-		
+	
 		$originaldebitNote=$debitNote;
         if ($this->request->is('put','patch','post')) {
-		
-	
 		//GET ORIGINAL DATA AND DELETE REFERENCE DATA//
 			$orignaldebit_note_ids=[];
 			foreach($originaldebitNote->debit_note_rows as $originaldebitNote_rows){
 				$orignaldebit_note_ids[]=$originaldebitNote_rows->id;
 			}
+			//pr($this->request->getData()); exit;
 			$this->DebitNotes->DebitNoteRows->ReferenceDetails->deleteAll(['ReferenceDetails.debit_note_row_id IN'=>$orignaldebit_note_ids]);
 			
 			$query_update = $this->DebitNotes->DebitNoteRows->query();
 					$query_update->update()
 					->set(['mode_of_payment' => '', 'cheque_no' => '', 'cheque_date' => ''])
 					->where(['debit_note_id' => $debitNote->id])
-					->execute(); 
+					->execute();
 			//GET ORIGINAL DATA AND DELETE REFERENCE DATA//
-			
-		
-		
-			$debitNote = $this->DebitNotes->patchEntity($debitNote, $this->request->getData(),['associated' => ['DebitNoteRows','DebitNoteRows.ReferenceDetails']]);
+		 $debitNote = $this->DebitNotes->get($id, [
+            'contain' => ['DebitNoteRows'=>['ReferenceDetails']]
+        ]);	
+		$debitNote = $this->DebitNotes->patchEntity($debitNote, $this->request->getData(),['associated' => ['DebitNoteRows','DebitNoteRows.ReferenceDetails']]);
 			$tdate=$this->request->data('transaction_date');
 			$debitNote->transaction_date=date('Y-m-d',strtotime($tdate));
 		 
@@ -383,6 +355,34 @@ class DebitNotesController extends AppController
             }
             $this->Flash->error(__('The Debit Note could not be saved. Please, try again.'));
         }
+		
+			$refDropDown =[];
+		foreach($debitNote->debit_note_rows as $debit_note_row)
+		{
+			if(!empty($debit_note_row->reference_details))
+			{
+				$query = $this->DebitNotes->DebitNoteRows->ReferenceDetails->find();
+				$query->select(['total_debit' => $query->func()->sum('ReferenceDetails.debit'),'total_credit' => $query->func()->sum('ReferenceDetails.credit')])
+				->where(['ReferenceDetails.ledger_id'=>$debit_note_row->ledger_id,'ReferenceDetails.type !='=>'On Account'])
+				->group(['ReferenceDetails.ref_name'])
+				->autoFields(true);
+				$referenceDetails=$query;
+				$option=[];
+				foreach($referenceDetails as $referenceDetail){
+					$remider=$referenceDetail->total_debit-$referenceDetail->total_credit;
+					if($remider>0){
+						$bal=abs($remider).' Dr';
+					}else if($remider<0){
+						$bal=abs($remider).' Cr';
+					}
+					if($referenceDetail->total_debit!=$referenceDetail->total_credit){
+						$option[] =['text' =>$referenceDetail->ref_name.' ('.$bal.')', 'value' => $referenceDetail->ref_name];
+						 
+					}
+				}
+				$refDropDown[$debit_note_row->id] = $option;
+			}
+		}
 		
 		
 		// frst row bank group

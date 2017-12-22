@@ -8,6 +8,9 @@ $this->set('title', 'Credit Note Voucher');
 .noBorder{
 	border:none;
 }
+.table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
+     vertical-align: top !important; 
+}
 </style>
 <div class="row">
 	<div class="col-md-12">
@@ -52,45 +55,43 @@ $this->set('title', 'Credit Note Voucher');
 								</thead>
 								<tbody id='MainTbody' class="tab">
 									<tr class="MainTr">
-			<td width="10%" valign="top">
-				<?php 
-				echo $this->Form->input('cr_dr', ['options'=>['Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm cr_dr', 'readonly'=>'readonly','required'=>'required','value'=>'Cr']); ?>
-			</td>
-			<td width="65%" valign="top">
-				<?php echo $this->Form->input('ledger_id', ['empty'=>'--Select--','options'=>@$ledgerFirstOptions,'label' => false,'class' => 'form-control input-sm ledger select2me','required'=>'required']); ?>
-				<div class="window" style="margin:auto;"></div>
-			</td>
-			<td width="10%" valign="top">
-				<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm  debitBox rightAligntextClass numberOnly calculate_total','placeholder'=>'Debit','style'=>'display:none;']); ?>
-			</td>
-			<td width="10%" valign="top">
-				<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm creditBox rightAligntextClass numberOnly calculate_total','placeholder'=>'Credit']); ?>	
-			</td>
-			<td align="center"  width="10%" valign="top">
-				<!--<a class="btn btn-danger delete-tr btn-xs" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a> -->
-			</td>
-		</tr>
-		<tr class="MainTr">
-			<td width="10%" valign="top">
-				<?php 
-				echo $this->Form->input('cr_dr', ['options'=>['Dr'=>'Dr'],'label' => false,'class' => 'form-control input-sm cr_dr', 'readonly'=>'readonly','required'=>'required','value'=>'Dr']); ?>
-			</td>
-			<td width="65%" valign="top">
-				<?php echo $this->Form->input('ledger_id', ['empty'=>'--Select--','options'=>@$ledgerOptions,'label' => false,'class' => 'form-control input-sm ledger select2me','required'=>'required']); ?>
-				<div class="window" style="margin:auto;"></div>
-			</td>
-			<td width="10%" valign="top">
-				<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm  debitBox rightAligntextClass numberOnly calculate_total','placeholder'=>'Debit']); ?>
-			</td>
-			<td width="10%" valign="top">
-				<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm creditBox rightAligntextClass numberOnly calculate_total','placeholder'=>'Credit','style'=>'display:none;']); ?>	
-			</td>
-			<td align="center"  width="10%" valign="top">
-				<!--<a class="btn btn-danger delete-tr btn-xs" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a> -->
-			</td>
-		</tr>
-		
-		
+										<td width="10%" valign="top">
+											<?php 
+											echo $this->Form->input('cr_dr', ['options'=>['Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm cr_dr', 'readonly'=>'readonly','required'=>'required','value'=>'Cr']); ?>
+										</td>
+										<td width="65%" valign="top">
+											<?php echo $this->Form->input('ledger_id', ['empty'=>'--Select--','options'=>@$ledgerFirstOptions,'label' => false,'class' => 'form-control input-sm ledger select2me','required'=>'required']); ?>
+											<div class="window" style="margin:auto;"></div>
+										</td>
+										<td width="10%" valign="top">
+											<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm  debitBox rightAligntextClass numberOnly calculate_total','placeholder'=>'Debit','style'=>'display:none;']); ?>
+										</td>
+										<td width="10%" valign="top">
+											<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm creditBox rightAligntextClass numberOnly calculate_total','placeholder'=>'Credit']); ?>	
+										</td>
+										<td align="center"  width="10%" valign="top">
+											<!--<a class="btn btn-danger delete-tr btn-xs" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a> -->
+										</td>
+									</tr>
+									<tr class="MainTr">
+										<td width="10%" valign="top">
+											<?php 
+											echo $this->Form->input('cr_dr', ['options'=>['Dr'=>'Dr'],'label' => false,'class' => 'form-control input-sm cr_dr', 'readonly'=>'readonly','required'=>'required','value'=>'Dr']); ?>
+										</td>
+										<td width="65%" valign="top">
+											<?php echo $this->Form->input('ledger_id', ['empty'=>'--Select--','options'=>@$ledgerOptions,'label' => false,'class' => 'form-control input-sm ledger select2me','required'=>'required']); ?>
+											<div class="window" style="margin:auto;"></div>
+										</td>
+										<td width="10%" valign="top">
+											<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm  debitBox rightAligntextClass numberOnly calculate_total','placeholder'=>'Debit']); ?>
+										</td>
+										<td width="10%" valign="top">
+											<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm creditBox rightAligntextClass numberOnly calculate_total','placeholder'=>'Credit','style'=>'display:none;']); ?>	
+										</td>
+										<td align="center"  width="10%" valign="top">
+											<!--<a class="btn btn-danger delete-tr btn-xs" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a> -->
+										</td>
+									</tr>
 								</tbody>
 								<tfoot>
 									<tr style="border-top:double;">
@@ -140,7 +141,6 @@ $option_ref[]= ['value'=>'On Account','text'=>'On Account'];
 			<td width="" valign="top">
 				<?php echo $this->Form->input('ref_name', ['type'=>'text','label' => false,'class' => 'form-control input-sm ref_name','placeholder'=>'Reference Name','required'=>'required']); ?>
 			</td>
-			
 			<td width="20%" style="padding-right:0px;" valign="top">
 				<?php echo $this->Form->input('amount', ['label' => false,'class' => 'form-control input-sm calculation numberOnly rightAligntextClass','placeholder'=>'Amount','required'=>'required']); ?>
 			</td>
@@ -150,7 +150,7 @@ $option_ref[]= ['value'=>'On Account','text'=>'On Account'];
 			</td>
 			<td width="15%" style="padding-left:0px;" valign="top">
 				<?php 
-				echo $this->Form->input('due_days', ['label' => false,'class' => 'form-control input-sm numberOnly rightAligntextClass dueDays','placeholder'=>'Due Days']);  ?>
+				echo $this->Form->input('due_days', ['label' => false,'class' => 'form-control input-sm numberOnly rightAligntextClass dueDays','placeholder'=>'Due Days','title'=>'Due Days']);  ?>
 			</td>
 			<td width="5%" align="right" valign="top">
 				<a class="delete-tr-ref" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
@@ -357,7 +357,6 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			{	var SelectedTr=$(this).closest('tr.MainTr');
 				$(this).closest('tr').remove();
 				renameMainRows();
-				renameBankRows(SelectedTr);
 				renameRefRows(SelectedTr);
 			});
 			
@@ -451,8 +450,6 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 					windowContainer.html('');
 				}
 				renameMainRows();
-				renameBankRows(SelectedTr);
-
 			});
 			
 			$('.AddMainRow').die().live('click',function(){ 
@@ -524,7 +521,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				var row_no=SelectedTr.attr('row_no');
 				SelectedTr.find('td:nth-child(2) div.window table tbody tr').each(function(){
 					
-					var type = $(this).find('td:nth-child(1) select.paymentType option:selected').val(); 
+					var type = SelectedTr.find('td:nth-child(1) select.paymentType option:selected').val(); 
 					
 					$(this).find('td:nth-child(1) select.paymentType').attr({name:'credit_note_rows['+row_no+'][mode_of_payment]',id:'credit_note_rows-'+row_no+'-mode_of_payment'});
 					$(this).find('td:nth-child(2) input.cheque_no').attr({name:'credit_note_rows['+row_no+'][cheque_no]',id:'credit_note_rows-'+row_no+'-cheque_no'});

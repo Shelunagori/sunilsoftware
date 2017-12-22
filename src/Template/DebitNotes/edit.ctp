@@ -8,6 +8,12 @@ $this->set('title', 'Debit Note Voucher');
 .noBorder{
 	border:none;
 }
+
+
+.table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
+     vertical-align: top !important; 
+
+</style>
 </style>
 
 <div class="row">
@@ -69,7 +75,7 @@ $this->set('title', 'Debit Note Voucher');
 									<tr class="MainTr" row_no="<?php echo $i;?>">
 										<td width="10%">
 											<?php 
-											echo $this->Form->input('debit_note_rows.'.$i.'.id',['value'=>$debitNoteRows->id]);
+											echo $this->Form->input('debit_note_rows.'.$i.'.id',['value'=>$debitNoteRows->id,'class'=>'hidden']);
 											
 												if($i==0)
 											{
@@ -165,11 +171,11 @@ $this->set('title', 'Debit Note Voucher');
 														</td>
 														<td width="10%" style="padding-left:0px;">
 															<?php 
-															echo $this->Form->input('debit_note_rows.'.$i.'.reference_details.'.$j.'.type_cr_dr', ['options'=>['Dr'=>'Dr','Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm  calculation refDrCr','value'=>$cr_dr]); ?>
+															echo $this->Form->input('type_cr_dr', ['options'=>['Dr'=>'Dr','Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm  calculation refDrCr','value'=>$cr_dr]); ?>
 														</td>
 														<td width="15%" style="padding-left:0px;"valign="top">
 														<?php if($reference_detail->type=='New Ref' || $reference_detail->type=='Advance'){ 
-															echo $this->Form->input('debit_note_rows.'.$i.'.reference_details.'.$j.'.due_days', ['label' => false,'class' => 'form-control input-sm numberOnly rightAligntextClass dueDays','placeholder'=>'Due Days','value'=>$reference_detail->due_days, 'type'=>'text']); ?><?php } ?>
+															echo $this->Form->input('debit_note_rows.'.$i.'.reference_details.'.$j.'.due_days', ['label' => false,'class' => 'form-control input-sm numberOnly rightAligntextClass dueDays','title'=>'Due Days','value'=>$reference_detail->due_days, 'type'=>'text']); ?><?php } ?>
 														</td> 
 														<td  width="5%" align="right">
 															<a class="delete-tr-ref" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
@@ -239,16 +245,35 @@ $this->set('title', 'Debit Note Voucher');
 											<?php } ?>
 											</div>
 										</td>
+										
 										<td width="10%">
-											<?php echo $this->Form->input('debit_note_rows.'.$i.'.debit', ['label' => false,'class' => 'form-control input-sm debitBox rightAligntextClass numberOnly totalCalculation calculate_total','placeholder'=>'Debit','value'=>$debitNoteRows->debit, 'type'=>'text']); ?>
-										</td>
-										<td width="10%">
-											<?php echo $this->Form->input('debit_note_rows.'.$i.'.credit', ['label' => false,'class' => 'form-control input-sm creditBox numberOnly rightAligntextClass totalCalculation calculate_total','placeholder'=>'Credit','value'=>$debitNoteRows->credit, 'type'=>'text']); ?>
+										<?php if(empty($debitNoteRows->debit))
+											  {
+												  $style1="display:none;";
+											  }else
+											  {
+												   $style1="display:block;";
+											  }
+											?>
+											<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm  debitBox rightAligntextClass numberOnly calculate_total','placeholder'=>'Debit','value'=>$debitNoteRows->debit,'style'=>@$style1]); ?>
 										
 										</td>
-										<td align="center"  width="10%">
+										
+										
+										<td width="10%">
+										<?php
+										      if(empty($debitNoteRows->credit))
+											  {
+												  $style2="display:none;";
+											  }else
+											  {
+												   $style2="display:block;";
+											  }
+										?>
+											<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm  creditBox rightAligntextClass numberOnly calculate_total','placeholder'=>'Credit','value'=>$debitNoteRows->credit,'style'=>@$style2]); ?>
+										</td><td align="center"  width="10%">
 										<?php 
-											if($i>=1)
+											if($i>1)
 											{
 										?>
 											<a class="btn btn-danger delete-tr btn-xs" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
@@ -583,13 +608,11 @@ $this->set('title', 'Debit Note Voucher');
 				}
 				renameMainRows();
 				
-				var SelectedTr=$(this).closest('tr.MainTr');
-				renameRefRows(SelectedTr);
 			});
 			
 			
 			
-			hideShow();
+			//hideShow();
 			function hideShow()
 			{
 				$('#MainTable tbody#MainTbody tr.MainTr').each(function(){
@@ -686,6 +709,8 @@ $this->set('title', 'Debit Note Voucher');
 				var i=0; var main_debit=0; var main_credit=0; var count_bank_cash=0;
 				$('#MainTable tbody#MainTbody tr.MainTr').each(function(){
 					$(this).attr('row_no',i);
+					
+					$(this).find('td:nth-child(1) input.hidden').attr({name:'debit_note_rows['+i+'][id]',id:'debit_note_rows-'+i+'-id'});
 					var cr_dr=$(this).find('td:nth-child(1) select.cr_dr option:selected').val();
 					
 					var is_cash_bank=$(this).find('td:nth-child(2) option:selected').attr('bank_and_cash');
@@ -698,9 +723,9 @@ $this->set('title', 'Debit Note Voucher');
 					$(this).find('td:nth-child(4) input.creditBox').attr({name:'debit_note_rows['+i+'][credit]',id:'debit_note_rows-'+i+'-credit'});
 					
 					if(cr_dr=='Dr'){
-						//$(this).find('td:nth-child(3) input.debitBox').rules('add', 'required');
-						//$(this).find('td:nth-child(4) input.creditBox').rules('remove');
-						//$(this).find('td:nth-child(4) span.help-block-error').remove();
+						$(this).find('td:nth-child(3) input.debitBox').rules('add', 'required');
+						$(this).find('td:nth-child(4) input.creditBox').rules('remove', 'required');
+						$(this).find('td:nth-child(4) span.help-block-error').remove();
 						var debit_amt=parseFloat($(this).find('td:nth-child(3) input.debitBox').val());
 						if(!debit_amt){
 							debit_amt=0;
@@ -710,9 +735,9 @@ $this->set('title', 'Debit Note Voucher');
 						 count_bank_cash++;
 						}
 					}else{
-						//$(this).find('td:nth-child(3) input.debitBox').rules('remove');
-						//$(this).find('td:nth-child(3) span.help-block-error').remove();
-						//$(this).find('td:nth-child(4) input.creditBox').rules('add', 'required');
+						$(this).find('td:nth-child(3) input.debitBox').rules('remove', 'required');
+						$(this).find('td:nth-child(3) span.help-block-error').remove();
+						$(this).find('td:nth-child(4) input.creditBox').rules('add', 'required');
 						var credit_amt=parseFloat($(this).find('td:nth-child(4) input.creditBox').val());
 						if(!credit_amt){
 							credit_amt=0;
@@ -721,6 +746,14 @@ $this->set('title', 'Debit Note Voucher');
 						
 					}
 					i++;
+					var type=$(this).find('td:nth-child(2) option:selected').attr('open_window'); 
+					var SelectedTr=$(this).closest('tr.MainTr');
+					if(type=='party'){
+						renameRefRows(SelectedTr);
+					}
+					if(type=='bank'){
+						renameBankRows(SelectedTr);
+					}
 				});
 				$('#MainTable tfoot tr td:nth-child(2) input#totalMainDr').val(round(main_debit,2));
 				$('#MainTable tfoot tr td:nth-child(3) input#totalMainCr').val(round(main_credit,2));
