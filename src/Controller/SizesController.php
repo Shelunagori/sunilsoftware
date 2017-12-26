@@ -22,7 +22,7 @@ class SizesController extends AppController
     {
 		$this->viewBuilder()->layout('index_layout');
 		$company_id=$this->Auth->User('session_company_id');
-        $Sizes = $this->paginate($this->Sizes->find()->where(['company_id'=>$company_id])->contain([]));
+        $Sizes = $this->paginate($this->Sizes->find()->where(['company_id'=>$company_id]));
        
         $this->set(compact('Sizes'));
         $this->set('_serialize', ['Sizes']);
