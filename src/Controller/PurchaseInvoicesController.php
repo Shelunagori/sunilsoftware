@@ -557,4 +557,128 @@ class PurchaseInvoicesController extends AppController
 
         return $this->redirect(['action' => 'index']);
     }
+	public function reportFilter()
+    {
+		$this->viewBuilder()->layout('index_layout');
+		$company_id=$this->Auth->User('session_company_id');
+		@$partyParentGroups = $this->PurchaseInvoices->PurchaseInvoiceRows->Ledgers->AccountingGroups->find()
+						->where(['AccountingGroups.company_id'=>$company_id, 'AccountingGroups.purchase_invoice_party'=>'1']);
+		$partyGroups=[];
+		
+		foreach($partyParentGroups as $partyParentGroup)
+		{
+			$accountingGroups = $this->PurchaseInvoices->PurchaseInvoiceRows->Ledgers->AccountingGroups
+			->find('children', ['for' => $partyParentGroup->id])->toArray();
+			$partyGroups[]=$partyParentGroup->id;
+			foreach($accountingGroups as $accountingGroup){
+				$partyGroups[]=$accountingGroup->id;
+			}
+		}
+	
+		if($partyGroups)
+		{  
+			$Partyledgers = $this->PurchaseInvoices->PurchaseInvoiceRows->Ledgers->find()
+							->where(['Ledgers.accounting_group_id IN' =>$partyGroups,'Ledgers.company_id'=>$company_id])
+							->contain(['Customers']);
+        }
+		
+		$partyOptions=[];
+		foreach($Partyledgers as $Partyledger){
+		
+		$receiptAccountLedgers = $this->PurchaseInvoices->PurchaseInvoiceRows->Ledgers->AccountingGroups->find()
+		//->where(['AccountingGroups.id'=>$Partyledger->accounting_group_id,'AccountingGroups.customer'=>1])
+		->Where(['AccountingGroups.id'=>$Partyledger->accounting_group_id,'AccountingGroups.supplier'=>1])->first();
+		
+	
+		
+		
+		if($receiptAccountLedgers)
+		{
+			$receiptAccountLedgersName='1';
+		}
+		else{
+			$receiptAccountLedgersName='0';
+		}
+			$partyOptions[]=['text' =>str_pad(@$Partyledger->supplier->supplier_id, 4, '0', STR_PAD_LEFT).' - '.$Partyledger->name, 'value' => $Partyledger->id ,'party_state_id'=>@$Partyledger->supplier->state_id, 'partyexist'=>$receiptAccountLedgersName, 'billToBillAccounting'=>$Partyledger->bill_to_bill_accounting];
+		}
+		
+		$this->set(compact('partyOptions'));
+    }
+	
+	 public function report($id=null)
+    {
+		$status=$this->request->query('status'); 
+		if(!empty($status)){ 
+			$this->viewBuilder()->layout('excel_layout');	
+		}else{ 
+			$this->viewBuilder()->layout('index_layout');
+		}
+		
+		$company_id=$this->Auth->User('session_company_id');
+		$url=$this->request->here();
+		$url=parse_url($url,PHP_URL_QUERY);
+	    $from=$this->request->query('from_date');
+		$to=$this->request->query('to_date');
+		
+		$where=[];
+		$where1=[];
+		if(!empty($from)){ 
+			$from_date=date('Y-m-d', strtotime($from));
+		$where['PurchaseInvoices.transaction_date >=']= $from_date;
+		}
+		if(!empty($to)){
+			$to_date=date('Y-m-d', strtotime($to));
+			$where['PurchaseInvoices.transaction_date <='] = $to_date;
+		}
+		$party_ids=$this->request->query('supplier_ledger_id');
+		
+	
+		
+		if(!empty($party_ids)){
+		$where['PurchaseInvoices.supplier_ledger_id IN'] = $party_ids;
+		}
+		$invoice_no=$this->request->query('invoice_no');
+	
+		if(!empty($invoice_no)){
+		$invoices_explode_commas=explode(',',$invoice_no);
+			
+			if($invoices_explode_commas){
+			$invoice_ids=[];
+		
+			
+			
+			foreach($invoices_explode_commas as $invoices_explode_comma)
+			{
+				@$invoices_explode_dashs=explode('-',$invoices_explode_comma);
+				
+				
+				$size=sizeOf($invoices_explode_dashs);
+				if($size==2){
+					$var1=$invoices_explode_dashs[0];
+					$var2=$invoices_explode_dashs[1];
+					for($i=$var1; $i<= $var2; $i++){
+						$invoice_ids[]=$i;
+					}
+				}else{
+					$invoice_ids[]=$invoices_explode_dashs[0];
+				}
+			}
+		}
+		$where1['PurchaseInvoices.voucher_no IN'] = $invoice_ids;
+		}
+		if(!empty($where)){
+		$purchaseInvoices = $this->PurchaseInvoices->find()->where(['PurchaseInvoices.company_id'=>$company_id])->where($where)->orWhere($where1)
+		->contain(['Companies', 'SupplierLedgers'=>['Suppliers'], 'PurchaseLedgers', 'PurchaseInvoicerows'=>['Items', 'GstFigures']])
+        ->order(['voucher_no' => 'ASC']);
+		}
+		else{
+		$purchaseInvoices = $this->PurchaseInvoices->find()->where(['PurchaseInvoices.company_id'=>$company_id])->where($where1)
+		->contain(['Companies', 'SupplierLedgers'=>['Suppliers'], 'PurchaseLedgers', 'PurchaseInvoicerows'=>['Items', 'GstFigures']])
+        ->order(['voucher_no' => 'ASC']);
+		}
+	
+		
+		$this->set(compact('purchaseInvoices', 'from', 'to','party_ids','invoice_no','url','status'));
+        $this->set('_serialize', ['purchaseInvoices']);
+    } 
 }

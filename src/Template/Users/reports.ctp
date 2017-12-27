@@ -40,6 +40,16 @@ $this->set('title', 'Report Setup');
 							</div>
 					</div>
 					<?php }?>
+					
+					<?php if (in_array("83", $userPages)){?>
+					<div class="col-md-6">
+						<div class="list-group">
+							<?php echo $this->Html->link('Purchase Report', '/PurchaseInvoices/reportFilter',['escape' => false, 'class'=>'list-group-item']); ?>
+							</div>
+					</div>
+					<?php }?>
+					
+					
 				</div>
 				<div class="row">
 				<?php if (in_array("22", $userPages)){?>

@@ -3,7 +3,7 @@
 /**
  * @Author: PHP Poets IT Solutions Pvt. Ltd.
  */
-$this->set('title', 'Sales Report');
+$this->set('title', 'Purchase Report');
 ?>
 	
 <style>
@@ -44,26 +44,26 @@ table td {
 			<div class="portlet-title">
 				<div class="caption">
 					<i class="icon-bar-chart font-green-sharp hide"></i>
-					<span class="caption-subject font-green-sharp bold ">Sales Report</span>
+					<span class="caption-subject font-green-sharp bold ">Purchase Report</span>
 				</div>
 				<div class="actions">
-					<?php echo $this->Html->link( '<i class="fa fa-file-excel-o"></i> Excel', '/SalesInvoices/Report/'.@$url_excel.'&status=excel',['class' =>'btn btn-sm green tooltips pull-right','target'=>'_blank','escape'=>false,'data-original-title'=>'Download as excel']); ?>
+					<?php echo $this->Html->link( '<i class="fa fa-file-excel-o"></i> Excel', '/purchaseInvoices/Report/'.@$url_excel.'&status=excel',['class' =>'btn btn-sm green tooltips pull-right','target'=>'_blank','escape'=>false,'data-original-title'=>'Download as excel']); ?>
 				</div>
 			</div>
 		<?php } ?>
 			<div class="portlet-body table-responsive">
 				<?php 
-				if(!empty($salesInvoices->toArray()))
+				if(!empty($purchaseInvoices->toArray()))
 				{
 				?>
 				<table class="table table-bordered table-hover table-condensed" width="100%" border="1">
 					<thead>
 						<tr>
-							<th scope="col" colspan="19" style="text-align:left";>Sales Register According To  <?php if($from){ ?>Date From <?=$from ?><?php } ?><?php if($to){ ?>Date To <?=$to ?> <?php } ?><?php if($party_ids){ ?> Party <?php } ?><?php  if($invoice_no){ ?> Invoice No :<?=$invoice_no ?><?php } ?> </th>
+							<th scope="col" colspan="19" style="text-align:left";>Purchase Register According To  <?php if($from){ ?>Date From <?=$from ?><?php } ?><?php if($to){ ?>Date To <?=$to ?> <?php } ?><?php if($party_ids){ ?> Party <?php } ?><?php  if($invoice_no){ ?> Invoice No :<?=$invoice_no ?><?php } ?> </th>
 						</tr>
 						<tr>
-							<th scope="col" style="text-align:center";>Customer Code</th>
-							<th scope="col" style="text-align:center";>Customer Name</th>
+							<th scope="col" style="text-align:center";>Supplier Code</th>
+							<th scope="col" style="text-align:center";>Supplier Name</th>
 							<th scope="col" style="text-align:center";>Invoice No</th>
 							<th scope="col" style="text-align:center";>Invoice date</th>
 							<th scope="col" style="text-align:center";>HSN Code</th>
@@ -73,6 +73,8 @@ table td {
 							<th scope="col" style="text-align:center";>Rate Per Unit</th>
 							<th scope="col" style="text-align:center";>Discount %</th>
 							<th scope="col" style="text-align:center";>Discount Amt.</th>
+							<th scope="col" style="text-align:center";>PNF %</th>
+							<th scope="col" style="text-align:center";>PNF Amt.</th>
 							<th scope="col" style="text-align:center";>Taxable Value</th>
 							<th scope="col" style="text-align:center";>CGST%</th>
 							<th scope="col" style="text-align:center";>CGST Amt.</th>
@@ -91,8 +93,9 @@ table td {
 					$totalIgst=0;
 					$totalNet=0;
 					$totalTaxablevalue=0;
-					foreach($salesInvoices->toArray() as $data){
-					foreach($data->sales_invoice_rows as $salesInvoicedata)
+					$totalDiscountPnf=0;
+					foreach($purchaseInvoices->toArray() as $data){
+					foreach($data->purchase_invoice_rows as $purchaseInvoicedata)
 					{
 						$date = date('Y-m-d', strtotime($data->transaction_date));
 						$d = date_parse_from_format('Y-m-d',$date);
@@ -122,32 +125,45 @@ table td {
 							$field='SG';
 						}
 
-					    if($data->party_ledger->customer_id==0 || $data->party_ledger->customer_id=='')
+					    if($data->supplier_ledger->supplier_id==0 || $data->supplier_ledger->supplier_id=='')
 						{
 							$customerName='Cash';
 							$customerCode='-';
 						}
 						else{
-							$customerName=$data->party_ledger->name;
-							$customerCode=$data->party_ledger->customer->customer_id;
+							$customerName=$data->supplier_ledger->name;
+							$customerCode=$data->supplier_ledger->supplier->id;
 						}
 					
-						if($salesInvoicedata->discount_percentage>0)
+						if($purchaseInvoicedata->discount_percentage>0)
 						{
-						   $salesInvoicedata->discount_percentage;
-						   $totrate=$salesInvoicedata->quantity*$salesInvoicedata->rate;
-						   $dis=$totrate*$salesInvoicedata->discount_percentage/100;
+						   $purchaseInvoicedata->discount_percentage;
+						   $totrate=$purchaseInvoicedata->quantity*$purchaseInvoicedata->rate;
+						   $dis=$totrate*$purchaseInvoicedata->discount_percentage/100;
 						}
 						else{
 						   $dis=0;
 						}
 						$totalDiscount+=$dis;
 						
+						if($purchaseInvoicedata->pnf_percentage>0)
+						{
+						   $purchaseInvoicedata->pnf_percentage;
+						   $totrates=$purchaseInvoicedata->quantity*$purchaseInvoicedata->rate;
+						   $dispnf=$totrates*$purchaseInvoicedata->pnf_percentage/100;
+						}
+						else{
+						   $dispnf=0;
+						}
+						$totalDiscountPnf+=$dispnf;
+						
+						
+						
 						if($data->total_igst=='' || $data->total_igst==0)
 						{
-						    $salesInvoicedata->gst_value;
-							$gst=$salesInvoicedata->gst_value/2;
-						    $cgtax=$salesInvoicedata->gst_figure->tax_percentage/2;
+						    $purchaseInvoicedata->gst_value;
+							$gst=$purchaseInvoicedata->gst_value/2;
+						    $cgtax=$purchaseInvoicedata->gst_figure->tax_percentage/2;
 							$cgst=$gst;
 							$sgst=$gst;
 							$igst=0;
@@ -157,37 +173,47 @@ table td {
 						{
 							$cgst=0;
 							$sgst=0;
-							$igst=$salesInvoicedata->gst_value;
-							$itax=$salesInvoicedata->gst_figure->tax_percentage;
+							$igst=$purchaseInvoicedata->gst_value;
+							$itax=$purchaseInvoicedata->gst_figure->tax_percentage;
 							$cgtax=0;
 						}
 						$totalCgst+=$cgst;
 						$totalSgst+=$sgst;
 						$totalIgst+=$igst;
-						$totalNet+=$salesInvoicedata->net_amount;
-						$totalTaxablevalue+=$salesInvoicedata->taxable_value;
+						$totalNet+=$purchaseInvoicedata->net_amount;
+						$totalTaxablevalue+=$purchaseInvoicedata->taxable_value;
 					?>
 					<tr>
 					<td><?=$customerCode?></td>
 					<td><?=$customerName?></td>
 					<td><?= $field.'/'.$financialyear.'/'. h(str_pad($data->voucher_no, 3, '0', STR_PAD_LEFT))?></td>
 					<td><?=$data->transaction_date?></td>
-					<td><?=$salesInvoicedata->item->hsn_code?></td>
-					<td><?=$salesInvoicedata->item->item_code?></td>
-					<td><?=$salesInvoicedata->item->name?></td>
-					<td class="rightAligntextClass"><?=$salesInvoicedata->quantity?></td>
-					<td class="rightAligntextClass"><?=$this->Money->moneyFormatIndia($salesInvoicedata->rate)?></td>
+					<td><?=$purchaseInvoicedata->item->hsn_code?></td>
+					<td><?=$purchaseInvoicedata->item->item_code?></td>
+					<td><?=$purchaseInvoicedata->item->name?></td>
+					<td class="rightAligntextClass"><?=$purchaseInvoicedata->quantity?></td>
+					<td class="rightAligntextClass"><?=$this->Money->moneyFormatIndia($purchaseInvoicedata->rate)?></td>
 					<td class="rightAligntextClass">
-					<?php if($salesInvoicedata->discount_percentage==0){?>
+					<?php if($purchaseInvoicedata->discount_percentage==0){?>
 					<?php echo '';?> <?php }else{ ?>
-					<?php echo $salesInvoicedata->discount_percentage.'%';?><?php }?>
+					<?php echo $purchaseInvoicedata->discount_percentage.'%';?><?php }?>
 					</td>
 					<td class="rightAligntextClass">
 					<?php if($dis==0){?>
 					<?php echo '';?> <?php }else{ ?>
 					<?php echo $dis;?><?php }?>
 					</td>
-					<td class="rightAligntextClass"><?=$salesInvoicedata->taxable_value?></td>
+						<td class="rightAligntextClass">
+					<?php if($purchaseInvoicedata->pnf_percentage==0){?>
+					<?php echo '';?> <?php }else{ ?>
+					<?php echo $purchaseInvoicedata->pnf_percentage.'%';?><?php }?>
+					</td>
+					<td class="rightAligntextClass">
+					<?php if($dispnf==0){?>
+					<?php echo '';?> <?php }else{ ?>
+					<?php echo $dispnf;?><?php }?>
+					</td>
+					<td class="rightAligntextClass"><?=$purchaseInvoicedata->taxable_value?></td>
 					<td class="rightAligntextClass">
 					<?php if($cgtax==0){?>
 					<?php echo '';?> <?php }else{ ?>
@@ -217,7 +243,7 @@ table td {
 					<?php echo '';?> <?php }else{ ?>
 					<?php echo $igst;?><?php }?>
 					</td>
-					<td class="rightAligntextClass"><?=$this->Money->moneyFormatIndia($salesInvoicedata->net_amount)?></td>
+					<td class="rightAligntextClass"><?=$this->Money->moneyFormatIndia($purchaseInvoicedata->net_amount)?></td>
 					</tr>
 					<?php }}?>
 					<tr>
@@ -226,6 +252,12 @@ table td {
 					<?php if($totalDiscount==0){?>
 					<?php echo '';?> <?php }else{ ?>
 					<?php echo $this->Money->moneyFormatIndia($totalDiscount);?><?php }?>
+					</b></td>
+					<td>&nbsp;</td>
+					<td class="rightAligntextClass"><b>
+					<?php if($totalDiscountPnf==0){?>
+					<?php echo '';?> <?php }else{ ?>
+					<?php echo $this->Money->moneyFormatIndia($totalDiscountPnf);?><?php }?>
 					</b></td>
 					<td class="rightAligntextClass"><b><?=$this->Money->moneyFormatIndia($totalTaxablevalue)?></b></td>
 					<td></td>
