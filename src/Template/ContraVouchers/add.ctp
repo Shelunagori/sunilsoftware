@@ -130,6 +130,7 @@ $this->set('title', 'Contra Voucher');
 <?php
 $option_mode[]= ['value'=>'Cheque','text'=>'Cheque'];
 $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
+$option_mode[]= ['value'=>'Cash','text'=>'Cash'];
 ?>
 <table id="sampleForBank" style="display:none;" width="100%">
 	<tbody>
@@ -329,7 +330,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				var type=$(this).val();	
 				var currentRefRow=$(this).closest('tr');
 				var SelectedTr=$(this).closest('tr.MainTr');
-				if(type=='NEFT/RTGS'){
+				if(type=='NEFT/RTGS' || type=='Cash'){
 					currentRefRow.find('span.help-block-error').remove();
 					currentRefRow.find('td:nth-child(2) input').val('');
 					currentRefRow.find('td:nth-child(3) input').val('');
