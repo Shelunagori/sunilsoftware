@@ -24,18 +24,19 @@ $this->set('title', 'Size');
 					</thead>
 					<tbody>
 						<?php $i=0;
-								foreach ($Sizes as $size): 
-								$i++;?>
+								foreach ($Sizes as $size){
+								$i++;  
+								?>
 						<tr>
 							<td><?php echo $i; ?></td>
 							<td><?= h($size->name) ?></td>
 							<td class="actions">
 							<?php if (in_array("69", $userPages)){?>
 								<?= $this->Html->link(__('Edit'), ['action' => 'edit', $size->id]) ?>
-								<?php}?>
+							<?php } ?>
 							</td>
 						</tr>
-						<?php endforeach; ?>
+								<?php } ?>
 					</tbody>
 				</table>
 				<div class="paginator">

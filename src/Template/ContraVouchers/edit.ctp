@@ -6,6 +6,7 @@ $this->set('title', 'Contra Voucher');
 
 $option_mode[]= ['value'=>'Cheque','text'=>'Cheque'];
 $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
+$option_mode[]= ['value'=>'Cash','text'=>'Cash'];
 ?>
 <style>
 .noBorder{
@@ -104,7 +105,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 											<div class="window" style="margin:auto;">
 											<?php
 											if(!empty($contra_voucher_row->mode_of_payment)){
-												if($contra_voucher_row->mode_of_payment=='NEFT/RTGS')
+												if($contra_voucher_row->mode_of_payment=='NEFT/RTGS' || $contra_voucher_row->mode_of_payment=='Cash' )
 												{  
 													$style="display:none;";
 												}
@@ -202,10 +203,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 	</div>
 </div>
 
-<?php
-$option_mode[]= ['value'=>'Cheque','text'=>'Cheque'];
-$option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
-?>
+
 <table id="sampleForBank" style="display:none;" width="100%">
 	<tbody>
 		<tr>
@@ -406,7 +404,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				var type=$(this).val();	
 				var currentRefRow=$(this).closest('tr');
 				var SelectedTr=$(this).closest('tr.MainTr');
-				if(type=='NEFT/RTGS'){
+				if(type=='NEFT/RTGS' || type=='Cash'){
 					currentRefRow.find('span.help-block-error').remove();
 					currentRefRow.find('td:nth-child(2) input').val('');
 					currentRefRow.find('td:nth-child(3) input').val('');

@@ -35,7 +35,7 @@ $this->set('title', 'Contra Voucher');
 				<td width="30%"><?php if(!empty(@$contraVoucher->company->logo)){ ?>
 				<?php echo $this->Html->image('/img/'.$contraVoucher->company->logo, ['height' => '70px', 'width' => '70px']); ?>
 				<?php } ?></td>
-				<td align="center" width="40%" style="font-size: 12px;"><div align="center" style="font-size: 18px;font-weight: bold;color: #0685a8;">DEBIT NOTE VOUCHER</div></td>
+				<td align="center" width="40%" style="font-size: 12px;"><div align="center" style="font-size: 18px;font-weight: bold;color: #0685a8;">CONTRA VOUCHER</div></td>
 				<td align="right" width="40%" style="font-size: 12px;">
 				<span style="font-size: 14px;font-weight: bold;"><?=@$contraVoucher->company->name?></span><br/>
 				<span><?=@$contraVoucher->company->address?>, <?=@$contraVoucher->company->state->name?></span></br>
