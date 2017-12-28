@@ -170,7 +170,7 @@ foreach($partyOptions as $partyOption)
 										<input type="hidden" name="salesInvoiceRow<?php echo $i;?>gst_value" class="gstValue calculation" value="<?php echo $salesInvoiceRow->gst_value;?>">
 										<input type="hidden" name="exactgst_value" class="exactgst_value calculation" value="<?php $exactgst;?>">
 										<input type="hidden" name="" class="discountvalue calculation" value="">
-										<input type="text" name="" class="is_gst_excluded calculation gstExcluded" value="<?php echo $salesInvoiceRow->is_gst_excluded;?>">
+										<input type="hidden" name="" class="is_gst_excluded calculation gstExcluded" value="<?php echo $salesInvoiceRow->is_gst_excluded;?>">
 
 										<?php
 										echo $salesInvoiceRow->item->name;
@@ -590,9 +590,6 @@ foreach($partyOptions as $partyOption)
 				}
 				
 				var gstExcluded=$(this).closest('tr').find('.gstExcluded').val();
-				
-				
-				
 			    var outdata=$(this).closest('tr').find('.outStock').val();
 				if(!outdata){outdata=0;}
 				outOfStockValue=parseFloat(outOfStockValue)+parseFloat(outdata);
@@ -607,21 +604,10 @@ foreach($partyOptions as $partyOption)
 				if(!rate){rate=0;}
 				var totamount = quantity*rate;
 				$(this).find('.totamount').val(totamount);
-				  
 			
-
-				
-				
-				
-
-			
-			var discountp=$(this).find('.discount').val();
-			
-			
-			
+				var discountp=$(this).find('.discount').val();
 			if(discountp)
 			{
-				alert(discountp);
 				var discount  = parseFloat($(this).find('.discount').val());
 				if(!discount){discount=0;}
 				var discountValue=(discount*totamount)/100;
@@ -640,13 +626,8 @@ foreach($partyOptions as $partyOption)
 				var gst_ietmamount  = $(this).find('.gst_amount').val();
 				var discountAmount  = $(this).find('.discountAmount').val();
 			}
-			
-			
-			
-			
-			
+
 			if(gstExcluded==1){
-				
 				var gst_figure_tax_percentage  = parseFloat($(this).find('.gst_figure_tax_percentage').val());
 				if(!gst_figure_tax_percentage){gst_figure_tax_percentage=0;}
 				var discountAmounts  = parseFloat($(this).find('.discountAmount').val());
@@ -783,7 +764,6 @@ foreach($partyOptions as $partyOption)
 			return false;
 		}
 	}
-
 	
 	";
 
