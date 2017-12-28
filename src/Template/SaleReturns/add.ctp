@@ -22,9 +22,7 @@ foreach($partyOptions as $partyOption)
 	{
 		$party_state_id=$state_id;
 	}
-	
 }
-
 ?>
 
 <div class="row">
@@ -172,7 +170,8 @@ foreach($partyOptions as $partyOption)
 										<input type="hidden" name="salesInvoiceRow<?php echo $i;?>gst_value" class="gstValue calculation" value="<?php echo $salesInvoiceRow->gst_value;?>">
 										<input type="hidden" name="exactgst_value" class="exactgst_value calculation" value="<?php $exactgst;?>">
 										<input type="hidden" name="" class="discountvalue calculation" value="">
-											
+										<input type="text" name="" class="is_gst_excluded calculation gstExcluded" value="<?php echo $salesInvoiceRow->is_gst_excluded;?>">
+
 										<?php
 										echo $salesInvoiceRow->item->name;
 										echo $this->Form->input('q', ['value'=>$salesInvoiceRow->id,'type'=>'hidden']);
@@ -573,7 +572,7 @@ foreach($partyOptions as $partyOption)
 			var exactgstvalue=0;		
 			$('#main_table tbody#main_tbody tr.main_tr').each(function()
 			{
-				var chkquanity1=$(this).find('.returnQty').attr('max');
+				var chkquanity1=$(this).find('.returnQty').attr('max');	
 				var chkquanity2=parseFloat($(this).closest('tr').find('.returnQty').val());
 
 				if(chkquanity2 != 0){
@@ -590,6 +589,10 @@ foreach($partyOptions as $partyOption)
 					}
 				}
 				
+				var gstExcluded=$(this).closest('tr').find('.gstExcluded').val();
+				
+				
+				
 			    var outdata=$(this).closest('tr').find('.outStock').val();
 				if(!outdata){outdata=0;}
 				outOfStockValue=parseFloat(outOfStockValue)+parseFloat(outdata);
@@ -605,22 +608,61 @@ foreach($partyOptions as $partyOption)
 				var totamount = quantity*rate;
 				$(this).find('.totamount').val(totamount);
 				  
+			
+
+				
+				
+				
+
+			
+			var discountp=$(this).find('.discount').val();
+			
+			
+			
+			if(discountp)
+			{
+				alert(discountp);
 				var discount  = parseFloat($(this).find('.discount').val());
 				if(!discount){discount=0;}
-				
 				var discountValue=(discount*totamount)/100;
 				var discountAmount=totamount-discountValue;
 				$(this).find('.discountAmount').val(discountAmount.toFixed(2));
-
 				var gst_ietmamount  = $(this).find('.gst_amount').val();
 				var discountAmount  = $(this).find('.discountAmount').val();
 				var item_gst_amount=discountAmount/quantity;
-				//console.log(item_gst_amount);
-				
 				discountValue=round(discountValue,2);
-				
 				$(this).find('.discountvalue').val(discountValue.toFixed(2));
+			}
+			else{
+				discountValue=0;
+				var discountAmount=totamount-discountValue;
+				$(this).find('.discountAmount').val(discountAmount.toFixed(2));
+				var gst_ietmamount  = $(this).find('.gst_amount').val();
+				var discountAmount  = $(this).find('.discountAmount').val();
+			}
+			
+			
+			
+			
+			
+			if(gstExcluded==1){
 				
+				var gst_figure_tax_percentage  = parseFloat($(this).find('.gst_figure_tax_percentage').val());
+				if(!gst_figure_tax_percentage){gst_figure_tax_percentage=0;}
+				var discountAmounts  = parseFloat($(this).find('.discountAmount').val());
+				if(!discountAmounts){discountAmounts=0;}
+				
+				var netValue=discountAmounts*(100+gst_figure_tax_percentage)/100;
+				if(!netValue){netValue=0;}
+				var netValue=round(netValue,2);
+			
+				$(this).find('.discountAmount').val(netValue);
+				gstValue = netValue-discountAmounts;
+				$(this).find('.gstValue').val(gstValue);
+				gstAmount = discountAmounts;
+				$(this).find('.gstAmount').val(gstAmount.toFixed(2));
+				
+			}else{
 				var gst_figure_tax_percentage  = parseFloat($(this).find('.gst_figure_tax_percentage').val());
 				if(!gst_figure_tax_percentage){gst_figure_tax_percentage=0;}
 				var discountAmount  = parseFloat($(this).find('.discountAmount').val());
@@ -631,11 +673,13 @@ foreach($partyOptions as $partyOption)
 	            var gstValue=(gstAmount*gst_figure_tax_percentage)/100;
 				$(this).find('.gstAmount').val(gstAmount.toFixed(2));
 				$(this).find('.gstValue').val(gstValue.toFixed(2));
-
+			}
+			
+			
+			
+			$(this).find('.discountvalue').val(discountValue.toFixed(2));
 				
 				
-				var gstValue  = parseFloat($(this).find('.gstValue').val());
-				var gstAmount  = parseFloat($(this).find('.gstAmount').val());
 				var is_interstate  = parseFloat($('#is_interstate').val());
 				if(is_interstate=='0')
 				{

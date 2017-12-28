@@ -319,7 +319,7 @@ class SaleReturnsController extends AppController
 			$Accountledgers = $this->SaleReturns->SalesInvoices->SalesInvoiceRows->Ledgers->find('list')->where(['Ledgers.accounting_group_id IN' =>$account_ids]);
         }
 
-//pr($partyOptions); exit;
+	
         $this->set(compact('saleReturn', 'companies', 'customers', 'salesLedgers', 'partyLedgers', 'locations', 'salesInvoices','sales_return_qty'));
 		$this->set(compact('salesInvoice', 'companies', 'customerOptions', 'gstFigures', 'voucher','company_id','itemOptions','state_id', 'Accountledgers', 'partyOptions', 'location_id'));
         $this->set('_serialize', ['saleReturn']);
