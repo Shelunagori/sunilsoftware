@@ -9,7 +9,6 @@ use Cake\TestSuite\IntegrationTestCase;
  */
 class SaleReturnsControllerTest extends IntegrationTestCase
 {
-
     /**
      * Fixtures
      *
