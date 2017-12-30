@@ -22,12 +22,23 @@ class GrnsController extends AppController
     {
 		$this->viewBuilder()->layout('index_layout');
 		$company_id=$this->Auth->User('session_company_id');
-        $this->paginate = [
+		$search=$this->request->query('search');
+		$this->paginate = [
             'contain' => ['Companies','SupplierLedgers']
         ];
-        $grns = $this->paginate($this->Grns->find()->where(['Grns.company_id'=>$company_id]));
+        $grns = $this->paginate($this->Grns->find()->where(['Grns.company_id'=>$company_id])->where([
+		'OR' => [
+            'Grns.voucher_no' => $search,
+            // ...
+            'SupplierLedgers.name LIKE' => '%'.$search.'%',
+			//.....
+			'Grns.reference_no LIKE' => '%'.$search.'%',
+			//...
+			'Grns.transaction_date ' => date('Y-m-d',strtotime($search))
 		
-        $this->set(compact('grns'));
+        ]]));
+		
+        $this->set(compact('grns','search'));
         $this->set('_serialize', ['grns']);
     }
 
@@ -45,8 +56,12 @@ class GrnsController extends AppController
         $grn = $this->Grns->get($id, [
             'contain' => ['Companies','GrnRows'=>['Items']]
         ]);
+		if($grn->supplier_ledger_id){
 		$supplier_details= $this->Grns->GrnRows->Ledgers->get($grn->supplier_ledger_id);
 		$supplier_ledger=$supplier_details->name;
+		}else{
+		$supplier_ledger=''	;
+		}
 		
 		$this->set(compact('grn','supplier_ledger'));
 		$this->set('_serialize', ['grn']);
@@ -343,7 +358,7 @@ class GrnsController extends AppController
 						 $data = explode(",",$test1[0]);
 						 $item = $this->Items->newEntity();
 						 $item->name           = $data[0];
-						 $item->item_code      = $data[1]; 
+						 $item->item_code      = trim($data[1]); 
 						 $item->hsn_code       = $data[2];
 						 $item->unit_id        = $data[3];
 						 $item->stock_group_id = $data[4];
@@ -421,6 +436,7 @@ class GrnsController extends AppController
 							$second_tamp_grn_records->provided_shade = @$data[12];
 							$second_tamp_grn_records->provided_size = @$data[13];
 							$second_tamp_grn_records->description = @$data[14];
+							$second_tamp_grn_records->stock_group = @$data[15];
 							$second_tamp_grn_records->processed      = 'no'; 
 							$second_tamp_grn_records->user_id        = $user_id;
 							$second_tamp_grn_records->company_id = $company_id;

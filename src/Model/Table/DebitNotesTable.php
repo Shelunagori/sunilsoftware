@@ -81,9 +81,9 @@ class DebitNotesTable extends Table
             ->requirePresence('transaction_date', 'create')
             ->notEmpty('transaction_date');
 
-        $validator
+        /*$validator
             ->requirePresence('narration', 'create')
-            ->notEmpty('narration');
+            ->notEmpty('narration');*/
 
         return $validator;
     }

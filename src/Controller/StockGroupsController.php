@@ -22,12 +22,18 @@ class StockGroupsController extends AppController
     {
 		$this->viewBuilder()->layout('index_layout');
 		$company_id=$this->Auth->User('session_company_id');
+		$search=$this->request->query('search');
 		$this->paginate = [
             'contain' => ['ParentStockGroups', 'Companies']
         ];
-        $stockGroups = $this->paginate($this->StockGroups->find()->where(['StockGroups.company_id'=>$company_id]));
+        $stockGroups = $this->paginate($this->StockGroups->find()->where(['StockGroups.company_id'=>$company_id])->where([
+		'OR' => [
+            'StockGroups.name LIKE' => '%'.$search.'%',
+			//...
+			'ParentStockGroups.name LIKE' => '%'.$search.'%'
+		 ]]));
 
-        $this->set(compact('stockGroups'));
+        $this->set(compact('stockGroups','search'));
         $this->set('_serialize', ['stockGroups']);
     }
 
@@ -121,4 +127,30 @@ class StockGroupsController extends AppController
 
         return $this->redirect(['action' => 'index']);
     }
+	
+	public function summary(){
+		$stockGroupId = $this->request->query('stock-group-id');
+		$from_date         = $this->request->query('from-date');
+		$to_date           = $this->request->query('to-date');
+		
+		$this->viewBuilder()->layout('index_layout');
+		$company_id=$this->Auth->User('session_company_id');
+		
+		if(!$stockGroupId){
+			$subGroups=$this->StockGroups->find()->where(['StockGroups.parent_id is null','StockGroups.company_id'=>$company_id]);
+			/* $subGroupBalances=[];
+			foreach($subGroups as $subGroup){
+				$subGroupBalances[$subGroup->id]=$this->groupBalance($subGroup->id,date('Y-m-d',strtotime($to_date)));
+			} */
+			
+			$Items=$this->StockGroups->Items->find()->where(['Items.stock_group_id'=>0, 'Items.company_id'=>$company_id]);
+			
+			$closingBalances=[];
+			foreach($Items as $Item){
+				$closingBalances[$Item->id]=$this->closingBalance($Item->id,date('Y-m-d',strtotime($to_date)));
+			}
+		}
+		
+		$this->set(compact('stockGroupId', 'from_date', 'to_date', 'subGroups', 'Items', 'closingBalances'));
+	}
 }

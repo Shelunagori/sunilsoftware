@@ -12,6 +12,19 @@ $this->set('title', 'Payment Voucher List');
 					<i class="icon-bar-chart font-green-sharp hide"></i>
 					<span class="caption-subject font-green-sharp bold ">Payment Voucher</span>
 				</div>
+				<div class="actions">
+				<form method="GET" id="">
+					<div class="row">
+						<div class="col-md-9">
+							<?php echo $this->Form->input('search',['class'=>'form-control input-sm pull-right','label'=>false, 'placeholder'=>'Search','autofocus'=>'autofocus','value'=> @$search]);
+							?>
+						</div>
+						<div class="col-md-1">
+							<button type="submit" class="go btn blue-madison input-sm">Go</button>
+						</div> 
+					</div>
+				</form>
+				</div>
 			</div>
 			<div class="portlet-body">
 				<div class="table-responsive">
@@ -23,6 +36,7 @@ $this->set('title', 'Payment Voucher List');
 								<th scope="col"><?= __('Sr') ?></th>
 								<th scope="col"><?= $this->Paginator->sort('voucher_no') ?></th>
 								<th scope="col"><?= $this->Paginator->sort('transaction_date') ?></th>
+								<th scope="col"><?= $this->Paginator->sort('Status') ?></th>
 								<th scope="col" class="actions"><?= __('Actions') ?></th>
 							</tr>
 						</thead>
@@ -32,10 +46,18 @@ $this->set('title', 'Payment Voucher List');
 									<td><?= h(++$page_no) ?></td>
 									<td><?= h(str_pad($payment->voucher_no, 4, '0', STR_PAD_LEFT)) ?></td>
 									<td><?= h(date("d-m-Y",strtotime($payment->transaction_date))) ?></td>
+									<td class=""><?= h($payment->status) ?></td>
 									<td class="actions">
 										<?= $this->Html->link(__('View'), ['action' => 'view', $payment->id]) ?>
+										<?php if ($payment->status!='cancel'){?>
+										<?php if (in_array("45", $userPages)){?>
 										<?= $this->Html->link(__('Edit'), ['action' => 'edit', $payment->id]) ?>
-										<?= $this->Form->postLink(__('Delete'), ['action' => 'delete', $payment->id], ['confirm' => __('Are you sure you want to delete # {0}?', $payment->id)]) ?>
+										<?php }?>
+										&nbsp;&nbsp;
+									<?= $this->Form->postLink(__('Cancel'), ['action' => 'cancel', $payment->id], ['style'=>'color:red;','confirm' => __('Are you sure you want to cancel # {0}?',h(str_pad($payment->voucher_no, 3, '0', STR_PAD_LEFT)))]) ?>&nbsp;&nbsp;
+									<?php }?>
+										
+										<!-- <?= $this->Form->postLink(__('Delete'), ['action' => 'delete', $payment->id], ['confirm' => __('Are you sure you want to delete # {0}?', $payment->id)]) ?> -->
 									</td>
 								</tr>
 							<?php endforeach; ?>

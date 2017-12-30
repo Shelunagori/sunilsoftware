@@ -1,114 +1,115 @@
+<style>
+
+@media print{
+	.maindiv{
+		width:100% !important;
+		margin:auto;
+	}	
+	.hidden-print{
+		display:none;
+	}
+}
+
+</style>
+<style type="text/css" media="print">
+@page {
+	width:100%;
+    size: auto;   /* auto is the initial value */
+    margin: 0px 0px 0px 0px;  /* this affects the margin in the printer settings */
+}
+.maindiv {
+border:solid 1px #c7c7c7;background-color: #FFF;padding: 10px;margin: auto;width: 100%;font-size: 12px;
+}
+</style>
+
+
 <?php
 /**
  * @Author: PHP Poets IT Solutions Pvt. Ltd.
  */
-$this->set('title', 'Receipt View');
+$this->set('title', 'Receipt Voucher');
 ?>
-<style>
-table th {
-    white-space: nowrap;
-	font-size:12px !important;
-}
-table td {
-	white-space: nowrap;
-	font-size:11px !important;
-}
-
-
-</style>
-<div class="row">
-	<div class="col-md-12">
-		<div class="portlet light ">
-			<div class="portlet-title">
-				<div class="caption">
-					<i class="icon-bar-chart font-green-sharp hide"></i>
-					<span class="caption-subject font-green-sharp bold ">Receipt View</span>
-				</div>
-			</div>
-			<div class="portlet-body table-responsive">
-				<table class="table table-bordered table-hover table-condensed" width="100%">
-					<thead>
-				<?php foreach($receipts as $data){?>
+<div  class="maindiv" style="border:solid 1px #c7c7c7;background-color: #FFF;padding: 10px;margin: auto;width:75%;font-size: 12px;">	
+	<table width="100%" class="divHeader">
+		<tbody><?php foreach($receipts as $data){?><tr>
+				<td width="30%"><?php if(!empty(@$data->company->logo)){ ?>
+				<?php echo $this->Html->image('/img/'.$data->company->logo, ['height' => '70px', 'width' => '70px']); ?>
+				<?php } ?></td>
+				<td align="center" width="40%" style="font-size: 12px;"><div align="center" style="font-size: 18px;font-weight: bold;color: #0685a8;">RECEIPT VOUCHER</div></td>
+				<td align="right" width="40%" style="font-size: 12px;">
+				<span style="font-size: 14px;font-weight: bold;"><?=@$data->company->name?></span><br/>
+				<span><?=@$data->company->address?>, <?=@$data->company->state->name?></span></br>
+				<span> <i class="fa fa-phone" aria-hidden="true"></i>  <?=@$data->company->phone_no ?> |  Mobile : <?=@$data->company->mobile ?><br> GSTIN NO:
+				<?=@$data->company->gstin ?></span></td>
+			</tr><?php }?>
+			<tr>
+				<td colspan="3">
+				<div style="border:solid 2px #0685a8;margin-bottom:5px;margin-top: 5px;"></div>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+		<table width="100%">	<thead>
+		<?php foreach($receipts as $data){?>
+		<tr>
+			<td width="50%" valign="top" align="left">
+				<table>
 					<tr>
-						<th scope="col" style="text-align:center";>Voucher No: 
-						<?= h(str_pad($data->voucher_no, 4, '0', STR_PAD_LEFT)) ?></th>
-						
-						<th scope="col" style="text-align:center";>Transaction Date: <?=date('d-m-y',strtotime($data->transaction_date))?></th>
-						<th scope="col" style="text-align:center";>Narration: <?=$data->narration?></th>
+						<td>Voucher No</td>
+						<td width="20" align="center">:</td>
+						<td><?= h(str_pad($data->voucher_no, 4, '0', STR_PAD_LEFT)) ?></td>
 					</tr>
-						<?php }?>
-						</thead>
 				</table>
-			
-				<table class="table table-bordered table-hover table-condensed" width="100%">
-					<thead>
+			</td>
+			<td width="50%" valign="top" align="right">
+				<table>
 					<tr>
-						<th scope="col" style="text-align:center">Cr/Dr</th>
-						<th scope="col" style="text-align:center">Ledger</th>
-						<th scope="col" style="text-align:center">Debit</th>
-						<th scope="col" style="text-align:center">Credit</th>
-						<th scope="col" style="text-align:center">Mode of Payment</th>
-						<th scope="col" style="text-align:center">Cheque No</th>
-						<th scope="col" style="text-align:center">Cheque Date</th>
+						<td>Transaction Date</td>
+						<td width="20" align="center">:</td>
+						<td><?= h(date("d-m-Y",strtotime($data->transaction_date))) ?></td>
 					</tr>
-					</thead>
-					<tbody>
-					<?php 
-					$totalDiscount=0;
-					$totalCgst=0;
-					$totalSgst=0;
-					$totalIgst=0;
-					$totalNet=0;
-					$totalTaxablevalue=0;
-					foreach($receipts->toArray() as $data){
+				</table>
+			</td>
+		</tr><?php }?>
+	</table>
+	<?php foreach($receipts as $data){?>
+		Narration: <?php echo $data->narration;?><?php }?>
+		<br/><br/>
+		<table width="100%" class="table" style="font-size:12px">
+			<tr style="background-color:#F0EFED;">
+				<th colspan="3"><?= __('Ledger A/C') ?></th>
+				<th><?= __('Dr') ?></th>
+				<th><?= __('Cr') ?></th>
+			</tr>
+			<?php foreach($receipts->toArray() as $data){
 					
 					foreach($data->receipt_rows as $receiptRows)
 					{
-					?>
+					@$total_debit+=$receiptRows->debit;
+					@$total_credit+=$receiptRows->credit; ?>
 					<tr>
-					<td style="text-align:center"><?=$receiptRows->cr_dr?></td>
-					<td style="text-align:center"><?=$receiptRows->ledger->name?></td>
-					<td class="rightAligntextClass"><?=$receiptRows->debit?></td>
-					<td class="rightAligntextClass"><?=$receiptRows->credit?></td>
-					<td class="" style="text-align:center"><?=$receiptRows->mode_of_payment?></td>
-					<td class="" style="text-align:center"><?=$receiptRows->cheque_no?></td>
-					<td class="" style="text-align:center">
-					<?php if($receiptRows->cheque_date=='000:00:00'){?>
-					<?php echo '';?> 
-					<?php } else{?>
-					<?php echo date('d-m-Y', strtotime($receiptRows->cheque_date));?>
-					<?php }?>
+					<td colspan="3" style="text-align:left"><b><?=$receiptRows->ledger->name?></b>
+						<div class="window" style="margin:auto;"><table width="50%">
+							<?php foreach($receiptRows->reference_details as $refdata)
+							{?><tr>
+							<td style="text-align:left"><?=$refdata->type?></td>
+							<td style="text-align:left"><?=$refdata->ref_name?></td>
+							<?php if($refdata->debit){ ?>
+							<td class="rightAligntextClass"><?=$refdata->debit?> Dr</td><?php } else {?>
+							<td class="rightAligntextClass"><?=$refdata->credit?> Cr</td><?php } ?></tr>
+							<?php } ?></table>
+						</div>
 					</td>
+					<td ><?=$receiptRows->debit?></td>
+					<td><?=$receiptRows->credit?></td>
 					</tr>
-					<?php if(!empty($receiptRows->reference_details)){?>
-					<tr><td>&nbsp;</td><td colspan="5">
-					<table class="table table-bordered table-condensed" width="50%" align="center" style="background-color:#f1f3fa">
-					<thead>
-					<tr>
-						<th scope="col" style="text-align:center">Type</th>
-						<th scope="col" style="text-align:center">Ref Name</th>
-						<th scope="col" style="text-align:center">Debit</th>
-						<th scope="col" style="text-align:center">Credit</th>
-					</tr>
-					</thead>
-					<tbody>
-					<?php foreach($receiptRows->reference_details as $refdata)
-					{?>
-					<tr>
-					<td style="text-align:center"><?=$refdata->type?></td>
-					<td style="text-align:center"><?=$refdata->ref_name?></td>
-					<td class="rightAligntextClass"><?=$refdata->debit?></td>
-					<td class="rightAligntextClass"><?=$refdata->credit?></td>
-					</tr>
-					<?php }?>
-					</tbody>
-					</table>
-					</td><td>&nbsp;</td></tr>
-					<?php }?>
-					<?php }}?>
-					</tbody>
-					</table>
-</div>
-</div>
-</div>					
-</div>
+			<?php } } ?>
+			<tr>
+			
+			<td colspan="3" align="right"></td>
+			
+			<td> <?php echo $total_debit;?></td>
+			<td> <?php echo $total_credit;?></td>
+			</tr>
+		</table>
+	</div>

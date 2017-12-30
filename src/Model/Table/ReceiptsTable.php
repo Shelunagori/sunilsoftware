@@ -5,7 +5,8 @@ use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
-
+use Cake\Event\Event;
+use ArrayObject;
 /**
  * Receipts Model
  *
@@ -47,7 +48,8 @@ class ReceiptsTable extends Table
 			'saveStrategy'=>'replace'
         ]);
         $this->hasMany('ReferenceDetails', [
-            'foreignKey' => 'receipt_id'
+            'foreignKey' => 'receipt_id',
+			
         ]);
 		$this->hasMany('AccountingEntries', [
             'foreignKey' => 'receipt_id',
@@ -84,6 +86,13 @@ class ReceiptsTable extends Table
         return $validator;
     }
 
+	public function beforeMarshal(Event $event, ArrayObject $data)
+    {
+		if(@$data['transaction_date']!="")
+		{
+			@$data['transaction_date'] = trim(date('Y-m-d',strtotime(@$data['transaction_date'])));
+		}
+    }
     /**
      * Returns a rules checker object that will be used for validating
      * application integrity.

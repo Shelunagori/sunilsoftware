@@ -2,7 +2,7 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
-
+use Cake\View\Helper\NumberHelper;
 /**
  * SalesInvoices Controller
  *
@@ -18,41 +18,154 @@ class SalesInvoicesController extends AppController
      *
      * @return \Cake\Http\Response|void
      */
-    public function index()
+    public function index($status = Null)
     {
 		$this->viewBuilder()->layout('index_layout');
 		$company_id=$this->Auth->User('session_company_id');
+		$search=$this->request->query('search');
+		/* if(!empty($status))
+		{
+			$where = $status;
+		}
+		else
+		{
+			$where = '';
+		}
+		 */
+		
 		$this->paginate = [
             'contain' => ['Companies', 'PartyLedgers', 'SalesLedgers']
         ];
-		$salesInvoices = $this->paginate($this->SalesInvoices->find()->where(['SalesInvoices.company_id'=>$company_id]));
-		
-        $this->set(compact('salesInvoices'));
+		$salesInvoices = $this->paginate($this->SalesInvoices->find()->where(['SalesInvoices.company_id'=>$company_id])->where([
+		'OR' => [
+            'SalesInvoices.voucher_no' => $search,
+            // ...
+            'PartyLedgers.name LIKE' => '%'.$search.'%',
+			//.....
+			'SalesLedgers.name LIKE' => '%'.$search.'%',
+			//...
+			'SalesInvoices.transaction_date ' => date('Y-m-d',strtotime($search)),
+			//...
+			'SalesInvoices.amount_after_tax' => $search
+        ]]));
+	
+        $this->set(compact('salesInvoices','search','status'));
         $this->set('_serialize', ['salesInvoices']);
     }
 	
 	public function reportFilter()
     {
 		$this->viewBuilder()->layout('index_layout');
+		$company_id=$this->Auth->User('session_company_id');
+		@$partyParentGroups = $this->SalesInvoices->SalesInvoiceRows->Ledgers->AccountingGroups->find()
+						->where(['AccountingGroups.company_id'=>$company_id, 'AccountingGroups.sale_invoice_party'=>'1']);
+		$partyGroups=[];
+		
+		foreach($partyParentGroups as $partyParentGroup)
+		{
+			$accountingGroups = $this->SalesInvoices->SalesInvoiceRows->Ledgers->AccountingGroups
+			->find('children', ['for' => $partyParentGroup->id])->toArray();
+			$partyGroups[]=$partyParentGroup->id;
+			foreach($accountingGroups as $accountingGroup){
+				$partyGroups[]=$accountingGroup->id;
+			}
+		}
+	
+		if($partyGroups)
+		{  
+			$Partyledgers = $this->SalesInvoices->SalesInvoiceRows->Ledgers->find()
+							->where(['Ledgers.accounting_group_id IN' =>$partyGroups,'Ledgers.company_id'=>$company_id])
+							->contain(['Customers']);
+        }
+		
+		
+		$partyOptions=[];
+		foreach($Partyledgers as $Partyledger){
+		
+		$receiptAccountLedgers = $this->SalesInvoices->SalesInvoiceRows->Ledgers->AccountingGroups->find()
+		->where(['AccountingGroups.id'=>$Partyledger->accounting_group_id,'AccountingGroups.customer'=>1])
+		->orWhere(['AccountingGroups.id'=>$Partyledger->accounting_group_id,'AccountingGroups.supplier'=>1])->first();
+		
+		if($receiptAccountLedgers)
+		{
+			$receiptAccountLedgersName='1';
+		}
+		else{
+			$receiptAccountLedgersName='0';
+		}
+			$partyOptions[]=['text' =>str_pad(@$Partyledger->customer->customer_id, 4, '0', STR_PAD_LEFT).' - '.$Partyledger->name, 'value' => $Partyledger->id ,'party_state_id'=>@$Partyledger->customer->state_id, 'partyexist'=>$receiptAccountLedgersName, 'billToBillAccounting'=>$Partyledger->bill_to_bill_accounting];
+		}
+		$this->set(compact('partyOptions'));
     }
 	
 	public function report($id=null)
     {
-	    $from=$this->request->query('from_date');
-		$from_date=date('Y-m-d', strtotime($from));
-
-		$to=$this->request->query('to_date');
-		$to_date=date('Y-m-d', strtotime($to));
-
-		$this->viewBuilder()->layout('index_layout');
+		$status=$this->request->query('status'); 
+		if(!empty($status)){ 
+			$this->viewBuilder()->layout('excel_layout');	
+		}else{ 
+			$this->viewBuilder()->layout('index_layout');
+		}
+		
 		$company_id=$this->Auth->User('session_company_id');
-		$salesInvoices = $this->SalesInvoices->find()->where(['SalesInvoices.company_id'=>$company_id,'transaction_date >='=>$from_date,'transaction_date <='=>$to_date])
-		->contain(['Companies', 'PartyLedgers'=>['Customers'], 'SalesLedgers', 'SalesInvoiceRows'=>['Items', 'GstFigures']]);
-        
+		$url=$this->request->here();
+		$url=parse_url($url,PHP_URL_QUERY);
+	    $from=$this->request->query('from_date');
+		$to=$this->request->query('to_date');
+		
+		$where=[];
+		$where1=[];
+		if(!empty($from)){ 
+			$from_date=date('Y-m-d', strtotime($from));
+		$where['SalesInvoices.transaction_date >=']= $from_date;
+		}
+		if(!empty($to)){
+			$to_date=date('Y-m-d', strtotime($to));
+			$where['SalesInvoices.transaction_date <='] = $to_date;
+		}
+		$party_ids=$this->request->query('party_ledger_id');
+		if(!empty($party_ids)){
+		$where['SalesInvoices.party_ledger_id IN'] = $party_ids;
+		}
+		$invoice_no=$this->request->query('invoice_no');
+		if(!empty($invoice_no)){
+		$invoices_explode_commas=explode(',',$invoice_no);
+		
+		if($invoices_explode_commas){
+			$invoice_ids=[];
+			foreach($invoices_explode_commas as $invoices_explode_comma)
+			{
+				@$invoices_explode_dashs=explode('-',$invoices_explode_comma);
+				
+				$size=sizeOf($invoices_explode_dashs);
+				if($size==2){
+					$var1=$invoices_explode_dashs[0];
+					$var2=$invoices_explode_dashs[1];
+					for($i=$var1; $i<= $var2; $i++){
+						$invoice_ids[]=$i;
+					}
+				}else{
+					$invoice_ids[]=$invoices_explode_dashs[0];
+				}
+			}
+		}
+		$where1['SalesInvoices.voucher_no IN'] = $invoice_ids;
+		}
+		if(!empty($where)){
+		$salesInvoices = $this->SalesInvoices->find()->where(['SalesInvoices.company_id'=>$company_id])->where($where)->orWhere($where1)
+		->contain(['Companies', 'PartyLedgers'=>['Customers'], 'SalesLedgers', 'SalesInvoiceRows'=>['Items', 'GstFigures']])
+        ->order(['voucher_no' => 'ASC']);
+		}
+		else{
+		$salesInvoices = $this->SalesInvoices->find()->where(['SalesInvoices.company_id'=>$company_id])->where($where1)
+		->contain(['Companies', 'PartyLedgers'=>['Customers'], 'SalesLedgers', 'SalesInvoiceRows'=>['Items', 'GstFigures']])
+        ->order(['voucher_no' => 'ASC']);
+		}
+	
 		//pr($salesInvoices->toArray());
 		//exit;
 		
-		$this->set(compact('salesInvoices', 'from', 'to'));
+		$this->set(compact('salesInvoices', 'from', 'to','party_ids','invoice_no','url','status'));
         $this->set('_serialize', ['salesInvoices']);
     }
     /**
@@ -85,7 +198,7 @@ class SalesInvoicesController extends AppController
 		$location_id=$this->Auth->User('session_location_id');
 		$stateDetails=$this->Auth->User('session_company');
 		$state_id=$stateDetails->state_id;
-		
+		$due_days=0;
 		$roundOffId = $this->SalesInvoices->SalesInvoiceRows->Ledgers->find()
 		->where(['Ledgers.company_id'=>$company_id, 'Ledgers.round_off'=>1])->first();
 		$Voucher_no = $this->SalesInvoices->find()->select(['voucher_no'])->where(['SalesInvoices.company_id'=>$company_id])->order(['voucher_no' => 'DESC'])->first();
@@ -99,6 +212,7 @@ class SalesInvoicesController extends AppController
 		} 		
         if ($this->request->is('post')) {
 		    $transaction_date=date('Y-m-d', strtotime($this->request->data['transaction_date']));
+			$due_days=$this->request->data['due_days']; 
             $salesInvoice = $this->SalesInvoices->patchEntity($salesInvoice, $this->request->getData());
             $salesInvoice->transaction_date=$transaction_date;
 			$Voucher_no = $this->SalesInvoices->find()->select(['voucher_no'])->where(['SalesInvoices.company_id'=>$company_id])->order(['voucher_no' => 'DESC'])->first();
@@ -174,27 +288,31 @@ class SalesInvoicesController extends AppController
 					  if($refLedgerId->bill_to_bill_accounting=='yes')
 						{
 						        $refData1 = $this->SalesInvoices->Receipts->ReceiptRows->ReferenceDetails->query();
-								$refData1->insert(['company_id','ledger_id','type', 'ref_name', 'credit', 'receipt_id','receipt_row_id'])
+								$refData1->insert(['company_id','ledger_id','type', 'ref_name', 'debit', 'sales_invoice_id','due_days','transaction_date'])
 										->values([
 										'company_id' => $salesInvoice->company_id,
 										'ledger_id' => $salesInvoice->party_ledger_id,
 										'type' => 'New Ref',
 										'ref_name' => $voucher_no,
-										'credit' => $salesInvoice->amount_after_tax,
-										'receipt_id' => $receiptId->id,
-										'receipt_row_id' => $receiptRowCrId->id])
+										'debit' => $salesInvoice->amount_after_tax,
+										'sales_invoice_id' => $salesInvoice->id,
+										'due_days' => $due_days,
+										'transaction_date' => $salesInvoice->transaction_date
+										])
 					  ->execute();
 					  
 								$refData2 = $this->SalesInvoices->Receipts->ReceiptRows->ReferenceDetails->query();
-								$refData2->insert(['company_id','ledger_id','type', 'ref_name', 'debit', 'receipt_id','receipt_row_id'])
+								$refData2->insert(['company_id','ledger_id','type', 'ref_name', 'credit','receipt_id','receipt_row_id','transaction_date'])
 										->values([
 										'company_id' => $salesInvoice->company_id,
-										'ledger_id' => $receiptLedgerId->id,
+										'ledger_id' => $salesInvoice->party_ledger_id,
 										'type' => 'Against',
 										'ref_name' => $voucher_no,
-										'debit' => $salesInvoice->amount_after_tax,
+										'credit' => $salesInvoice->amount_after_tax,
 										'receipt_id' => $receiptId->id,
-										'receipt_row_id' => $receiptRowDrId->id])
+										'receipt_row_id' => $receiptRowCrId->id,
+										'transaction_date' => $salesInvoice->transaction_date
+										])
 					  ->execute();
 						}
 					 
@@ -220,6 +338,29 @@ class SalesInvoicesController extends AppController
 					$this->SalesInvoices->Receipts->AccountingEntries->save($accountEntry);
 					//Accounting Entries for Receipt End//
 					
+				}
+				else 
+				if($salesInvoice->invoice_receipt_type=='credit' && $salesInvoice->invoiceReceiptTd==1)
+				{
+						$refLedgerId = $this->SalesInvoices->SalesInvoiceRows->Ledgers->find()
+						->where(['Ledgers.id' =>$salesInvoice->party_ledger_id,'Ledgers.company_id'=>$company_id])->first();
+					  
+					  if($refLedgerId->bill_to_bill_accounting=='yes')
+						{
+						        $refData1 = $this->SalesInvoices->Receipts->ReceiptRows->ReferenceDetails->query();
+								$refData1->insert(['company_id','ledger_id','type', 'ref_name', 'debit', 'sales_invoice_id','due_days','transaction_date'])
+										->values([
+										'company_id' => $salesInvoice->company_id,
+										'ledger_id' => $salesInvoice->party_ledger_id,
+										'type' => 'New Ref',
+										'ref_name' => $voucher_no,
+										'debit' => $salesInvoice->amount_after_tax,
+										'sales_invoice_id' => $salesInvoice->id,
+										'due_days'=>$due_days,
+										'transaction_date' => $salesInvoice->transaction_date
+										])
+					  ->execute();
+						}
 				}
 				
 
@@ -353,10 +494,49 @@ class SalesInvoicesController extends AppController
 		$items = $this->SalesInvoices->SalesInvoiceRows->Items->find()
 					->where(['Items.company_id'=>$company_id])
 					->contain(['FirstGstFigures', 'SecondGstFigures', 'Units']);
-		$itemOptions=[];
-		foreach($items as $item){
-			$itemOptions[]=['text'=>$item->item_code.' '.$item->name, 'value'=>$item->id,'item_code'=>$item->item_code, 'first_gst_figure_id'=>$item->first_gst_figure_id, 'gst_amount'=>floatval($item->gst_amount), 'sales_rate'=>$item->sales_rate, 'second_gst_figure_id'=>$item->second_gst_figure_id, 'FirstGstFigure'=>$item->FirstGstFigures->tax_percentage, 'SecondGstFigure'=>$item->SecondGstFigures->tax_percentage];
+		$itemLedgers=[];
+		foreach($items->toArray() as $data)
+		{
+			$itemId=$data->id;
+			$query = $this->SalesInvoices->SalesInvoiceRows->Items->ItemLedgers->find()
+			->where(['ItemLedgers.item_id' => $itemId, 'ItemLedgers.company_id' => $company_id]);
+			$totalInCase = $query->newExpr()
+			->addCase(
+				$query->newExpr()->add(['status' => 'In']),
+				$query->newExpr()->add(['quantity']),
+				'integer'
+			);
+		$totalOutCase = $query->newExpr()
+			->addCase(
+				$query->newExpr()->add(['status' => 'out']),
+				$query->newExpr()->add(['quantity']),
+				'integer'
+			);
+		$query->select([
+			'total_in' => $query->func()->sum($totalInCase),
+			'total_out' => $query->func()->sum($totalOutCase),'id','item_id'
+		])
+		->where(['ItemLedgers.item_id' => $itemId, 'ItemLedgers.company_id' => $company_id, 'ItemLedgers.location_id' => $location_id])
+		->group('item_id')
+		->autoFields(true)
+		->contain(['Items'=>['FirstGstFigures', 'SecondGstFigures', 'Units']]);
+        $itemLedgers[] = ($query);
 		}
+		$itemOptions=[];
+		foreach($itemLedgers as $d)
+		{
+			foreach($d as $dd)
+			{
+				$available_stock=$dd->total_in;
+				$stock_issue=$dd->total_out;
+				@$remaining=number_format($available_stock-$stock_issue, 2);
+				if($remaining>0)
+				{
+				$itemOptions[]=['text'=>$dd->item->item_code.' '.$dd->item->name, 'value'=>$dd->item_id,'item_code'=>$dd->item->item_code, 'first_gst_figure_id'=>$dd->item->first_gst_figure_id, 'gst_amount'=>floatval($dd->item->gst_amount), 'sales_rate'=>$dd->item->sales_rate, 'second_gst_figure_id'=>$dd->item->second_gst_figure_id, 'FirstGstFigure'=>$dd->item->FirstGstFigures->tax_percentage, 'SecondGstFigure'=>$dd->item->SecondGstFigures->tax_percentage];
+				}
+			}
+		}
+		
         $partyParentGroups = $this->SalesInvoices->SalesInvoiceRows->Ledgers->AccountingGroups->find()
 						->where(['AccountingGroups.company_id'=>$company_id, 'AccountingGroups.sale_invoice_party'=>'1']);
 		$partyGroups=[];
@@ -393,7 +573,7 @@ class SalesInvoicesController extends AppController
 		else{
 			$receiptAccountLedgersName='0';
 		}
-			$partyOptions[]=['text' =>str_pad(@$Partyledger->customer->customer_id, 4, '0', STR_PAD_LEFT).' - '.$Partyledger->name, 'value' => $Partyledger->id ,'party_state_id'=>@$Partyledger->customer->state_id, 'partyexist'=>$receiptAccountLedgersName, 'billToBillAccounting'=>$Partyledger->bill_to_bill_accounting];
+			$partyOptions[]=['text' =>str_pad(@$Partyledger->customer->customer_id, 4, '0', STR_PAD_LEFT).' - '.$Partyledger->name, 'value' => $Partyledger->id ,'party_state_id'=>@$Partyledger->customer->state_id, 'partyexist'=>$receiptAccountLedgersName, 'billToBillAccounting'=>$Partyledger->bill_to_bill_accounting,'default_days'=>$Partyledger->default_credit_days];
 		}
 		
 		$accountLedgers = $this->SalesInvoices->SalesInvoiceRows->Ledgers->AccountingGroups->find()->where(['AccountingGroups.sale_invoice_sales_account'=>1,'AccountingGroups.company_id'=>$company_id])->first();
@@ -445,6 +625,7 @@ public function edit($id = null)
 		$stateDetails=$this->Auth->User('session_company');
 		$location_id=$this->Auth->User('session_location_id');
 		$state_id=$stateDetails->state_id;
+		$due_days=0;
 		$roundOffId = $this->SalesInvoices->SalesInvoiceRows->Ledgers->find()
 		->where(['Ledgers.company_id'=>$company_id, 'Ledgers.round_off'=>1])->first();
 		$Voucher_no = $this->SalesInvoices->find()->select(['voucher_no'])->where(['company_id'=>$company_id])->order(['voucher_no' => 'DESC'])->first();
@@ -459,8 +640,10 @@ public function edit($id = null)
 		
         if ($this->request->is(['patch', 'post', 'put'])) {
 		    $transaction_date=date('Y-m-d', strtotime($this->request->data['transaction_date']));
+			
             $salesInvoice = $this->SalesInvoices->patchEntity($salesInvoice, $this->request->getData());
             $salesInvoice->transaction_date=$transaction_date;
+			$due_days=$this->request->data['due_days'];
 			
 			if($salesInvoice->invoice_receipt_type=='cash' && $salesInvoice->invoiceReceiptTd==1)
 				{
@@ -470,8 +653,7 @@ public function edit($id = null)
 				$salesInvoice->receipt_amount=0;
 				}
 			
-			
-			if ($this->SalesInvoices->save($salesInvoice)) {
+		if ($this->SalesInvoices->save($salesInvoice)) {
 			
 			$receiptIdExist = $this->SalesInvoices->Receipts->find()
 			->where(['Receipts.company_id'=>$company_id, 'Receipts.sales_invoice_id'=>$salesInvoice->id])
@@ -518,7 +700,7 @@ public function edit($id = null)
 						
 						$this->SalesInvoices->Receipts->AccountingEntries->deleteAll(['ReferenceDetails.receipt_id'=>$receiptId->id]);
 						
-						$accountEntry = $this->SalesInvoices->Receipts->AccountingEntries->newEntity();
+					$accountEntry = $this->SalesInvoices->Receipts->AccountingEntries->newEntity();
 					$accountEntry->ledger_id                  = $salesInvoice->party_ledger_id;
 					$accountEntry->debit                      = 0;
 					$accountEntry->credit                     = $salesInvoice->receipt_amount;
@@ -541,6 +723,13 @@ public function edit($id = null)
 					   $receiptRowCrId = $this->SalesInvoices->Receipts->ReceiptRows->find()->select(['id'])->where(['ReceiptRows.company_id'=>$company_id,'ReceiptRows.receipt_id'=>$receiptId->id, 'ReceiptRows.cr_dr'=>'Cr'])->first();
 					   $receiptRowDrId = $this->SalesInvoices->Receipts->ReceiptRows->find()->select(['id'])->where(['ReceiptRows.company_id'=>$company_id,'ReceiptRows.receipt_id'=>$receiptId->id, 'ReceiptRows.cr_dr'=>'Dr'])->first();
 					  
+					  
+					  $refExist = $this->SalesInvoices->Receipts->ReceiptRows->ReferenceDetails->find()->select(['id'])->where(['ReferenceDetails.company_id'=>$company_id,'ReferenceDetails.sales_invoice_id'=>$salesInvoice->id]);
+						
+						if($refExist)
+						{
+						
+					  
 					  if($refLedgerId->bill_to_bill_accounting=='yes')
 						{
 							$refData1 = $this->SalesInvoices->Receipts->ReceiptRows->ReferenceDetails->query();
@@ -548,22 +737,47 @@ public function edit($id = null)
 							->set(['company_id' => $salesInvoice->company_id,
 										'ledger_id' => $salesInvoice->party_ledger_id,
 										'type' => 'New Ref',
-										'credit' => $salesInvoice->receipt_amount,
-										'receipt_id' => $receiptId->id,
-										'receipt_row_id' => $receiptRowCrId->id])
-						->where(['ReferenceDetails.company_id'=>$company_id, 'ReferenceDetails.receipt_id'=>$receiptId->id, 'ReferenceDetails.receipt_row_id'=>$receiptRowCrId->id])
+										'debit' =>$salesInvoice->amount_after_tax,
+										'sales_invoice_id' => $salesInvoice->id,
+										'transaction_date'=>$salesInvoice->transaction_date,
+										'due_days'=>$due_days
+									])
+						->where(['ReferenceDetails.company_id'=>$company_id, 'ReferenceDetails.sales_invoice_id'=>$salesInvoice->id])
 						->execute();
 					  
+					  $refExist2nd = $this->SalesInvoices->Receipts->ReceiptRows->ReferenceDetails->find()->select(['id'])->where(['ReferenceDetails.company_id'=>$company_id,'ReferenceDetails.receipt_id'=>$receiptId->id]);
+						
+						if($refExist2nd)
+						{
 					 $refData2 = $this->SalesInvoices->Receipts->ReceiptRows->ReferenceDetails->query();
 						$refData2->update()
 						->set(['company_id' => $salesInvoice->company_id,
-										'ledger_id' => $receiptLedgerId->id,
+										'ledger_id' => $salesInvoice->party_ledger_id,
 										'type' => 'Against',
-										'debit' => $salesInvoice->receipt_amount,
+										'credit' => $salesInvoice->receipt_amount,
 										'receipt_id' => $receiptId->id,
-										'receipt_row_id' => $receiptRowDrId->id])
-						->where(['ReferenceDetails.company_id'=>$company_id, 'ReferenceDetails.receipt_id'=>$receiptId->id, 'ReferenceDetails.receipt_row_id'=>$receiptRowDrId->id])
+										'receipt_row_id' => $receiptRowCrId->id,
+										'transaction_date' => $salesInvoice->transaction_date
+										])
+						->where(['ReferenceDetails.company_id'=>$company_id, 'ReferenceDetails.receipt_id'=>$receiptId->id, 'ReferenceDetails.receipt_row_id'=>$receiptRowCrId->id])
 						->execute();
+						}
+						else{
+					
+						$refData2 = $this->SalesInvoices->Receipts->ReceiptRows->ReferenceDetails->query();
+								$refData2->insert(['company_id','ledger_id','type', 'ref_name', 'credit', 'receipt_id','receipt_row_id','transaction_date'])
+										->values([
+										'company_id' => $salesInvoice->company_id,
+										'ledger_id' => $salesInvoice->party_ledger_id,
+										'type' => 'Against',
+										'ref_name' => $salesInvoice->voucher_no,
+										'credit' => $salesInvoice->receipt_amount,
+										'receipt_id' => $receiptId->id,
+										'receipt_row_id' => $receiptRowCrId->id,
+										'transaction_date' => $salesInvoice->transaction_date])
+					  ->execute();
+						}
+						
 						}
 						else if($refLedgerId->bill_to_bill_accounting=='no')
 						{
@@ -572,28 +786,61 @@ public function edit($id = null)
 							->set(['company_id' => $salesInvoice->company_id,
 										'ledger_id' => $salesInvoice->party_ledger_id,
 										'type' => 'New Ref',
-										'credit' => '0',
-										'receipt_id' => $receiptId->id,
-										'receipt_row_id' => $receiptRowCrId->id])
-						->where(['ReferenceDetails.company_id'=>$company_id, 'ReferenceDetails.receipt_id'=>$receiptId->id, 'ReferenceDetails.receipt_row_id'=>$receiptRowCrId->id])
+										'debit' => '0',
+										'due_days'=>$due_days,
+										'sales_invoice_id' => $salesInvoice->id])
+						->where(['ReferenceDetails.company_id'=>$company_id, 'ReferenceDetails.sales_invoice_id'=>$salesInvoice->id])
 						->execute();
 					  
 					 $refData2 = $this->SalesInvoices->Receipts->ReceiptRows->ReferenceDetails->query();
 						$refData2->update()
 						->set(['company_id' => $salesInvoice->company_id,
-										'ledger_id' => $receiptLedgerId->id,
+										'ledger_id' => $salesInvoice->party_ledger_id,
 										'type' => 'Against',
-										'debit' => '0',
+										'credit' => '0',
 										'receipt_id' => $receiptId->id,
-										'receipt_row_id' => $receiptRowDrId->id])
-						->where(['ReferenceDetails.company_id'=>$company_id, 'ReferenceDetails.receipt_id'=>$receiptId->id, 'ReferenceDetails.receipt_row_id'=>$receiptRowDrId->id])
+										'receipt_row_id' => $receiptRowCrId->id])
+						->where(['ReferenceDetails.company_id'=>$company_id, 'ReferenceDetails.receipt_id'=>$receiptId->id, 'ReferenceDetails.receipt_row_id'=>$receiptRowCrId->id])
 						->execute();
 						
+						 }
+						
 						}
-
+						else{
+						
+					  if($refLedgerId->bill_to_bill_accounting=='yes')
+						      {
+						        $refData1 = $this->SalesInvoices->Receipts->ReceiptRows->ReferenceDetails->query();
+								$refData1->insert(['company_id','ledger_id','type', 'ref_name', 'debit','sales_invoice_id','due_days','transaction_date'])
+										->values([
+										'company_id' => $salesInvoice->company_id,
+										'ledger_id' => $salesInvoice->party_ledger_id,
+										'type' => 'New Ref',
+										'ref_name' => $salesInvoice->voucher_no,
+										'debit' => $salesInvoice->amount_after_tax,
+										'sales_invoice_id' => $salesInvoice->id,
+										'due_days'=>$due_days,
+										'transaction_date' => $salesInvoice->transaction_date])
+					  ->execute();
+					  
+								$refData2 = $this->SalesInvoices->Receipts->ReceiptRows->ReferenceDetails->query();
+								$refData2->insert(['company_id','ledger_id','type', 'ref_name', 'credit', 'receipt_id','receipt_row_id','transaction_date'])
+										->values([
+										'company_id' => $salesInvoice->company_id,
+										'ledger_id' => $salesInvoice->party_ledger_id,
+										'type' => 'Against',
+										'ref_name' => $salesInvoice->voucher_no,
+										'credit' => $salesInvoice->receipt_amount,
+										'receipt_id' => $receiptId->id,
+										'receipt_row_id' => $receiptRowCrId->id,
+										'transaction_date' => $salesInvoice->transaction_date])
+					  ->execute();
+					        }
+						}
 					}
 					else
 					{
+					//echo 'ok';exit;
 					$query_update = $this->SalesInvoices->Receipts->query();
 						$query_update->update()
 						->set(['company_id' => $salesInvoice->company_id,
@@ -655,32 +902,80 @@ public function edit($id = null)
 						
 						$refExist = $this->SalesInvoices->Receipts->ReceiptRows->ReferenceDetails->find()->select(['id'])->where(['ReferenceDetails.company_id'=>$company_id,'ReferenceDetails.receipt_id'=>$receiptId->id]);
 						
-						if($refExist)
+						if($refExist->toArray())
 						{
+						
 						   $receiptRowCrId = $this->SalesInvoices->Receipts->ReceiptRows->find()->select(['id'])->where(['ReceiptRows.company_id'=>$company_id,'ReceiptRows.receipt_id'=>$receiptId->id, 'ReceiptRows.cr_dr'=>'Cr'])->first();
 						   $receiptRowDrId = $this->SalesInvoices->Receipts->ReceiptRows->find()->select(['id'])->where(['ReceiptRows.company_id'=>$company_id,'ReceiptRows.receipt_id'=>$receiptId->id, 'ReceiptRows.cr_dr'=>'Dr'])->first();
-					  
+						   
+							if($refLedgerId->bill_to_bill_accounting=='yes')
+								  {
 								$refData1 = $this->SalesInvoices->Receipts->ReceiptRows->ReferenceDetails->query();
 								$refData1->update()
 								->set(['company_id' => $salesInvoice->company_id,
 											'ledger_id' => $salesInvoice->party_ledger_id,
 											'type' => 'New Ref',
-											'credit' => '0',
-											'receipt_id' => $receiptId->id,
-											'receipt_row_id' => $receiptRowCrId->id])
-								->where(['ReferenceDetails.company_id'=>$company_id, 'ReferenceDetails.receipt_id'=>$receiptId->id, 'ReferenceDetails.receipt_row_id'=>$receiptRowCrId->id])
+											'debit' => $salesInvoice->amount_after_tax,
+											'due_days'=>$due_days,
+											'sales_invoice_id' => $salesInvoice->id])
+								->where(['ReferenceDetails.company_id'=>$company_id, 'ReferenceDetails.sales_invoice_id'=>$salesInvoice->id])
 								->execute();
 							  
 								 $refData2 = $this->SalesInvoices->Receipts->ReceiptRows->ReferenceDetails->query();
 									$refData2->update()
 									->set(['company_id' => $salesInvoice->company_id,
-													'ledger_id' => $receiptLedgerId->id,
+												'ledger_id' => $salesInvoice->party_ledger_id,
 												'type' => 'Against',
-												'debit' => '0',
+												'credit' => '0',
 												'receipt_id' => $receiptId->id,
-												'receipt_row_id' => $receiptRowDrId->id])
-								->where(['ReferenceDetails.company_id'=>$company_id, 'ReferenceDetails.receipt_id'=>$receiptId->id, 'ReferenceDetails.receipt_row_id'=>$receiptRowDrId->id])
+												'receipt_row_id' => $receiptRowCrId->id])
+								->where(['ReferenceDetails.company_id'=>$company_id, 'ReferenceDetails.receipt_id'=>$receiptId->id, 'ReferenceDetails.receipt_row_id'=>$receiptRowCrId->id])
 								->execute();
+								
+								}
+								else{
+								   $refData1 = $this->SalesInvoices->Receipts->ReceiptRows->ReferenceDetails->query();
+								$refData1->update()
+								->set(['company_id' => $salesInvoice->company_id,
+											'ledger_id' => $salesInvoice->party_ledger_id,
+											'type' => 'New Ref',
+											'debit' => 0,
+											'due_days'=>$due_days,
+											'sales_invoice_id' => $salesInvoice->id])
+								->where(['ReferenceDetails.company_id'=>$company_id, 'ReferenceDetails.sales_invoice_id'=>$salesInvoice->id])
+								->execute();
+							  
+								 $refData2 = $this->SalesInvoices->Receipts->ReceiptRows->ReferenceDetails->query();
+									$refData2->update()
+									->set(['company_id' => $salesInvoice->company_id,
+												'ledger_id' => $salesInvoice->party_ledger_id,
+												'type' => 'Against',
+												'credit' => '0',
+												'receipt_id' => $receiptId->id,
+												'receipt_row_id' => $receiptRowCrId->id])
+								->where(['ReferenceDetails.company_id'=>$company_id, 'ReferenceDetails.receipt_id'=>$receiptId->id, 'ReferenceDetails.receipt_row_id'=>$receiptRowCrId->id])
+								->execute();
+								}
+						}
+						else{
+						
+						
+						 if($refLedgerId->bill_to_bill_accounting=='yes')
+						      {
+						        $refData1 = $this->SalesInvoices->Receipts->ReceiptRows->ReferenceDetails->query();
+								$refData1->insert(['company_id','ledger_id','type', 'ref_name', 'debit', 'sales_invoice_id','due_days','transaction_date'])
+										->values([
+										'company_id' => $salesInvoice->company_id,
+										'ledger_id' => $salesInvoice->party_ledger_id,
+										'type' => 'New Ref',
+										'ref_name' => $salesInvoice->voucher_no,
+										'debit' => $salesInvoice->amount_after_tax,
+										'sales_invoice_id' => $salesInvoice->id,
+										'due_days'=>$due_days,
+										'transaction_date' => $salesInvoice->transaction_date])
+					  ->execute();
+					        }
+						
 						}
 					}
 			}
@@ -688,6 +983,8 @@ public function edit($id = null)
 			
 			if($salesInvoice->invoice_receipt_type=='cash' && $salesInvoice->invoiceReceiptTd==1)
 				{
+				
+				
 				   $receiptVoucherNo = $this->SalesInvoices->Receipts->find()->select(['voucher_no'])->where(['Receipts.company_id'=>$company_id])->order(['voucher_no' => 'DESC'])->first();
 						if($receiptVoucherNo)
 						{
@@ -753,40 +1050,105 @@ public function edit($id = null)
 					$accountEntry->receipt_id                 = $receiptId->id;
 					$accountEntry->receipt_row_id             = 0;
 					$this->SalesInvoices->Receipts->AccountingEntries->save($accountEntry);
-					  
-					  
-					  
-					   $receiptRowCrId = $this->SalesInvoices->Receipts->ReceiptRows->find()->select(['id'])->where(['ReceiptRows.company_id'=>$company_id,'ReceiptRows.receipt_id'=>$receiptId->id, 'ReceiptRows.cr_dr'=>'Cr'])->first();
+					 
+						$receiptRowCrId = $this->SalesInvoices->Receipts->ReceiptRows->find()->select(['id'])->where(['ReceiptRows.company_id'=>$company_id,'ReceiptRows.receipt_id'=>$receiptId->id, 'ReceiptRows.cr_dr'=>'Cr'])->first();
 					   $receiptRowDrId = $this->SalesInvoices->Receipts->ReceiptRows->find()->select(['id'])->where(['ReceiptRows.company_id'=>$company_id,'ReceiptRows.receipt_id'=>$receiptId->id, 'ReceiptRows.cr_dr'=>'Dr'])->first();
 					  
 					  if($refLedgerId->bill_to_bill_accounting=='yes')
 						{
+							$refExist = $this->SalesInvoices->Receipts->ReceiptRows->ReferenceDetails->find()->select(['id'])->where(['ReferenceDetails.company_id'=>$company_id,'ReferenceDetails.sales_invoice_id'=>$salesInvoice->id]);
+							if($refExist){
+								 $deleteRef = $this->SalesInvoices->Receipts->ReceiptRows->ReferenceDetails->query();
+								$deleteRefResult = $deleteRef->delete()
+									->where(['sales_invoice_id' => $salesInvoice->id])
+									->execute();
 						        $refData1 = $this->SalesInvoices->Receipts->ReceiptRows->ReferenceDetails->query();
-								$refData1->insert(['company_id','ledger_id','type', 'ref_name', 'credit', 'receipt_id','receipt_row_id'])
+								$refData1->insert(['company_id','ledger_id','type', 'ref_name', 'debit', 'sales_invoice_id','due_days','transaction_date'])
 										->values([
 										'company_id' => $salesInvoice->company_id,
 										'ledger_id' => $salesInvoice->party_ledger_id,
 										'type' => 'New Ref',
 										'ref_name' => $salesInvoice->voucher_no,
-										'credit' => $salesInvoice->amount_after_tax,
-										'receipt_id' => $receiptId->id,
-										'receipt_row_id' => $receiptRowCrId->id])
+										'debit' => $salesInvoice->amount_after_tax,
+										'sales_invoice_id' => $salesInvoice->id,
+										'due_days'=>$due_days,
+										'transaction_date' => $salesInvoice->transaction_date])
 					  ->execute();
 					  
 								$refData2 = $this->SalesInvoices->Receipts->ReceiptRows->ReferenceDetails->query();
-								$refData2->insert(['company_id','ledger_id','type', 'ref_name', 'debit', 'receipt_id','receipt_row_id'])
+								$refData2->insert(['company_id','ledger_id','type', 'ref_name', 'credit','receipt_id','receipt_row_id','transaction_date'])
 										->values([
 										'company_id' => $salesInvoice->company_id,
-										'ledger_id' => $receiptLedgerId->id,
+										'ledger_id' => $salesInvoice->party_ledger_id,
 										'type' => 'Against',
 										'ref_name' => $salesInvoice->voucher_no,
-										'debit' => $salesInvoice->amount_after_tax,
+										'credit' => $salesInvoice->receipt_amount,
 										'receipt_id' => $receiptId->id,
-										'receipt_row_id' => $receiptRowDrId->id])
+										'receipt_row_id' => $receiptRowCrId->id,
+										'transaction_date' => $salesInvoice->transaction_date])
+					  ->execute();
+						}
+						}	
+				    }
+					
+			else if($salesInvoice->invoice_receipt_type=='credit' && $salesInvoice->invoiceReceiptTd==1)
+				{
+				     $refExist = $this->SalesInvoices->Receipts->ReceiptRows->ReferenceDetails->find()->select(['id'])->where(['ReferenceDetails.company_id'=>$company_id,'ReferenceDetails.sales_invoice_id'=>$salesInvoice->id]);
+						
+						$refLedgerId = $this->SalesInvoices->SalesInvoiceRows->Ledgers->find()
+						->where(['Ledgers.id' =>$salesInvoice->party_ledger_id,'Ledgers.company_id'=>$company_id])->first();
+						
+						if($refExist)
+						{
+						
+							  if($refLedgerId->bill_to_bill_accounting=='yes')
+								  {
+								$refData1 = $this->SalesInvoices->Receipts->ReceiptRows->ReferenceDetails->query();
+								$refData1->update()
+								->set(['company_id' => $salesInvoice->company_id,
+											'ledger_id' => $salesInvoice->party_ledger_id,
+											'type' => 'New Ref',
+											'debit' => $salesInvoice->amount_after_tax,
+											'due_days'=>$due_days,
+											'sales_invoice_id' => $salesInvoice->id])
+								->where(['ReferenceDetails.company_id'=>$company_id, 'ReferenceDetails.sales_invoice_id'=>$salesInvoice->id])
+								->execute();
+								}
+								else{
+								   $refData1 = $this->SalesInvoices->Receipts->ReceiptRows->ReferenceDetails->query();
+								$refData1->update()
+								->set(['company_id' => $salesInvoice->company_id,
+											'ledger_id' => $salesInvoice->party_ledger_id,
+											'type' => 'New Ref',
+											'debit' => 0,
+											'due_days'=>$due_days,
+											'sales_invoice_id' => $salesInvoice->id])
+								->where(['ReferenceDetails.company_id'=>$company_id, 'ReferenceDetails.sales_invoice_id'=>$salesInvoice->id])
+								->execute();
+								}
+						}
+					else{
+						
+				    $refLedgerId = $this->SalesInvoices->SalesInvoiceRows->Ledgers->find()
+						->where(['Ledgers.id' =>$salesInvoice->party_ledger_id,'Ledgers.company_id'=>$company_id])->first();
+					  if($refLedgerId->bill_to_bill_accounting=='yes')
+						{
+						        $refData1 = $this->SalesInvoices->Receipts->ReceiptRows->ReferenceDetails->query();
+								$refData1->insert(['company_id','ledger_id','type', 'ref_name', 'debit', 'sales_invoice_id','due_days','transaction_date'])
+										->values([
+										'company_id' => $salesInvoice->company_id,
+										'ledger_id' => $salesInvoice->party_ledger_id,
+										'type' => 'New Ref',
+										'ref_name' => $salesInvoice->voucher_no,
+										'debit' => $salesInvoice->amount_after_tax,
+										'sales_invoice_id' => $salesInvoice->id,
+										'due_days'=>$due_days,
+										'transaction_date' => $salesInvoice->transaction_date])
 					  ->execute();
 						}
 				    }
 			
+				}
 			}
 			
 			
@@ -913,7 +1275,7 @@ public function edit($id = null)
 								])
 						->execute();
 			   }
-		   }
+			}
                 $this->Flash->success(__('The sales invoice has been saved.'));
                 return $this->redirect(['action' => 'index']);
             }
@@ -934,9 +1296,47 @@ public function edit($id = null)
 		$items = $this->SalesInvoices->SalesInvoiceRows->Items->find()
 					->where(['Items.company_id'=>$company_id])
 					->contain(['FirstGstFigures', 'SecondGstFigures', 'Units']);
+		$itemLedgers=[];
+		foreach($items->toArray() as $data)
+		{
+			$itemId=$data->id;
+			$query = $this->SalesInvoices->SalesInvoiceRows->Items->ItemLedgers->find()
+			->where(['ItemLedgers.item_id' => $itemId, 'ItemLedgers.company_id' => $company_id]);
+			$totalInCase = $query->newExpr()
+			->addCase(
+				$query->newExpr()->add(['status' => 'In']),
+				$query->newExpr()->add(['quantity']),
+				'integer'
+			);
+		$totalOutCase = $query->newExpr()
+			->addCase(
+				$query->newExpr()->add(['status' => 'out']),
+				$query->newExpr()->add(['quantity']),
+				'integer'
+			);
+		$query->select([
+			'total_in' => $query->func()->sum($totalInCase),
+			'total_out' => $query->func()->sum($totalOutCase),'id','item_id'
+		])
+		->where(['ItemLedgers.item_id' => $itemId, 'ItemLedgers.company_id' => $company_id, 'ItemLedgers.location_id' => $location_id])
+		->group('item_id')
+		->autoFields(true)
+		->contain(['Items'=>['FirstGstFigures', 'SecondGstFigures', 'Units']]);
+        $itemLedgers[] = ($query);
+		}
 		$itemOptions=[];
-		foreach($items as $item){
-			$itemOptions[]=['text'=>$item->item_code.' '.$item->name, 'value'=>$item->id, 'first_gst_figure_id'=>$item->first_gst_figure_id, 'gst_amount'=>floatval($item->gst_amount), 'sales_rate'=>$item->sales_rate, 'second_gst_figure_id'=>$item->second_gst_figure_id, 'FirstGstFigure'=>$item->FirstGstFigures->tax_percentage, 'SecondGstFigure'=>$item->SecondGstFigures->tax_percentage];
+		foreach($itemLedgers as $d)
+		{
+			foreach($d as $dd)
+			{
+				$available_stock=$dd->total_in;
+				$stock_issue=$dd->total_out;
+				@$remaining=number_format($available_stock-$stock_issue, 2);
+				if($remaining>=0)
+				{
+				$itemOptions[]=['text'=>$dd->item->item_code.' '.$dd->item->name, 'value'=>$dd->item_id,'item_code'=>$dd->item->item_code, 'first_gst_figure_id'=>$dd->item->first_gst_figure_id, 'gst_amount'=>floatval($dd->item->gst_amount), 'sales_rate'=>$dd->item->sales_rate, 'second_gst_figure_id'=>$dd->item->second_gst_figure_id, 'FirstGstFigure'=>$dd->item->FirstGstFigures->tax_percentage, 'SecondGstFigure'=>$dd->item->SecondGstFigures->tax_percentage];
+				}
+			}
 		}
 	
         $partyParentGroups = $this->SalesInvoices->SalesInvoiceRows->Ledgers->AccountingGroups->find()
@@ -972,7 +1372,7 @@ public function edit($id = null)
 			$receiptAccountLedgersName='0';
 		}
 		
-			$partyOptions[]=['text' =>str_pad(@$Partyledger->customer->customer_id, 4, '0', STR_PAD_LEFT).' - '.$Partyledger->name, 'value' => $Partyledger->id ,'party_state_id'=>@$Partyledger->customer->state_id, 'partyexist'=>$receiptAccountLedgersName, 'billToBillAccounting'=>$Partyledger->bill_to_bill_accounting];
+			$partyOptions[]=['text' =>str_pad(@$Partyledger->customer->customer_id, 4, '0', STR_PAD_LEFT).' - '.$Partyledger->name, 'value' => $Partyledger->id ,'party_state_id'=>@$Partyledger->customer->state_id, 'partyexist'=>$receiptAccountLedgersName, 'billToBillAccounting'=>$Partyledger->bill_to_bill_accounting,'default_days'=>$Partyledger->default_credit_days];
 		}
 		
 		$accountLedgers = $this->SalesInvoices->SalesInvoiceRows->Ledgers->AccountingGroups->find()->where(['AccountingGroups.sale_invoice_sales_account'=>1,'AccountingGroups.company_id'=>$company_id])->first();
@@ -994,12 +1394,17 @@ public function edit($id = null)
         }
         $gstFigures = $this->SalesInvoices->GstFigures->find('list')
 						->where(['company_id'=>$company_id]);
+						
+						//pr($sales_return_qty);
+						//exit;
+						
+						
         $this->set(compact('salesInvoice', 'companies', 'customerOptions', 'gstFigures', 'voucher_no','company_id','itemOptions','state_id', 'Accountledgers', 'partyOptions', 'location_id','sales_return_qty'));
         $this->set('_serialize', ['salesInvoice']);
     }	
 	
 	
-public function salesInvoiceBill($id=null)
+    public function salesInvoiceBill($id=null)
     {
 		
 	    $this->viewBuilder()->layout('');
@@ -1008,10 +1413,17 @@ public function salesInvoiceBill($id=null)
 		$state_id=$stateDetails->state_id;
 		$invoiceBills= $this->SalesInvoices->find()
 		->where(['SalesInvoices.id'=>$id])
-		->contain(['Companies'=>['States'],'SalesInvoiceRows'=>['Items'=>['Sizes'], 'GstFigures']]);
-	
+		->contain(['Companies'=>['States'],'SalesInvoiceRows'=>['Items'=>['Sizes','Shades','Units'], 'GstFigures']]);
+		
+		$unit_ids=[];
+		//pr($units->toArray());
+		//exit;
 	    foreach($invoiceBills->toArray() as $data){
+			
 		foreach($data->sales_invoice_rows as $sales_invoice_row){
+		if(!in_array($sales_invoice_row->item->unit_id,$unit_ids)){
+			$unit_ids[]=$sales_invoice_row->item->unit_id;
+			}
 		$item_id=$sales_invoice_row->item_id;
 		$accountingEntries= $this->SalesInvoices->AccountingEntries->find()
 		->where(['AccountingEntries.sales_invoice_id'=>$data->id]);
@@ -1041,7 +1453,7 @@ public function salesInvoiceBill($id=null)
 			
 		}
 		}
-		//pr($id);exit;
+		//pr($unit_ids);exit;
 		$query = $this->SalesInvoices->SalesInvoiceRows->find();
 		
 		$totalTaxableAmt = $query->newExpr()
@@ -1068,7 +1480,8 @@ public function salesInvoiceBill($id=null)
 		
 		//pr($invoiceBills->toArray());exit;
 		
-		$this->set(compact('invoiceBills','taxable_type','sale_invoice_rows','partyCustomerid'));
+		
+		$this->set(compact('invoiceBills','taxable_type','sale_invoice_rows','partyCustomerid','units'));
         $this->set('_serialize', ['invoiceBills']);
     }	
 	
@@ -1336,4 +1749,51 @@ public function salesInvoiceBill($id=null)
 		$this->set(compact('sales_return','SalesInvoice'));
 		//exit;
 	}
+	
+	
+	public function cancel($id = null)
+    {
+		// $this->request->allowMethod(['post', 'delete']);
+        $salesInvoice = $this->SalesInvoices->get($id);
+		$company_id=$this->Auth->User('session_company_id');
+		//pr($salesInvoice);exit;
+		$salesInvoice->status='cancel';
+        if ($this->SalesInvoices->save($salesInvoice)) {
+			$receipt = $this->SalesInvoices->Receipts->find()->where(['Receipts.sales_invoice_id' => $id])->first();
+			if($receipt){
+			$receipt_id=$receipt->id;
+			//$receipt_rows= $this->SalesInvoices->Receipts->ReceiptRows->find()->where(['ReceiptRows.receipt_id' => $receipt_id,'ReceiptRows.cr_dr' =>'Cr'])->first();
+			//$receipt_row_id=$receipt_rows->id;
+			//if($receipt_row_id){
+				$refData1 = $this->SalesInvoices->Receipts->ReceiptRows->ReferenceDetails->query();
+								$refData1->update()
+								->set([
+											'type' => 'New Ref'
+											])
+								->where(['ReferenceDetails.company_id'=>$company_id, 'ReferenceDetails.receipt_id'=>$receipt_id,'ReferenceDetails.type'=>'Against'])
+								->execute();
+				$deleteRefDetails = $this->SalesInvoices->Receipts->ReceiptRows->ReferenceDetails->query();
+				$deleteRef = $deleteRefDetails->delete()
+					->where(['sales_invoice_id' => $salesInvoice->id])
+					->execute();
+				$deleteAccountEntries = $this->SalesInvoices->AccountingEntries->query();
+				$result = $deleteAccountEntries->delete()
+				->where(['AccountingEntries.sales_invoice_id' => $id])
+				->execute();
+			}
+			$deleteItemLedger = $this->SalesInvoices->ItemLedgers->query();
+				$deleteResult = $deleteItemLedger->delete()
+					->where(['sales_invoice_id' => $salesInvoice->id])
+					->execute();
+				$deleteAccountEntries = $this->SalesInvoices->AccountingEntries->query();
+				$result = $deleteAccountEntries->delete()
+				->where(['AccountingEntries.sales_invoice_id' => $id])
+				->execute();
+            $this->Flash->success(__('The Sales Invoice has been cancelled.'));
+        } else {
+            $this->Flash->error(__('The Sales Invoice could not be deleted. Please, try again.'));
+        }
+
+        return $this->redirect(['action' => 'index']);
+    }
 }

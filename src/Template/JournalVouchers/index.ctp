@@ -12,6 +12,19 @@ $this->set('title', 'Journal Vouchers List');
 					<i class="icon-bar-chart font-green-sharp hide"></i>
 					<span class="caption-subject font-green-sharp bold ">Journal Vouchers</span>
 				</div>
+				<div class="actions">
+					<form method="GET" id="">
+						<div class="row">
+							<div class="col-md-9">
+								<?php echo $this->Form->input('search',['class'=>'form-control input-sm pull-right','label'=>false, 'placeholder'=>'Search','autofocus'=>'autofocus','value'=> @$search]);
+								?>
+							</div>
+							<div class="col-md-1">
+								<button type="submit" class="go btn blue-madison input-sm">Go</button>
+							</div> 
+						</div>
+					</form>
+				</div>
 			</div>
 			<div class="portlet-body">
 				<div class="table-responsive">
@@ -24,6 +37,7 @@ $this->set('title', 'Journal Vouchers List');
 								<th scope="col"><?= $this->Paginator->sort('voucher_no') ?></th>
 								<th scope="col"><?= $this->Paginator->sort('transaction_date') ?></th>
 								<th scope="col"><?= $this->Paginator->sort('reference_no') ?></th>
+								<th scope="col"><?= $this->Paginator->sort('Status') ?></th>
 								<th scope="col" class="actions"><?= __('Actions') ?></th>
 							</tr>
 						</thead>
@@ -34,9 +48,15 @@ $this->set('title', 'Journal Vouchers List');
 									<td><?= h(str_pad($journalVoucher->voucher_no, 4, '0', STR_PAD_LEFT)) ?></td>
 									<td><?= h(date("d-m-Y",strtotime($journalVoucher->transaction_date))) ?></td>
 									<td><?= h($journalVoucher->reference_no) ?></td>
+									<td class=""><?= h($journalVoucher->status) ?></td>
 									<td class="actions">
 										<?= $this->Html->link(__('View'), ['action' => 'view', $journalVoucher->id]) ?>
+										<?php if ($journalVoucher->status!='cancel'){?>
+										<?php if (in_array("48", $userPages)){?>
 										<?= $this->Html->link(__('Edit'), ['action' => 'edit', $journalVoucher->id]) ?>
+										<?php }?>
+										<?= $this->Form->postLink(__('Cancel'), ['action' => 'cancel', $journalVoucher->id], ['style'=>'color:red;','confirm' => __('Are you sure you want to cancel # {0}?',h(str_pad($journalVoucher->voucher_no, 3, '0', STR_PAD_LEFT)))]) ?>
+										<?php }?>
 									</td>
 								</tr>
 							<?php endforeach; ?>

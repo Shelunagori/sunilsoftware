@@ -42,7 +42,10 @@ class ErrorController extends AppController
     public function beforeFilter(Event $event)
     {
     }
-
+	public function pageNotFound()
+    {
+        $this->viewBuilder()->layout('index_layout');
+    }
     /**
      * beforeRender callback.
      *

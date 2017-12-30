@@ -154,7 +154,7 @@ class FirstTampGrnRecordsController extends AppController
 						{
 							$data = explode(",",$test1[0]);
 							$FirstTampGrnRecords = $this->FirstTampGrnRecords->newEntity();
-							$FirstTampGrnRecords->item_code                       = $data[0];
+							$FirstTampGrnRecords->item_code                       = trim($data[0]);
 							$FirstTampGrnRecords->quantity                        = $data[1]; 
 							$FirstTampGrnRecords->purchase_rate                   = $data[2];
 							$FirstTampGrnRecords->sales_rate                      = $data[3];
@@ -264,7 +264,7 @@ class FirstTampGrnRecordsController extends AppController
 		$FirstTampGrnRecords = $this->FirstTampGrnRecords->find()
 								->where(['user_id'=>$user_id,'company_id'=>$company_id]);
 
-		$excel = "Item Code,Quantity,Purchase Rate,Sales Rate,Addition Item Data Required, item name, hsn code, unit, gst rate fix or fluid, first gst rate, amount in refence to gst rate, second gst rate, shade, size,description  \n";
+		$excel = "Item Code,Quantity,Purchase Rate,Sales Rate,Addition Item Data Required, item name, hsn code, unit, gst rate fix or fluid, first gst rate, amount in refence to gst rate, second gst rate, shade, size,description, Stock Group  \n";
 
 		foreach($FirstTampGrnRecords as $FirstTampGrnRecord)
 		{

@@ -1,3 +1,16 @@
+
+<script type="text/javascript">
+<!--
+function NewPrint(Copies){
+	
+  var Count = 0;
+  while (Count < Copies){
+    window.print(0);
+    Count++;
+  }
+}
+//-->
+</script>
 <style>
 
 @media print{
@@ -13,7 +26,7 @@ margin-bottom: 0;
 }
 .table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
     padding: 5px !important;
-	font-family: monospace !important;
+	font-family: Calibri !important;
 }
 </style>
 
@@ -23,9 +36,14 @@ margin-bottom: 0;
     margin: 0px 0px 0px 0px;  /* this affects the margin in the printer settings */
 }
 </style>
-
-<div style="width:300px;font-family: monospace !important;" class="maindiv">
-<?php echo $this->Html->link('Print',array(),['escape'=>false,'class'=>'hidden-print','style'=>' background-color:blue;  font-size:18px; padding:5px; color:white; cursor:hand;  float: left','onclick'=>'javascript:window.print()();']);
+<?php
+/**
+ * @Author: PHP Poets IT Solutions Pvt. Ltd.
+ */
+$this->set('title', 'Sales Invoice Bill');
+?>
+<div style="width:300px;font-family: Calibri !important;" class="maindiv">
+<?php echo $this->Html->link('Print',array(),['escape'=>false,'class'=>'hidden-print','style'=>' background-color:blue;  font-size:18px; padding:5px; color:white; cursor:hand;  float: left','onclick'=>'javascript:NewPrint(2);']);
  echo $this->Html->link('Close',['controller'=>'SalesInvoices','action'=>'add'],['escape'=>false,'class'=>'hidden-print','style'=>' background-color:blue;  font-size:18px; padding:5px; color:white; cursor:hand;  float: right']);
 ?>
 <table  width="100%" border="0"  >
@@ -129,59 +147,82 @@ margin-bottom: 0;
 	</tr>
 	<?php if($taxable_type!= 'IGST') { ?>
 	<tr>
-		<td></td>
-		<td align="center" style="font-style:italic;font-size:12px;">Taxable Value</td>
-		<td align="center" style="font-style:italic;font-size:12px;"> %SGST </br> %CGST</td>
+		<td align="right" style="font-style:italic;font-size:12px;">Taxable Value</td>
+		<td align="center" style="font-style:italic;font-size:12px;">%SGST</td>
+		<td align="center" style="font-style:italic;font-size:12px;"> %CGST</td>
 		<td></td>
 	</tr>
 	<?php } else { ?> 
 	<tr>
-		<td></td>
-		<td style="font-style:italic;font-size:12px;">Taxable Value</td>
-		<td style="font-style:italic;font-size:12px;">%IGST</td> <?php } ?>
+		<td align="right" style="font-style:italic;font-size:12px;">Taxable Value</td>
+		<td style="font-style:italic;font-size:12px;">%IGST</td> 
+		<td style="font-style:italic;font-size:12px;"></td><?php } ?>
 	</tr>
+	
 	<?php
-		
+		$unit_ids=[]; $k=0;
 		foreach($invoiceBills->toArray() as $data){
 		$cgst=0;
 		$sgst=0;
 		$igst=0;
 		$totalAmount=0;
-		
+		$totDis=0;
+		$totalQty=0;
+		$unitQty=[];
+		$unitName=[];
+		$totalQty=0;
 		foreach($data->sales_invoice_rows as $sales_invoice_row){ ?>
-		
 		<tr><td colspan="4" style="border-top:1px dashed;"></td></tr>
 		<?php
+			$totalQty+=$sales_invoice_row->quantity;
 			if(@$data->company->state_id==$data->partyDetails->state_id){
-			$gst_type=$sales_invoice_row->gst_figure->tax_percentage;
-			$gst_perc=$gst_type/2;
-			$gstValue=$sales_invoice_row->gst_value;
-			$gst=$gstValue/2;
-			$cgst+=$gst;
-			$sgst+=$gst;
-			$totalAmount+=$sales_invoice_row->quantity*$sales_invoice_row->rate;
+				$gst_type=$sales_invoice_row->gst_figure->tax_percentage;
+				$gst_perc=$gst_type/2;
+				$gstValue=$sales_invoice_row->gst_value;
+				$gst=$gstValue/2;
+				$cgst+=$gst;
+				$sgst+=$gst;
+				$totalAmount+=$sales_invoice_row->quantity*$sales_invoice_row->rate;
 			}
 			else{
-			$gst_type=$sales_invoice_row->gst_figure->name;
-			$gstValue=$sales_invoice_row->gst_value;
-			$gst=$gstValue;
-			$igst+=$gst;
-			
-			$totalAmount+=$sales_invoice_row->quantity*$sales_invoice_row->rate;
+				$gst_type=$sales_invoice_row->gst_figure->name;
+				$gstValue=$sales_invoice_row->gst_value;
+				$gst=$gstValue;
+				$igst+=$gst;
+				
+				$totalAmount+=$sales_invoice_row->quantity*$sales_invoice_row->rate;
 			}
+			if($sales_invoice_row->discount_percentage>0)
+			{
+				$DisVal=$sales_invoice_row->quantity*$sales_invoice_row->rate;
+				$totDis+=$DisVal*$sales_invoice_row->discount_percentage/100;
+			}
+			
+			if($sales_invoice_row->item->unit->special_treatment==0){
+			@$unitQty[$sales_invoice_row->item->unit->id]+=$sales_invoice_row->quantity;
+			@$unitName[$sales_invoice_row->item->unit->id]=$sales_invoice_row->item->unit->name;
+			
+			}else{
+				$k++;
+			@$unitQty[$sales_invoice_row->item->unit->id]=$k;
+			@$unitName[$sales_invoice_row->item->unit->id]=$sales_invoice_row->item->unit->name;
+			}
+			
+			
+			
 		?>
 		<tr>
 			<td style="font-size:12px;"><?=$sales_invoice_row->item->item_code.' ' ?><?=  $sales_invoice_row->item->name ?></td>
 			<td style="font-size:14px;"><?php
 			if(!empty($sales_invoice_row->item->size->name))
 			{
-			echo @$sales_invoice_row->item->size->name;
+				echo @$sales_invoice_row->item->size->name;
 			}
 			else{
-			echo '-';
+				echo '-';
 			}
 			?></td>
-			<td style="text-align:right;"><?=$sales_invoice_row->quantity ?></td>
+			<td style="text-align:left;font-size:12px;"><?=$sales_invoice_row->quantity ?><?php echo ' ';?><?=$sales_invoice_row->item->unit->name ?></td>
 			<td style="text-align:right;"><?=$sales_invoice_row->rate ?></td>
 		</tr>
 		<tr>
@@ -193,42 +234,59 @@ margin-bottom: 0;
 		
 		<?php if($data->company->state_id==$data->partyDetails->state_id){?>
 		<tr>
-			<td></td>
 			<td style="font-style:italic;font-size:12px;text-align:right"><?=$sales_invoice_row->taxable_value ?></td>
-			<td style="font-style:italic;font-size:12px;text-align:right"><?=$gst_perc.' %' ?><br/><?=$gst_perc.' %'?></td>
-			<td></td>
+			<td style="font-style:italic;font-size:12px;text-align:right"><?=$gst_perc.' %' ?></td>
+			<td style="font-style:italic;font-size:12px;text-align:right"><?=$gst_perc.' %'?></td><td></td>
 		</tr>
 		
 		<?php }else {?>
 		<tr>
-			<td></td>
 			<td style="font-style:italic;font-size:12px;text-align:right"><?=$sales_invoice_row->taxable_value ?></td>
 			<td style="font-style:italic;font-size:12px;text-align:right"><?=$gst_type ?></td>
-			<td></td>
+			<td></td><td></td>
 		</tr>
 		<?php }?>
-		<?php }} ?>
+		<?php }}   ?>
 		<tr><td colspan="4" style="border-top:1px dashed;"></td></tr>
-		
+		<?php foreach($unitName as $key=>$unit){ ?>
+		<tr>
+			<td style="font-size:14px;">Total quantity in <?php echo $unit; ?></td>
+			<td></td>
+			<td></td>
+			<td style="text-align:right;font-size:14px;"><?php echo number_format($unitQty[$key],2);  ?></td>
+		</tr>
+		<?php } ?>
 		<tr>
 			<td>Total MRP</td>
 			<td></td>
 			<td></td>
 			<td style="text-align:right;"><?php echo number_format($totalAmount,2);  ?></td>
-			</tr>
+		</tr>
+		<?php if(!empty($data->discount_amount)) {?>
 		<tr>
 			<td>Discount </td>
 			<td></td>
 			<td></td>
 			<td style="text-align:right;"><?php echo $data->discount_amount;  ?></td>
 		</tr>
+		
+		<?php } if(!empty($data->round_off)) {?>
+		<tr>
+		<td>Round off </td>
+			<td></td>
+			<td></td>
+			<td style="text-align:right;"><?php echo $data->round_off;  ?></td>
+		</tr>
+		<?php } ?>
 		<tr>
 			<td>Net Total</td>
 			<td></td>
 			<td></td>
-			<td style="text-align:right;"><?php echo number_format($data->amount_after_tax, 2);  ?></td>
+			<td style="text-align:right;"><b><?php echo number_format($data->amount_after_tax, 2);  ?></b></td>
 		</tr>
-				
+		<tr>
+		<td colspan="4" style="font-size:14px;"><b>Amount In words: </b> <?php echo $this->NumberWords->convert_number_to_words($data->amount_after_tax); ?><?php echo ' only'; ?> </td>
+		</tr>		
 </tbody></table>
 <table width="100%" border="" style="font-size:12px; border-collapse: collapse; margin-top:15px; border-style:dashed">
 <thead>
@@ -286,3 +344,4 @@ margin-bottom: 0;
 	</tr>
 </table>
 </div>
+

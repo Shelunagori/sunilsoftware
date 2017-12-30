@@ -145,7 +145,7 @@ $this->set('title', 'Create Inter Location stock Transfer Voucher');
 				</td>
 			
 			<td width="25%" >
-				<?php echo $this->Form->input('quantity', ['label' => false,'class' => 'form-control input-sm rightAligntextClass quantity','placeholder'=>'Quantity','required']); ?>
+				<?php echo $this->Form->input('quantity', ['label' => false,'class' => 'form-control input-sm rightAligntextClass numberOnly quantity','placeholder'=>'Quantity','required']); ?>
 			</td>
 			<td align="center">
 				<a class="btn btn-danger delete-tr btn-xs" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>

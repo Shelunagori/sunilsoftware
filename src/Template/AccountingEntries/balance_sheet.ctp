@@ -34,7 +34,7 @@ $this->set('title', 'Balance Sheet');
 					<table class="table table-bordered">
 						<thead>
 							<tr style="background-color: #c4ffbd;">
-								<td>
+								<td style="width: 50%;">
 									<table width="100%">
 										<tbody>
 											<tr>
@@ -67,7 +67,7 @@ $this->set('title', 'Balance Sheet');
 													<td><?php echo $groupForPrintRow['name']; ?></td>
 													<td align="right">
 														<?php if($groupForPrintRow['balance']!=0){
-															echo abs($groupForPrintRow['balance']);
+															echo $this->Money->moneyFormatIndia(abs($groupForPrintRow['balance']));
 															$LeftTotal+=abs($groupForPrintRow['balance']);
 														} ?>
 													</td>
@@ -86,7 +86,7 @@ $this->set('title', 'Balance Sheet');
 													<td><?php echo $groupForPrintRow['name']; ?></td>
 													<td align="right">
 														<?php if($groupForPrintRow['balance']!=0){
-															echo abs($groupForPrintRow['balance']); 
+															echo $this->Money->moneyFormatIndia(abs($groupForPrintRow['balance'])); 
 															$RightTotal+=abs($groupForPrintRow['balance']); 
 														} ?>
 													</td>
@@ -97,7 +97,7 @@ $this->set('title', 'Balance Sheet');
 													<td>Closing Stock</td>
 													<td align="right">
 														<?php 
-														echo $closingValue; 
+														echo $this->Money->moneyFormatIndia($closingValue); 
 														$RightTotal+=$closingValue; 
 														?>
 													</td>
@@ -117,7 +117,7 @@ $this->set('title', 'Balance Sheet');
 												<td>Profit & Loss A/c</td>
 												<td align="right">
 													<?php 
-													echo $GrossProfit;
+													echo $this->Money->moneyFormatIndia($GrossProfit);
 													$LeftTotal+=$GrossProfit;
 													?>
 												</td>
@@ -134,8 +134,46 @@ $this->set('title', 'Balance Sheet');
 												<td>Profit & Loss A/c</td>
 												<td align="right">
 													<?php 
-													echo abs($GrossProfit); 
+													echo $this->Money->moneyFormatIndia(abs($GrossProfit)); 
 													$RightTotal+=$GrossProfit;
+													?>
+												</td>
+											</tr>
+										</tbody>
+									</table>
+									<?php } ?>
+								</td>
+							</tr>
+							<?php } ?>
+							<?php if($differenceInOpeningBalance!=0){ ?>
+							<tr>
+								<td>
+									<?php if($differenceInOpeningBalance>0){ ?>
+									<table width="100%">
+										<tbody>
+											<tr>
+												<td><span style="color:red;">Difference In Opening Balance</span></td>
+												<td align="right">
+													<?php 
+													echo $this->Money->moneyFormatIndia(abs($differenceInOpeningBalance)); 
+													$LeftTotal+=abs($differenceInOpeningBalance);
+													?>
+												</td>
+											</tr>
+										</tbody>
+									</table>
+									<?php } ?>
+								</td>
+								<td>
+									<?php if($differenceInOpeningBalance<0){ ?>
+									<table width="100%">
+										<tbody>
+											<tr>
+												<td><span style="color:red;">Difference In Opening Balance</span></td>
+												<td align="right">
+													<?php 
+													echo $this->Money->moneyFormatIndia(abs($differenceInOpeningBalance)); 
+													$RightTotal+=abs($differenceInOpeningBalance);
 													?>
 												</td>
 											</tr>
@@ -153,7 +191,7 @@ $this->set('title', 'Balance Sheet');
 										<tbody>
 											<tr>
 												<td><b>Total</b></td>
-												<td align="right"><b><?php echo $LeftTotal; ?></b></td>
+												<td align="right"><b><?php echo $this->Money->moneyFormatIndia($LeftTotal); ?></b></td>
 											</tr>
 										</tbody>
 									</table>
@@ -163,7 +201,7 @@ $this->set('title', 'Balance Sheet');
 										<tbody>
 											<tr>
 												<td><b>Total</b></td>
-												<td align="right"><b><?php echo $RightTotal; ?></b></td>
+												<td align="right"><b><?php echo $this->Money->moneyFormatIndia($RightTotal); ?></b></td>
 											</tr>
 										</tbody>
 									</table>

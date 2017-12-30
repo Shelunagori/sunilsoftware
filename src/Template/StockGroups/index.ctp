@@ -12,6 +12,19 @@ $this->set('title', 'Stock Groups');
 					<i class="icon-bar-chart font-green-sharp hide"></i>
 					<span class="caption-subject font-green-sharp bold ">Stock Groups</span>
 				</div>
+				<div class="actions">
+					<form method="GET" id="">
+						<div class="row">
+							<div class="col-md-9">
+								<?php echo $this->Form->input('search',['class'=>'form-control input-sm pull-right','label'=>false, 'placeholder'=>'Search','autofocus'=>'autofocus','value'=> @$search]);
+								?>
+							</div>
+							<div class="col-md-1">
+								<button type="submit" class="go btn blue-madison input-sm">Go</button>
+							</div> 
+						</div>
+					</form>
+				</div>
 			</div>
 			<div class="portlet-body">
 				<table class="table table-condensed table-hover table-bordered">
@@ -30,7 +43,9 @@ $this->set('title', 'Stock Groups');
 							<td><?= h($stockGroup->name) ?></td>
 							<td><?= $stockGroup->has('parent_stock_group') ? $this->Html->link($stockGroup->parent_stock_group->name, ['controller' => 'StockGroups', 'action' => 'view', $stockGroup->parent_stock_group->id]) : '' ?></td>
 							<td class="actions">
+							<?php if (in_array("57", $userPages)){?>
 								<?= $this->Html->link(__('Edit'), ['action' => 'edit', $stockGroup->id]) ?>
+								<?php }?>
 							</td>
 						</tr>
 						<?php endforeach; ?>

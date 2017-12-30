@@ -43,6 +43,11 @@ class CreditNoteRowsTable extends Table
             'foreignKey' => 'credit_note_id',
             'joinType' => 'INNER'
         ]);
+		 $this->belongsTo('RefCreditNotes', [
+			'className' => 'CreditNotes',
+            'foreignKey' => 'credit_note_id',
+            'joinType' => 'LEFT'
+        ]);
        $this->belongsTo('Ledgers', [
             'foreignKey' => 'ledger_id',
             'joinType' => 'INNER'

@@ -47,6 +47,7 @@ class AppController extends Controller
 		FrozenDate::setToStringFormat('dd-MM-yyyy');  // For any immutable Date
         $this->loadComponent('RequestHandler');
         $this->loadComponent('Flash');
+		
 		$this->loadComponent('Auth', [
 		 'authenticate' => [
                 'Form' => [
@@ -75,8 +76,33 @@ class AppController extends Controller
 			$this->set(compact('coreVariable'));
 		}
 		
+		$this->loadModel('UserRights');
+		$this->loadModel('Pages');
+		$userid=$this->Auth->User('id');
+		if(!empty($userid)){
+		$userData = $this->UserRights->find()
+		            ->where(['UserRights.user_id'=>$userid])
+					//->contain(['Pages'])
+					->autoFields(true);
+			foreach($userData->toArray() as $data)
+			{
+				$userPages[]=$data->page_id;
+			}
+			$this->set(compact('userPages'));
+		}
 		
+		/* $pages=$this->Pages->find()->where(['master'=>1]);
+		$this->set(compact('pages')); */
+		$controller = $this->request->params['controller'];
+		$action = $this->request->params['action']; 
+		$page=$this->Pages->find()->where(['controller_name'=>$controller,'action'=>$action])->first();
 		
+		if(!empty($page->id) and !in_array($page->id,$userPages)){
+			$pages=[];
+			$this->set(compact('pages'));
+			$this->viewBuilder()->layout('index_layout');
+			$this -> render('/Error/pageNotFound'); 
+		}
         /*
          * Enable the following components for recommended CakePHP security settings.
          * see http://book.cakephp.org/3.0/en/controllers/components/security.html
@@ -104,10 +130,8 @@ class AppController extends Controller
 					->where(['id' => $contraVoucher->id])
 					->execute();
 			}
-			
 		}
 	}
-	
 	public function StockValuation(){
 		$this->loadModel('ItemLedgers');
 		$company_id=$this->Auth->User('session_company_id');
@@ -137,10 +161,55 @@ class AppController extends Controller
 	}
 	
 	public function StockValuationWithDate($date){
-		$this->loadModel('ItemLedgers');
 		$company_id=$this->Auth->User('session_company_id');
-		$ItemLedgers=$this->ItemLedgers->find()->where(['ItemLedgers.company_id'=>$company_id,'ItemLedgers.transaction_date <='=>$date]);
+		
+		$this->loadModel('Companies');
+		$Company=$this->Companies->get($company_id);
+		
+		$this->loadModel('ItemLedgers');
+		if(strtotime($date)==strtotime($Company->books_beginning_from)){
+			$where=['ItemLedgers.company_id'=>$company_id,'ItemLedgers.transaction_date <='=>$date,'ItemLedgers.is_opening_balance'=>'yes'];
+		}else{
+			$where=['ItemLedgers.company_id'=>$company_id,'ItemLedgers.transaction_date <'=>$date];
+		}
+		$ItemLedgers=$this->ItemLedgers->find()->where($where);
 		$stock=[];
+		
+		foreach($ItemLedgers as $ItemLedger){
+			if($ItemLedger->status=="in"){
+				for($inc=0;$inc<$ItemLedger->quantity;$inc++){
+					$stock[$ItemLedger->item_id][]=$ItemLedger->rate;
+				}
+			}
+		}
+		foreach($ItemLedgers as $ItemLedger){
+			if($ItemLedger->status=='out'){
+				if(sizeof(@$stock[$ItemLedger->item_id])>0){
+					$stock[$ItemLedger->item_id] = array_slice($stock[$ItemLedger->item_id], $ItemLedger->quantity); 
+				}
+			}
+		}
+		$closingValue=0;
+		foreach($stock as $stockRow){
+			foreach($stockRow as $stockRowRate){
+				$closingValue+=$stockRowRate;
+			}
+		}
+		return $closingValue;
+	}
+	
+	
+	public function StockValuationWithDate2($date){
+		$company_id=$this->Auth->User('session_company_id');
+		
+		$this->loadModel('Companies');
+		$Company=$this->Companies->get($company_id);
+		
+		$this->loadModel('ItemLedgers');
+		$where=['ItemLedgers.company_id'=>$company_id,'ItemLedgers.transaction_date <='=>$date];
+		$ItemLedgers=$this->ItemLedgers->find()->where($where);
+		$stock=[];
+		
 		foreach($ItemLedgers as $ItemLedger){
 			if($ItemLedger->status=="in"){
 				for($inc=0;$inc<$ItemLedger->quantity;$inc++){
@@ -187,7 +256,7 @@ class AppController extends Controller
 		$query=$this->AccountingEntries->find();
 		$query->select(['ledger_id','totalDebit' => $query->func()->sum('AccountingEntries.debit'),'totalCredit' => $query->func()->sum('AccountingEntries.credit')])
 				->group('AccountingEntries.ledger_id')
-				->where(['AccountingEntries.company_id'=>$company_id])
+				->where(['AccountingEntries.company_id'=>$company_id,'AccountingEntries.transaction_date >='=>$from_date, 'AccountingEntries.transaction_date <='=>$to_date])
 				->contain(['Ledgers'=>function($q){
 					return $q->select(['Ledgers.accounting_group_id','Ledgers.id']);
 				}]);
@@ -202,12 +271,106 @@ class AppController extends Controller
 			$totalCr+=$balanceOfLedger->totalCredit;
 		}
 		
-		$openingValue= $this->StockValuationWithDate($from_date);
-		$closingValue= $this->StockValuation();
+		$company_id=$this->Auth->User('session_company_id');
+		
+		$this->loadModel('Companies');
+		$Company=$this->Companies->get($company_id);
+		
+		$openingValue= $this->StockValuationWithDate($Company->books_beginning_from);
+		$closingValue= $this->StockValuationWithDate2($to_date);
 		
 		$totalDr+=$openingValue;
 		$totalCr+=$closingValue;
 		return $totalCr-$totalDr;
+	}
+	
+	public function differenceInOpeningBalance(){
+		$this->loadModel('AccountingEntries');
+		$company_id=$this->Auth->User('session_company_id');
+		$Ledgers=$this->AccountingEntries->find()->where(['AccountingEntries.company_id'=>$company_id, 'AccountingEntries.is_opening_balance'=>'yes']);
+		
+		$output=0;
+		foreach($Ledgers as $Ledger){
+			$output+=$Ledger->debit;
+			$output-=$Ledger->credit;
+		}
+		
+		$this->loadModel('ItemLedgers');
+		$ItemLedgers=$this->ItemLedgers->find()->where(['ItemLedgers.company_id'=>$company_id, 'ItemLedgers.is_opening_balance'=> 'yes']);
+		
+		foreach($ItemLedgers as $ItemLedger){
+			$output+=$ItemLedger->quantity*$ItemLedger->rate;
+		}
+		return $output;
+	}
+	
+	public function groupBalance($group_id,$date){
+		$company_id=$this->Auth->User('session_company_id');
+		$this->loadModel('AccountingGroups');
+						
+		$allGroups=[];
+		$accountingGroups = $this->AccountingGroups->find('children', ['for' => $group_id])->toArray();
+		$allGroups[]=$group_id;
+		foreach($accountingGroups as $accountingGroup){
+			$allGroups[]=$accountingGroup->id;
+		}
+		
+		$this->loadModel('Ledgers');
+		$Ledgers=$this->Ledgers->find()->where(['Ledgers.accounting_group_id IN'=>$allGroups]);
+		$balance=0;
+		foreach($Ledgers as $Ledger){
+			$balance+=$this->ledgerBalance($Ledger->id,date('Y-m-d',strtotime($date)));
+		}
+		return $balance;
+	}
+	
+	public function ledgerBalance($ledger_id,$date){
+		$company_id=$this->Auth->User('session_company_id');
+		$this->loadModel('AccountingEntries');
+		$query=$this->AccountingEntries->find();
+		$query->select(['ledger_id','totalDebit' => $query->func()->sum('AccountingEntries.debit'),'totalCredit' => $query->func()->sum('AccountingEntries.credit')])
+		->where(['AccountingEntries.company_id'=>$company_id, 'AccountingEntries.transaction_date <='=>$date, 'AccountingEntries.ledger_id'=>$ledger_id]);
+		$query=$query->toArray();
+		$balance=$query[0]->totalDebit-$query[0]->totalCredit;
+		return $balance;
+	}
+	
+	public function closingBalance($item_id,$date){
+		$company_id=$this->Auth->User('session_company_id');
+		$this->loadModel('ItemLedgers');
+		$ItemLedgers=$this->ItemLedgers->find()->where(['ItemLedgers.item_id'=>$item_id, 'ItemLedgers.company_id'=>$company_id, 'ItemLedgers.transaction_date <='=>$date])->order(['ItemLedgers.transaction_date'=>'ASC']);
+		
+		$stockArray=[];
+		foreach($ItemLedgers as $ItemLedger){
+			if($ItemLedger->status=="in" && $ItemLedger->intra_location_stock_transfer_voucher_id==null){
+				for($q=0; $q<($ItemLedger->quantity*100); $q++){
+					$stockArray[]=$ItemLedger->rate;
+				}
+			}
+		}
+		foreach($ItemLedgers as $ItemLedger){
+			if($ItemLedger->status=="out" && $ItemLedger->intra_location_stock_transfer_voucher_id==null){
+				$stockArray=array_slice($stockArray, $ItemLedger->quantity*100);
+			}
+		}
+		$StockQty=[];
+		foreach($ItemLedgers as $ItemLedger){
+			if($ItemLedger->status=="in"){
+				@$StockQty[$ItemLedger->location_id]+=@$ItemLedger->quantity;
+			}else if($ItemLedger->status=="out"){
+				@$StockQty[$ItemLedger->location_id]-=@$ItemLedger->quantity;
+			}
+		}
+		
+		$value=0;
+		if(sizeof($stockArray)>0){
+			foreach($stockArray as $stockRate){
+				$value+=$stockRate;
+			}
+		}
+		
+		
+		return $output=['value'=>$value,'StockQty'=>$StockQty];
 	}
 
     /**

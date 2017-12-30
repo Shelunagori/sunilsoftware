@@ -1,57 +1,122 @@
-<?php
+<?php 
+ $url_excel="/?".$url; 
 /**
  * @Author: PHP Poets IT Solutions Pvt. Ltd.
  */
 $this->set('title', 'Day Book');
 ?>
+<?php
+	if($status=='excel'){
+		$date= date("d-m-Y"); 
+	$time=date('h:i:a',time());
+
+	$filename="Day_book_".$date.'_'.$time;
+	//$from_date=date('d-m-Y',strtotime($from_date));
+	//$to_date=date('d-m-Y',strtotime($to_date));
+	
+	header ("Expires: 0");
+	header ("Last-Modified: " . gmdate("D,d M YH:i:s") . " GMT");
+	header ("Cache-Control: no-cache, must-revalidate");
+	header ("Pragma: no-cache");
+	header ("Content-type: application/vnd.ms-excel");
+	header ("Content-Disposition: attachment; filename=".$filename.".xls");
+	header ("Content-Description: Generated Report" ); 
+	}
+
+?>
 <div class="row">
 	<div class="col-md-12">
 		<div class="portlet light ">
+			<div class="portlet-title">
+			<?php if($status!='excel'){ ?>
+				<div class="caption">
+					<i class="icon-bar-chart font-green-sharp hide"></i>
+					<span class="caption-subject font-green-sharp bold ">Day Book</span>
+				</div>
+				<div class="actions">
+					<?php echo $this->Html->link( '<i class="fa fa-file-excel-o"></i> Excel', '/Ledgers/DayBook/'.@$url_excel.'&status=excel',['class' =>'btn btn-sm green tooltips pull-right','target'=>'_blank','escape'=>false,'data-original-title'=>'Download as excel']); ?>
+				</div>
+			</div>
 			<div class="portlet-body">
-					<table class="table table-bordered table-hover table-condensed" width="100%">
+				<div class="row">
+					<form method="get">
+						<div class="col-md-3">
+							<div class="form-group">
+								<label>From Date</label>
+								<?php 
+								if(!empty($from_date))
+								{
+									$from_date = date("d-m-Y",strtotime(@$from_date));
+								}
+								else{
+									$from_date = date("d-m-Y");
+								}
+								echo $this->Form->control('from_date',['class'=>'form-control input-sm date-picker','data-date-format'=>'dd-mm-yyyy','label'=>false,'placeholder'=>'DD-MM-YYYY','type'=>'text','value'=>@$from_date,'data-date-start-date'=>@$coreVariable[fyValidFrom],'data-date-end-date'=>@$coreVariable[fyValidTo]]); ?>
+							</div>
+						</div>
+						<div class="col-md-3">
+							<div class="form-group">
+								<label>To Date</label>
+								<?php  
+								if(!empty($to_date))
+								{
+									$to_date = date("d-m-Y",strtotime(@$to_date));
+								} else{
+									$to_date = date("d-m-Y");
+								}
+								echo $this->Form->control('to_date',['class'=>'form-control input-sm date-picker','data-date-format'=>'dd-mm-yyyy','label'=>false,'placeholder'=>'DD-MM-YYYY','type'=>'text','value'=>@$to_date,'data-date-start-date'=>@$coreVariable[fyValidFrom],'data-date-end-date'=>@$coreVariable[fyValidTo]]); ?>
+							</div>
+						</div>
+					<div class="col-md-2" >
+							<div class="form-group" style="padding-top:22px;"> 
+								<button type="submit" class="btn btn-xs blue input-sm srch">Go</button>
+							</div>
+					</div>	
+					</form>
+				</div>
+				<?php } ?>
+				<?php 
+				
+				if(!empty($day_book))
+				{
+				?>
+					<table class="table table-bordered table-hover table-condensed" width="100%" border="1">
 						<thead>
 							<tr>
 								<th scope="col">Date</th>
-								<th scope="col" style="text-align:center";>Voucher Type</th>
-								<th scope="col" style="text-align:center";>Voucher No</th>
-								<th scope="col" style="text-align:center";>Debit Amount</th>
-								<th scope="col" style="text-align:center";>Credit Amount</th>
-								<th scope="col" style="text-align:center";>Inward Qty.</th>
-								<th scope="col" style="text-align:center";>Outward Qty.</th>
+								<th scope="col" style="text-align:left";>Particulars</th>
+								<th scope="col" style="text-align:left";>Voucher Type</th>
+								<th scope="col" style="text-align:left";>Voucher No</th>
+								<th scope="col" style="text-align:left";>Debit Amount</th>
+								<th scope="col" style="text-align:left";>Credit Amount</th>
+								
 							</tr>
 						</thead>
 						<tbody>
-						<?php
-								if(!empty($salesLedgers))
-								{
-									foreach($salesLedgers as $salesLedger)
-									{   
-										$id= $salesLedger->id;
+						<?php 
+						if(!empty($day_book))
+						{
+							foreach($day_book as $paymentLedgers)
+							{  
+								foreach($paymentLedgers as $paymentLedger)
+										{
 						?>
 							<tr>
-								<td><?php echo date("d-m-Y",strtotime($salesLedger->transaction_date)); ?></td>
+								<td><?php echo date("d-m-Y",strtotime($paymentLedger->transaction_date)); ?></td>
 								<td>
-								<?= $this->Html->link(__($salesLedger->voucher_type), array('controller' => 'SalesInvoices', 'action' => 'salesInvoiceBill', $salesLedger->id))?>
+								<?= $paymentLedger->ledger->name?>
 								</td>
-								<td class=""><?= 
-								h(str_pad($salesLedger->voucher_no, 4, '0', STR_PAD_LEFT))?></td>
-						        <?php 
-						        foreach($salesLedger->accounting_entries 
-								as $accounting_entry){
-								?>
-								<?php }?>
-								<td><?=$accounting_entry->debit?></td>
-								<td style="";>
-								<?=$accounting_entry->credit?>
+								<td>
+								<?= $paymentLedger->voucher_type?>
 								</td>
-								<td style="";>
-								</td>
-								<td style="";>
-								</td>
+								<td class=""><?= $this->Html->link(__(h(str_pad($paymentLedger->voucher_no, 4, '0', STR_PAD_LEFT))), array('controller' => $paymentLedger->hlink, 'action' => $paymentLedger->haction, $paymentLedger->voucher_id)) ?></td>
+						        <td style="text-align:right"><?php if(!empty($paymentLedger->debit)){ ?><?=$this->Money->moneyFormatIndia($paymentLedger->debit) ?><?php } ?></td>
+								<td style="text-align:right"><?php if(!empty($paymentLedger->credit)){ ?><?=$this->Money->moneyFormatIndia($paymentLedger->credit) ?><?php } ?></td>
 							</tr>
-						<?php } } ?>
+						<?php } } } ?>
 						</tbody>
 					</table>
+					<?php } ?>	
 			</div>
 		</div>
 	</div>

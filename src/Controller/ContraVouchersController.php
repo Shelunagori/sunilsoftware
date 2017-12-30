@@ -21,12 +21,25 @@ class ContraVouchersController extends AppController
     public function index()
     { 
 		$this->viewBuilder()->layout('index_layout');
+		$company_id=$this->Auth->User('session_company_id');
+		$search=$this->request->query('search');
         $this->paginate = [
-            'contain' => ['ContraVoucherRows']
+            'contain' => ['Companies']
         ];
-        $contraVouchers = $this->paginate($this->ContraVouchers);
-
-        $this->set(compact('contraVouchers'));
+		if($search){
+		$contraVouchers = $this->paginate($this->ContraVouchers->find()->where(['ContraVouchers.company_id'=>$company_id])->where([
+		'OR' => [
+            'ContraVouchers.voucher_no' => $search,
+            //....
+			'ContraVouchers.reference_no LIKE' => '%'.$search.'%',
+				//...
+			'ContraVouchers.transaction_date ' => date('Y-m-d',strtotime($search))
+		 ]]));
+		}
+		else {
+        $contraVouchers = $this->paginate($this->ContraVouchers->find()->where(['ContraVouchers.company_id'=>$company_id]));
+		}
+        $this->set(compact('contraVouchers','search'));
         $this->set('_serialize', ['contraVouchers']);
     }
 
@@ -160,6 +173,14 @@ class ContraVouchersController extends AppController
 		$company_id=$this->Auth->User('session_company_id');
         $this->request->data['company_id'] =$company_id;
         if ($this->request->is(['patch', 'post', 'put'])) {
+			$query_update = $this->ContraVouchers->ContraVoucherRows->query();
+							$query_update->update()
+							->set(['mode_of_payment' => '', 'cheque_no' => '', 'cheque_date' => ''])
+							->where(['contra_voucher_id' => $contraVoucher->id])
+							->execute();
+			 $contraVoucher = $this->ContraVouchers->get($id, [
+            'contain' => ['ContraVoucherRows']
+        ]);
 			$this->request->data['transaction_date'] = date("Y-m-d",strtotime($this->request->getData()['transaction_date']));
             $contraVoucher = $this->ContraVouchers->patchEntity($contraVoucher, $this->request->getData());
 			//pr($contraVoucher);exit;
@@ -246,6 +267,30 @@ class ContraVouchersController extends AppController
             $this->Flash->success(__('The contra voucher has been deleted.'));
         } else {
             $this->Flash->error(__('The contra voucher could not be deleted. Please, try again.'));
+        }
+
+        return $this->redirect(['action' => 'index']);
+    }
+	public function cancel($id = null)
+    {
+        $contraVoucher = $this->ContraVouchers->get($id, [
+            'contain' => ['ContraVoucherRows']
+        ]);
+		$contra_voucher_row_ids=[];
+		foreach($contraVoucher->contra_voucher_rows as $contra_voucher_row){
+			$contra_voucher_row_ids[]=$contra_voucher_row->id;
+		}
+		$company_id=$this->Auth->User('session_company_id');
+		$contraVoucher->status='cancel';
+        if ($this->ContraVouchers->save($contraVoucher)) {
+			
+			$deleteAccountEntries = $this->ContraVouchers->AccountingEntries->query();
+				$result = $deleteAccountEntries->delete()
+				->where(['AccountingEntries.contra_voucher_id' => $contraVoucher->id])
+				->execute();
+			$this->Flash->success(__('The Contra Voucher has been cancelled.'));
+        } else {
+            $this->Flash->error(__('The Contra Voucher could not be cancelled. Please, try again.'));
         }
 
         return $this->redirect(['action' => 'index']);

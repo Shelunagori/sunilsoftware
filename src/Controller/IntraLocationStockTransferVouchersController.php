@@ -23,6 +23,7 @@ class IntraLocationStockTransferVouchersController extends AppController
 		$this->viewBuilder()->layout('index_layout');
 		$company_id=$this->Auth->User('session_company_id');
 		$location_id=$this->Auth->User('session_location_id');
+		$search=$this->request->query('search');
 		$this->viewBuilder()->layout('index_layout');
 		if(!empty($status))
 		{
@@ -36,8 +37,15 @@ class IntraLocationStockTransferVouchersController extends AppController
         $this->paginate = [
             'contain' => ['TransferFromLocations','TransferToLocations']
         ];
-		$intraLocationStockTransferVouchers = $this->paginate($this->IntraLocationStockTransferVouchers->find()->where(['IntraLocationStockTransferVouchers.company_id'=>$company_id,'IntraLocationStockTransferVouchers.status'=>@$where]));
-		$this->set(compact('intraLocationStockTransferVouchers','status','location_id'));
+		$intraLocationStockTransferVouchers = $this->paginate($this->IntraLocationStockTransferVouchers->find()->where(['IntraLocationStockTransferVouchers.company_id'=>$company_id,'IntraLocationStockTransferVouchers.status'=>@$where])->where([
+		'OR' => [
+            'IntraLocationStockTransferVouchers.voucher_no' => $search,
+            // ...
+			'TransferFromLocations.name LIKE' => '%'.$search.'%',
+			//...
+			'IntraLocationStockTransferVouchers.transaction_date ' => date('Y-m-d',strtotime($search))
+		 ]]));
+		$this->set(compact('intraLocationStockTransferVouchers','status','location_id','search'));
         $this->set('_serialize', ['intraLocationStockTransferVouchers']);
     }
 
@@ -271,6 +279,7 @@ class IntraLocationStockTransferVouchersController extends AppController
 		->contain(['Items']);
         $itemLedgers[] = ($query);
 		}
+		
 		$itemOptions=[];
 		foreach($itemLedgers as $d)
 		{
@@ -490,6 +499,28 @@ class IntraLocationStockTransferVouchersController extends AppController
             $this->Flash->success(__('The intra location stock transfer voucher has been deleted.'));
         } else {
             $this->Flash->error(__('The intra location stock transfer voucher could not be deleted. Please, try again.'));
+        }
+
+        return $this->redirect(['action' => 'index']);
+    }
+	
+		public function cancel($id = null)
+    {
+		// $this->request->allowMethod(['post', 'delete']);
+        $intraLocationStockTransferVoucher = $this->IntraLocationStockTransferVouchers->get($id);
+		$company_id=$this->Auth->User('session_company_id');
+		//pr($salesInvoice);exit;
+		$intraLocationStockTransferVoucher->cancel_status='cancel';
+		
+        if ($this->IntraLocationStockTransferVouchers->save($intraLocationStockTransferVoucher)) {
+			$deleteItemLedger = $this->IntraLocationStockTransferVouchers->ItemLedgers->query();
+				$deleteResult = $deleteItemLedger->delete()
+					->where(['ItemLedgers.intra_location_stock_transfer_voucher_id' => $intraLocationStockTransferVoucher->id])
+					->execute();
+				
+            $this->Flash->success(__('The intra location stock transfer voucher has been cancelled.'));
+        } else {
+            $this->Flash->error(__('The intra location stock transfer voucher could not be cancelled. Please, try again.'));
         }
 
         return $this->redirect(['action' => 'index']);

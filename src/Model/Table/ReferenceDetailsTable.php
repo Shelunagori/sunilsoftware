@@ -5,7 +5,8 @@ use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
-
+use Cake\Event\Event;
+use ArrayObject;
 /**
  * ReferenceDetails Model
  *
@@ -49,47 +50,64 @@ class ReferenceDetailsTable extends Table
             'foreignKey' => 'ledger_id',
             'joinType' => 'INNER'
         ]);
+		$this->belongsTo('Customers', [
+            'foreignKey' => 'customer_id',
+            'joinType' => 'LEFT'
+        ]);
+		$this->belongsTo('Suppliers', [
+            'foreignKey' => 'supplier_id',
+            'joinType' => 'LEFT'
+        ]);
+		
         $this->belongsTo('Receipts', [
             'foreignKey' => 'receipt_id',
-            'joinType' => 'INNER'
+            'joinType' => 'LEFT'
         ]);
         $this->belongsTo('ReceiptRows', [
             'foreignKey' => 'receipt_row_id',
-            'joinType' => 'INNER'
+            'joinType' => 'LEFT'
         ]);
         $this->belongsTo('Payments', [
             'foreignKey' => 'payment_id',
-            'joinType' => 'INNER'
+            'joinType' => 'LEFT'
         ]);
         $this->belongsTo('PaymentRows', [
             'foreignKey' => 'payment_row_id',
-            'joinType' => 'INNER'
+            'joinType' => 'LEFT'
         ]);
 
 		$this->belongsTo('CreditNoteRows', [
             'foreignKey' => 'credit_note_row_id',
-			   'joinType' => 'INNER'
+			   'joinType' => 'LEFT'
         ]);
 
+		$this->belongsTo('DebitNoteRows', [
+            'foreignKey' => 'debit_note_row_id',
+			   'joinType' => 'LEFT'
+        ]);
+		
 		$this->belongsTo('SalesVoucherRows', [
             'foreignKey' => 'sales_voucher_row_id',
-			'joinType' => 'INNER'
+			'joinType' => 'LEFT'
         ]);
 		
 		$this->belongsTo('PurchaseVoucherRows', [
-            'foreignKey' => 'sales_voucher_row_id',
-			'joinType' => 'INNER'
+            'foreignKey' => 'purchase_voucher_row_id',
+			'joinType' => 'LEFT'
         ]);
 		
 		$this->belongsTo('JournalVoucherRows', [
             'foreignKey' => 'journal_voucher_row_id',
-			'joinType' => 'INNER'
+			'joinType' => 'LEFT'
         ]);
 		$this->belongsTo('SalesInvoices', [
             'foreignKey' => 'sales_invoice_id',
 			'joinType' => 'LEFT'
         ]);
-		$this->belongsTo('SaleReturns');
+		$this->belongsTo('SaleReturns',[
+            'foreignKey' => 'sale_return_id',
+			'joinType' => 'LEFT'
+        ]);
 		$this->belongsTo('PurchaseInvoices', [
             'foreignKey' => 'purchase_invoice_id',
 			'joinType' => 'LEFT'
@@ -119,6 +137,13 @@ class ReferenceDetailsTable extends Table
 		return $validator;
     }
 
+	public function beforeMarshal(Event $event, ArrayObject $data)
+    {
+		if(@$data['transaction_date']!="")
+		{
+			@$data['transaction_date'] = trim(date('Y-m-d',strtotime(@$data['transaction_date'])));
+		}
+    }
     /**
      * Returns a rules checker object that will be used for validating
      * application integrity.

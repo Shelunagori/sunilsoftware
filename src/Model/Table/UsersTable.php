@@ -39,6 +39,9 @@ class UsersTable extends Table
         $this->hasMany('CompanyUsers', [
             'foreignKey' => 'user_id'
         ]);
+		 $this->hasMany('UserRights', [
+            'foreignKey' => 'user_id'
+        ]);
     }
 
     /**

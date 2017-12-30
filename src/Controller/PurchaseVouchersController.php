@@ -22,12 +22,22 @@ class PurchaseVouchersController extends AppController
     {
 		$this->viewBuilder()->layout('index_layout');
 		$company_id=$this->Auth->User('session_company_id');
+		$search=$this->request->query('search');
 		$this->paginate = [
             'contain' => []
         ];
-        $purchaseVouchers = $this->paginate($this->PurchaseVouchers->find()->where(['PurchaseVouchers.company_id'=>$company_id]));
+        $purchaseVouchers = $this->paginate($this->PurchaseVouchers->find()->where(['PurchaseVouchers.company_id'=>$company_id])->where([
+		'OR' => [
+            'PurchaseVouchers.voucher_no' => $search,
+            //....
+			'PurchaseVouchers.supplier_invoice_no LIKE' => '%'.$search.'%',
+			//...
+			'PurchaseVouchers.transaction_date ' => date('Y-m-d',strtotime($search)),
+			//...
+			'PurchaseVouchers.supplier_invoice_date ' => date('Y-m-d',strtotime($search))
+		 ]]));
 
-        $this->set(compact('purchaseVouchers'));
+        $this->set(compact('purchaseVouchers','search'));
         $this->set('_serialize', ['purchaseVouchers']);
     }
 
@@ -42,7 +52,7 @@ class PurchaseVouchersController extends AppController
     {
 		$this->viewBuilder()->layout('index_layout');
         $purchaseVoucher = $this->PurchaseVouchers->get($id, [
-            'contain' => ['PurchaseVoucherRows'=>['Ledgers','ReferenceDetails']]
+            'contain' => ['Companies','PurchaseVoucherRows'=>['Ledgers','ReferenceDetails']]
         ]);
 
         $this->set('purchaseVoucher', $purchaseVoucher);
@@ -76,12 +86,27 @@ class PurchaseVouchersController extends AppController
 			$purchaseVoucher = $this->PurchaseVouchers->patchEntity($purchaseVoucher, $this->request->getData(), [
 							'associated' => ['PurchaseVoucherRows','PurchaseVoucherRows.ReferenceDetails']
 						]);
+						
+				//pr($purchaseVoucher);exit;		
+						
+						
+						
 			if(!empty($purchaseVoucher->supplier_invoice_date))
 			{
 				$purchaseVoucher->supplier_invoice_date = date("Y-m-d",strtotime($purchaseVoucher->supplier_invoice_date));
 			}
 			$purchaseVoucher->transaction_date      = date("Y-m-d",strtotime($purchaseVoucher->transaction_date));
-			//pr($purchaseVoucher);exit;
+			foreach($purchaseVoucher->purchase_voucher_rows as $purchase_voucher_row)
+			{
+				if(!empty($purchase_voucher_row->reference_details))
+				{
+					foreach($purchase_voucher_row->reference_details as $reference_detail)
+					{
+						$reference_detail->transaction_date = $purchaseVoucher->transaction_date;
+					}
+				}
+			}
+			
 			if ($this->PurchaseVouchers->save($purchaseVoucher)) 
 			{
 				foreach($purchaseVoucher->purchase_voucher_rows as $purchase_voucher_row)
@@ -149,7 +174,7 @@ class PurchaseVouchersController extends AppController
 				$Creditledgers[]=['text' =>$AllCreditledger->name, 'value' => $AllCreditledger->id ,'open_window' => 'bank'];
 			}
 			else if($AllCreditledger->bill_to_bill_accounting == 'yes'){
-				$Creditledgers[]=['text' =>$AllCreditledger->name, 'value' => $AllCreditledger->id,'open_window' => 'party' ];
+				$Creditledgers[]=['text' =>$AllCreditledger->name, 'value' => $AllCreditledger->id,'open_window' => 'party','default_days'=>$AllCreditledger->default_credit_days];
 			}
 			else{
 				$Creditledgers[]=['text' =>$AllCreditledger->name, 'value' => $AllCreditledger->id,'open_window' => 'no' ];
@@ -178,7 +203,7 @@ class PurchaseVouchersController extends AppController
 				$Debitledgers[]=['text' =>$AllDebitledger->name, 'value' => $AllDebitledger->id ,'open_window' => 'bank'];
 			}
 			else if($AllDebitledger->bill_to_bill_accounting == 'yes'){
-				$Debitledgers[]=['text' =>$AllDebitledger->name, 'value' => $AllDebitledger->id,'open_window' => 'party' ];
+				$Debitledgers[]=['text' =>$AllDebitledger->name, 'value' => $AllDebitledger->id,'open_window' => 'party','default_days'=>$AllDebitledger->default_credit_days ];
 			}
 			else{
 				$Debitledgers[]=['text' =>$AllDebitledger->name, 'value' => $AllDebitledger->id,'open_window' => 'no' ];
@@ -206,7 +231,7 @@ class PurchaseVouchersController extends AppController
 				$ledgers[]=['text' =>$Allledger->name, 'value' => $Allledger->id ,'open_window' => 'bank'];
 			}
 			else if($Allledger->bill_to_bill_accounting == 'yes'){
-				$ledgers[]=['text' =>$Allledger->name, 'value' => $Allledger->id,'open_window' => 'party' ];
+				$ledgers[]=['text' =>$Allledger->name, 'value' => $Allledger->id,'open_window' => 'party','default_days'=>$Allledger->default_credit_days ];
 			}
 			else{
 				$ledgers[]=['text' =>$Allledger->name, 'value' => $Allledger->id,'open_window' => 'no' ];
@@ -239,10 +264,17 @@ class PurchaseVouchersController extends AppController
 			foreach($originalPurchaseVoucher->purchase_voucher_rows as $originalpurchase_voucher_rows){
 				$orignalPurchase_voucher_row_ids[]=$originalpurchase_voucher_rows->id;
 			}
+			$query_update = $this->PurchaseVouchers->PurchaseVoucherRows->query();
+							$query_update->update()
+							->set(['mode_of_payment' => '', 'cheque_no' => '', 'cheque_date' => ''])
+							->where(['purchase_voucher_id' => $purchaseVoucher->id])
+							->execute();
+			 $purchaseVoucher = $this->PurchaseVouchers->get($id, [
+								'contain' => ['PurchaseVoucherRows'=>['Ledgers','ReferenceDetails']]
+			]);
+			
 			$this->PurchaseVouchers->PurchaseVoucherRows->ReferenceDetails->deleteAll(['ReferenceDetails.purchase_voucher_row_id IN'=>$orignalPurchase_voucher_row_ids]);
 			//GET ORIGINAL DATA AND DELETE REFERENCE DATA//
-			
-            $purchaseVoucher = $this->PurchaseVouchers->patchEntity($purchaseVoucher, $this->request->getData());
 			$purchaseVoucher = $this->PurchaseVouchers->patchEntity($purchaseVoucher, $this->request->getData(), [
 							'associated' => ['PurchaseVoucherRows','PurchaseVoucherRows.ReferenceDetails']
 						]);
@@ -251,7 +283,22 @@ class PurchaseVouchersController extends AppController
 				$purchaseVoucher->supplier_invoice_date = date("Y-m-d",strtotime($purchaseVoucher->supplier_invoice_date));
 			}
 			$purchaseVoucher->transaction_date      = date("Y-m-d",strtotime($purchaseVoucher->transaction_date));
+			foreach($purchaseVoucher->purchase_voucher_rows as $purchase_voucher_row)
+			{
+				if(!empty($purchase_voucher_row->reference_details))
+				{
+					foreach($purchase_voucher_row->reference_details as $reference_detail)
+					{
+						$reference_detail->transaction_date = $purchaseVoucher->transaction_date;
+					}
+				}
+			}
 			//pr($purchaseVoucher->toArray());exit;
+			
+			/* pr($purchaseVoucher);
+		    exit; */
+			
+			
 		    if ($this->PurchaseVouchers->save($purchaseVoucher)) {
 				$query_delete = $this->PurchaseVouchers->AccountingEntries->query();
 					$query_delete->delete()
@@ -281,6 +328,10 @@ class PurchaseVouchersController extends AppController
 		{
 			if(!empty($purchase_voucher_row->reference_details))
 			{
+				foreach($purchase_voucher_row->reference_details as $reference_details)
+				{
+					@$ref_details_name[]=$reference_details->ref_name;
+				}
 				$query = $this->PurchaseVouchers->PurchaseVoucherRows->ReferenceDetails->find();
 				$query->select(['total_debit' => $query->func()->sum('ReferenceDetails.debit'),'total_credit' => $query->func()->sum('ReferenceDetails.credit')])
 				->where(['ReferenceDetails.ledger_id'=>$purchase_voucher_row->ledger_id,'ReferenceDetails.type !='=>'On Account'])
@@ -295,7 +346,8 @@ class PurchaseVouchersController extends AppController
 					}else if($remider<0){
 						$bal=abs($remider).' Cr';
 					}
-					if($referenceDetail->total_debit!=$referenceDetail->total_credit){
+					if($referenceDetail->total_debit!=$referenceDetail->total_credit || in_array($referenceDetail->ref_name,$ref_details_name))
+					{
 						$option[] = ['text' =>$referenceDetail->ref_name.' ('.$bal.')', 'value' => $referenceDetail->ref_name];
 						 
 					}
@@ -340,7 +392,7 @@ class PurchaseVouchersController extends AppController
 				$Creditledgers[]=['text' =>$AllCreditledger->name, 'value' => $AllCreditledger->id ,'open_window' => 'bank'];
 			}
 			else if($AllCreditledger->bill_to_bill_accounting == 'yes'){
-				$Creditledgers[]=['text' =>$AllCreditledger->name, 'value' => $AllCreditledger->id,'open_window' => 'party' ];
+				$Creditledgers[]=['text' =>$AllCreditledger->name, 'value' => $AllCreditledger->id,'open_window' => 'party','default_days'=>$AllCreditledger->default_credit_days];
 			}
 			else{
 				$Creditledgers[]=['text' =>$AllCreditledger->name, 'value' => $AllCreditledger->id,'open_window' => 'no' ];
@@ -369,7 +421,7 @@ class PurchaseVouchersController extends AppController
 				$Debitledgers[]=['text' =>$AllDebitledger->name, 'value' => $AllDebitledger->id ,'open_window' => 'bank'];
 			}
 			else if($AllDebitledger->bill_to_bill_accounting == 'yes'){
-				$Debitledgers[]=['text' =>$AllDebitledger->name, 'value' => $AllDebitledger->id,'open_window' => 'party' ];
+				$Debitledgers[]=['text' =>$AllDebitledger->name, 'value' => $AllDebitledger->id,'open_window' => 'party','default_days'=>$AllDebitledger->default_credit_days ];
 			}
 			else{
 				$Debitledgers[]=['text' =>$AllDebitledger->name, 'value' => $AllDebitledger->id,'open_window' => 'no' ];
@@ -397,7 +449,7 @@ class PurchaseVouchersController extends AppController
 				$ledgers[]=['text' =>$Allledger->name, 'value' => $Allledger->id ,'open_window' => 'bank'];
 			}
 			else if($Allledger->bill_to_bill_accounting == 'yes'){
-				$ledgers[]=['text' =>$Allledger->name, 'value' => $Allledger->id,'open_window' => 'party' ];
+				$ledgers[]=['text' =>$Allledger->name, 'value' => $Allledger->id,'open_window' => 'party','default_days'=>$Allledger->default_credit_days ];
 			}
 			else{
 				$ledgers[]=['text' =>$Allledger->name, 'value' => $Allledger->id,'open_window' => 'no' ];
@@ -423,6 +475,36 @@ class PurchaseVouchersController extends AppController
             $this->Flash->success(__('The purchase voucher has been deleted.'));
         } else {
             $this->Flash->error(__('The purchase voucher could not be deleted. Please, try again.'));
+        }
+
+        return $this->redirect(['action' => 'index']);
+    }
+	
+	public function cancel($id = null)
+    {
+		// $this->request->allowMethod(['post', 'delete']);
+        $purchaseVoucher = $this->PurchaseVouchers->get($id, [
+            'contain' => ['PurchaseVoucherRows'=>['ReferenceDetails']]
+        ]);
+		$purchase_voucher_row_ids=[];
+		foreach($purchaseVoucher->purchase_voucher_rows as $purchase_voucher_row){
+			$purchase_voucher_row_ids[]=$purchase_voucher_row->id;
+		}
+		$company_id=$this->Auth->User('session_company_id');
+		$purchaseVoucher->status='cancel';
+        if ($this->PurchaseVouchers->save($purchaseVoucher)) {
+			
+				$deleteRefDetails = $this->PurchaseVouchers->PurchaseVoucherRows->ReferenceDetails->query();
+				$deleteRef = $deleteRefDetails->delete()
+					->where(['ReferenceDetails.purchase_voucher_row_id IN' => $purchase_voucher_row_ids])
+					->execute();
+				$deleteAccountEntries = $this->PurchaseVouchers->AccountingEntries->query();
+				$result = $deleteAccountEntries->delete()
+				->where(['AccountingEntries.purchase_voucher_id' => $purchaseVoucher->id])
+				->execute();
+			$this->Flash->success(__('The Purchase Vouchers has been cancelled.'));
+        } else {
+            $this->Flash->error(__('The Purchase Vouchers could not be cancelled. Please, try again.'));
         }
 
         return $this->redirect(['action' => 'index']);

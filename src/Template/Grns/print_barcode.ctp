@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -29,8 +30,8 @@
 			if($inc==0){ echo '<table style="width:100%;" class="print">'; }
 			if($r==0){ echo '<tr>'; }
 			?>
-			<td width="25%" height="108px" style="font-size:11px;" valign="middle">
-				<table width="100%" style="font-size:11px;line-height: 9px;">
+			<td width="25%" height="106px" style="font-size:10px;" valign="middle">
+				<table width="100%" style="font-size:10px;line-height: 7px;">
 					<tr>
 						<td colspan="2"><?php echo $coreVariable['company_name']; ?></td>
 					</tr>
@@ -46,7 +47,7 @@
 						<?php if(!empty($arData->item->shade->name)){?><td>Shade : <?= @$arData->item->shade->name.' ' ?></td><?php }?>
 					</tr>
 				</table>
-				<div align="center"><?= $this->Html->Image('barcode/'.$arData->item->id.'.png',['width'=>'130px;','height'=>'25px','style'=>'width:130px;height:25px;']) ?></div>
+				<div align="center" style="font-size:8px;"><?= $this->Html->Image('barcode/'.$arData->item->id.'.png',['width'=>'160px;','height'=>'13px','style'=>'width:160px;height:13px;']) ?><br/><?= $arData->item->item_code ?></div>
 			</td>
 			<?php
 			
@@ -62,5 +63,6 @@
 
 </body>
 </html>
+
 
 

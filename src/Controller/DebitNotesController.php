@@ -21,11 +21,24 @@ class DebitNotesController extends AppController
     public function index()
     {
 	$this->viewBuilder()->layout('index_layout');
+	$company_id=$this->Auth->User('session_company_id');
+	$search=$this->request->query('search');
         $this->paginate = [
             'contain' => ['Companies']
         ];
-        $debitNotes = $this->paginate($this->DebitNotes);
-        $this->set(compact('debitNotes'));
+		if($search){
+        $debitNotes = $this->paginate($this->DebitNotes->find()->where(['DebitNotes.company_id'=>$company_id])->where([
+		'OR' => [
+            'DebitNotes.voucher_no' => $search,
+            //....
+			'DebitNotes.transaction_date ' => date('Y-m-d',strtotime($search))
+			//...
+		 ]]));
+		}else{
+		  $debitNotes = $this->paginate($this->DebitNotes->find()->where(['DebitNotes.company_id'=>$company_id]));	
+		}
+		
+        $this->set(compact('debitNotes','search'));
         $this->set('_serialize', ['debitNotes']);
     }
 
@@ -40,9 +53,10 @@ class DebitNotesController extends AppController
     {
 		$this->viewBuilder()->layout('index_layout');
 	    $company_id=$this->Auth->User('session_company_id');
-        $debitNotes = $this->DebitNotes->find()->where(['DebitNotes.company_id'=>$company_id, 'DebitNotes.id'=>$id])
-		->contain(['Companies', 'DebitNoteRows'=>['ReferenceDetails', 'Ledgers']]);
-	
+		$debitNotes = $this->DebitNotes->get($id, [
+            'contain' => ['Companies', 'DebitNoteRows'=>['ReferenceDetails', 'Ledgers']]
+        ]);
+        
         $this->set(compact('debitNotes'));
         $this->set('_serialize', ['debitNotes']);
     }
@@ -58,11 +72,25 @@ class DebitNotesController extends AppController
         $debitNote = $this->DebitNotes->newEntity();
 		$company_id=$this->Auth->User('session_company_id');
         if ($this->request->is('post')) {
-		 $debitNote = $this->DebitNotes->patchEntity($debitNote, $this->request->getData(),['associated' => ['DebitNoteRows','DebitNoteRows.ReferenceDetails']]);
-		 $tdate=$this->request->data('transaction_date');
-		 $debitNote->transaction_date=date('Y-m-d',strtotime($tdate));
-		 
-            if ($this->DebitNotes->save($debitNote)) {
+
+		$debitNote = $this->DebitNotes->patchEntity($debitNote, $this->request->getData(),['associated' => ['DebitNoteRows','DebitNoteRows.ReferenceDetails']]);
+		$tdate=$this->request->data('transaction_date');
+		$debitNote->transaction_date=date('Y-m-d',strtotime($tdate));
+		//transaction date for debit note code start here--
+			foreach($debitNote->debit_note_rows as $debit_note_row)
+			{
+				if(!empty($debit_note_row->reference_details))
+				{
+					foreach($debit_note_row->reference_details as $reference_detail)
+					{
+						$reference_detail->transaction_date = $debitNote->transaction_date;
+					}
+				}
+			}
+			//pr($debitNote);exit;
+		//transaction date for debit note code close here--
+
+		if ($this->DebitNotes->save($debitNote)) {
 			
 			foreach($debitNote->debit_note_rows as $debit_note_row)
 				{
@@ -150,7 +178,7 @@ class DebitNotesController extends AppController
 				$ledgerFirstOptions[]=['text' =>$ledger->name, 'value' => $ledger->id ,'open_window' => 'bank','bank_and_cash' => 'yes'];
 			}
 			else if($ledger->bill_to_bill_accounting == 'yes'){
-				$ledgerFirstOptions[]=['text' =>$ledger->name, 'value' => $ledger->id,'open_window' => 'party','bank_and_cash' => 'no'];
+				$ledgerFirstOptions[]=['text' =>$ledger->name, 'value' => $ledger->id,'open_window' => 'party','bank_and_cash' => 'no','default_days' => $ledger->default_credit_days];
 			}
 			else if(in_array($ledger->accounting_group_id,$cashGroups)){
 				$ledgerFirstOptions[]=['text' =>$ledger->name, 'value' => $ledger->id ,'open_window' => 'no','bank_and_cash' => 'yes'];
@@ -218,7 +246,7 @@ class DebitNotesController extends AppController
 				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id ,'open_window' => 'bank','bank_and_cash' => 'yes'];
 			}
 			else if($ledger->bill_to_bill_accounting == 'yes'){
-				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id,'open_window' => 'party','bank_and_cash' => 'no'];
+				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id,'open_window' => 'party','bank_and_cash' => 'no','default_days' => $ledger->default_credit_days];
 			}
 			else if(in_array($ledger->accounting_group_id,$cashGroups)){
 				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id ,'open_window' => 'no','bank_and_cash' => 'yes'];
@@ -253,14 +281,82 @@ class DebitNotesController extends AppController
      */
      public function edit($id = null)
     {
-	
+		
         $this->viewBuilder()->layout('index_layout');
         $debitNote = $this->DebitNotes->get($id, [
             'contain' => ['DebitNoteRows'=>['ReferenceDetails']]
         ]);
 		$company_id=$this->Auth->User('session_company_id');
 		
-		$refDropDown =[];
+	
+		$originaldebitNote=$debitNote;
+        if ($this->request->is('put','patch','post')) {
+		//GET ORIGINAL DATA AND DELETE REFERENCE DATA//
+			$orignaldebit_note_ids=[];
+			foreach($originaldebitNote->debit_note_rows as $originaldebitNote_rows){
+				$orignaldebit_note_ids[]=$originaldebitNote_rows->id;
+			}
+			//pr($this->request->getData()); exit;
+			$this->DebitNotes->DebitNoteRows->ReferenceDetails->deleteAll(['ReferenceDetails.debit_note_row_id IN'=>$orignaldebit_note_ids]);
+			
+			$query_update = $this->DebitNotes->DebitNoteRows->query();
+					$query_update->update()
+					->set(['mode_of_payment' => '', 'cheque_no' => '', 'cheque_date' => ''])
+					->where(['debit_note_id' => $debitNote->id])
+					->execute();
+			//GET ORIGINAL DATA AND DELETE REFERENCE DATA//
+		 $debitNote = $this->DebitNotes->get($id, [
+            'contain' => ['DebitNoteRows'=>['ReferenceDetails']]
+        ]);	
+		$debitNote = $this->DebitNotes->patchEntity($debitNote, $this->request->getData(),['associated' => ['DebitNoteRows','DebitNoteRows.ReferenceDetails']]);
+			$tdate=$this->request->data('transaction_date');
+			$debitNote->transaction_date=date('Y-m-d',strtotime($tdate));
+		 
+			//transaction date for debit note code start here--
+			foreach($debitNote->debit_note_rows as $debit_note_row)
+			{
+				if(!empty($debit_note_row->reference_details))
+				{
+					foreach($debit_note_row->reference_details as $reference_detail)
+					{
+						$reference_detail->transaction_date = $debitNote->transaction_date;
+					}
+				}
+			}
+		    //transaction date for debit note code close here--
+		
+	/* 	pr($debitNote);
+		exit; */
+		
+		
+            if ($this->DebitNotes->save($debitNote)) {
+			$query_delete = $this->DebitNotes->AccountingEntries->query();
+					$query_delete->delete()
+					->where(['debit_note_id' => $debitNote->id,'company_id'=>$company_id])
+					->execute();
+			
+			foreach($debitNote->debit_note_rows as $debit_note_row)
+				{
+					$accountEntry = $this->DebitNotes->AccountingEntries->newEntity();
+					$accountEntry->ledger_id                  = $debit_note_row->ledger_id;
+					$accountEntry->debit                      = @$debit_note_row->debit;
+					$accountEntry->credit                     = @$debit_note_row->credit;
+					$accountEntry->transaction_date           = $debitNote->transaction_date;
+					$accountEntry->company_id                 = $company_id;
+					$accountEntry->debit_note_id                 = $debitNote->id;
+					$accountEntry->debit_note_row_id             = $debit_note_row->id;
+					$this->DebitNotes->AccountingEntries->save($accountEntry);
+				}
+
+                $this->Flash->success(__('The Debit Note has been Update.'));
+				$this->repairRef();
+
+                return $this->redirect(['action' => 'index']);
+            }
+            $this->Flash->error(__('The Debit Note could not be saved. Please, try again.'));
+        }
+		
+			$refDropDown =[];
 		foreach($debitNote->debit_note_rows as $debit_note_row)
 		{
 			if(!empty($debit_note_row->reference_details))
@@ -287,59 +383,6 @@ class DebitNotesController extends AppController
 				$refDropDown[$debit_note_row->id] = $option;
 			}
 		}
-		
-		$originaldebitNote=$debitNote;
-        if ($this->request->is('put','patch','post')) {
-		
-	
-		//GET ORIGINAL DATA AND DELETE REFERENCE DATA//
-			$orignaldebit_note_ids=[];
-			foreach($originaldebitNote->debit_note_rows as $originaldebitNote_rows){
-				$orignaldebit_note_ids[]=$originaldebitNote_rows->id;
-			}
-			$this->DebitNotes->DebitNoteRows->ReferenceDetails->deleteAll(['ReferenceDetails.debit_note_row_id IN'=>$orignaldebit_note_ids]);
-			
-			$query_update = $this->DebitNotes->DebitNoteRows->query();
-					$query_update->update()
-					->set(['mode_of_payment' => '', 'cheque_no' => '', 'cheque_date' => ''])
-					->where(['debit_note_id' => $debitNote->id])
-					->execute();
-			//GET ORIGINAL DATA AND DELETE REFERENCE DATA//
-			
-		
-		
-		 $debitNote = $this->DebitNotes->patchEntity($debitNote, $this->request->getData(),['associated' => ['DebitNoteRows','DebitNoteRows.ReferenceDetails']]);
-		 $tdate=$this->request->data('transaction_date');
-		 $debitNote->transaction_date=date('Y-m-d',strtotime($tdate));
-		 
-	
-		
-            if ($this->DebitNotes->save($debitNote)) {
-			$query_delete = $this->DebitNotes->AccountingEntries->query();
-					$query_delete->delete()
-					->where(['credit_note_id' => $debitNote->id,'company_id'=>$company_id])
-					->execute();
-			
-			foreach($debitNote->debit_note_rows as $debit_note_row)
-				{
-					$accountEntry = $this->DebitNotes->AccountingEntries->newEntity();
-					$accountEntry->ledger_id                  = $debit_note_row->ledger_id;
-					$accountEntry->debit                      = @$debit_note_row->debit;
-					$accountEntry->credit                     = @$debit_note_row->credit;
-					$accountEntry->transaction_date           = $debitNote->transaction_date;
-					$accountEntry->company_id                 = $company_id;
-					$accountEntry->debit_note_id                 = $debitNote->id;
-					$accountEntry->debit_note_row_id             = $debit_note_row->id;
-					$this->DebitNotes->AccountingEntries->save($accountEntry);
-				}
-
-                $this->Flash->success(__('The Debit Note has been Update.'));
-				$this->repairRef();
-
-                return $this->redirect(['action' => 'index']);
-            }
-            $this->Flash->error(__('The Debit Note could not be saved. Please, try again.'));
-        }
 		
 		
 		// frst row bank group
@@ -398,7 +441,7 @@ class DebitNotesController extends AppController
 				$ledgerFirstOptions[]=['text' =>$ledger->name, 'value' => $ledger->id ,'open_window' => 'bank','bank_and_cash' => 'yes'];
 			}
 			else if($ledger->bill_to_bill_accounting == 'yes'){
-				$ledgerFirstOptions[]=['text' =>$ledger->name, 'value' => $ledger->id,'open_window' => 'party','bank_and_cash' => 'no'];
+				$ledgerFirstOptions[]=['text' =>$ledger->name, 'value' => $ledger->id,'open_window' => 'party','bank_and_cash' => 'no','default_days'=>$ledger->default_credit_days];
 			}
 			else if(in_array($ledger->accounting_group_id,$cashGroups)){
 				$ledgerFirstOptions[]=['text' =>$ledger->name, 'value' => $ledger->id ,'open_window' => 'no','bank_and_cash' => 'yes'];
@@ -465,7 +508,7 @@ class DebitNotesController extends AppController
 				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id ,'open_window' => 'bank','bank_and_cash' => 'yes'];
 			}
 			else if($ledger->bill_to_bill_accounting == 'yes'){
-				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id,'open_window' => 'party','bank_and_cash' => 'no'];
+				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id,'open_window' => 'party','bank_and_cash' => 'no','default_days'=>$ledger->default_credit_days];
 			}
 			else if(in_array($ledger->accounting_group_id,$cashGroups)){
 				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id ,'open_window' => 'no','bank_and_cash' => 'yes'];
@@ -474,8 +517,6 @@ class DebitNotesController extends AppController
 				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id,'open_window' => 'no','bank_and_cash' => 'no' ];
 			}
 		}
-		
-		
 		
 		$referenceDetails=$this->DebitNotes->DebitNoteRows->ReferenceDetails->find('list');
         $companies = $this->DebitNotes->Companies->find('list', ['limit' => 200]);
@@ -498,6 +539,35 @@ class DebitNotesController extends AppController
             $this->Flash->success(__('The debit note has been deleted.'));
         } else {
             $this->Flash->error(__('The debit note could not be deleted. Please, try again.'));
+        }
+
+        return $this->redirect(['action' => 'index']);
+    }
+	public function cancel($id = null)
+    {
+		// $this->request->allowMethod(['post', 'delete']);
+        $debitNote = $this->DebitNotes->get($id, [
+            'contain' => ['DebitNoteRows'=>['ReferenceDetails']]
+        ]);
+		$debit_note_row_ids=[];
+		foreach($debitNote->debit_note_rows as $debit_note_row){
+			$debit_note_row_ids[]=$debit_note_row->id;
+		}
+		$company_id=$this->Auth->User('session_company_id');
+		$debitNote->status='cancel';
+        if ($this->DebitNotes->save($debitNote)) {
+			
+				$deleteRefDetails = $this->DebitNotes->DebitNoteRows->ReferenceDetails->query();
+				$deleteRef = $deleteRefDetails->delete()
+					->where(['ReferenceDetails.debit_note_row_id IN' => $debit_note_row_ids])
+					->execute();
+				$deleteAccountEntries = $this->DebitNotes->AccountingEntries->query();
+				$result = $deleteAccountEntries->delete()
+				->where(['AccountingEntries.debit_note_id' => $debitNote->id])
+				->execute();
+			$this->Flash->success(__('The Debit Notes has been cancelled.'));
+        } else {
+            $this->Flash->error(__('The Debit Notes could not be cancelled. Please, try again.'));
         }
 
         return $this->redirect(['action' => 'index']);

@@ -61,6 +61,15 @@ class ItemLedgersTable extends Table
             'joinType' => 'INNER'
         ]);
 		
+		$this->belongsTo('SaleReturns', [
+		'foreignKey' => 'sale_return_id',
+		'joinType' => 'INNER'
+        ]);
+		
+		$this->belongsTo('locations', [
+            'foreignKey' => 'location_id',
+            'joinType' => 'INNER'
+        ]);
 		$this->belongsTo('IntraLocationStockTransferVouchers', [
             'foreignKey' => 'intra_location_stock_transfer_voucher_id',
             'joinType' => 'INNER'

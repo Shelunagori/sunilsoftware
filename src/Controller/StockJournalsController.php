@@ -22,12 +22,20 @@ class StockJournalsController extends AppController
     {
 		$this->viewBuilder()->layout('index_layout');
 		$company_id=$this->Auth->User('session_company_id');
+		$search=$this->request->query('search');
 		$this->paginate = [
             'contain' => ['Companies']
         ];
-        $stockJournals = $this->paginate($this->StockJournals->find()->where(['StockJournals.company_id'=>$company_id]));
+        $stockJournals = $this->paginate($this->StockJournals->find()->where(['StockJournals.company_id'=>$company_id])->where([
+		'OR' => [
+            'StockJournals.voucher_no' => $search,
+            // ...
+			'StockJournals.reference_no LIKE' => '%'.$search.'%',
+			//...
+			'StockJournals.transaction_date ' => date('Y-m-d',strtotime($search))
+		 ]]));
 
-        $this->set(compact('stockJournals'));
+        $this->set(compact('stockJournals','search'));
         $this->set('_serialize', ['stockJournals']);
     }
 
@@ -116,14 +124,18 @@ class StockJournalsController extends AppController
             }
             $this->Flash->error(__('The stock journal could not be saved. Please, try again.'));
         }
-		$items     = $this->StockJournals->Inwards->Items->find('list')->where(['company_id'=>$company_id]);
+		$items     = $this->StockJournals->Inwards->Items->find()->where(['company_id'=>$company_id]);
+		$itemOptions=[];
+		foreach($items as $item){
+			$itemOptions[]=['text'=>$item->item_code.' '.$item->name, 'value'=>$item->id,'item_code'=>$item->item_code];
+		}
         $Voucher_no=$this->StockJournals->find()->select(['voucher_no'])->where(['company_id'=>$company_id])->order(['voucher_no' => 'DESC'])->first();
 		if($Voucher_no){
 			$voucher_no=$Voucher_no->voucher_no+1;
 		}else{
 			$voucher_no=1;
 		} 
-        $this->set(compact('stockJournal', 'items','voucher_no'));
+        $this->set(compact('stockJournal', 'items','voucher_no','itemOptions'));
         $this->set('_serialize', ['stockJournal']);
     }
 
@@ -198,13 +210,16 @@ class StockJournalsController extends AppController
 
                 return $this->redirect(['action' => 'index']);
             }else{
-				pr($stockJournal);exit;
+				
             $this->Flash->error(__('The stock journal could not be saved. Please, try again.'));
 			}
         }
-		
-		$items = $this->StockJournals->Inwards->Items->find('list')->where(['company_id'=>$company_id]);
-        $this->set(compact('stockJournal', 'items'));
+		$items     = $this->StockJournals->Inwards->Items->find()->where(['company_id'=>$company_id]);
+		$itemOptions=[];
+		foreach($items as $item){
+			$itemOptions[]=['text'=>$item->item_code.' '.$item->name, 'value'=>$item->id,'item_code'=>$item->item_code];
+		}
+        $this->set(compact('stockJournal', 'items','itemOptions'));
         $this->set('_serialize', ['stockJournal']);
     }
 
@@ -215,16 +230,23 @@ class StockJournalsController extends AppController
      * @return \Cake\Http\Response|null Redirects to index.
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
-    public function delete($id = null)
+    public function cancel($id = null)
     {
-        $this->request->allowMethod(['post', 'delete']);
-        $stockJournal = $this->StockJournals->get($id);
-        if ($this->StockJournals->delete($stockJournal)) {
-            $this->Flash->success(__('The stock journal has been deleted.'));
+		$stockJournals = $this->StockJournals->get($id);
+		$company_id=$this->Auth->User('session_company_id');
+		$stockJournals->status='cancel';
+		
+        if ($this->StockJournals->save($stockJournals)) {
+			
+				$deleteItemLedgers = $this->StockJournals->ItemLedgers->query();
+				$result = $deleteItemLedgers->delete()
+				->where(['ItemLedgers.stock_journal_id' => $stockJournals->id])
+				->execute();
+				
+            $this->Flash->success(__('The Stock Journal has been cancelled.'));
         } else {
-            $this->Flash->error(__('The stock journal could not be deleted. Please, try again.'));
+            $this->Flash->error(__('The Stock Journal could not be deleted. Please, try again.'));
         }
-
         return $this->redirect(['action' => 'index']);
     }
 }

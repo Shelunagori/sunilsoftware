@@ -11,7 +11,7 @@ $this->set('title', 'Login');
 	<div class="form-group">
 		<!--ie8, ie9 does not support html5 placeholder, so we just show field title for that-->
 		<label>Username</label>
-		<?php  echo $this->Form->control('username',['label'=>false,'class'=>'form-control ','autocomplete'=>'off','placeholder'=>'Username']); ?>
+		<?php  echo $this->Form->control('username',['label'=>false,'class'=>'form-control ','autocomplete'=>'off','placeholder'=>'Username','autofocus']); ?>
 	</div>
 	<div class="form-group">
 		<label>Password</label>

@@ -21,12 +21,24 @@ class JournalVouchersController extends AppController
     public function index()
     {
 		$this->viewBuilder()->layout('index_layout');
+		$company_id=$this->Auth->User('session_company_id');
+		$search=$this->request->query('search');
         $this->paginate = [
             'contain' => ['Companies']
         ];
-        $journalVouchers = $this->paginate($this->JournalVouchers);
-
-        $this->set(compact('journalVouchers'));
+		if($search){
+        $journalVouchers = $this->paginate($this->JournalVouchers->find()->where(['JournalVouchers.company_id'=>$company_id])->where([
+		'OR' => [
+            'JournalVouchers.voucher_no' => $search,
+            //....
+			'JournalVouchers.reference_no LIKE' => '%'.$search.'%',
+				//...
+			'JournalVouchers.transaction_date ' => date('Y-m-d',strtotime($search))
+		 ]]));
+		} else {
+        $journalVouchers = $this->paginate($this->JournalVouchers->find()->where(['JournalVouchers.company_id'=>$company_id]));
+		}
+        $this->set(compact('journalVouchers','search'));
         $this->set('_serialize', ['journalVouchers']);
     }
 
@@ -41,7 +53,7 @@ class JournalVouchersController extends AppController
     {
 		$this->viewBuilder()->layout('index_layout');
         $journalVoucher = $this->JournalVouchers->get($id, [
-            'contain' => ['JournalVoucherRows'=>['Ledgers','ReferenceDetails']]
+            'contain' => ['Companies','JournalVoucherRows'=>['Ledgers','ReferenceDetails']]
         ]);
 
         $this->set('journalVoucher', $journalVoucher);
@@ -76,6 +88,16 @@ class JournalVouchersController extends AppController
 						]);
 			$journalVoucher->transaction_date      = date("Y-m-d",strtotime($journalVoucher->transaction_date));
 			//pr($journalVoucher);exit;
+			foreach($journalVoucher->journal_voucher_rows as $journal_voucher_row)
+			{
+				if(!empty($journal_voucher_row->reference_details))
+				{
+					foreach($journal_voucher_row->reference_details as $reference_detail)
+					{
+						$reference_detail->transaction_date = $journalVoucher->transaction_date;
+					}
+				}
+			}
             if ($this->JournalVouchers->save($journalVoucher)) 
 			{
 				foreach($journalVoucher->journal_voucher_rows as $journal_voucher_row)
@@ -142,7 +164,7 @@ class JournalVouchersController extends AppController
 				$ledgers[]=['text' =>$AllCreditledger->name, 'value' => $AllCreditledger->id ,'open_window' => 'bank'];
 			}
 			else if($AllCreditledger->bill_to_bill_accounting == 'yes'){
-				$ledgers[]=['text' =>$AllCreditledger->name, 'value' => $AllCreditledger->id,'open_window' => 'party' ];
+				$ledgers[]=['text' =>$AllCreditledger->name, 'value' => $AllCreditledger->id,'open_window' => 'party','default_days'=>$AllCreditledger->default_credit_days];
 			}
 			else{
 				$ledgers[]=['text' =>$AllCreditledger->name, 'value' => $AllCreditledger->id,'open_window' => 'no' ];
@@ -185,6 +207,16 @@ class JournalVouchersController extends AppController
 						]);
 			$journalVoucher->transaction_date      = date("Y-m-d",strtotime($journalVoucher->transaction_date));
 			//pr($journalVoucher);exit;
+			foreach($journalVoucher->journal_voucher_rows as $journal_voucher_row)
+			{
+				if(!empty($journal_voucher_row->reference_details))
+				{
+					foreach($journal_voucher_row->reference_details as $reference_detail)
+					{
+						$reference_detail->transaction_date = $journalVoucher->transaction_date;
+					}
+				}
+			}
             if ($this->JournalVouchers->save($journalVoucher)) {
 				$query_delete = $this->JournalVouchers->AccountingEntries->query();
 					$query_delete->delete()
@@ -215,6 +247,10 @@ class JournalVouchersController extends AppController
 		{
 			if(!empty($journal_voucher_row->reference_details))
 			{
+				foreach($journal_voucher_row->reference_details as $referenceDetailRows)
+				{
+					@$ref_details_name[]=$referenceDetailRows->ref_name;
+				}
 				$query = $this->JournalVouchers->JournalVoucherRows->ReferenceDetails->find();
 				$query->select(['total_debit' => $query->func()->sum('ReferenceDetails.debit'),'total_credit' => $query->func()->sum('ReferenceDetails.credit')])
 				->where(['ReferenceDetails.ledger_id'=>$journal_voucher_row->ledger_id,'ReferenceDetails.type !='=>'On Account'])
@@ -229,7 +265,7 @@ class JournalVouchersController extends AppController
 					}else if($remider<0){
 						$bal=abs($remider).' Cr';
 					}
-					if($referenceDetail->total_debit!=$referenceDetail->total_credit){
+					if($referenceDetail->total_debit!=$referenceDetail->total_credit || in_array($referenceDetail->ref_name,$ref_details_name)){
 						$option[] = ['text' =>$referenceDetail->ref_name.' ('.$bal.')', 'value' => $referenceDetail->ref_name];
 						 
 					}
@@ -275,7 +311,7 @@ class JournalVouchersController extends AppController
 				$ledgers[]=['text' =>$AllCreditledger->name, 'value' => $AllCreditledger->id ,'open_window' => 'bank'];
 			}
 			else if($AllCreditledger->bill_to_bill_accounting == 'yes'){
-				$ledgers[]=['text' =>$AllCreditledger->name, 'value' => $AllCreditledger->id,'open_window' => 'party' ];
+				$ledgers[]=['text' =>$AllCreditledger->name, 'value' => $AllCreditledger->id,'open_window' => 'party','default_days'=>$AllCreditledger->default_credit_days ];
 			}
 			else{
 				$ledgers[]=['text' =>$AllCreditledger->name, 'value' => $AllCreditledger->id,'open_window' => 'no' ];
@@ -301,6 +337,35 @@ class JournalVouchersController extends AppController
             $this->Flash->success(__('The journal voucher has been deleted.'));
         } else {
             $this->Flash->error(__('The journal voucher could not be deleted. Please, try again.'));
+        }
+
+        return $this->redirect(['action' => 'index']);
+    }
+	public function cancel($id = null)
+    {
+		// $this->request->allowMethod(['post', 'delete']);
+        $journalVoucher = $this->JournalVouchers->get($id, [
+            'contain' => ['JournalVoucherRows'=>['ReferenceDetails']]
+        ]);
+		$journal_voucher_row_ids=[];
+		foreach($journalVoucher->journal_voucher_rows as $journal_voucher_row){
+			$journal_voucher_row_ids[]=$journal_voucher_row->id;
+		}
+		$company_id=$this->Auth->User('session_company_id');
+		$journalVoucher->status='cancel';
+        if ($this->JournalVouchers->save($journalVoucher)) {
+			
+				$deleteRefDetails = $this->JournalVouchers->JournalVoucherRows->ReferenceDetails->query();
+				$deleteRef = $deleteRefDetails->delete()
+					->where(['ReferenceDetails.journal_voucher_row_id IN' => $journal_voucher_row_ids])
+					->execute();
+				$deleteAccountEntries = $this->JournalVouchers->AccountingEntries->query();
+				$result = $deleteAccountEntries->delete()
+				->where(['AccountingEntries.journal_voucher_id' => $journalVoucher->id])
+				->execute();
+			$this->Flash->success(__('The Journal Voucher has been cancelled.'));
+        } else {
+            $this->Flash->error(__('The Journal Voucher could not be cancelled. Please, try again.'));
         }
 
         return $this->redirect(['action' => 'index']);

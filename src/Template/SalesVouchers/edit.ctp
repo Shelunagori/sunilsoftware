@@ -8,6 +8,9 @@ $this->set('title', 'Sales Voucher');
 .noBorder{
 	border:none;
 }
+.table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
+     vertical-align: top !important; 
+}
 </style>
 <?php
 $option_ref[]= ['value'=>'New Ref','text'=>'New Ref'];
@@ -135,7 +138,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
                                                             
 															if(!empty($refDropDown[$sales_voucher_row->id]))
 															{
-																echo $this->Form->input('mode_of_payment', ['options'=>$refDropDown[$sales_voucher_row->id],'label' => false,'class' => 'form-control input-sm paymentType','required'=>'required','value'=>$reference_detail->type]);
+																echo $this->Form->input('sales_voucher_rows.'.$i.'.reference_details.'.$j.'.ref_name', ['options'=>$refDropDown[$sales_voucher_row->id],'label' => false,'class' => 'form-control input-sm paymentType refList','required'=>'required','value'=>$reference_detail->ref_name]);
 																
 															} }?>
 															
@@ -161,14 +164,17 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 																$name="credit";
 															}
 
-															echo $this->Form->input('sales_voucher_rows.'.$i.'.reference_details.'.$j.'.'.$name, ['label' => false,'class' => 'form-control input-sm calculation rightAligntextClass','placeholder'=>'Amount','required'=>'required','value'=>$value,'type'=>'text']); ?>
+															echo $this->Form->input('sales_voucher_rows.'.$i.'.reference_details.'.$j.'.'.$name, ['label' => false,'class' => 'form-control input-sm calculation numberOnly rightAligntextClass','placeholder'=>'Amount','required'=>'required','value'=>$value,'type'=>'text']); ?>
 														</td>
 														<td width="10%" style="padding-left:0px;vertical-align: top !important;">
 															<?php 
 															echo $this->Form->input('type_cr_dr', ['options'=>['Dr'=>'Dr','Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm  calculation refDrCr reload','value'=>$cr_dr]); ?>
 														</td>
-														
-														<td align="center">
+														<td width="15%" style="padding-left:0px;"valign="top">
+														<?php if($reference_detail->type=='New Ref' || $reference_detail->type=='Advance'){ 
+															echo $this->Form->input('sales_voucher_rows.'.$i.'.reference_details.'.$j.'.due_days', ['label' => false,'class' => 'form-control input-sm numberOnly rightAligntextClass dueDays','title'=>'Due Days','value'=>$reference_detail->due_days, 'type'=>'text']); ?><?php } ?>
+														</td> 
+														<td  width="5%" align="right">
 															<a class="ref_delete" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
 														</td>
 													</tr>
@@ -190,8 +196,8 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 												    <tr class="remove_ref_foot">
 														<td colspan="2">
 													    </td>
-														<td><input type="text" class="form-control input-sm rightAligntextClass total calculation ttl noBorder"  value="<?php echo $sales_voucher_row->total;?>" name="sales_voucher_rows[<?php echo $i;?>][total]"></td>
-														<td style="vertical-align: top !important;"><input type="text" class="form-control input-sm total_type calculation noBorder"  value="<?php echo @$type;?>"></td>
+														<td><input type="text" class="form-control input-sm rightAligntextClass total calculation ttl noBorder"  value="<?php echo $sales_voucher_row->total;?>" name="sales_voucher_rows[<?php echo $i;?>][total]" readonly></td>
+														<td style="vertical-align: top !important;"><input type="text" class="form-control input-sm total_type calculation noBorder"  value="<?php echo @$type;?>" readonly></td>
 													</tr>
 												</tfoot>
 												</table>
@@ -244,7 +250,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 												   $style1="display:block;";
 											  }
 											?>
-											<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm  debitBox rightAligntextClass totalCalculation','placeholder'=>'Debit','value'=>$sales_voucher_row->debit,'style'=>@$style1]); ?>
+											<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm  debitBox rightAligntextClass numberOnly totalCalculation','placeholder'=>'Debit','value'=>$sales_voucher_row->debit,'style'=>@$style1]); ?>
 										
 										</td>
 										<td width="10%">
@@ -257,7 +263,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 												   $style2="display:block;";
 											  }
 										?>
-											<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm  creditBox rightAligntextClass totalCalculation','placeholder'=>'Credit','value'=>$sales_voucher_row->credit,'style'=>@$style2]); ?>
+											<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm  creditBox rightAligntextClass numberOnly totalCalculation','placeholder'=>'Credit','value'=>$sales_voucher_row->credit,'style'=>@$style2]); ?>
 										</td>
 										<td align="center"  width="10%">
 										<?php 
@@ -275,8 +281,8 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 										<td colspan="2" >	
 											<button type="button" class="AddMainRow btn btn-default input-sm"><i class="fa fa-plus"></i> Add row</button>
 										</td>
-										<td><input type="text" class="form-control input-sm rightAligntextClass total_debit" placeholder="Total Debit" id="totalMainDr" name="totalMainDr" value="<?php echo $salesVoucher->totalMainDr;?>" readonly></td>
-										<td><input type="text" class="form-control input-sm rightAligntextClass total_credit" placeholder="Total Credit" id="totalMainCr" name="totalMainCr" value="<?php echo $salesVoucher->totalMainCr;?>" readonly></td>
+										<td valign="top"><input type="text" class="form-control input-sm rightAligntextClass total_debit" placeholder="Total Debit" id="totalMainDr" name="totalMainDr" value="<?php echo $salesVoucher->totalMainDr;?>" readonly></td>
+										<td valign="top"><input type="text" class="form-control input-sm rightAligntextClass total_credit" placeholder="Total Credit" id="totalMainCr" name="totalMainCr" value="<?php echo $salesVoucher->totalMainCr;?>" readonly></td>
 									</tr>
 								</tfoot>
 							</table>
@@ -313,14 +319,17 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			</td>
 			
 			<td width="20%" style="vertical-align: top !important;">
-				<?php echo $this->Form->input('amount', ['label' => false,'class' => 'form-control input-sm calculation rightAligntextClass','placeholder'=>'Amount','required'=>'required']); ?>
+				<?php echo $this->Form->input('amount', ['label' => false,'class' => 'form-control input-sm calculation numberOnly rightAligntextClass','placeholder'=>'Amount','required'=>'required']); ?>
 			</td>
 			<td width="10%" style="padding-left:0px;vertical-align: top !important;">
 				<?php 
 				echo $this->Form->input('type_cr_dr', ['options'=>['Dr'=>'Dr','Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm  calculation refDrCr reload','value'=>'Dr','style'=>'vertical-align: top !important;']); ?>
 			</td>
-			
-			<td align="center">
+			<td width="15%" style="padding-left:0px;" valign="top">
+				<?php 
+				echo $this->Form->input('due_days', ['label' => false,'class' => 'form-control input-sm numberOnly rightAligntextClass dueDays','placeholder'=>'Due Days','title'=>'Due Days']);  ?>
+			</td>
+			<td width="5%" align="right" valign="top">
 				<a class="ref_delete" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
 			</td>
 		</tr>
@@ -359,10 +368,10 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				<div class="window" style="margin:auto;"></div>
 			</td>
 			<td width="10%">
-				<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm  debitBox rightAligntextClass totalCalculation','placeholder'=>'Debit']); ?>
+				<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm  debitBox rightAligntextClass numberOnly totalCalculation','placeholder'=>'Debit']); ?>
 			</td>
 			<td width="10%">
-				<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm  creditBox rightAligntextClass totalCalculation','placeholder'=>'Credit','style'=>'display:none;']); ?>	
+				<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm  creditBox rightAligntextClass numberOnly totalCalculation','placeholder'=>'Credit','style'=>'display:none;']); ?>	
 			</td>
 			<td align="center"  width="10%">
 				<a class="btn btn-danger delete-tr btn-xs" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
@@ -436,8 +445,9 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 <!-- END PAGE LEVEL SCRIPTS -->
 <?php
 	$kk='<input type="text" class="form-control input-sm ref_name " placeholder="Reference Name">';
-	$total_input='<input type="text" class="form-control input-sm rightAligntextClass total calculation noBorder" >';
-	$total_type='<input type="text" class="form-control input-sm total_type calculation noBorder" >';
+	$dd='<input type="text" class="form-control input-sm rightAligntextClass dueDays " placeholder="Due Days">';
+	$total_input='<input type="text" class="form-control input-sm rightAligntextClass total calculation noBorder" readonly>';
+	$total_type='<input type="text" class="form-control input-sm total_type calculation noBorder" readonly>';
     $style ='style="vertical-align: top !important;"';
 	$js="
 		$(document).ready(function() {
@@ -556,11 +566,12 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			
 			$('.delete-tr').die().live('click',function() 
 			{
+				$(this).closest('tr').find('input').val('');
 				$(this).closest('tr').remove();
 				renameMainRows();
 				var SelectedTr=$(this).closest('tr.MainTr');
-				renameBankRows(SelectedTr);
-				renameRefRows(SelectedTr);
+				//renameBankRows(SelectedTr);
+				//renameRefRows(SelectedTr);
 				calc();
 			});
 			
@@ -577,7 +588,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				var type=$(this).val();
 				var currentRefRow=$(this).closest('tr');
 				var ledger_id=$(this).closest('tr.MainTr').find('select.ledger option:selected').val();
-				
+				var due_days=$(this).closest('tr.MainTr').find('select.ledger option:selected').attr('default_days');
 				if(type=='Against'){
 					$(this).closest('tr').find('td:nth-child(2)').html('Loading Ref List...');
 					var url='".$this->Url->build(['controller'=>'ReferenceDetails','action'=>'listRef'])."';
@@ -586,15 +597,17 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 						url: url,
 					}).done(function(response) { 
 						currentRefRow.find('td:nth-child(2)').html(response);
+						currentRefRow.find('td:nth-child(5)').html('');
 						renameRefRows(SelectedTr);
 					});
 				}else if(type=='On Account'){
 					currentRefRow.find('td:nth-child(2)').html('');
+					currentRefRow.find('td:nth-child(5)').html('');
 				}else{
 					currentRefRow.find('td:nth-child(2)').html('".$kk."');
-					
+					currentRefRow.find('td:nth-child(5)').html('".$dd."');
+					currentRefRow.find('td:nth-child(5) input.dueDays').val(due_days);
 				}
-				var SelectedTr=$(this).closest('tr.MainTr');
 				renameRefRows(SelectedTr);
 			});
 			
@@ -764,7 +777,8 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 			function AddRefRow(SelectedTr){
 				var refTr=$('#sampleForRef tbody tr').clone();
 				//console.log(refTr); 
-				
+				var due_days=SelectedTr.find('td:nth-child(2) select.ledger option:selected').attr('default_days');
+				refTr.find('td:nth-child(5) input.dueDays').val(due_days);
 				SelectedTr.find('td:nth-child(2) div.window table tbody').append(refTr);
 				renameRefRows(SelectedTr);
 			}
@@ -796,6 +810,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 						$(this).find('td:nth-child(2) select.refList').attr({name:'sales_voucher_rows['+row_no+'][reference_details]['+i+'][ref_name]',id:'sales_voucher_rows-'+row_no+'-reference_details-'+i+'-ref_name'}).rules('add','required');
 					}else if(is_input){
 						$(this).find('td:nth-child(2) input.ref_name').attr({name:'sales_voucher_rows['+row_no+'][reference_details]['+i+'][ref_name]',id:'sales_voucher_rows-'+row_no+'-reference_details-'+i+'-ref_name'}).rules('add','required');
+						$(this).find('td:nth-child(5) input.dueDays').attr({name:'sales_voucher_rows['+row_no+'][reference_details]['+i+'][due_days]',id:'sales_voucher_rows-'+row_no+'-reference_details-'+i+'-due_days'});
 					}
 					var Dr_Cr=$(this).find('td:nth-child(4) select option:selected').val();
 					if(Dr_Cr=='Dr'){
@@ -825,7 +840,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				}
 			}
 			
-			$('.calculation').die().live('keyup',function()
+			$('.calculation').die().live('keyup, change',function()
 			{ 
 				var SelectedTr=$(this).closest('tr.MainTr');
 				renameRefRows(SelectedTr);

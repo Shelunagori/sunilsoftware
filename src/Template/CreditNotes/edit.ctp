@@ -8,6 +8,9 @@ $this->set('title', 'Credit Note Voucher');
 .noBorder{
 	border:none;
 }
+.table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
+     vertical-align: top !important; 
+}
 </style>
 
 <div class="row">
@@ -66,10 +69,10 @@ $this->set('title', 'Credit Note Voucher');
 								         foreach($creditNote->credit_note_rows as $creditNoteRows)
 									     {?>
 									
-									<tr class="MainTr" row_no="<?php echo $i;?>">
+										<tr class="MainTr" row_no="<?php echo $i;?>">
 										<td width="10%">
 											<?php 
-											echo $this->Form->input('credit_note_rows.'.$i.'.id',['value'=>$creditNoteRows->id]);
+											echo $this->Form->input('credit_note_rows.'.$i.'.id',['value'=>$creditNoteRows->id,'class'=>'hidden']);
 											
 												if($i==0)
 											{
@@ -117,8 +120,11 @@ $this->set('title', 'Credit Note Voucher');
 												?>
 													<tr>
 														<td width="20%">
-															<input type="hidden" class="ledgerIdContainer" value="<?php echo $reference_detail->ledger_id;?>"/>
-															<input type="hidden" class="companyIdContainer" value="<?php echo $reference_detail->company_id;?>"/>
+															<?php 
+															echo $this->Form->input('credit_note_rows.'.$i.'.reference_details.'.$j.'.ledger_id', ['type'=>'hidden','label' => false,'class' => 'form-control input-sm ledgerIdContainer','value'=>$reference_detail->ledger_id]); ?>
+															
+															<?php 
+															echo $this->Form->input('credit_note_rows.'.$i.'.reference_details.'.$j.'.company_id', ['type'=>'hidden','label' => false,'class' => 'form-control input-sm companyIdContainer','value'=>$reference_detail->company_id]); ?>
 															<?php 
 															echo $this->Form->input('credit_note_rows.'.$i.'.reference_details.'.$j.'.type', ['options'=>$option_ref,'label' => false,'class' => 'form-control input-sm refType','required'=>'required','value'=>$reference_detail->type]); ?>
 														</td>
@@ -126,16 +132,15 @@ $this->set('title', 'Credit Note Voucher');
 														<td width="">
 														<?php if($reference_detail->type=='New Ref' || $reference_detail->type=='Advance'){ 
 														?>
-															<?php echo $this->Form->input('credit_note_rows.'.$i.'.reference_details.'.$j.'.ref_name', ['type'=>'text','label' => false,'class' => 'form-control input-sm ref_name','placeholder'=>'Reference Name','required'=>'required', 'value'=>$reference_detail->ref_name]); ?>
+															<?php echo $this->Form->input('credit_note_rows.'.$i.'.reference_details.'.$j.'.ref_name', ['type'=>'text','label' => false,'class' => 'form-control input-sm ref_name','placeholder'=>'Reference Name','required'=>'required']); ?>
 															<?php } if($reference_detail->type=='Against')
 															{?>
 															<?php 
 															if(!empty($refDropDown[$creditNoteRows->id]))
 															{
-																echo $this->Form->input('mode_of_payment', ['options'=>$refDropDown[3],'label' => false,'class' => 'form-control input-sm paymentType','required'=>'required','value'=>$reference_detail->type]);
+																echo $this->Form->input('credit_note_rows.'.$i.'.reference_details.'.$j.'.ref_name', ['options'=>$refDropDown[$creditNoteRows->id],'label' => false,'class' => 'form-control input-sm paymentType refList','required'=>'required','value'=>$reference_detail->ref_name]);
 																
 															} }?>
-															
 														</td>
 														
 														<td width="20%" style="padding-right:0px;">
@@ -158,14 +163,17 @@ $this->set('title', 'Credit Note Voucher');
 																$name="credit";
 															}
 
-															echo $this->Form->input('credit_note_rows.'.$i.'.reference_details.'.$j.'.'.$name, ['label' => false,'class' => 'form-control input-sm calculation rightAligntextClass','placeholder'=>'Amount','required'=>'required','value'=>$value, 'type'=>'text']); ?>
+															echo $this->Form->input('credit_note_rows.'.$i.'.reference_details.'.$j.'.'.$name, ['label' => false,'class' => 'form-control input-sm calculation numberOnly rightAligntextClass','placeholder'=>'Amount','required'=>'required','value'=>$value, 'type'=>'text']); ?>
 														</td>
 														<td width="10%" style="padding-left:0px;">
 															<?php 
-															echo $this->Form->input('credit_note_rows.'.$i.'.reference_details.'.$j.'.type_cr_dr', ['options'=>['Dr'=>'Dr','Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm  calculation refDrCr','value'=>$cr_dr]); ?>
+															echo $this->Form->input('type_cr_dr', ['options'=>['Dr'=>'Dr','Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm  calculation refDrCr','value'=>$cr_dr]); ?>
 														</td>
-														
-														<td align="center">
+														<td width="15%" style="padding-left:0px;"valign="top">
+														<?php if($reference_detail->type=='New Ref' || $reference_detail->type=='Advance'){ 
+															echo $this->Form->input('credit_note_rows.'.$i.'.reference_details.'.$j.'.due_days', ['label' => false,'class' => 'form-control input-sm numberOnly rightAligntextClass dueDays','title'=>'Due Days','value'=>$reference_detail->due_days, 'type'=>'text']); ?><?php } ?>
+														</td> 
+														<td  width="5%" align="right">
 															<a class="delete-tr-ref" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
 														</td>
 													</tr>
@@ -190,11 +198,11 @@ $this->set('title', 'Credit Note Voucher');
 														<td colspan="2"><input type="hidden" id="htotal" value="<?php echo $total;?>">
 													<a role="button" class="addRefRow">Add Row</a>
 													</td>
-			<td>
-			<input type="text" class="form-control input-sm rightAligntextClass total calculation noBorder" name="credit_note_rows[<?php echo $i;?>][total]" id="credit_note_rows-<?php echo $i;?>-total" aria-invalid="true" aria-describedby="credit_note_rows-<?php echo $i;?>-total-error" value="<?php echo $total;?>" readonly>
-			</td>
+													<td valign="top">
+														<input type="text" class="form-control input-sm rightAligntextClass total calculation noBorder" name="credit_note_rows[<?php echo $i;?>][total]" id="credit_note_rows-<?php echo $i;?>-total" aria-invalid="true" aria-describedby="credit_note_rows-<?php echo $i;?>-total-error" value="<?php echo $total;?>" readonly>
+													</td>
 														
-														<td><input type="text" class="form-control input-sm total_type calculation noBorder" readonly value="<?php echo @$type;?>" name="credit_note_rows<?php echo $i;?>reference_details<?php echo $i;?>type_cr_dr"></td>
+													<td valign="top"><input type="text" class="form-control input-sm total_type calculation noBorder" readonly value="<?php echo @$type;?>" name="credit_note_rows<?php echo $i;?>reference_details<?php echo $i;?>type_cr_dr"></td>
 													</tr>
 												</tfoot>
 												</table>
@@ -234,15 +242,34 @@ $this->set('title', 'Credit Note Voucher');
 											</div>
 										</td>
 										<td width="10%">
-											<?php echo $this->Form->input('credit_note_rows.'.$i.'.debit', ['label' => false,'class' => 'form-control input-sm debitBox rightAligntextClass totalCalculation calculate_total','placeholder'=>'Debit','value'=>$creditNoteRows->debit, 'type'=>'text']); ?>
-										</td>
-										<td width="10%">
-											<?php echo $this->Form->input('credit_note_rows.'.$i.'.credit', ['label' => false,'class' => 'form-control input-sm creditBox rightAligntextClass totalCalculation calculate_total','placeholder'=>'Credit','value'=>$creditNoteRows->credit, 'type'=>'text']); ?>
+										<?php if(empty($creditNoteRows->debit))
+											  {
+												  $style1="display:none;";
+											  }else
+											  {
+												   $style1="display:block;";
+											  }
+											?>
+											<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm  debitBox rightAligntextClass numberOnly calculate_total','placeholder'=>'Debit','value'=>$creditNoteRows->debit,'style'=>@$style1]); ?>
 										
+										</td>
+										
+										
+										<td width="10%">
+										<?php
+										      if(empty($creditNoteRows->credit))
+											  {
+												  $style2="display:none;";
+											  }else
+											  {
+												   $style2="display:block;";
+											  }
+										?>
+											<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm  creditBox rightAligntextClass numberOnly calculate_total','placeholder'=>'Credit','value'=>$creditNoteRows->credit,'style'=>@$style2]); ?>
 										</td>
 										<td align="center"  width="10%">
 										<?php 
-											if($i>=1)
+											if($i>1)
 											{
 										?>
 											<a class="btn btn-danger delete-tr btn-xs" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
@@ -295,14 +322,17 @@ $this->set('title', 'Credit Note Voucher');
 			</td>
 			
 			<td width="20%" style="padding-right:0px;" valign="top">
-				<?php echo $this->Form->input('amount', ['label' => false,'class' => 'form-control input-sm calculation rightAligntextClass','placeholder'=>'Amount','required'=>'required']); ?>
+				<?php echo $this->Form->input('amount', ['label' => false,'class' => 'form-control input-sm calculation numberOnly rightAligntextClass','placeholder'=>'Amount','required'=>'required']); ?>
 			</td>
 			<td width="10%" style="padding-left:0px;" valign="top">
 				<?php 
 				echo $this->Form->input('type_cr_dr', ['options'=>['Dr'=>'Dr','Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm  calculation refDrCr','value'=>'Dr']); ?>
 			</td>
-			
-			<td align="center" valign="top">
+			<td width="15%" style="padding-left:0px;" valign="top">
+				<?php 
+				echo $this->Form->input('due_days', ['label' => false,'class' => 'form-control input-sm numberOnly rightAligntextClass dueDays','title'=>'Due Days']);  ?>
+			</td>
+			<td width="5%" align="right" valign="top">
 				<a class="delete-tr-ref" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
 			</td>
 		</tr>
@@ -341,10 +371,10 @@ $this->set('title', 'Credit Note Voucher');
 				<div class="window" style="margin:auto;"></div>
 			</td>
 			<td width="10%" valign="top">
-				<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm  debitBox rightAligntextClass calculate_total','placeholder'=>'Debit']); ?>
+				<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm  debitBox rightAligntextClass numberOnly calculate_total','placeholder'=>'Debit']); ?>
 			</td>
 			<td width="10%" valign="top">
-				<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm creditBox rightAligntextClass calculate_total','placeholder'=>'Credit','style'=>'display:none;']); ?>	
+				<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm creditBox rightAligntextClass numberOnly calculate_total','placeholder'=>'Credit','style'=>'display:none;']); ?>	
 			</td>
 			<td align="center"  width="10%" valign="top">
 				<a class="btn btn-danger delete-tr btn-xs" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
@@ -419,7 +449,7 @@ $this->set('title', 'Credit Note Voucher');
 <!-- END PAGE LEVEL SCRIPTS -->
 <?php
 	$kk='<input type="text" class="form-control input-sm ref_name " placeholder="Reference Name">';
-	
+	$dd='<input type="text" class="form-control input-sm rightAligntextClass dueDays " placeholder="Due Days">';
 	$total_input='<input type="text" class="form-control input-sm rightAligntextClass total calculation noBorder" readonly>';
 	$total_type='<input type="text" class="form-control input-sm total_type calculation noBorder" readonly>';
 	$js="
@@ -533,10 +563,11 @@ $this->set('title', 'Credit Note Voucher');
 			});
 			
 			$('.refType').die().live('change',function(){
+			    var SelectedTr=$(this).closest('tr.MainTr');
 				var type=$(this).val();
 				var currentRefRow=$(this).closest('tr');
 				var ledger_id=$(this).closest('tr.MainTr').find('select.ledger option:selected').val();
-				
+				var due_days=$(this).closest('tr.MainTr').find('select.ledger option:selected').attr('default_days');
 				if(type=='Against'){
 					$(this).closest('tr').find('td:nth-child(2)').html('Loading Ref List...');
 					var url='".$this->Url->build(['controller'=>'ReferenceDetails','action'=>'listRef'])."';
@@ -545,12 +576,16 @@ $this->set('title', 'Credit Note Voucher');
 						url: url,
 					}).done(function(response) { 
 						currentRefRow.find('td:nth-child(2)').html(response);
+						currentRefRow.find('td:nth-child(5)').html('');
+						renameRefRows(SelectedTr);
 					});
 				}else if(type=='On Account'){
 					currentRefRow.find('td:nth-child(2)').html('');
+					currentRefRow.find('td:nth-child(5)').html('');
 				}else{
 					currentRefRow.find('td:nth-child(2)').html('".$kk."');
-					
+					currentRefRow.find('td:nth-child(5)').html('".$dd."');
+					currentRefRow.find('td:nth-child(5) input.dueDays').val(due_days);
 				}
 				var SelectedTr=$(this).closest('tr.MainTr');
 				renameRefRows(SelectedTr);
@@ -569,14 +604,11 @@ $this->set('title', 'Credit Note Voucher');
 					$(this).closest('tr').find('.creditBox').hide();
 				}
 				renameMainRows();
-				
-				var SelectedTr=$(this).closest('tr.MainTr');
-				renameRefRows(SelectedTr);
 			});
 			
 			
 			
-			hideShow();
+			//hideShow();
 			function hideShow()
 			{
 				$('#MainTable tbody#MainTbody tr.MainTr').each(function(){
@@ -592,7 +624,7 @@ $this->set('title', 'Credit Note Voucher');
 					$(this).closest('tr').find('.creditBox').hide();
 					//$(this).closest('tr').find('.creditBox').css('display', 'none');
 				}
-				//renameMainRows();
+				renameMainRows();
 				//var SelectedTr=$(this).closest('tr.MainTr');
 				//renameRefRows(SelectedTr);
 			});
@@ -632,7 +664,7 @@ $this->set('title', 'Credit Note Voucher');
 					SelectedTr.find('.BankValueDefine').val(bankValue);
                     var windowContainer=$(this).closest('td').find('div.window');
 					windowContainer.html('');
-					windowContainer.html('<table width=90% class=refTbl><tbody></tbody><tfoot><tr style=border-top:double#a5a1a1><td colspan=2><a role=button class=addRefRow>Add Row</a></td><td>$total_input</td><td>$total_type</td></tr></tfoot></table>');
+					windowContainer.html('<table width=90% class=refTbl><tbody></tbody><tfoot><tr style=border-top:double#a5a1a1><td colspan=2><a role=button class=addRefRow>Add Row</a></td><td valign= top>$total_input</td><td valign= top>$total_type</td></tr></tfoot></table>');
 					AddRefRow(SelectedTr);
 				}
 				else if(openWindow=='bank'){
@@ -674,20 +706,22 @@ $this->set('title', 'Credit Note Voucher');
 				$('#MainTable tbody#MainTbody tr.MainTr').each(function(){
 					$(this).attr('row_no',i);
 					var cr_dr=$(this).find('td:nth-child(1) select.cr_dr option:selected').val();
+					$(this).find('td:nth-child(1) input.hidden').attr({name:'credit_note_rows['+i+'][id]',id:'credit_note_rows-'+i+'-id'});
 					
 					var is_cash_bank=$(this).find('td:nth-child(2) option:selected').attr('bank_and_cash');
 					$(this).find('td:nth-child(1) select.cr_dr').attr({name:'credit_note_rows['+i+'][cr_dr]',id:'credit_note_rows-'+i+'-cr_dr'});
 					
-	$(this).find('td:nth-child(2) input.BankValueDefine').attr({name:'credit_note_rows['+i+'][BankDefination]',id:'credit_note_rows-'+i+'-BankDefination'});
+					$(this).find('td:nth-child(2) input.BankValueDefine').attr({name:'credit_note_rows['+i+'][BankDefination]',id:'credit_note_rows-'+i+'-BankDefination'});
 					
 					$(this).find('td:nth-child(2) select.ledger').attr({name:'credit_note_rows['+i+'][ledger_id]',id:'credit_note_rows-'+i+'-ledger_id'}).select2();
 					$(this).find('td:nth-child(3) input.debitBox').attr({name:'credit_note_rows['+i+'][debit]',id:'credit_note_rows-'+i+'-debit'});
 					$(this).find('td:nth-child(4) input.creditBox').attr({name:'credit_note_rows['+i+'][credit]',id:'credit_note_rows-'+i+'-credit'});
 					
 					if(cr_dr=='Dr'){
-						//$(this).find('td:nth-child(3) input.debitBox').rules('add', 'required');
-						//$(this).find('td:nth-child(4) input.creditBox').rules('remove');
-						//$(this).find('td:nth-child(4) span.help-block-error').remove();
+						$(this).find('td:nth-child(3) input.debitBox').rules('add', 'required');
+						$(this).find('td:nth-child(4) input.creditBox').rules('remove', 'required');
+						$(this).find('td:nth-child(4) span.help-block-error').remove();
+						
 						var debit_amt=parseFloat($(this).find('td:nth-child(3) input.debitBox').val());
 						if(!debit_amt){
 							debit_amt=0;
@@ -697,9 +731,9 @@ $this->set('title', 'Credit Note Voucher');
 						 count_bank_cash++;
 						}
 					}else{
-						//$(this).find('td:nth-child(3) input.debitBox').rules('remove');
-						//$(this).find('td:nth-child(3) span.help-block-error').remove();
-						//$(this).find('td:nth-child(4) input.creditBox').rules('add', 'required');
+						$(this).find('td:nth-child(3) input.debitBox').rules('remove', 'required');
+						$(this).find('td:nth-child(3) span.help-block-error').remove();
+						$(this).find('td:nth-child(4) input.creditBox').rules('add', 'required');
 						var credit_amt=parseFloat($(this).find('td:nth-child(4) input.creditBox').val());
 						if(!credit_amt){
 							credit_amt=0;
@@ -707,8 +741,15 @@ $this->set('title', 'Credit Note Voucher');
 						main_credit=round(main_credit+credit_amt,2);
 						
 					}
-					i++;
-				});
+					var type=$(this).find('td:nth-child(2) option:selected').attr('open_window');
+					var SelectedTr=$(this).closest('tr.MainTr');
+					if(type=='party'){
+						renameRefRows(SelectedTr);
+					}
+					if(type=='bank'){
+						renameBankRows(SelectedTr);
+					}i++;
+					});
 				$('#MainTable tfoot tr td:nth-child(2) input#totalMainDr').val(round(main_debit,2));
 				$('#MainTable tfoot tr td:nth-child(3) input#totalMainCr').val(round(main_credit,2));
 				$('#MainTable tfoot tr td:nth-child(1) input#totalBankCash').val(count_bank_cash);
@@ -757,7 +798,9 @@ $this->set('title', 'Credit Note Voucher');
 			
 			function AddRefRow(SelectedTr){
 				var refTr=$('#sampleForRef tbody tr').clone();
+				var due_days=SelectedTr.find('td:nth-child(2) select.ledger option:selected').attr('default_days');
 				//console.log(refTr);
+				refTr.find('td:nth-child(5) input.dueDays').val(due_days);
 				SelectedTr.find('td:nth-child(2) div.window table tbody').append(refTr);
 				renameRefRows(SelectedTr);
 			}
@@ -783,16 +826,21 @@ $this->set('title', 'Credit Note Voucher');
 					$(this).find('td:nth-child(1) select.refType').attr({name:'credit_note_rows['+row_no+'][reference_details]['+i+'][type]',id:'credit_note_rows-'+row_no+'-reference_details-'+i+'-type'});
 					var is_select=$(this).find('td:nth-child(2) select.refList').length;
 					var is_input=$(this).find('td:nth-child(2) input.ref_name').length;
+					
 					if(is_select){
-						$(this).find('td:nth-child(2) select.refList').attr({name:'credit_note_rows['+row_no+'][reference_details]['+i+'][ref_name]',id:'credit_note_rows-'+row_no+'-reference_details-'+i+'-ref_name'}).rules('add', 'required');
+						$(this).find('td:nth-child(2) select.refList').attr({name:'credit_note_rows['+row_no+'][reference_details]['+i+'][ref_name]',id:'credit_note_rows-'+row_no+'-reference_details-'+i+'-ref_name'}).rules('add','required');
 					}else if(is_input){
-						$(this).find('td:nth-child(2) input.ref_name').attr({name:'credit_note_rows['+row_no+'][reference_details]['+i+'][ref_name]',id:'credit_note_rows-'+row_no+'-reference_details-'+i+'-ref_name'}).rules('add', 'required');;
+						$(this).find('td:nth-child(2) input.ref_name').attr({name:'credit_note_rows['+row_no+'][reference_details]['+i+'][ref_name]',id:'credit_note_rows-'+row_no+'-reference_details-'+i+'-ref_name'}).rules('add','required');
+						$(this).find('td:nth-child(5) input.dueDays').attr({name:'credit_note_rows['+row_no+'][reference_details]['+i+'][due_days]',id:'credit_note_rows-'+row_no+'-reference_details-'+i+'-due_days'});
 					}
+					
+					
+					
 					var Dr_Cr=$(this).find('td:nth-child(4) select option:selected').val();
 					if(Dr_Cr=='Dr'){
-						$(this).find('td:nth-child(3) input').attr({name:'credit_note_rows['+row_no+'][reference_details]['+i+'][debit]',id:'credit_note_rows-'+row_no+'-reference_details-'+i+'-debit'}).rules('add', 'required');;
+						$(this).find('td:nth-child(3) input').attr({name:'credit_note_rows['+row_no+'][reference_details]['+i+'][debit]',id:'credit_note_rows-'+row_no+'-reference_details-'+i+'-debit'});
 					}else{
-						$(this).find('td:nth-child(3) input').attr({name:'credit_note_rows['+row_no+'][reference_details]['+i+'][credit]',id:'credit_note_rows-'+row_no+'-reference_details-'+i+'-credit'}).rules('add', 'required');;
+						$(this).find('td:nth-child(3) input').attr({name:'credit_note_rows['+row_no+'][reference_details]['+i+'][credit]',id:'credit_note_rows-'+row_no+'-reference_details-'+i+'-credit'});
 					}
 					i++;
 				});
@@ -819,6 +867,7 @@ $this->set('title', 'Credit Note Voucher');
 			{ 
 				 renameMainRows();
 			});
+			
 			$('.calculation').die().live('keyup',function()
 			{ 
 				var SelectedTr=$(this).closest('tr.MainTr');

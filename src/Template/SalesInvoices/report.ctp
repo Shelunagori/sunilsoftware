@@ -1,9 +1,11 @@
 <?php
+ $url_excel="/?".$url; 
 /**
  * @Author: PHP Poets IT Solutions Pvt. Ltd.
  */
 $this->set('title', 'Sales Report');
 ?>
+	
 <style>
 table th {
     white-space: nowrap;
@@ -14,26 +16,50 @@ table td {
 	font-size:11px !important;
 }
 
+<?php
+	if($status=='excel'){
+		$date= date("d-m-Y"); 
+	$time=date('h:i:a',time());
+
+	$filename="Invoice_report_".$date.'_'.$time;
+	//$from_date=date('d-m-Y',strtotime($from_date));
+	//$to_date=date('d-m-Y',strtotime($to_date));
+	
+	header ("Expires: 0");
+	header ("Last-Modified: " . gmdate("D,d M YH:i:s") . " GMT");
+	header ("Cache-Control: no-cache, must-revalidate");
+	header ("Pragma: no-cache");
+	header ("Content-type: application/vnd.ms-excel");
+	header ("Content-Disposition: attachment; filename=".$filename.".xls");
+	header ("Content-Description: Generated Report" ); 
+	}
+
+ ?>
 
 </style>
 <div class="row">
 	<div class="col-md-12">
 		<div class="portlet light ">
+		<?php if($status!='excel'){ ?>
 			<div class="portlet-title">
 				<div class="caption">
 					<i class="icon-bar-chart font-green-sharp hide"></i>
 					<span class="caption-subject font-green-sharp bold ">Sales Report</span>
 				</div>
+				<div class="actions">
+					<?php echo $this->Html->link( '<i class="fa fa-file-excel-o"></i> Excel', '/SalesInvoices/Report/'.@$url_excel.'&status=excel',['class' =>'btn btn-sm green tooltips pull-right','target'=>'_blank','escape'=>false,'data-original-title'=>'Download as excel']); ?>
+				</div>
 			</div>
+		<?php } ?>
 			<div class="portlet-body table-responsive">
 				<?php 
 				if(!empty($salesInvoices->toArray()))
 				{
 				?>
-				<table class="table table-bordered table-hover table-condensed" width="100%">
+				<table class="table table-bordered table-hover table-condensed" width="100%" border="1">
 					<thead>
 						<tr>
-							<th scope="col" colspan="19" style="text-align:left";>Sales Register From <?=$from?> To <?=$to?></th>
+							<th scope="col" colspan="19" style="text-align:left";>Sales Register According To  <?php if($from){ ?>Date From <?=$from ?><?php } ?><?php if($to){ ?>Date To <?=$to ?> <?php } ?><?php if($party_ids){ ?> Party <?php } ?><?php  if($invoice_no){ ?> Invoice No :<?=$invoice_no ?><?php } ?> </th>
 						</tr>
 						<tr>
 							<th scope="col" style="text-align:center";>Customer Code</th>
@@ -150,7 +176,7 @@ table td {
 					<td><?=$salesInvoicedata->item->item_code?></td>
 					<td><?=$salesInvoicedata->item->name?></td>
 					<td class="rightAligntextClass"><?=$salesInvoicedata->quantity?></td>
-					<td class="rightAligntextClass"><?=$salesInvoicedata->rate?></td>
+					<td class="rightAligntextClass"><?=$this->Money->moneyFormatIndia($salesInvoicedata->rate)?></td>
 					<td class="rightAligntextClass">
 					<?php if($salesInvoicedata->discount_percentage==0){?>
 					<?php echo '';?> <?php }else{ ?>
@@ -191,7 +217,7 @@ table td {
 					<?php echo '';?> <?php }else{ ?>
 					<?php echo $igst;?><?php }?>
 					</td>
-					<td class="rightAligntextClass"><?=$salesInvoicedata->net_amount?></td>
+					<td class="rightAligntextClass"><?=$this->Money->moneyFormatIndia($salesInvoicedata->net_amount)?></td>
 					</tr>
 					<?php }}?>
 					<tr>
@@ -199,9 +225,9 @@ table td {
 					<td class="rightAligntextClass"><b>
 					<?php if($totalDiscount==0){?>
 					<?php echo '';?> <?php }else{ ?>
-					<?php echo $totalDiscount;?><?php }?>
+					<?php echo $this->Money->moneyFormatIndia($totalDiscount);?><?php }?>
 					</b></td>
-					<td class="rightAligntextClass"><b><?=$totalTaxablevalue?></b></td>
+					<td class="rightAligntextClass"><b><?=$this->Money->moneyFormatIndia($totalTaxablevalue)?></b></td>
 					<td></td>
 					<td class="rightAligntextClass"><b>
 					<?php if($totalCgst==0){?>
@@ -220,7 +246,7 @@ table td {
 					<?php echo '';?> <?php }else{ ?>
 					<?php echo $totalIgst;?><?php }?>
 					</b></td>
-					<td class="rightAligntextClass"><b><?=$totalNet?></b></td>
+					<td class="rightAligntextClass"><b><?=$this->Money->moneyFormatIndia($totalNet)?></b></td>
 					</tr>
 					</tbody>
 					</table>

@@ -23,11 +23,22 @@ class ReceiptsController extends AppController
     {
 	$this->viewBuilder()->layout('index_layout');
 	$company_id=$this->Auth->User('session_company_id');
+	$search=$this->request->query('search');
         $this->paginate = [
             'contain' => ['Companies']
         ];
-        $receipts = $this->paginate($this->Receipts->find()->where(['Receipts.company_id'=>$company_id]));
-        $this->set(compact('receipts'));
+		if($search){
+        $receipts = $this->paginate($this->Receipts->find()->where(['Receipts.company_id'=>$company_id])->where([
+		'OR' => [
+            'Receipts.voucher_no' => $search,
+            //....
+			'Receipts.transaction_date ' => date('Y-m-d',strtotime($search))
+			//...
+		 ]]));
+		}else{
+		  $receipts = $this->paginate($this->Receipts->find()->where(['Receipts.company_id'=>$company_id]));	
+		}
+        $this->set(compact('receipts','search'));
         $this->set('_serialize', ['receipts']);
     }
 
@@ -60,10 +71,24 @@ class ReceiptsController extends AppController
         $receipt = $this->Receipts->newEntity();
 		$company_id=$this->Auth->User('session_company_id');
         if ($this->request->is('post')) {
-		 $receipt = $this->Receipts->patchEntity($receipt, $this->request->getData(),['associated' => ['ReceiptRows','ReceiptRows.ReferenceDetails']]);
-		 $tdate=$this->request->data('transaction_date');
-		 $receipt->transaction_date=date('Y-m-d',strtotime($tdate));
-		 
+
+		$receipt = $this->Receipts->patchEntity($receipt, $this->request->getData(),['associated' => ['ReceiptRows','ReceiptRows.ReferenceDetails']]);
+		$tdate=$this->request->data('transaction_date');
+		$receipt->transaction_date=date('Y-m-d',strtotime($tdate));
+		
+		   //transaction date for receipt code start here--
+			foreach($receipt->receipt_rows as $receipt_row)
+			{
+				if(!empty($receipt_row->reference_details))
+				{
+					foreach($receipt_row->reference_details as $reference_detail)
+					{
+						$reference_detail->transaction_date = $receipt->transaction_date;
+					}
+				}
+			}
+			//transaction date for receipt code close here-- 
+
             if ($this->Receipts->save($receipt)) {
 			
 			foreach($receipt->receipt_rows as $receipt_row)
@@ -150,7 +175,7 @@ class ReceiptsController extends AppController
 				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id ,'open_window' => 'bank','bank_and_cash' => 'yes'];
 			}
 			else if($ledger->bill_to_bill_accounting == 'yes'){
-				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id,'open_window' => 'party','bank_and_cash' => 'no'];
+				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id,'open_window' => 'party','bank_and_cash' => 'no','default_days'=>$ledger->default_credit_days];
 			}
 			else if(in_array($ledger->accounting_group_id,$cashGroups)){
 				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id ,'open_window' => 'no','bank_and_cash' => 'yes'];
@@ -189,39 +214,9 @@ class ReceiptsController extends AppController
         ]);
 		$company_id=$this->Auth->User('session_company_id');
 		
-		$refDropDown =[];
-		foreach($receipt->receipt_rows as $receipt_row)
-		{
-			if(!empty($receipt_row->reference_details))
-			{
-				$query = $this->Receipts->ReceiptRows->ReferenceDetails->find();
-				$query->select(['total_debit' => $query->func()->sum('ReferenceDetails.debit'),'total_credit' => $query->func()->sum('ReferenceDetails.credit')])
-				->where(['ReferenceDetails.ledger_id'=>$receipt_row->ledger_id,'ReferenceDetails.type !='=>'On Account'])
-				->group(['ReferenceDetails.ref_name'])
-				->autoFields(true);
-				$referenceDetails=$query;
-				$option=[];
-				foreach($referenceDetails as $referenceDetail){
-					$remider=$referenceDetail->total_debit-$referenceDetail->total_credit;
-					if($remider>0){
-						$bal=abs($remider).' Dr';
-					}else if($remider<0){
-						$bal=abs($remider).' Cr';
-					}
-					if($referenceDetail->total_debit!=$referenceDetail->total_credit){
-						$option[] =['text' =>$referenceDetail->ref_name.' ('.$bal.')', 'value' => $referenceDetail->ref_name];
-						 
-					}
-				}
-				$refDropDown[$receipt_row->id] = $option;
-			}
-		}
 		
 		$originalReceipt=$receipt;
         if ($this->request->is('put','patch','post')) {
-		
-		//pr($receipt);
-		//exit;
 		
 		//GET ORIGINAL DATA AND DELETE REFERENCE DATA//
 			$orignalReceipt_ids=[];
@@ -233,23 +228,31 @@ class ReceiptsController extends AppController
 			
 			//GET ORIGINAL DATA AND DELETE REFERENCE DATA//
 			
-			/* $query_update = $this->Receipts->ReceiptRows->query();
+			 $query_update = $this->Receipts->ReceiptRows->query();
 					$query_update->update()
 					->set(['mode_of_payment' => '', 'cheque_no' => '', 'cheque_date' => ''])
 					->where(['receipt_id' => $receipt->id])
 					->execute();
-					 */
+		$receipt = $this->Receipts->get($id, [
+            'contain' => ['ReceiptRows'=>['ReferenceDetails']]
+        ]);			 
+		$receipt = $this->Receipts->patchEntity($receipt, $this->request->getData(),['associated' => ['ReceiptRows','ReceiptRows.ReferenceDetails']]);
+
 		
-		
-		 $receipt = $this->Receipts->patchEntity($receipt, $this->request->getData(),['associated' => ['ReceiptRows','ReceiptRows.ReferenceDetails']]);
-		 $tdate=$this->request->data('transaction_date');
-		 $receipt->transaction_date=date('Y-m-d',strtotime($tdate));
-		 
-		 
-		//pr($receipt);
-		//exit;
-		
-		
+		//transaction date for receipt code start here--
+			foreach($receipt->receipt_rows as $receipt_row)
+			{
+				if(!empty($receipt_row->reference_details))
+				{
+					foreach($receipt_row->reference_details as $reference_detail)
+					{
+						$reference_detail->transaction_date = $receipt->transaction_date;
+					}
+				}
+			}
+			//transaction date for receipt code close here-- 
+			//pr($receipt->toArray());
+			//exit;
             if ($this->Receipts->save($receipt)) {
 			$query_delete = $this->Receipts->AccountingEntries->query();
 					$query_delete->delete()
@@ -276,6 +279,40 @@ class ReceiptsController extends AppController
             }
             $this->Flash->error(__('The receipt could not be saved. Please, try again.'));
         }
+		
+		
+		$refDropDown =[];
+		foreach($receipt->receipt_rows as $receipt_row)
+		{	
+			if(!empty($receipt_row->reference_details))
+			{	
+				foreach($receipt_row->reference_details as $referenceDetailRows)
+				{
+					@$ref_details_name[]=$referenceDetailRows->ref_name;
+				}
+				
+				$query = $this->Receipts->ReceiptRows->ReferenceDetails->find();
+				$query->select(['total_debit' => $query->func()->sum('ReferenceDetails.debit'),'total_credit' => $query->func()->sum('ReferenceDetails.credit')])
+				->where(['ReferenceDetails.ledger_id'=>$receipt_row->ledger_id,'ReferenceDetails.type !='=>'On Account'])
+				->group(['ReferenceDetails.ref_name'])
+				->autoFields(true);
+				$referenceDetails=$query;
+				$option=[];
+				foreach($referenceDetails as $referenceDetail){
+					$remider=$referenceDetail->total_debit-$referenceDetail->total_credit;
+					if($remider>0){
+						$bal=abs($remider).' Dr';
+					}else if($remider<0){
+						$bal=abs($remider).' Cr';
+					}
+					if($referenceDetail->total_debit!=$referenceDetail->total_credit || in_array($referenceDetail->ref_name,$ref_details_name)){
+						$option[] =['text' =>$referenceDetail->ref_name.' ('.$bal.')', 'value' => $referenceDetail->ref_name];
+					}
+				}
+				$refDropDown[$receipt_row->id] = $option;
+			}
+		}
+		
 		
 		//bank group
 		$bankParentGroups = $this->Receipts->ReceiptRows->Ledgers->AccountingGroups->find()
@@ -333,7 +370,7 @@ class ReceiptsController extends AppController
 				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id ,'open_window' => 'bank','bank_and_cash' => 'yes'];
 			}
 			else if($ledger->bill_to_bill_accounting == 'yes'){
-				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id,'open_window' => 'party','bank_and_cash' => 'no'];
+				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id,'open_window' => 'party','bank_and_cash' => 'no','default_days'=>$ledger->default_credit_days];
 			}
 			else if(in_array($ledger->accounting_group_id,$cashGroups)){
 				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id ,'open_window' => 'no','bank_and_cash' => 'yes'];
@@ -427,6 +464,34 @@ class ReceiptsController extends AppController
             $this->Flash->error(__('The receipt could not be deleted. Please, try again.'));
         }
 
+        return $this->redirect(['action' => 'index']);
+    }
+	public function cancel($id = null)
+    {
+		 $Receipts = $this->Receipts->get($id, [
+            'contain' => ['ReceiptRows'=>['ReferenceDetails']]
+        ]);
+		$company_id=$this->Auth->User('session_company_id');
+		$Receipts->status='cancel';
+		$receipt_row_ids=[];
+		foreach($Receipts->receipt_rows as $receipt_row){
+			$receipt_row_ids[]=$receipt_row->id;
+		}
+		
+        if ($this->Receipts->save($Receipts)) {
+			$deleteRefDetails = $this->Receipts->ReceiptRows->ReferenceDetails->query();
+				$deleteRef = $deleteRefDetails->delete()
+					->where(['ReferenceDetails.receipt_row_id IN' => $receipt_row_ids])
+					->execute();
+				$deleteAccountEntries = $this->Receipts->AccountingEntries->query();
+				$result = $deleteAccountEntries->delete()
+				->where(['AccountingEntries.receipt_id' => $Receipts->id])
+				->execute();
+				
+            $this->Flash->success(__('The Receipt has been cancelled.'));
+        } else {
+            $this->Flash->error(__('The Receipt could not be deleted. Please, try again.'));
+        }
         return $this->redirect(['action' => 'index']);
     }
 }

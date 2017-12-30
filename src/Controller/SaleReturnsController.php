@@ -2,7 +2,7 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
-
+use Cake\View\Helper\NumberHelper;
 /**
  * SaleReturns Controller
  *
@@ -13,26 +13,36 @@ use App\Controller\AppController;
 class SaleReturnsController extends AppController
 {
 
-    /**
+       /**
      * Index method
      *
      * @return \Cake\Http\Response|void
      */
-    public function index() 
+	 public function index($status= null)
     {
 		$this->viewBuilder()->layout('index_layout');
 		$company_id=$this->Auth->User('session_company_id');
-       
-        $saleReturns = $this->paginate($this->SaleReturns->find()->contain(['Companies',  'SalesLedgers', 'PartyLedgers', 'Locations', 'SalesInvoices'])->where(['SaleReturns.company_id'=>$company_id]));
+		$search=$this->request->query('search');
+		 $saleReturns = $this->paginate($this->SaleReturns->find()->contain(['Companies',  'SalesLedgers', 'PartyLedgers', 'Locations', 'SalesInvoices'])->where(['SaleReturns.company_id'=>$company_id])->where([
+		'OR' => [
+            'SalesInvoices.voucher_no' => $search,
+            // ...
+			'SaleReturns.voucher_no' => $search,
+			//....
+            'PartyLedgers.name LIKE' => '%'.$search.'%',
+			//.....
+			'SaleReturns.transaction_date ' => date('Y-m-d',strtotime($search)),
+			//...
+			'SaleReturns.amount_after_tax' => $search
+        ]]));
 		//pr($saleReturns); exit;
-        $this->set(compact('saleReturns'));
+        $this->set(compact('saleReturns','search','status'));
         $this->set('_serialize', ['saleReturns']);
     }
-
-    /**
+ /**
      * View method
      *
-     * @param string|null $id Sale Return id.
+     * @param string|null $id Sales Invoice id.
      * @return \Cake\Http\Response|void
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
@@ -40,7 +50,7 @@ class SaleReturnsController extends AppController
     {
 		$this->viewBuilder()->layout('index_layout');
         $saleReturn = $this->SaleReturns->get($id, [
-            'contain' => ['Companies', 'SalesLedgers', 'PartyLedgers', 'Locations', 'SalesInvoices', 'SaleReturnRows'=>['GstFigures','Items']]
+            'contain' => ['Companies'=>['States'], 'SalesLedgers', 'PartyLedgers', 'Locations', 'SalesInvoices', 'SaleReturnRows'=>['GstFigures','Items']]
         ]);
 		//pr($saleReturn); exit;
         $this->set('saleReturn', $saleReturn);
@@ -76,14 +86,16 @@ class SaleReturnsController extends AppController
 		$company_id=$this->Auth->User('session_company_id');
 		$stateDetails=$this->Auth->User('session_company');
 		$location_id=$this->Auth->User('session_location_id');
-		$state_id=$stateDetails->state_id;
+		$state_id=$stateDetails->state_id; 
 		$roundOffId = $this->SaleReturns->SalesInvoices->SalesInvoiceRows->Ledgers->find()
 		->where(['Ledgers.company_id'=>$company_id, 'Ledgers.round_off'=>1])->first();
 
         $saleReturn = $this->SaleReturns->newEntity();
         if ($this->request->is(['patch', 'post', 'put'])) {
+			
 			$transaction_date=date('Y-m-d', strtotime($this->request->data['transaction_date']));
 			$saleReturn = $this->SaleReturns->patchEntity($saleReturn, $this->request->getData());
+			
 			$saleReturn->transaction_date=$transaction_date;
 			$saleReturn->sales_invoice_id=$id;
 			$Voucher_no = $this->SaleReturns->find()->select(['voucher_no'])->where(['company_id'=>$company_id])->order(['voucher_no' => 'DESC'])->first();
@@ -96,7 +108,9 @@ class SaleReturnsController extends AppController
 			$saleReturn->voucher_no=$voucher_no;
 			$saleReturn->sales_ledger_id=$salesInvoice->sales_ledger_id;
 			$saleReturn->party_ledger_id=$salesInvoice->party_ledger_id;
+			
             if($this->SaleReturns->save($saleReturn)){
+				
 				$gstVal=0;
 				$gVal=0;
 				foreach($saleReturn->sale_return_rows as $sale_return_row){ 
@@ -240,8 +254,9 @@ class SaleReturnsController extends AppController
 					$this->SaleReturns->ReferenceDetails->save($ReferenceDetail);
 				}
 			   
-				$this->Flash->success(__('The sale return has been saved.'));
-				return $this->redirect(['action' => 'index']);
+			$this->Flash->success(__('The sale return has been saved.'));
+			return $this->redirect(['action' => 'saleReturnBill/'.$saleReturn->id]);
+
             } else{
 				 $this->Flash->error(__('The sale return could not be saved. Please, try again.'));
 			}
@@ -304,7 +319,7 @@ class SaleReturnsController extends AppController
 			$Accountledgers = $this->SaleReturns->SalesInvoices->SalesInvoiceRows->Ledgers->find('list')->where(['Ledgers.accounting_group_id IN' =>$account_ids]);
         }
 
-//pr($partyOptions); exit;
+	
         $this->set(compact('saleReturn', 'companies', 'customers', 'salesLedgers', 'partyLedgers', 'locations', 'salesInvoices','sales_return_qty'));
 		$this->set(compact('salesInvoice', 'companies', 'customerOptions', 'gstFigures', 'voucher','company_id','itemOptions','state_id', 'Accountledgers', 'partyOptions', 'location_id'));
         $this->set('_serialize', ['saleReturn']);
@@ -356,6 +371,100 @@ class SaleReturnsController extends AppController
             $this->Flash->success(__('The sale return has been deleted.'));
         } else {
             $this->Flash->error(__('The sale return could not be deleted. Please, try again.'));
+        }
+
+        return $this->redirect(['action' => 'index']);
+    }
+	
+		
+	public function saleReturnBill($id=null)
+    {
+		$this->viewBuilder()->layout('');
+		$company_id=$this->Auth->User('session_company_id');
+		$stateDetails=$this->Auth->User('session_company');
+		$state_id=$stateDetails->state_id;
+        $saleReturn = $this->SaleReturns->get($id, [
+            'contain' => ['Companies'=>['States'], 'SalesLedgers', 'PartyLedgers'=>['Customers'], 'Locations', 'SalesInvoices', 'SaleReturnRows'=>['GstFigures','Items'=>['Sizes','Shades','Units']]]
+        ]);
+		//pr($saleReturn->toArray());exit;
+		
+			@$partyDetail= $this->SaleReturns->PartyLedgers->find()
+			->where(['id'=>$saleReturn->party_ledger_id])->first();
+			$partyCustomerid=$partyDetail->customer_id;
+			if($partyCustomerid>0)
+			{
+				$partyDetails= $this->SaleReturns->PartyLedgers->Customers->find()
+				->where(['Customers.id'=>$partyCustomerid])
+				->contain(['States', 'Cities'])->first();
+				$saleReturn->partyDetails=$partyDetails;
+			}
+			else
+			{
+				$partyDetails=(object)['name'=>'Cash Customer', 'state_id'=>$state_id];
+				$saleReturn->partyDetails=$partyDetails;
+			}
+			
+			if(@$saleReturn->company->state_id==$saleReturn->partyDetails->state_id){
+				$taxable_type='CGST/SGST';
+			}else{
+				$taxable_type='IGST';
+			}
+		
+		//pr($taxable_type);exit;
+		$query = $this->SaleReturns->SaleReturnRows->find();
+		
+		$totalTaxableAmt = $query->newExpr()
+			->addCase(
+				$query->newExpr()->add(['sale_return_id']),
+				$query->newExpr()->add(['taxable_value']),
+				'decimal'
+			);
+		$totalgstAmt = $query->newExpr()
+			->addCase(
+				$query->newExpr()->add(['sale_return_id']),
+				$query->newExpr()->add(['gst_value']),
+				'decimal'
+			);
+		$query->select([
+			'total_taxable_amount' => $query->func()->sum($totalTaxableAmt),
+			'total_gst_amount' => $query->func()->sum($totalgstAmt),'sale_return_id','item_id'
+		])
+		->where(['SaleReturnRows.sale_return_id' => $id])
+		->group('gst_figure_id')
+		->autoFields(true)
+		->contain(['GstFigures']);
+        $sale_return_rows = ($query);
+		
+		$this->set(compact('saleReturn','taxable_type','sale_return_rows','partyCustomerid'));
+        $this->set('_serialize', ['saleReturn']);
+    }	
+	
+	public function cancel($id = null)
+    {
+		// $this->request->allowMethod(['post', 'delete']);
+        $salesReturn = $this->SaleReturns->get($id);
+		$company_id=$this->Auth->User('session_company_id');
+		//pr($salesInvoice);exit;
+		$salesReturn->status='cancel';
+        if ($this->SaleReturns->save($salesReturn)) {
+			
+				$deleteRefDetails = $this->SaleReturns->ReferenceDetails->query();
+				$deleteRef = $deleteRefDetails->delete()
+					->where(['ReferenceDetails.sale_return_id' => $salesReturn->id])
+					->execute();
+				$deleteAccountEntries = $this->SaleReturns->SalesInvoices->AccountingEntries->query();
+				$result = $deleteAccountEntries->delete()
+				->where(['AccountingEntries.sale_return_id' => $salesReturn->id])
+				->execute();
+			
+			$deleteItemLedger = $this->SaleReturns->SalesInvoices->ItemLedgers->query();
+				$deleteResult = $deleteItemLedger->delete()
+					->where(['ItemLedgers.sale_return_id' => $salesReturn->id])
+					->execute();
+				
+            $this->Flash->success(__('The Sales Return has been cancelled.'));
+        } else {
+            $this->Flash->error(__('The Sales Return could not be cancelled. Please, try again.'));
         }
 
         return $this->redirect(['action' => 'index']);

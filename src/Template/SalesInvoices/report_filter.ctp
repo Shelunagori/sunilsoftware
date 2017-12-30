@@ -16,43 +16,69 @@ $this->set('title', 'Sales Report');
 			<div class="portlet-body">
 				<div class="row">
 					<form method="get" action="report">
-					<div class="col-md-3">
-						<div class="form-group">
-							<label>From Date</label>
-							<?php 
-							if(@$from_date=='1970-01-01')
-							{
-								$from_date = '';
-							}
-							elseif(!empty($from_date))
-							{
-								$from_date = date("d-m-Y",strtotime(@$from_date));
-							}
-							echo $this->Form->control('from_date',['class'=>'form-control input-sm date-picker','data-date-format'=>'dd-mm-yyyy','label'=>false,'placeholder'=>'DD-MM-YYYY','type'=>'text','value'=>@$from_date,'data-date-start-date'=>@$coreVariable[fyValidFrom],'data-date-end-date'=>@$coreVariable[fyValidTo]]); ?>
-						</div>
-					</div>
-					<div class="col-md-3">
-						<div class="form-group">
-							<label>To Date</label>
-							<?php 
-							if(@$to_date=='1970-01-01')
-							{
-								$to_date = '';
-							}
-							elseif(!empty($to_date))
-							{
-								$to_date = date("d-m-Y",strtotime(@$to_date));
-							}
-							echo $this->Form->control('to_date',['class'=>'form-control input-sm date-picker','data-date-format'=>'dd-mm-yyyy','label'=>false,'placeholder'=>'DD-MM-YYYY','type'=>'text','value'=>@$to_date,'data-date-start-date'=>@$coreVariable[fyValidFrom],'data-date-end-date'=>@$coreVariable[fyValidTo]]); ?>
-						</div>
-					</div>
-					<div class="col-md-2" >
-							<div class="form-group" style="padding-top:22px;"> 
-								<button type="submit" class="btn btn-xs blue input-sm srch">Go</button>
+					<div class="row">
+						<div class="col-md-3">
+							<div class="form-group">
+								<label>From Date</label>
+								<?php 
+								if(@$from_date=='1970-01-01')
+								{
+									$from_date = '';
+								}
+								elseif(!empty($from_date))
+								{
+									$from_date = date("d-m-Y",strtotime(@$from_date));
+								}
+								echo $this->Form->control('from_date',['class'=>'form-control input-sm date-picker','data-date-format'=>'dd-mm-yyyy','label'=>false,'placeholder'=>'DD-MM-YYYY','type'=>'text','value'=>@$from_date,'data-date-start-date'=>@$coreVariable[fyValidFrom],'data-date-end-date'=>@$coreVariable[fyValidTo]]); ?>
 							</div>
+						</div>
+						<div class="col-md-3">
+							<div class="form-group">
+								<label>To Date</label>
+								<?php 
+								if(@$to_date=='1970-01-01')
+								{
+									$to_date = '';
+								}
+								elseif(!empty($to_date))
+								{
+									$to_date = date("d-m-Y",strtotime(@$to_date));
+								}
+								echo $this->Form->control('to_date',['class'=>'form-control input-sm date-picker','data-date-format'=>'dd-mm-yyyy','label'=>false,'placeholder'=>'DD-MM-YYYY','type'=>'text','value'=>@$to_date,'data-date-start-date'=>@$coreVariable[fyValidFrom],'data-date-end-date'=>@$coreVariable[fyValidTo]]); ?>
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-6" align="center">
+							<label>AND</label>
+						</div>
+					</div>
+					<div class="row">
+						<div class="form-group col-md-6">
+							<label>Party</label>
+							<?php echo $this->Form->control('party_ledger_id',['empty'=>'-Select Party-', 'class'=>'form-control input-sm party_ledger_id select2me','label'=>false, 'options' => $partyOptions,'multiple'=>'multiple']);
+							?>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-6" align="center">
+							<label>OR</label>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-6">
+							<label>Invoice No</label>
+							<?php echo $this->Form->control('invoice_no',['class'=>'form-control input-sm','label'=>false,'placeholder'=>'eg: 1-5,8,9-12' ]);
+							?>
+						</div>
+					</div>
+					<div class="col-md-6" align="center">
+						<div class="form-group" style="padding-top:22px;"> 
+							<button type="submit" class="btn btn-xs blue input-sm srch">Go</button>
+						</div>
 					</div>	
 					</form>
-</div>
+				</div>
 </div>
 </div>
 </div>

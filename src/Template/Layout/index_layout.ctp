@@ -180,12 +180,12 @@ License: You must have a valid license purchased only from themeforest(the above
 				e.preventDefault();
 			});
 			
-			$('.numberOnly').die().keyup(function(e)
-			{
+			$('.numberOnly').die().live('keyup, change',function()
+			{   var ex = /^[0-9]+\.?[0-9]*$/;
 			    var evt=$(this).val();
-				if(evt<0)
+				if(!evt.match(ex))
 				{
-					$(this).val('');
+					$(this).val('0');
 				}
 			});
 			
@@ -198,7 +198,7 @@ License: You must have a valid license purchased only from themeforest(the above
 		  exp = +exp;
 
 		  if (isNaN(value) || !(typeof exp === 'number' && exp % 1 === 0))
-			return NaN;
+			return 0;
 
 		  // Shift
 		  value = value.toString().split('e');

@@ -1,18 +1,45 @@
-<?php
+dangishowroom<?php
+ $url_excel="/?".$url; 
+
 /**
  * @Author: PHP Poets IT Solutions Pvt. Ltd.
  */
 $this->set('title', 'Account Ledger report');
 ?>
+<?php
+	if($status=='excel'){
+		$date= date("d-m-Y"); 
+	$time=date('h:i:a',time());
+
+	$filename="Invoice_report_".$date.'_'.$time;
+	//$from_date=date('d-m-Y',strtotime($from_date));
+	//$to_date=date('d-m-Y',strtotime($to_date));
+	
+	header ("Expires: 0");
+	header ("Last-Modified: " . gmdate("D,d M YH:i:s") . " GMT");
+	header ("Cache-Control: no-cache, must-revalidate");
+	header ("Pragma: no-cache");
+	header ("Content-type: application/vnd.ms-excel");
+	header ("Content-Disposition: attachment; filename=".$filename.".xls");
+	header ("Content-Description: Generated Report" ); 
+	}
+
+ 
+?>
 <div class="row">
 	<div class="col-md-12">
 		<div class="portlet light ">
+		<?php if($status!='excel'){ ?>
 			<div class="portlet-title">
 				<div class="caption">
 					<i class="icon-bar-chart font-green-sharp hide"></i>
 					<span class="caption-subject font-green-sharp bold ">Account Ledger</span>
 				</div>
+				<div class="actions">
+					<?php echo $this->Html->link( '<i class="fa fa-file-excel-o"></i> Excel', '/Ledgers/AccountLedger'.@$url_excel.'&status=excel',['class' =>'btn btn-sm green tooltips pull-right','target'=>'_blank','escape'=>false,'data-original-title'=>'Download as excel']); ?>
+				</div>
 			</div>
+		
 			<div class="portlet-body">
 				<div class="row">
 					<form method="GET" >
@@ -67,11 +94,12 @@ $this->set('title', 'Account Ledger report');
 						</div>	
 					</form>
 				</div>
+				<?php } ?>
 				<?php
 				if(!empty($AccountingLedgers))
 				{
 				?>
-					<table class="table table-bordered table-hover table-condensed" width="100%">
+					<table class="table table-bordered table-hover table-condensed" width="100%" border="1">
 						<thead>
 							<tr>
 								<th colspan="4">
@@ -125,12 +153,12 @@ $this->set('title', 'Account Ledger report');
 								else if(!empty($AccountingLedger->purchase_invoice_id)){
 									echo 'Purchase Invoices';
 									@$voucher_no=$AccountingLedger->purchase_invoice->voucher_no;
-									@$url_link=$this->Html->link($voucher_no,['controller'=>'PurchaseInvoices','action' => 'edit', $AccountingLedger->purchase_invoice_id],['target'=>'_blank']);
+									@$url_link=$this->Html->link($voucher_no,['controller'=>'PurchaseInvoices','action' => 'view', $AccountingLedger->purchase_invoice_id],['target'=>'_blank']);
 								}
 								else if(!empty($AccountingLedger->purchase_return_id)){
 									echo 'Purchase Returns';
 									@$voucher_no=$AccountingLedger->purchase_return->voucher_no;
-									@$url_link=$this->Html->link($voucher_no,['controller'=>'PurchaseReturns','action' => 'edit', $AccountingLedger->purchase_return_id],['target'=>'_blank']);
+									@$url_link=$this->Html->link($voucher_no,['controller'=>'PurchaseReturns','action' => 'view', $AccountingLedger->purchase_return_id],['target'=>'_blank']);
 								}
 								else if(!empty($AccountingLedger->sales_invoice_id)){
 									echo 'Sales Invoices';
@@ -197,7 +225,7 @@ $this->set('title', 'Account Ledger report');
 								<?php 
 									if(!empty($AccountingLedger->credit))
 									{
-										echo $AccountingLedger->credit; 
+										echo $this->Money->moneyFormatIndia($AccountingLedger->credit); 
 										$total_credit +=round($AccountingLedger->credit,2);
 									}else
 									{
@@ -212,8 +240,8 @@ $this->set('title', 'Account Ledger report');
 						<tfoot>
 							<tr>
 								<td scope="col" colspan="3" style="text-align:right";><b>Total</b></td>
-								<td scope="col" style="text-align:right";><?php echo @$total_debit;?></td>
-								<td scope="col" style="text-align:right";><?php echo @$total_credit;?></td>
+								<td scope="col" style="text-align:right";><?php echo $this->Money->moneyFormatIndia(@$total_debit, 2);?></td>
+								<td scope="col" style="text-align:right";><?php echo $this->Money->moneyFormatIndia(@$total_credit);?></td>
 							</tr>
 							<tr>
 								<td scope="col" colspan="4" style="text-align:right";><b>Closing Balance</b></td>
@@ -235,7 +263,7 @@ $this->set('title', 'Account Ledger report');
 									else{
 									@$closing_bal_type='';	
 									}
-									echo round(abs($closingBalance),2); echo ' '.$closing_bal_type;
+									echo $this->Money->moneyFormatIndia(round(abs($closingBalance),2)); echo ' '.$closing_bal_type;
 								?>
 								</b></td>
 								

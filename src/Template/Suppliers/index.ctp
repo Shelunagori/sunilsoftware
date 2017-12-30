@@ -12,6 +12,19 @@ $this->set('title', 'Suppliers');
 					<i class="icon-bar-chart font-green-sharp hide"></i>
 					<span class="caption-subject font-green-sharp bold ">Suppliers</span>
 				</div>
+				<div class="actions">
+					<form method="GET" id="">
+						<div class="row">
+							<div class="col-md-9">
+								<?php echo $this->Form->input('search',['class'=>'form-control input-sm pull-right','label'=>false, 'placeholder'=>'Search','autofocus'=>'autofocus','value'=> @$search]);
+								?>
+							</div>
+							<div class="col-md-1">
+								<button type="submit" class="go btn blue-madison input-sm">Go</button>
+							</div> 
+						</div>
+					</form>
+				</div>
 			</div>
 			<div class="portlet-body">
 				<?php $page_no=$this->Paginator->current('Suppliers'); $page_no=($page_no-1)*20; ?>
@@ -37,7 +50,9 @@ $this->set('title', 'Suppliers');
 							<td><?= h($supplier->email) ?></td>
 							<td><?= h($supplier->mobile) ?></td>
 							<td class="actions">
+							<?php if (in_array("81", $userPages)){?>
 								<?= $this->Html->link(__('Edit'), ['action' => 'edit', $supplier->id]) ?>
+							<?php }?>
 							</td>	
 						</tr>
 						<?php endforeach; ?>

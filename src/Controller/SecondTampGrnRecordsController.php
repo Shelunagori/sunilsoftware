@@ -130,7 +130,7 @@ class SecondTampGrnRecordsController extends AppController
 						$barcode->barcode();
 						$barcode->setType('C128');
 						$barcode->setCode($data_to_encode);
-						$barcode->setSize(40,100);
+						$barcode->setSize(20,100);
 						$barcode->hideCodeType('N');
 							
 						// Generate filename     
@@ -361,7 +361,7 @@ class SecondTampGrnRecordsController extends AppController
 		if($SecondTampGrnRecords->count()==0){
 			goto Bottom;
 		}
-		$shade_id=0; $size_id=0;
+		$shade_id=0; $size_id=0; $stock_id=0;
 		foreach($SecondTampGrnRecords as $SecondTampGrnRecord){
 			
 			$item=$this->SecondTampGrnRecords->Companies->Items->find()
@@ -392,6 +392,37 @@ class SecondTampGrnRecordsController extends AppController
 				}else{
 					goto DoNotMarkYesValidToImport;
 				}
+				
+				
+				if(!empty($SecondTampGrnRecord->stock_group)){
+					if(strtolower(trim($SecondTampGrnRecord->stock_group)) == 'primary' ){
+						$stock_id=0;	
+					}
+					else{
+						$stock=$this->SecondTampGrnRecords->Companies->Items->StockGroups->find()
+						->where(['StockGroups.name LIKE'=>'%'.trim($SecondTampGrnRecord->stock_group).'%', 'StockGroups.company_id'=>$company_id])
+						->first();
+						if($stock){
+						$query = $this->SecondTampGrnRecords->query();
+						$query->update()
+							->set(['stock_group_id' => $stock->id])
+							->where(['SecondTampGrnRecords.id' =>$SecondTampGrnRecord->id])
+							->execute();
+						$stock_id= $stock->id;
+						}
+						else
+						{
+						$stock_entry = $this->SecondTampGrnRecords->Companies->Items->StockGroups->newEntity();
+						$stock_entry->name = $SecondTampGrnRecord->stock_group;
+						$stock_entry->company_id = $company_id;
+						$result_entry=$this->SecondTampGrnRecords->Companies->Items->StockGroups->save($stock_entry);
+						$stock_id =$result_entry->id;
+						}
+				}
+				}else{
+					$stock_id=0;
+				}
+				
 				if(!empty($SecondTampGrnRecord->provided_shade)){
 					$shade=$this->SecondTampGrnRecords->Companies->Items->Shades->find()
 						->where(['Shades.name LIKE'=>'%'.trim($SecondTampGrnRecord->provided_shade).'%', 'Shades.company_id'=>$company_id])
@@ -409,10 +440,7 @@ class SecondTampGrnRecordsController extends AppController
 				}
 				
 				
-				
-				
-				
-				if(!empty($SecondTampGrnRecord->provided_shade)){
+				if(!empty($SecondTampGrnRecord->provided_size)){
 					$size=$this->SecondTampGrnRecords->Companies->Items->Sizes->find()
 						->where(['Sizes.name LIKE'=>'%'.trim($SecondTampGrnRecord->provided_size).'%', 'Sizes.company_id'=>$company_id])
 						->first();
@@ -460,7 +488,7 @@ class SecondTampGrnRecordsController extends AppController
 								->set(['second_gst_figure_id' => $gstFigure->id])
 								->where(['SecondTampGrnRecords.id' =>$SecondTampGrnRecord->id])
 								->execute();
-							$second_gst_figure_id=$gstFigure->id;
+							$second_gst_figure_id=$gstFigure->id; 
 						}else{
 							goto DoNotMarkYesValidToImport;
 						}
@@ -491,7 +519,7 @@ class SecondTampGrnRecordsController extends AppController
 								->where(['SecondTampGrnRecords.id' =>$SecondTampGrnRecord->id])
 								->execute();
 							
-							$second_gst_figure_id=$gstFigure->id;
+							$second_gst_figure_id=$secondgstFigure->id;
 						}else{
 							goto DoNotMarkYesValidToImport;
 						}
@@ -522,13 +550,14 @@ class SecondTampGrnRecordsController extends AppController
 				$item->company_id=$company_id;
 				$item->first_gst_figure_id=$first_gst_figure_id;
 				$item->gst_amount=$SecondTampGrnRecord->amount_in_ref_of_gst_rate;
-				$item->second_gst_figure_id=$second_gst_figure_id;
+				$item->second_gst_figure_id=@$second_gst_figure_id;
 				$item->kind_of_gst=$SecondTampGrnRecord->gst_rate_fixed_or_fluid;
 				$item->purchase_rate=$SecondTampGrnRecord->purchase_rate;
 				$item->sales_rate=$SecondTampGrnRecord->sales_rate;
 				$item->shade_id=$shade_id;
 				$item->size_id=$size_id;
 				$item->description=$SecondTampGrnRecord->description;
+				$item->stock_group_id=$stock_id;
 				$item->sales_rate_update_on=date("Y-m-d",strtotime($transaction_date));
 				$item->location_id=$location_id;
 				//$item->item_code=strtoupper($SecondTampGrnRecord->item_code);
@@ -540,7 +569,7 @@ class SecondTampGrnRecordsController extends AppController
 					$barcode->barcode();
 					$barcode->setType('C128');
 					$barcode->setCode($data_to_encode);
-					$barcode->setSize(40,100);
+					$barcode->setSize(20,100);
 					$barcode->hideCodeType('N');
 						
 					// Generate filename     

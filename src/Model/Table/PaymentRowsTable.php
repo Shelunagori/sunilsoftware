@@ -43,6 +43,11 @@ class PaymentRowsTable extends Table
             'foreignKey' => 'payment_id',
             'joinType' => 'INNER'
         ]);
+		$this->belongsTo('RefPayments', [
+			'className' => 'Payments',
+            'foreignKey' => 'payment_id',
+            'joinType' => 'LEFT'
+        ]);
         $this->belongsTo('Ledgers', [
             'foreignKey' => 'ledger_id',
             'joinType' => 'INNER'

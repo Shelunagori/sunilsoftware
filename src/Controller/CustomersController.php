@@ -22,12 +22,24 @@ class CustomersController extends AppController
     {
 		$this->viewBuilder()->layout('index_layout');
 		$company_id=$this->Auth->User('session_company_id');
+		$search=$this->request->query('search');
 		$this->paginate = [
             'contain' => ['States']
         ];
-        $customers = $this->paginate($this->Customers->find()->where(['Customers.company_id'=>$company_id]));
+        $customers = $this->paginate($this->Customers->find()->where(['Customers.company_id'=>$company_id])->where([
+		'OR' => [
+            'Customers.name LIKE' => '%'.$search.'%',
+			//...
+			'States.name LIKE' => '%'.$search.'%',
+			//...
+			'Customers.gstin LIKE' => '%'.$search.'%',
+			//...
+			'Customers.mobile LIKE' => '%'.$search.'%',
+			//...
+			'Customers.email LIKE' => '%'.$search.'%'
+		]]));
 
-        $this->set(compact('customers'));
+        $this->set(compact('customers','search'));
         $this->set('_serialize', ['customers']);
     }
 
@@ -63,6 +75,18 @@ class CustomersController extends AppController
 			
 			$customer = $this->Customers->patchEntity($customer, $this->request->data);
 			$bill_to_bill_accounting=$customer->bill_to_bill_accounting;
+			$default_credit_days=$customer->default_credit_days;
+			
+				if(!empty($customer->reference_details))
+				{
+					foreach($customer->reference_details as $reference_detail)
+					{
+						$reference_detail->transaction_date = $this->Auth->User('session_company')->books_beginning_from;
+						$reference_detail->company_id = $company_id;
+						$reference_detail->opening_balance = 'yes';
+					}
+				}
+			
 			if ($this->Customers->save($customer)) {
 				
 				$query=$this->Customers->query();
@@ -77,9 +101,14 @@ class CustomersController extends AppController
 				$ledger->company_id =$company_id;
 				$ledger->customer_id=$customer->id;
 				$ledger->bill_to_bill_accounting=$bill_to_bill_accounting;
-				
+				$ledger->default_credit_days=$default_credit_days;
 				if($this->Customers->Ledgers->save($ledger))
 				{
+					$query=$this->Customers->ReferenceDetails->query();
+						$result = $query->update()
+						->set(['ledger_id' => $ledger->id])
+						->where(['customer_id' => $customer->id])
+						->execute();
 					//Create Accounting Entry//
 			        $transaction_date=$this->Auth->User('session_company')->books_beginning_from;
 					$AccountingEntry = $this->Customers->Ledgers->AccountingEntries->newEntity();
@@ -161,17 +190,29 @@ class CustomersController extends AppController
     {
 		$this->viewBuilder()->layout('index_layout');
         $customer = $this->Customers->get($id, [
-            'contain' => ['Ledgers']
+            'contain' => ['Ledgers','ReferenceDetails']
         ]);
 		
 		$company_id=$this->Auth->User('session_company_id');
         if ($this->request->is(['patch', 'post', 'put'])) {
             $customer = $this->Customers->patchEntity($customer, $this->request->getData());
+			$this->Customers->ReferenceDetails->deleteAll(['ReferenceDetails.customer_id'=>$customer->id]);
 			$bill_to_bill_accounting=$customer->bill_to_bill_accounting;
+			$default_credit_days=$customer->default_credit_days;
+			if(!empty($customer->reference_details))
+				{
+					foreach($customer->reference_details as $reference_detail)
+					{
+						$reference_detail->transaction_date = $this->Auth->User('session_company')->books_beginning_from;
+						$reference_detail->company_id = $company_id;
+						$reference_detail->opening_balance = 'yes';
+						$reference_detail->ledger_id =$customer->ledger->id ;
+					}
+				}
             if ($this->Customers->save($customer)) {
 				$query = $this->Customers->Ledgers->query();
 					$query->update()
-						->set(['name' => $customer->name,'accounting_group_id'=>$customer->accounting_group_id,'bill_to_bill_accounting'=>$bill_to_bill_accounting])
+						->set(['name' => $customer->name,'accounting_group_id'=>$customer->accounting_group_id,'bill_to_bill_accounting'=>$bill_to_bill_accounting,'default_credit_days'=>$default_credit_days])
 						->where(['customer_id' => $id,'company_id'=>$company_id])
 						->execute();
 						

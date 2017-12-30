@@ -12,6 +12,19 @@ $this->set('title', 'Receipt List');
 					<i class="icon-bar-chart font-green-sharp hide"></i>
 					<span class="caption-subject font-green-sharp bold ">Receipt List</span>
 				</div>
+				<div class="actions">
+				<form method="GET" id="">
+					<div class="row">
+						<div class="col-md-9">
+							<?php echo $this->Form->input('search',['class'=>'form-control input-sm pull-right','label'=>false, 'placeholder'=>'Search','autofocus'=>'autofocus','value'=> @$search]);
+							?>
+						</div>
+						<div class="col-md-1">
+							<button type="submit" class="go btn blue-madison input-sm">Go</button>
+						</div> 
+					</div>
+				</form>
+				</div>
 			</div>
 			<div class="portlet-body">
 				<div class="table-responsive">
@@ -24,6 +37,7 @@ $this->set('title', 'Receipt List');
 								<th scope="col"><?= $this->Paginator->sort('voucher_no') ?></th>
 								<th scope="col"><?= $this->Paginator->sort('transaction_date') ?></th>
 								<th scope="col"><?= $this->Paginator->sort('Narration') ?></th>
+								<th scope="col"><?= $this->Paginator->sort('Status') ?></th>
 								<th scope="col" class="actions"><?= __('Actions') ?></th>
 							</tr>
 						</thead>
@@ -38,13 +52,21 @@ $this->set('title', 'Receipt List');
 								<td><?= h(str_pad($receipt->voucher_no, 4, '0', STR_PAD_LEFT)) ?></td>
 								<td><?= h($transaction_date) ?></td>
 								<td class=""><?= h($receipt->narration) ?></td>
+								<td class=""><?= h($receipt->status) ?></td>
 								<td class="actions">
+								<?= $this->Html->link(__('View'), ['action' => 'view', $receipt->id]) ?>
 								
+								
+							
 								<?php if($receipt->sales_invoice_id==0){?>
-									<?= $this->Html->link(__('Edit'), ['action' => 'edit', $receipt->id]) ?>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+									<?php if ($receipt->status !='cancel'){?>
+								<?php if (in_array("42", $userPages)){?>
+									<?= $this->Html->link(__('Edit'), ['action' => 'edit', $receipt->id]) ?>
 									<?php }?>
 									
-									<?= $this->Html->link(__('View'), ['action' => 'view', $receipt->id]) ?>
+									<?= $this->Form->postLink(__('Cancel'), ['action' => 'cancel', $receipt->id], ['style'=>'color:red;','confirm' => __('Are you sure you want to cancel # {0}?',h(str_pad($receipt->voucher_no, 3, '0', STR_PAD_LEFT)))]) ?>&nbsp;&nbsp;
+									<?php }?>
+									<?php }?>
 								</td>
 							</tr>
 							<?php endforeach; ?>

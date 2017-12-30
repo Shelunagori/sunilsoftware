@@ -50,21 +50,30 @@ if($supplier_state_id== $state_id){
 						</div>
 						<div class="col-md-3">
 							<div class="form-group">
-								<label>GRN Transaction Date <span class="required">*</span></label><br/>
+								<label>GRN Transaction Date </label><br/>
 								<?php echo $Grns->transaction_date; ?>
 							</div>
 						</div>
+						
 						<div class="col-md-3">
 								<label>Supplier</label>
 								<?php
 									 echo $this->Form->control('q',['class'=>'form-control input-sm supplier_state_id ','label'=>false,'type'=>'hidden','value'=>$supplier_state_id]);
-									echo $this->Form->control('supplier_ledger_id',['class'=>'form-control input-sm supplier_ledger select2me','label'=>false, 'options' => $partyOptions,'required'=>'required','disabled']);
+									echo $this->Form->control('supplier_ledger_id',['class'=>'form-control input-sm supplier_ledger select2me','label'=>false, 'options' => $partyOptions,'required'=>'required','value'=>$supplier_ledger_id,'disabled']);
 								?>
+						</div>
+						<div class="col-md-3">
+							<div class="form-group">
+								<label>Reference No</label><br/>
+								<?php
+									 echo $Grns->reference_no;
+								?>
+								</div>
 						</div>
 					</div><br>
 						<input type="hidden" name="state_id" class="state_id" value="<?php echo $state_id;?>">
 						<input type="hidden" name="is_interstate" id="is_interstate" value="<?php echo $is_interstate;?>">
-						
+						<input type="hidden" name="due_days" class="dueDays" value=0>
 					<div class="row">
 						<div class="col-md-3">
 							<div class="form-group">
@@ -91,6 +100,14 @@ if($supplier_state_id== $state_id){
 								?>
 						</div>
 						
+					</div>
+					<div class="row">
+						<div class="col-md-5">
+							<div class="form-group">
+								<label>Narration </label>
+								<?php echo $this->Form->control('narration',['class'=>'form-control input-sm','label'=>false,'placeholder'=>'Narration','rows'=>'4']); ?>
+							</div>
+						</div>
 					</div><BR/><BR/>
 					
 				   
@@ -100,7 +117,7 @@ if($supplier_state_id== $state_id){
 								style=" height: 24px; padding: 0px 0px;font-size: 12px;" width="100%">
 								<thead>
 								<tr align="center">
-									<th rowspan="2" style="text-align:center;"><label>Item<label></td>
+									<th rowspan="2" style="text-align:left;"><label>Item<label></td>
 									<th rowspan="2" style="text-align:center;"><label>Qty<label></td>
 									<th rowspan="2" style="text-align:center;"><label>Rate<label></td>
 									<th  colspan="2" style="text-align:center;"><label align="center">Discount (%)</label></th>
@@ -127,7 +144,7 @@ if($supplier_state_id== $state_id){
 									//pr($grn_row->item->FirstGstFigures->tax_percentage); exit;
 							     ?>
 								<tr class="main_tr" class="tab">
-									<td width="15%" align="center">
+									<td width="15%" align="left">
 									<input type="hidden" name="q" class="attrGet calculation" value="<?php echo $grn_row->item_id; ?>">
 									<?php echo $grn_row->item->name; ?></td>
 									<td width="5%" align="center">
@@ -136,24 +153,24 @@ if($supplier_state_id== $state_id){
 										?>
 									</td>
 									<td width="8%" align="center">
-										<?php echo $this->Form->input('q', ['type'=>'text','label' => false,'class' => 'form-control input-sm  rate rightAligntextClass','value'=>$grn_row->purchase_rate]); 
+										<?php echo $this->Form->input('q', ['type'=>'text','label' => false,'class' => 'form-control input-sm  rate numberOnly rightAligntextClass','value'=>$grn_row->purchase_rate]); 
 										//echo $grn_row->purchase_rate;
 										?>
 									</td>
 									<td  width="6%" align="center">
-										<?php echo $this->Form->input('q', ['style'=>'text-align:right','label' => false,'class' => 'form-control input-sm discount numberOnly','placeholder'=>'Discount','type'=>'text']);
+										<?php echo $this->Form->input('q', ['style'=>'text-align:right','label' => false,'class' => 'form-control input-sm discount numberOnly','placeholder'=>'Discount','type'=>'text','value'=>0]);
 										?>	
 									</td>
 									<td  width="10%" align="center">
-										<?php echo $this->Form->input('q', ['style'=>'text-align:right','label' => false,'class' => 'form-control input-sm discountAmount','type'=>'text']);
+										<?php echo $this->Form->input('q', ['style'=>'text-align:right','label' => false,'class' => 'form-control input-sm discountAmount numberOnly','type'=>'text','value'=>0]);
 										?>	
 									</td>
 									<td  width="6%" align="center">
-										<?php echo $this->Form->input('q', ['style'=>'text-align:right','label' => false,'class' => 'form-control input-sm pnf numberOnly','placeholder'=>'PNF','type'=>'text']);
+										<?php echo $this->Form->input('q', ['style'=>'text-align:right','label' => false,'class' => 'form-control input-sm pnf numberOnly','placeholder'=>'PNF','type'=>'text','value'=>0]);
 										?>	
 									</td>
 									<td  width="10%" align="center">
-										<?php echo $this->Form->input('q', ['style'=>'text-align:right','label' => false,'class' => 'form-control input-sm pnfAmount','type'=>'text']);
+										<?php echo $this->Form->input('q', ['style'=>'text-align:right','label' => false,'class' => 'form-control input-sm pnfAmount numberOnly','type'=>'text','value'=>0]);
 										?>	
 									</td>
 									
@@ -175,7 +192,7 @@ if($supplier_state_id== $state_id){
 										?>	
 									</td>
 									<td  width="7%" align="center">
-										<?php echo $this->Form->input('q', ['style'=>'text-align:right','label' => false,'class' => 'form-control input-sm roundOff','placeholder'=>'','type'=>'text']);
+										<?php echo $this->Form->input('q', ['style'=>'text-align:right','label' => false,'class' => 'form-control input-sm numberOnly roundOff','placeholder'=>'','type'=>'text']);
 										?>	
 									</td>
 									<td  width="20%" align="center">
@@ -271,8 +288,8 @@ if($supplier_state_id== $state_id){
 
 <?php
 	$js="
-	
-		
+			var due_days=$('select[name=supplier_ledger_id] :selected').attr('default_days');
+			$('.dueDays').val(due_days);
 			var supplier_state_id=$('.supplier_state_id').val();
 			var state_id=$('.state_id').val();
 			if(supplier_state_id!=state_id)
@@ -332,11 +349,48 @@ if($supplier_state_id== $state_id){
 	});
 	$('.discount').die().live('blur',function()
 	{
+		var quantity=parseFloat($(this).closest('tr').find('.quantity').val());
+			    var rate=parseFloat($(this).closest('tr').find('.rate').val());
+				var amount=quantity*rate;
+			    var discount=parseFloat($(this).closest('tr').find('.discount').val());
+				if(!discount){discount=0;}
+				//quantity=round(quantity,2);
+				//rate=round(rate,2);
+				//amount=round(amount,2);
+				discount=round(discount,3);
+				var disAmt=0;
+				
+				if(isNaN(discount)){ 
+					disAmt=round(disAmt,2);
+					$(this).closest('tr').find('.discountAmount').val(disAmt);
+					$(this).closest('tr').find('.discount').val(disAmt);
+				}else{
+					var disAmt=(amount*discount)/100;
+					disAmt=round(disAmt,2);
+					$(this).closest('tr').find('.discountAmount').val(disAmt);
+				}
 		forward_total_amount();
 	});
 	
 	$('.pnf').die().live('blur',function()
-	{
+	{ 
+		var quantity=parseFloat($(this).closest('tr').find('.quantity').val());
+		var rate=parseFloat($(this).closest('tr').find('.rate').val());
+		var amount=quantity*rate;
+		var pnf=parseFloat($(this).closest('tr').find('.pnf').val());
+				if(!pnf){pnf=0;}
+				if(isNaN(pnf)){ 
+					var pnfAmt=0;
+					pnfAmt=round(pnfAmt,2);
+					$(this).closest('tr').find('.pnfAmount').val(pnfAmt);
+					$(this).closest('tr').find('.pnf').val(pnfAmt);
+				}else{
+					pnf=round(pnf,2);
+					var pnfAmt=(amount*pnf)/100;
+					pnfAmt=round(pnfAmt,2);
+					$(this).closest('tr').find('.pnfAmount').val(pnfAmt);
+					//total_pnf=total_pnf+pnfAmt;
+				}
 		forward_total_amount();
 	});
 	$('.roundOff').die().live('blur',function()
@@ -362,40 +416,17 @@ if($supplier_state_id== $state_id){
 				var amount=quantity*rate;
 			    var discount=parseFloat($(this).closest('tr').find('.discount').val());
 				if(!discount){discount=0;}
-				quantity=round(quantity,2);
-				rate=round(rate,2);
-				amount=round(amount,2);
-				discount=round(discount,2);
-				var disAmt=0;
 				
-				if(isNaN(discount)){ 
-					disAmt=round(disAmt,2);
-					$(this).closest('tr').find('.discountAmount').val(disAmt);
-					$(this).closest('tr').find('.discount').val(disAmt);
-				}else{
-					var disAmt=(amount*discount)/100;
-					disAmt=round(disAmt,2);
-					$(this).closest('tr').find('.discountAmount').val(disAmt);
-					total_dis=total_dis+disAmt;
-					
-				}
+				discount=round(discount,3);
+				var disAmt=0;
+				disAmt=parseFloat($(this).closest('tr').find('.discountAmount').val());
+				var pnfAmt=parseFloat($(this).closest('tr').find('.pnfAmount').val());
 				amountAfterDiscount=amount-disAmt;
-				var pnf=parseFloat($(this).closest('tr').find('.pnf').val());
-				if(!pnf){pnf=0;}
-				if(isNaN(pnf)){ 
-					var pnfAmt=0;
-					pnfAmt=round(pnfAmt,2);
-					$(this).closest('tr').find('.pnfAmount').val(pnfAmt);
-					$(this).closest('tr').find('.pnf').val(pnfAmt);
-				}else{
-					pnf=round(pnf,2);
-					var pnfAmt=(amount*pnf)/100;
-					pnfAmt=round(pnfAmt,2);
-					$(this).closest('tr').find('.pnfAmount').val(pnfAmt);
-					total_pnf=total_pnf+pnfAmt;
-				}
+				
 				amount=round(amount,2);
 				disAmt=round(disAmt,2);
+				total_dis+=disAmt;
+				total_pnf+=pnfAmt;
 				taxableAmt=(amount-disAmt)+pnfAmt;
 				//taxableAmt=round(taxableAmt,2);
 				$(this).closest('tr').find('.taxableValue').val(taxableAmt.toFixed(2));
@@ -489,20 +520,25 @@ if($supplier_state_id== $state_id){
 			    var rate=parseFloat($(this).closest('tr').find('.rate').val());
 				var amount=quantity*rate;
 			    var discountAmt=parseFloat($(this).closest('tr').find('.discountAmount').val());
+				
+				//var discountAmt=round(discountAmt,2)
 				if(isNaN(discountAmt)){ 
 					var dis=0;
 					var discountAmt=0;
 					$(this).closest('tr').find('.discount').val(dis.toFixed(2));
-					$(this).closest('tr').find('.discountAmount').val(discountAmt.toFixed(2));
+					$(this).closest('tr').find('.discountAmount').val(discountAmt);
 					//total_dis=total_dis+discountAmt;
 				}else{
 					var dis=(100*discountAmt)/amount;
 					dis=round(dis,3);
+					
 					$(this).closest('tr').find('.discount').val(dis);
 					//total_dis=total_dis+discountAmt;
 				}
 				forward_total_amount();
 	});
+	
+
 		
 	function checkValidation() 
 	{  

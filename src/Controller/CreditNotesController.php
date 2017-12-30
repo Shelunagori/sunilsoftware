@@ -22,12 +22,22 @@ class CreditNotesController extends AppController
     {
 		$this->viewBuilder()->layout('index_layout');
 		$company_id=$this->Auth->User('session_company_id');
+		$search=$this->request->query('search');
         $this->paginate = [
             'contain' => ['Companies']
         ];
-        $creditNotes = $this->paginate($this->CreditNotes->find()->where(['CreditNotes.company_id'=>$company_id]));
+		if($search){
+        $creditNotes = $this->paginate($this->CreditNotes->find()->where(['CreditNotes.company_id'=>$company_id])->where([
+		'OR' => [
+            'CreditNotes.voucher_no' => $search,
+          
+		 ]]));
 
-        $this->set(compact('creditNotes'));
+		}
+		else{
+		 $creditNotes = $this->paginate($this->CreditNotes->find()->where(['CreditNotes.company_id'=>$company_id]));
+		}
+        $this->set(compact('creditNotes','search'));
         $this->set('_serialize', ['creditNotes']);
     }
 
@@ -42,9 +52,10 @@ class CreditNotesController extends AppController
     {
 		$this->viewBuilder()->layout('index_layout');
 	    $company_id=$this->Auth->User('session_company_id');
-        $creditNotes = $this->CreditNotes->find()->where(['CreditNotes.company_id'=>$company_id, 'CreditNotes.id'=>$id])
-		->contain(['Companies', 'CreditNoteRows'=>['ReferenceDetails', 'Ledgers']]);
-	
+		  $creditNotes = $this->CreditNotes->get($id, [
+            'contain' => ['Companies', 'CreditNoteRows'=>['ReferenceDetails', 'Ledgers']]
+        ]);
+
         $this->set(compact('creditNotes'));
         $this->set('_serialize', ['creditNotes']);
     }
@@ -61,11 +72,23 @@ class CreditNotesController extends AppController
         $creditNote = $this->CreditNotes->newEntity();
 		$company_id=$this->Auth->User('session_company_id');
         if ($this->request->is('post')) {
-		 $creditNote = $this->CreditNotes->patchEntity($creditNote, $this->request->getData(),['associated' => ['CreditNoteRows','CreditNoteRows.ReferenceDetails']]);
-		 $tdate=$this->request->data('transaction_date');
-		 $creditNote->transaction_date=date('Y-m-d',strtotime($tdate));
-		 
-	
+		$creditNote = $this->CreditNotes->patchEntity($creditNote, $this->request->getData(),['associated' => ['CreditNoteRows','CreditNoteRows.ReferenceDetails']]);
+		$tdate=$this->request->data('transaction_date');
+		$creditNote->transaction_date=date('Y-m-d',strtotime($tdate));
+		//pr($creditNote);exit;
+		//transaction date for credit note code start here--
+			foreach($creditNote->credit_note_rows as $credit_note_row)
+			{
+				if(!empty($credit_note_row->reference_details))
+				{
+					foreach($credit_note_row->reference_details as $reference_detail)
+					{
+						$reference_detail->transaction_date = $creditNote->transaction_date;
+					}
+				}
+			}
+			//pr($creditNote);exit;
+			//transaction date for credit note code close here--
 		 
             if ($this->CreditNotes->save($creditNote)) {
 			
@@ -77,7 +100,7 @@ class CreditNotesController extends AppController
 					$accountEntry->credit                     = @$credit_note_row->credit;
 					$accountEntry->transaction_date           = $creditNote->transaction_date;
 					$accountEntry->company_id                 = $company_id;
-					$accountEntry->creditNote_id                 = $creditNote->id;
+					$accountEntry->credit_note_id                 = $creditNote->id;
 					$accountEntry->credit_note_row_id             = $credit_note_row->id;
 					$this->CreditNotes->AccountingEntries->save($accountEntry);
 				}
@@ -153,7 +176,7 @@ class CreditNotesController extends AppController
 				$ledgerFirstOptions[]=['text' =>$ledger->name, 'value' => $ledger->id ,'open_window' => 'bank','bank_and_cash' => 'yes'];
 			}
 			else if($ledger->bill_to_bill_accounting == 'yes'){
-				$ledgerFirstOptions[]=['text' =>$ledger->name, 'value' => $ledger->id,'open_window' => 'party','bank_and_cash' => 'no'];
+				$ledgerFirstOptions[]=['text' =>$ledger->name, 'value' => $ledger->id,'open_window' => 'party','bank_and_cash' => 'no','default_days'=>$ledger->default_credit_days ];
 			}
 			else if(in_array($ledger->accounting_group_id,$cashGroups)){
 				$ledgerFirstOptions[]=['text' =>$ledger->name, 'value' => $ledger->id ,'open_window' => 'no','bank_and_cash' => 'yes'];
@@ -220,7 +243,7 @@ class CreditNotesController extends AppController
 				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id ,'open_window' => 'bank','bank_and_cash' => 'yes'];
 			}
 			else if($ledger->bill_to_bill_accounting == 'yes'){
-				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id,'open_window' => 'party','bank_and_cash' => 'no'];
+				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id,'open_window' => 'party','bank_and_cash' => 'no','default_days'=>$ledger->default_credit_days];
 			}
 			else if(in_array($ledger->accounting_group_id,$cashGroups)){
 				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id ,'open_window' => 'no','bank_and_cash' => 'yes'];
@@ -260,7 +283,78 @@ class CreditNotesController extends AppController
             'contain' => ['CreditNoteRows'=>['ReferenceDetails']]
         ]);
 		$company_id=$this->Auth->User('session_company_id');
+
+		$originalcreditNote=$creditNote;
+        if ($this->request->is('put','patch','post')) {
 		
+	//GET ORIGINAL DATA AND DELETE REFERENCE DATA//
+			$orignalCreditNote_ids=[];
+			foreach($originalcreditNote->credit_note_rows as $originalCreditNote_rows){
+				$orignalCreditNote_ids[]=$originalCreditNote_rows->id;
+			}
+			
+		$this->CreditNotes->CreditNoteRows->ReferenceDetails->deleteAll(['ReferenceDetails.credit_note_row_id IN'=>$orignalCreditNote_ids]);
+			$query_update = $this->CreditNotes->CreditNoteRows->query();
+					$query_update->update()
+					->set(['mode_of_payment' => '', 'cheque_no' => '', 'cheque_date' => ''])
+					->where(['credit_note_id' => $creditNote->id])
+					->execute();
+				
+			//GET ORIGINAL DATA AND DELETE REFERENCE DATA//
+			//exit;
+		
+			 $creditNote = $this->CreditNotes->get($id, [
+            'contain' => ['CreditNoteRows'=>['ReferenceDetails']]
+        ]);
+		
+		
+			$creditNote = $this->CreditNotes->patchEntity($creditNote, $this->request->getData(),['associated' => ['CreditNoteRows','CreditNoteRows.ReferenceDetails']]);
+			$tdate=$this->request->data('transaction_date');
+			$creditNote->transaction_date=date('Y-m-d',strtotime($tdate));
+		 
+		 
+		 
+			//transaction date for credit note code start here--
+			foreach($creditNote->credit_note_rows as $credit_note_row)
+			{
+				if(!empty($credit_note_row->reference_details))
+				{
+					foreach($credit_note_row->reference_details as $reference_detail)
+					{
+						$reference_detail->transaction_date = $creditNote->transaction_date;
+					}
+				}
+			}
+			//transaction date for credit note code close here--
+		//pr($creditNote);exit;
+            if ($this->CreditNotes->save($creditNote)) {
+			$query_delete = $this->CreditNotes->AccountingEntries->query();
+					$query_delete->delete()
+					->where(['credit_note_id' => $creditNote->id,'company_id'=>$company_id])
+					->execute();
+			
+			foreach($creditNote->credit_note_rows as $credit_note_row)
+				{
+					$accountEntry = $this->CreditNotes->AccountingEntries->newEntity();
+					$accountEntry->ledger_id                  = $credit_note_row->ledger_id;
+					$accountEntry->debit                      = @$credit_note_row->debit;
+					$accountEntry->credit                     = @$credit_note_row->credit;
+					$accountEntry->transaction_date           = $creditNote->transaction_date;
+					$accountEntry->company_id                 = $company_id;
+					$accountEntry->credit_note_id             = $creditNote->id;
+					$accountEntry->credit_note_row_id         = $credit_note_row->id;
+					$this->CreditNotes->AccountingEntries->save($accountEntry);
+				}
+
+                $this->Flash->success(__('The Credit Note has been Update.'));
+				$this->repairRef();
+
+                return $this->redirect(['action' => 'index']);
+            }
+            $this->Flash->error(__('The Credit Note could not be saved. Please, try again.'));
+        }
+		
+				
 		$refDropDown =[];
 		foreach($creditNote->credit_note_rows as $credit_note_row)
 		{
@@ -288,59 +382,6 @@ class CreditNotesController extends AppController
 				$refDropDown[$credit_note_row->id] = $option;
 			}
 		}
-		
-		$originalcreditNote=$creditNote;
-        if ($this->request->is('put','patch','post')) {
-		
-	
-		//GET ORIGINAL DATA AND DELETE REFERENCE DATA//
-			$orignalCreditNote_ids=[];
-			foreach($originalcreditNote->credit_note_rows as $originalCreditNote_rows){
-				$orignalCreditNote_ids[]=$originalCreditNote_rows->id;
-			}
-			$this->CreditNotes->CreditNoteRows->ReferenceDetails->deleteAll(['ReferenceDetails.credit_note_row_id IN'=>$orignalCreditNote_ids]);
-			$query_update = $this->CreditNotes->CreditNoteRows->query();
-					$query_update->update()
-					->set(['mode_of_payment' => '', 'cheque_no' => '', 'cheque_date' => ''])
-					->where(['credit_note_id' => $creditNote->id])
-					->execute();
-			//GET ORIGINAL DATA AND DELETE REFERENCE DATA//
-			
-		
-		
-		 $creditNote = $this->CreditNotes->patchEntity($creditNote, $this->request->getData(),['associated' => ['CreditNoteRows','CreditNoteRows.ReferenceDetails']]);
-		 $tdate=$this->request->data('transaction_date');
-		 $creditNote->transaction_date=date('Y-m-d',strtotime($tdate));
-		 
-	
-		
-            if ($this->CreditNotes->save($creditNote)) {
-			$query_delete = $this->CreditNotes->AccountingEntries->query();
-					$query_delete->delete()
-					->where(['credit_note_id' => $creditNote->id,'company_id'=>$company_id])
-					->execute();
-			
-			foreach($creditNote->credit_note_rows as $credit_note_row)
-				{
-					$accountEntry = $this->CreditNotes->AccountingEntries->newEntity();
-					$accountEntry->ledger_id                  = $credit_note_row->ledger_id;
-					$accountEntry->debit                      = @$credit_note_row->debit;
-					$accountEntry->credit                     = @$credit_note_row->credit;
-					$accountEntry->transaction_date           = $creditNote->transaction_date;
-					$accountEntry->company_id                 = $company_id;
-					$accountEntry->credit_note_id                 = $creditNote->id;
-					$accountEntry->credit_note_row_id             = $credit_note_row->id;
-					$this->CreditNotes->AccountingEntries->save($accountEntry);
-				}
-
-                $this->Flash->success(__('The Credit Note has been Update.'));
-				$this->repairRef();
-
-                return $this->redirect(['action' => 'index']);
-            }
-            $this->Flash->error(__('The Credit Note could not be saved. Please, try again.'));
-        }
-		
 		
 		//frst row options
 		$bankParentGroups = $this->CreditNotes->CreditNoteRows->Ledgers->AccountingGroups->find()
@@ -381,7 +422,6 @@ class CreditNotesController extends AppController
 		
 		foreach($partyParentGroups as $partyParentGroup)
 		{
-			
 			$partyChildGroups = $this->CreditNotes->CreditNoteRows->Ledgers->AccountingGroups->find('children', ['for' => $partyParentGroup->id]);
 			$partyGroups[]=$partyParentGroup->id;
 			foreach($partyChildGroups as $partyChildGroup){
@@ -398,7 +438,7 @@ class CreditNotesController extends AppController
 				$ledgerFirstOptions[]=['text' =>$ledger->name, 'value' => $ledger->id ,'open_window' => 'bank','bank_and_cash' => 'yes'];
 			}
 			else if($ledger->bill_to_bill_accounting == 'yes'){
-				$ledgerFirstOptions[]=['text' =>$ledger->name, 'value' => $ledger->id,'open_window' => 'party','bank_and_cash' => 'no'];
+				$ledgerFirstOptions[]=['text' =>$ledger->name, 'value' => $ledger->id,'open_window' => 'party','bank_and_cash' => 'no','default_days'=>$ledger->default_credit_days];
 			}
 			else if(in_array($ledger->accounting_group_id,$cashGroups)){
 				$ledgerFirstOptions[]=['text' =>$ledger->name, 'value' => $ledger->id ,'open_window' => 'no','bank_and_cash' => 'yes'];
@@ -465,7 +505,7 @@ class CreditNotesController extends AppController
 				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id ,'open_window' => 'bank','bank_and_cash' => 'yes'];
 			}
 			else if($ledger->bill_to_bill_accounting == 'yes'){
-				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id,'open_window' => 'party','bank_and_cash' => 'no'];
+				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id,'open_window' => 'party','bank_and_cash' => 'no','default_days'=>$ledger->default_credit_days];
 			}
 			else if(in_array($ledger->accounting_group_id,$cashGroups)){
 				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id ,'open_window' => 'no','bank_and_cash' => 'yes'];
@@ -474,8 +514,6 @@ class CreditNotesController extends AppController
 				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id,'open_window' => 'no','bank_and_cash' => 'no' ];
 			}
 		}
-		
-		
 		$referenceDetails=$this->CreditNotes->CreditNoteRows->ReferenceDetails->find('list');
         $companies = $this->CreditNotes->Companies->find('list', ['limit' => 200]);
         $this->set(compact('creditNote', 'companies','voucher_no','ledgerOptions','company_id','referenceDetails','refDropDown', 'ledgerFirstOptions'));
@@ -498,6 +536,35 @@ class CreditNotesController extends AppController
             $this->Flash->success(__('The credit note has been deleted.'));
         } else {
             $this->Flash->error(__('The credit note could not be deleted. Please, try again.'));
+        }
+
+        return $this->redirect(['action' => 'index']);
+    }
+	public function cancel($id = null)
+    {
+		// $this->request->allowMethod(['post', 'delete']);
+        $creditNote = $this->CreditNotes->get($id, [
+            'contain' => ['CreditNoteRows'=>['ReferenceDetails']]
+        ]);
+		$debit_note_row_ids=[];
+		foreach($creditNote->credit_note_rows as $credit_note_row){
+			$credit_note_row_ids[]=$credit_note_row->id;
+		}
+		$company_id=$this->Auth->User('session_company_id');
+		$creditNote->status='cancel';
+        if ($this->CreditNotes->save($creditNote)) {
+			
+				$deleteRefDetails = $this->CreditNotes->CreditNoteRows->ReferenceDetails->query();
+				$deleteRef = $deleteRefDetails->delete()
+					->where(['ReferenceDetails.credit_note_row_id IN' => $credit_note_row_ids])
+					->execute();
+				$deleteAccountEntries = $this->CreditNotes->AccountingEntries->query();
+				$result = $deleteAccountEntries->delete()
+				->where(['AccountingEntries.credit_note_id' => $creditNote->id])
+				->execute();
+			$this->Flash->success(__('The Credit Notes has been cancelled.'));
+        } else {
+            $this->Flash->error(__('The Credit Notes could not be cancelled. Please, try again.'));
         }
 
         return $this->redirect(['action' => 'index']);

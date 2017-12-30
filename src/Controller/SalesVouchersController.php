@@ -22,13 +22,20 @@ class SalesVouchersController extends AppController
     {
 		$this->viewBuilder()->layout('index_layout');
 		$company_id=$this->Auth->User('session_company_id');
+		$search=$this->request->query('search');
         $this->paginate = [
-            'contain' => ['Companies'],
-			'where'   => $company_id
+            'contain' => ['Companies']
         ];
-        $salesVouchers = $this->paginate($this->SalesVouchers);
+        $salesVouchers = $this->paginate($this->SalesVouchers->find()->where(['SalesVouchers.company_id'=>$company_id])->where([
+		'OR' => [
+            'SalesVouchers.voucher_no' => $search,
+            //....
+			'SalesVouchers.reference_no LIKE' => '%'.$search.'%',
+			//...
+			'SalesVouchers.transaction_date ' => date('Y-m-d',strtotime($search))
+		 ]]));
 
-        $this->set(compact('salesVouchers'));
+        $this->set(compact('salesVouchers','search'));
         $this->set('_serialize', ['salesVouchers']);
     }
 
@@ -78,7 +85,20 @@ class SalesVouchersController extends AppController
 			$salesVoucher = $this->SalesVouchers->patchEntity($salesVoucher, $this->request->getData(), [
 							'associated' => ['SalesVoucherRows','SalesVoucherRows.ReferenceDetails']
 						]);
-			//pr($salesVoucher->sales_voucher_rows); exit;
+						
+			//transaction date for reference detail code start here--
+			foreach($salesVoucher->sales_voucher_rows as $sales_voucher_row)
+			{
+				if(!empty($sales_voucher_row->reference_details))
+				{
+					foreach($sales_voucher_row->reference_details as $reference_detail)
+					{
+						$reference_detail->transaction_date = $salesVoucher->transaction_date;
+					}
+				}
+			}
+			//transaction date for reference detail code close here--
+			
             if ($this->SalesVouchers->save($salesVoucher)) {
 				
 				foreach($salesVoucher->sales_voucher_rows as $sales_voucher_row)
@@ -143,7 +163,7 @@ class SalesVouchersController extends AppController
 				$ledgerDroption[]=['text' =>$ParentLedger->name, 'value' => $ParentLedger->id ,'open_window' => 'bank'];
 			}
 			else if($ParentLedger->bill_to_bill_accounting == 'yes'){
-				$ledgerDroption[]=['text' =>$ParentLedger->name, 'value' => $ParentLedger->id,'open_window' => 'party' ];
+				$ledgerDroption[]=['text' =>$ParentLedger->name, 'value' => $ParentLedger->id,'open_window' => 'party','default_days'=>$ParentLedger->default_credit_days];
 			}
 			else{
 				$ledgerDroption[]=['text' =>$ParentLedger->name, 'value' => $ParentLedger->id,'open_window' => 'no' ];
@@ -171,7 +191,7 @@ class SalesVouchersController extends AppController
 				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id ,'open_window' => 'bank'];
 			}
 			else if($ledger->bill_to_bill_accounting == 'yes'){
-				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id,'open_window' => 'party' ];
+				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id,'open_window' => 'party','default_days'=>$ledger->default_credit_days];
 			}
 			else{
 				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id,'open_window' => 'no' ];
@@ -199,7 +219,7 @@ class SalesVouchersController extends AppController
 				$AllLedgers[]=['text' =>$all_ledger->name, 'value' => $all_ledger->id ,'open_window' => 'bank'];
 			}
 			else if($all_ledger->bill_to_bill_accounting == 'yes'){
-				$AllLedgers[]=['text' =>$all_ledger->name, 'value' => $all_ledger->id,'open_window' => 'party' ];
+				$AllLedgers[]=['text' =>$all_ledger->name, 'value' => $all_ledger->id,'open_window' => 'party','default_days'=>$all_ledger->default_credit_days ];
 			}
 			else{
 				$AllLedgers[]=['text' =>$all_ledger->name, 'value' => $all_ledger->id,'open_window' => 'no' ];
@@ -220,6 +240,7 @@ class SalesVouchersController extends AppController
      */
     public function edit($id = null)
     {
+		
 		$this->viewBuilder()->layout('index_layout');
 		$company_id=$this->Auth->User('session_company_id');
         $this->request->data['company_id'] =$company_id;
@@ -234,7 +255,16 @@ class SalesVouchersController extends AppController
 			foreach($originalSalesVoucher->sales_voucher_rows as $originalSales_voucher_rows){
 				$orignalSales_voucher_row_ids[]=$originalSales_voucher_rows->id;
 			}
+			$query_update = $this->SalesVouchers->SalesVoucherRows->query();
+							$query_update->update()
+							->set(['mode_of_payment' => '', 'cheque_no' => '', 'cheque_date' => ''])
+							->where(['sales_voucher_id' => $salesVoucher->id])
+							->execute();
+			 $salesVoucher = $this->SalesVouchers->get($id, [
+            'contain' => ['SalesVoucherRows'=>['ReferenceDetails']]
+        ]);
 			$this->SalesVouchers->SalesVoucherRows->ReferenceDetails->deleteAll(['ReferenceDetails.sales_voucher_row_id IN'=>$orignalSales_voucher_row_ids]);
+			
 			//GET ORIGINAL DATA AND DELETE REFERENCE DATA//
 			
 			$this->request->data['transaction_date'] = date("Y-m-d",strtotime($this->request->getData()['transaction_date']));
@@ -245,8 +275,17 @@ class SalesVouchersController extends AppController
 
 			//pr($salesVoucher);
 			//exit;
-			
-			
+			foreach($salesVoucher->sales_voucher_rows as $sales_voucher_row)
+			{
+				if(!empty($sales_voucher_row->reference_details))
+				{
+					foreach($sales_voucher_row->reference_details as $reference_detail)
+					{
+						$reference_detail->transaction_date = $salesVoucher->transaction_date;
+					}
+				}
+			}
+			//ppr($salesVoucher->toArray()); exit;
 			if ($this->SalesVouchers->save($salesVoucher)) {
 				$query_delete = $this->SalesVouchers->AccountingEntries->query();
 					$query_delete->delete()
@@ -275,11 +314,16 @@ class SalesVouchersController extends AppController
 		
         }
 		
+		
 		$refDropDown =[];
 		foreach($salesVoucher->sales_voucher_rows as $sales_voucher_row)
 		{
 			if(!empty($sales_voucher_row->reference_details))
 			{
+				foreach($sales_voucher_row->reference_details as $referenceDetailRows)
+				{
+					@$ref_details_name[]=$referenceDetailRows->ref_name;
+				}
 				$query = $this->SalesVouchers->SalesVoucherRows->ReferenceDetails->find();
 				$query->select(['total_debit' => $query->func()->sum('ReferenceDetails.debit'),'total_credit' => $query->func()->sum('ReferenceDetails.credit')])
 				->where(['ReferenceDetails.ledger_id'=>$sales_voucher_row->ledger_id,'ReferenceDetails.type !='=>'On Account'])
@@ -294,7 +338,7 @@ class SalesVouchersController extends AppController
 					}else if($remider<0){
 						$bal=abs($remider).' Cr';
 					}
-					if($referenceDetail->total_debit!=$referenceDetail->total_credit){
+					if($referenceDetail->total_debit!=$referenceDetail->total_credit || in_array($referenceDetail->ref_name,$ref_details_name)){
 						$option[] =['text' =>$referenceDetail->ref_name.' ('.$bal.')', 'value' => $referenceDetail->ref_name];
 						 
 					}
@@ -332,14 +376,13 @@ class SalesVouchersController extends AppController
 			}
 		}
 		$ParentLedgers = $this->SalesVouchers->SalesVoucherRows->Ledgers->find()->where(['Ledgers.accounting_group_id IN' =>$Groups]);
-		
 		$ledgerDroption =[];
 		foreach($ParentLedgers as $ParentLedger){
 		if(in_array($ParentLedger->accounting_group_id,$bankGroups)){
 				$ledgerDroption[]=['text' =>$ParentLedger->name, 'value' => $ParentLedger->id ,'open_window' => 'bank'];
 			}
 			else if($ParentLedger->bill_to_bill_accounting == 'yes'){
-				$ledgerDroption[]=['text' =>$ParentLedger->name, 'value' => $ParentLedger->id,'open_window' => 'party' ];
+				$ledgerDroption[]=['text' =>$ParentLedger->name, 'value' => $ParentLedger->id,'open_window' => 'party','default_days'=>$ParentLedger->default_credit_days ];
 			}
 			else{
 				$ledgerDroption[]=['text' =>$ParentLedger->name, 'value' => $ParentLedger->id,'open_window' => 'no' ];
@@ -367,7 +410,7 @@ class SalesVouchersController extends AppController
 				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id ,'open_window' => 'bank'];
 			}
 			else if($ledger->bill_to_bill_accounting == 'yes'){
-				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id,'open_window' => 'party' ];
+				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id,'open_window' => 'party','default_days'=>$ledger->default_credit_days];
 			}
 			else{
 				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id,'open_window' => 'no' ];
@@ -394,7 +437,7 @@ class SalesVouchersController extends AppController
 				$AllLedgers[]=['text' =>$all_ledger->name, 'value' => $all_ledger->id ,'open_window' => 'bank'];
 			}
 			else if($all_ledger->bill_to_bill_accounting == 'yes'){
-				$AllLedgers[]=['text' =>$all_ledger->name, 'value' => $all_ledger->id,'open_window' => 'party' ];
+				$AllLedgers[]=['text' =>$all_ledger->name, 'value' => $all_ledger->id,'open_window' => 'party','default_days'=>$all_ledger->default_credit_days];
 			}
 			else{
 				$AllLedgers[]=['text' =>$all_ledger->name, 'value' => $all_ledger->id,'open_window' => 'no' ];
@@ -420,6 +463,38 @@ class SalesVouchersController extends AppController
             $this->Flash->success(__('The sales voucher has been deleted.'));
         } else {
             $this->Flash->error(__('The sales voucher could not be deleted. Please, try again.'));
+        }
+
+        return $this->redirect(['action' => 'index']);
+    }
+	public function cancel($id = null)
+    {
+		// $this->request->allowMethod(['post', 'delete']);
+        $salesVoucher = $this->SalesVouchers->get($id, [
+            'contain' => ['SalesVoucherRows'=>['ReferenceDetails']]
+        ]);
+		$sales_voucher_row_ids=[];
+		foreach($salesVoucher->sales_voucher_rows as $sales_voucher_row){
+			$sales_voucher_row_ids[]=$sales_voucher_row->id;
+		}
+		$company_id=$this->Auth->User('session_company_id');
+		$salesVoucher->status='cancel';
+        if ($this->SalesVouchers->save($salesVoucher)) {
+			
+				$deleteRefDetails = $this->SalesVouchers->SalesVoucherRows->ReferenceDetails->query();
+				$deleteRef = $deleteRefDetails->delete()
+					->where(['ReferenceDetails.sales_voucher_row_id IN' => $sales_voucher_row_ids])
+					->execute();
+				$deleteAccountEntries = $this->SalesVouchers->AccountingEntries->query();
+				$result = $deleteAccountEntries->delete()
+				->where(['AccountingEntries.sales_voucher_id' => $salesVoucher->id])
+				->execute();
+			
+			
+				
+            $this->Flash->success(__('The Sales Vouchers has been cancelled.'));
+        } else {
+            $this->Flash->error(__('The Sales Vouchers could not be cancelled. Please, try again.'));
         }
 
         return $this->redirect(['action' => 'index']);

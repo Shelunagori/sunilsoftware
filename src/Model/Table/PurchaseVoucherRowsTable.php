@@ -43,6 +43,11 @@ class PurchaseVoucherRowsTable extends Table
             'foreignKey' => 'purchase_voucher_id',
             'joinType' => 'INNER'
         ]);
+		$this->belongsTo('RefPurchaseVouchers', [
+			'className' => 'PurchaseVouchers',
+            'foreignKey' => 'purchase_voucher_id',
+            'joinType' => 'LEFT'
+        ]);
         $this->belongsTo('Ledgers', [
             'foreignKey' => 'ledger_id',
             'joinType' => 'INNER'

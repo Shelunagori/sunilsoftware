@@ -313,9 +313,9 @@ $this->set('title', 'Create Stock Journal');
 		 $('#main_table tbody#main_tbody tr.main_tr').each(function(){ 
 		  $(this).find('td:nth-child(1)').html(i+1);
 		  $(this).find('td:nth-child(2) select').select2().attr({name:'inwards['+i+'][item_id]', id:'inwards-'+i+'-item_id'});
-		  $(this).find('td:nth-child(3) input').attr({name:'inwards['+i+'][quantity]',id:'inwards-'+i+'-quantity',class:'inward_reverseCalculation   form-control input-sm'});		
-		  $(this).find('td:nth-child(4) input').attr({name:'inwards['+i+'][rate]', id:'inwards-'+i+'-rate',class:'inward_calculation form-control input-sm'});
-		  $(this).find('td:nth-child(5) input').attr({name:'inwards['+i+'][amount]', id:'inwards-'+i+'-amount',class:'inward_reverseCalculation form-control input-sm'});
+		  $(this).find('td:nth-child(3) input').attr({name:'inwards['+i+'][quantity]',id:'inwards-'+i+'-quantity',class:'inward_reverseCalculation   form-control input-sm numberOnly'});		
+		  $(this).find('td:nth-child(4) input').attr({name:'inwards['+i+'][rate]', id:'inwards-'+i+'-rate',class:'inward_calculation form-control input-sm numberOnly'});
+		  $(this).find('td:nth-child(5) input').attr({name:'inwards['+i+'][amount]', id:'inwards-'+i+'-amount',class:'inward_reverseCalculation form-control input-sm numberOnly'});
 			
 			i++;
 			});
@@ -326,9 +326,9 @@ $this->set('title', 'Create Stock Journal');
 		  $('#main_table2 tbody#main_tbody2 tr.main_tr').each(function(){ 
 		   $(this).find('td:nth-child(1)').html(j+1);
 		   $(this).find('td:nth-child(2) select').select2().attr({name:'outwards['+j+'][item_id]', id:'outwards-'+j+'-item_id'});
-		   $(this).find('td:nth-child(3) input').attr({name:'outwards['+j+'][quantity]',id:'outwards-'+j+'-quantity',class:'outward_reverseCalculation   form-control input-sm'});		
-		   $(this).find('td:nth-child(4) input').attr({name:'outwards['+j+'][rate]', id:'outwards-'+j+'-rate',class:'outward_calculation form-control input-sm'});
-		   $(this).find('td:nth-child(5) input').attr({name:'outwards['+j+'][amount]', id:'outwards-'+j+'-amount',class:'outward_reverseCalculation form-control input-sm'});
+		   $(this).find('td:nth-child(3) input').attr({name:'outwards['+j+'][quantity]',id:'outwards-'+j+'-quantity',class:'outward_reverseCalculation   form-control input-sm numberOnly'});		
+		   $(this).find('td:nth-child(4) input').attr({name:'outwards['+j+'][rate]', id:'outwards-'+j+'-rate',class:'outward_calculation form-control input-sm numberOnly'});
+		   $(this).find('td:nth-child(5) input').attr({name:'outwards['+j+'][amount]', id:'outwards-'+j+'-amount',class:'outward_reverseCalculation form-control input-sm numberOnly'});
 				j++;
 			});
 			}
@@ -366,16 +366,16 @@ echo $this->Html->scriptBlock($js, array('block' => 'scriptBottom'));
 		<tr class="main_tr" class="tab ">
 			<td width="7%"></td>
 			<td>
-				<?php echo $this->Form->input('item_id', ['empty'=>'--Select--','options'=>$items,'label' => false,'class' => 'form-control input-medium','required'=>'required']); ?>
+				<?php echo $this->Form->input('item_id', ['empty'=>'--Select--','options'=>$itemOptions,'label' => false,'class' => 'form-control input-medium','required'=>'required']); ?>
 			</td>
 			<td width="15%" align="right">
-				<?php echo $this->Form->input('quantity', ['label' => false,'class' => 'form-control ','id'=>'check','required'=>'required','placeholder'=>'Qty','style'=>'text-align:right;']); ?>
+				<?php echo $this->Form->input('quantity', ['label' => false,'class' => 'form-control numberOnly','id'=>'check','required'=>'required','placeholder'=>'Qty','style'=>'text-align:right;']); ?>
 			</td>
 			<td width="20%" >
-				<?php echo $this->Form->input('rate', ['label' => false,'class' => 'form-control input-sm rightAligntextClasses','required'=>'required','placeholder'=>'Rate','style'=>'text-align:right;']); ?>
+				<?php echo $this->Form->input('rate', ['label' => false,'class' => 'form-control input-sm numberOnly rightAligntextClasses','required'=>'required','placeholder'=>'Rate','style'=>'text-align:right;']); ?>
 			</td>
 			<td width="25%" >
-				<?php echo $this->Form->input('amount', ['label' => false,'class' => 'form-control input-sm rightAligntextClasses','required'=>'required','placeholder'=>'Amount','style'=>'text-align:right;']); ?>	
+				<?php echo $this->Form->input('amount', ['label' => false,'class' => 'form-control input-sm numberOnly rightAligntextClasses','required'=>'required','placeholder'=>'Amount','style'=>'text-align:right;']); ?>	
 			</td>
 			<td align="center">
 				<a class="btn btn-danger delete-tr btn-xs" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>

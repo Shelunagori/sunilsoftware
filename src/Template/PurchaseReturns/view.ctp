@@ -1,172 +1,200 @@
-<?php //pr($salesInvoice); exit;
+<style>
+
+@media print{
+	.maindiv{
+		width:100% !important;
+		margin:auto;
+	}	
+	.hidden-print{
+		display:none;
+	}
+}
+
+</style>
+<style type="text/css" media="print">
+@page {
+	width:100%;
+    size: auto;   /* auto is the initial value */
+    margin: 0px 0px 0px 0px;  /* this affects the margin in the printer settings */
+}
+.maindiv {
+border:solid 1px #c7c7c7;background-color: #FFF;padding: 10px;margin: auto;width: 100%;font-size: 12px;
+}
+</style>
+
+
+<?php
 /**
  * @Author: PHP Poets IT Solutions Pvt. Ltd.
  */
- 
- 
-$this->set('title', 'Purchase Return');
-$is_interstate=0;
+$this->set('title', 'Purchase Return View');
 
-if($supplier_state_id== $state_id){
-		$is_interstate=0;
-}else{
-	$is_interstate=1;
-}
 ?>
-
-<div class="row">
-	<div class="col-md-12">
-		<div class="portlet light ">
+<div  class="maindiv" style="border:solid 1px #c7c7c7;background-color: #FFF;padding: 10px;margin: auto;width:100%;font-size: 12px;">	
+	<table width="100%" class="divHeader">
+		<tbody><tr>
+				<td width="30%"><?php if(!empty(@$purchaseReturn->company->logo)){ ?>
+				<?php echo $this->Html->image('/img/'.$purchaseReturn->company->logo, ['height' => '70px', 'width' => '70px']); ?>
+				<?php } ?></td>
+				<td align="center" width="40%" style="font-size: 12px;"><div align="center" style="font-size: 18px;font-weight: bold;color: #0685a8;">PURCHASE RETURN VIEW</div></td>
+				<td align="right" width="40%" style="font-size: 12px;">
+				<span style="font-size: 14px;font-weight: bold;"><?=@$purchaseReturn->company->name?></span><br/>
+				<span><?=@$purchaseReturn->company->address?>, <?=@$purchaseReturn->company->state->name?></span></br>
+				<span> <i class="fa fa-phone" aria-hidden="true"></i>  <?=@$purchaseReturn->company->phone_no ?> |  Mobile : <?=@$purchaseReturn->company->mobile ?><br> GSTIN NO:
+				<?=@$purchaseReturn->company->gstin ?></span></td>
+			</tr>
+			<tr>
+				<td colspan="3">
+				<div style="border:solid 2px #0685a8;margin-bottom:5px;margin-top: 5px;"></div>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+		<table width="100%">
+		<tbody>
+			<tr>
+				<td width="50%" valign="top" align="left">
+				<table>
+					 <tbody><tr>
+                        <td>Purchase Invoice No</td>
+                        <td width="20" align="center">:</td>
+                        <td><?php echo '#'.str_pad($purchaseReturn->purchase_invoice->voucher_no, 4, '0', STR_PAD_LEFT);?></td>
+						</tr>
+					<tr>
+						<td>Voucher No</td>
+						<td width="20" align="center">:</td>
+						<td><?php echo '#'.str_pad($purchaseReturn->voucher_no, 4, '0', STR_PAD_LEFT);?>
+					</tr>
+				</tbody></table>
+			</td>
+			<td width="50%" valign="top" align="right">
+				<table>
+					<tbody><tr>
+						<td>Transaction Date</td>
+						<td width="20" align="center">:</td>
+						<td><?php echo date("d-m-Y",strtotime($purchaseReturn->transaction_date)); ?></td>
+					</tr>
+					<tr>
+						<td>Supplier</td>
+						<td width="20" align="center">:</td>
+						<td><?php echo $purchaseReturn->purchase_invoice->supplier_ledger->name; ?></td>
+					</tr>
+				</tbody></table>
+			</td>
+		</tr>
+		</tbody></table>
+		<br>
+		<table width="100%" class="table  table-bordered" style="border:none;" border="0">
+			<thead>
+				<tr></tr>
+				<tr align="center" >
+					<td rowspan="2"><b>Sr</b></td>
+					<td rowspan="2"><b>Item</b></td>
+					<td rowspan="2"><b>Qty</b></td>
+					<td rowspan="2"><b>Rate</b></td>
+					<td colspan="2"><b>Discount</b></td>
+					<td colspan="2"><b>Pnf</b></td>
+					<td rowspan="2"><b>Taxable Value</b></td>
+					<td colspan="2"><b><?php if($supplier_state_id == $state_id){ echo 'GST'; } else{ echo 'IGST';} ?></b></td>
+					<td rowspan="2">Round Off</b></th>
+					<td rowspan="2"><b>Net Amount</b></td>
+				</tr>
+				<tr>
+					<th><div align="center">%</div></th>
+					<th><div align="center">Rs</div></th>
+					<th><div align="center">%</div></th>
+					<th><div align="center">Rs</div></th>
+					<th><div align="center">%</div></th>
+					<th><div align="center">Rs</div></th>
+					
+				</tr>
+			</thead>
 			
-			<div class="portlet-body">
-				<?= $this->Form->create($purchaseReturn,['id'=>'form_sample_2']) ?>
-					<div class="row">
-						
-						<div class="col-md-6 caption-subject font-green-sharp bold " align="center" style="font-size:16px"><b>PURCHASE RETURN VIEW</b></div>
-					</div><br><br>
-					
-					<div class="row">
-						<div class="col-md-3">
-							<div class="form-group">
-								<label><b>Purchase Invoice Voucher No : </b><br><?= h('#'.str_pad($purchaseReturn->voucher_no, 4, '0', STR_PAD_LEFT)) ?></label>&nbsp;&nbsp;
-								
-							</div>
-						</div>
-						<div class="col-md-3">
-							<div class="form-group">
-								<label><b>Transaction Date</b></label><br>
-								<?php  
-								echo $purchaseReturn->transaction_date;
-								?>
-							</div>
-						</div>
-						
-						<div class="col-md-3">
-								<label><b>Party</b></label><br/>
-								<?php echo $purchaseReturn->purchase_invoice->supplier_ledger->supplier->name
-								?>
-						</div>
-						
-						<div class="col-md-3">
-								<label><b>Purchase Account</b></label><br/>
-								<?php echo $purchaseReturn->purchase_invoice->purchase_ledger->name
-								?>
-						</div>
-						
-						
-					</div>
-					
-				   <div class="row">
-				  <div class="table-responsive">
-						<table id="main_table" class="table table-condensed table-bordered" style="margin-bottom: 4px;font-size:12px;" width="100%">
-							<thead>
-								<tr align="center" style="font-size:12px;">
-									<th rowspan="2" style="text-align:center;"><label  style="text-align:center; font-size:12px">SR No.<label></th>
-									<th rowspan="2" style="text-align:center;"><label  style="text-align:center; font-size:12px">Item<label></th>
-									<th rowspan="2" style="text-align:center;"><label  style="text-align:center; font-size:12px">Qty</label></th>
-									<th rowspan="2" style="text-align:center;"><label  style="text-align:center; font-size:12px">Rate</label></th>
-									<th  colspan="2" style="text-align:center;"><label  style="text-align:center; font-size:12px">Discount (%)</label></th>
-									<th  colspan="2" style="text-align:center;"><label  style="text-align:center; font-size:12px">PNF (%)</label></th>
-									<th rowspan="2" style="text-align:center;"><label  style="text-align:center; font-size:12px">Taxable Value</label></td>
-									<?php if($supplier_state_id== $state_id){ ?>
-											<th colspan="2" style="text-align:center;"><label  style="text-align:center; font-size:12px" id="gstDisplay">GST</label></th>
-									<?php } else { ?>
-												<th colspan="2" style="text-align:center;"><label  style="text-align:center; font-size:12px" id="gstDisplay">IGST</label></th>
-									<?php } ?>
-									
-									<th rowspan="2" style="text-align:center;"><label  style="text-align:center; font-size:12px">Round Of</label></th>
-									<th rowspan="2" style="text-align:center; "><label style="text-align:center;">Total</label></th>
-									
-								</tr>
-								<tr>
-									<th><div align="center" style="text-align:center; font-size:12px">%</div></th>
-									<th><div align="center" style="text-align:center; font-size:12px">Rs</div></th>
-									<th><div align="center" style="text-align:center; font-size:12px">%</div></th>
-									<th><div align="center" style="text-align:center; font-size:12px">Rs</div></th>
-									<th><div align="center" style="text-align:center; font-size:12px">%</div></th>
-									<th><div align="center" style="text-align:center; font-size:12px">Rs</div></th>
-									
-								</tr>
-							</thead>
-							<tbody id='main_tbody' class="tab">
-							 <?php if(!empty($purchaseReturn->purchase_return_rows))
-							$i=1;
-							$total_amt=0;
-							 foreach($purchaseReturn->purchase_return_rows as $purchase_return_row)
-							 { 
+			<tbody id='main_tbody' class="tab">
+				<?php if(!empty($purchaseReturn->purchase_return_rows))
+				$i=1;
+				$total_amt=0; 	$total_discount=0;		$total_pnf=0;	$total_round_off=0;
+				$total_taxable_value=0; $total_gst=0;	$total_net_amount=0;
+				 foreach($purchaseReturn->purchase_return_rows as $purchase_return_row)
+				 { 
+				?>
+				<tr class="main_tr" class="tab" >
+					<td width="3%" class="rightAligntextClass"><?php echo $i; ?></td>
+					<td width="15%" align="left">
+							<?php echo $purchase_return_row->item->name; ?>
+					</td>
+					<td width="5%" class="rightAligntextClass">
+							<?php echo $purchase_return_row->quantity;
 							?>
-							<tr class="main_tr" class="tab" >
-								<td width="3%" align="center"><?php echo $i; ?></td>
-								<td width="15%" align="center">
-										<?php echo $purchase_return_row->item->name; ?>
-								</td>
-								<td width="5%" align="center">
-										<?php echo $purchase_return_row->quantity;
-										?>
-								</td>	
-								<td width="5%" align="center">
-										<?php echo $purchase_return_row->rate;
-										?>
-								</td>	
-								<td width="5%" align="center">
-										<?php echo $purchase_return_row->discount_percentage;
-										?>
-								</td>	
-								<td width="5%" align="center">
-										<?php echo $purchase_return_row->discount_amount;
-										?>
-								</td>	
-								<td width="5%" align="center">
-										<?php echo $purchase_return_row->pnf_percentage;
-										?>
-								</td>	
-								<td width="5%" align="center">
-										<?php echo $purchase_return_row->pnf_amount;
-										?>
-								</td>	
-								
-								<td width="5%" align="center">
-										<?php echo $purchase_return_row->taxable_value;
-										?>
-								</td>
+					</td>	
+					<td width="5%" class="rightAligntextClass">
+							<?php echo $purchase_return_row->rate;
+							?>
+					</td>	
+					<td width="5%" class="rightAligntextClass">
+							<?php if(!empty($purchase_return_row->discount_percentage)) { echo $purchase_return_row->discount_percentage; } else { echo ' '; }
+							?>
+					</td>	
+					<td width="5%" class="rightAligntextClass">
+					<?php  if(!empty($purchase_return_row->discount_amount)) { echo $purchase_return_row->discount_amount; } else { echo ' '; }
+					$total_discount+=$purchase_return_row->discount_amount;?>
+					</td>	
+					<td width="5%" class="rightAligntextClass">
+							<?php  if(!empty($purchase_return_row->pnf_percentage)) { echo $purchase_return_row->pnf_percentage; } else { echo ' '; }
+							?>
+					</td>	
+					<td width="5%" class="rightAligntextClass">
+							<?php  if(!empty($purchase_return_row->pnf_amount)) { echo $purchase_return_row->pnf_amount; } else { echo ' '; }
+							$total_pnf+=$purchase_return_row->pnf_amount;
+							?>
+					</td>	
+					
+					<td width="5%" class="rightAligntextClass">
+							<?php echo $purchase_return_row->taxable_value;
+							$total_taxable_value+=$purchase_return_row->taxable_value;
+							?>
+					</td>
 
-								<td width="5%" align="center">
-										<?php echo $purchase_return_row->item->FirstGstFigures->tax_percentage;
-										?>
-								</td>	
-								<td width="5%" align="center">
-										<?php echo $purchase_return_row->gst_value;
-										?>
-								</td>
-								<td width="5%" align="center">
-										<?php echo $purchase_return_row->round_off;
-										?>
-								</td>	
-								<td width="5%" align="center" style="border-left-width:2px;">
-										<?php echo $purchase_return_row->net_amount;
-												$total_amt+=$purchase_return_row->net_amount;
-										?>
-								</td>
-								
-							</tr>
-							<?php $i++; } ?>
-							</tbody>
-							<tfoot>
-								<tr>
-									<td  colspan="12"  align="right"><b>Total</b>
-									</td>
-									<td style="text-align:center">
-									<?php echo $total_amt;
-										?>	
-									</td>
-								</tr>
-							</tfoot>
-					</table>
-				   </div>
-				  </div>
-			</div>
+					<td width="5%" class="rightAligntextClass">
+							<?php echo $purchase_return_row->item->FirstGstFigures->tax_percentage;
+							?>
+					</td>	
+					<td width="5%" class="rightAligntextClass">
+							<?php echo $purchase_return_row->gst_value;
+							$total_gst+= $purchase_return_row->gst_value;
+							?>
+					</td>
+					<td width="5%" class="rightAligntextClass">
+							<?php  if($purchase_return_row->round_off>0) { echo $purchase_return_row->round_off;}
+							$total_round_off+=$purchase_return_row->round_off;
+							?>
+					</td>	
+					<td width="5%" class="rightAligntextClass" style="border-left-width:2px;">
+							<?php echo $purchase_return_row->net_amount;
+									$total_amt+=$purchase_return_row->net_amount;
+							?>
+					</td>
+					
+				</tr>
+				<?php $i++; } ?> 
+	
+			</tbody>
+			<tfoot>
 				
-		</div>
-	</div>
-</div>
+				<tr>
+					<td colspan="4" class="rightAligntextClass"><b>Total</b></td>
+					<td colspan="2" class="rightAligntextClass"><b><?php  if($total_discount>0) {  echo $total_discount; } ?></b></td>
+					<td colspan="2" class="rightAligntextClass"><b><?php if($total_pnf>0) { echo $total_pnf; }?></b></td>
+					<td colspan="1" class="rightAligntextClass"><b><?php echo $total_taxable_value;  ?></b></td>
+					<td colspan="2" class="rightAligntextClass"><b><?php  if($total_gst>0) {  echo $total_gst; } ?></b></td>
+					<td colspan="1" class="rightAligntextClass"><b><?php  if($total_round_off>0) { echo $total_round_off; }?></b></td>
+					<td colspan="1" class="rightAligntextClass"><b><?php echo $total_amt; ?></b></td>
+						
+				</tr>
+			
+			</tfoot>
+		</table>
+						
+ </div>
+
 

@@ -42,6 +42,11 @@ class JournalVoucherRowsTable extends Table
             'foreignKey' => 'journal_voucher_id',
             'joinType' => 'INNER'
         ]);
+		$this->belongsTo('RefJournalVouchers', [
+			'className' => 'JournalVouchers',
+            'foreignKey' => 'journal_voucher_id',
+            'joinType' => 'LEFT'
+        ]);
         $this->belongsTo('Ledgers', [
             'foreignKey' => 'ledger_id',
             'joinType' => 'INNER'

@@ -68,11 +68,11 @@ $this->set('title', 'Approve Stock Transfer');
 										</td>
 									
 									<td width="25%" >
-										<?php echo $this->Form->input('intra_location_stock_transfer_voucher_rows.'.$i.'.quantity', ['label' => false,'class' => 'form-control input-sm getQty','placeholder'=>'Quantity','value'=>$intra_location_stock_transfer_voucher_row->quantity,'required','readonly'=>'readonly']); ?>
+										<?php echo $this->Form->input('intra_location_stock_transfer_voucher_rows.'.$i.'.quantity', ['label' => false,'class' => 'form-control input-sm getQty rightAligntextClass','placeholder'=>'Quantity','value'=>$intra_location_stock_transfer_voucher_row->quantity,'required','readonly'=>'readonly']); ?>
 									</td>
 									
 									<td width="25%" >
-										<?php echo $this->Form->input('intra_location_stock_transfer_voucher_rows.'.$i.'.receive_quantity', ['label' => false,'class' => 'form-control input-sm checkQty','placeholder'=>'Receive Quantity','value'=>$intra_location_stock_transfer_voucher_row->quantity,'required']); ?>
+										<?php echo $this->Form->input('intra_location_stock_transfer_voucher_rows.'.$i.'.receive_quantity', ['type'=>'text','label' => false,'class' => 'form-control input-sm checkQty rightAligntextClass','placeholder'=>'Receive Quantity','value'=>$intra_location_stock_transfer_voucher_row->quantity,'required']); ?>
 									</td>
 								</tr>
 								<?php $i++; }?>	

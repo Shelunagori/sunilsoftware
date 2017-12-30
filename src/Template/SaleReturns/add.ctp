@@ -5,7 +5,7 @@
 $this->set('title', 'Sales Return');
 foreach($partyOptions as $partyOption)
 {
-		$value=$partyOption['value'];
+	$value=$partyOption['value'];
 	if($value==$salesInvoice->party_ledger_id)
 	{
 		$party_states=$partyOption['party_state_id'];
@@ -17,6 +17,10 @@ foreach($partyOptions as $partyOption)
 	{
 		$party_state_id=$state_id;
 	}
+	}
+	else
+	{
+		$party_state_id=$state_id;
 	}
 }
 ?>
@@ -35,7 +39,29 @@ foreach($partyOptions as $partyOption)
 						<div class="col-md-3">
 							<div class="form-group">
 								<label><b>Sales Invoice Voucher No :</b></label>&nbsp;&nbsp;<br>
-								<?= h('#'.str_pad($salesInvoice->voucher_no, 4, '0', STR_PAD_LEFT)) ?>
+								<?php
+								    $date = date('Y-m-d', strtotime($salesInvoice->transaction_date));
+									$d = date_parse_from_format('Y-m-d',$date);
+									$yr=$d["year"];$year= substr($yr, -2);
+									if($d["month"]=='01' || $d["month"]=='02' || $d["month"]=='03')
+									{
+									  $startYear=$year-1;
+									  $endYear=$year;
+									  $financialyear=$startYear.'-'.$endYear;
+									}
+									else
+									{
+									  $startYear=$year;
+									  $endYear=$year+1;
+									  $financialyear=$startYear.'-'.$endYear;
+									}
+									$words = explode(" ", $coreVariable['company_name']);
+									$acronym = "";
+									foreach ($words as $w) {
+									$acronym .= $w[0];
+									}
+								?>
+								<?= $acronym.'/'.$financialyear.'/'. h(str_pad($salesInvoice->voucher_no, 3, '0', STR_PAD_LEFT))?>
 							</div>
 						</div>
 						<div class="col-md-3">
@@ -144,7 +170,8 @@ foreach($partyOptions as $partyOption)
 										<input type="hidden" name="salesInvoiceRow<?php echo $i;?>gst_value" class="gstValue calculation" value="<?php echo $salesInvoiceRow->gst_value;?>">
 										<input type="hidden" name="exactgst_value" class="exactgst_value calculation" value="<?php $exactgst;?>">
 										<input type="hidden" name="" class="discountvalue calculation" value="">
-											
+										<input type="hidden" name="" class="is_gst_excluded calculation gstExcluded" value="<?php echo $salesInvoiceRow->is_gst_excluded;?>">
+
 										<?php
 										echo $salesInvoiceRow->item->name;
 										echo $this->Form->input('q', ['value'=>$salesInvoiceRow->id,'type'=>'hidden']);
@@ -162,7 +189,7 @@ foreach($partyOptions as $partyOption)
 									?>
 								</td>
 								<td width="5%" align="center">
-									<?php echo $this->Form->input('q', ['type'=>'hidden','label' => false,'class' => 'form-control input-sm calculation discount rightAligntextClass','placeholder'=>'Dis.','disabled', 'value'=>$salesInvoiceRow->discount_percentage]); 
+									<?php echo $this->Form->input('q', ['type'=>'hidden','label' => false,'class' => 'form-control input-sm rightAligntextClass discount','placeholder'=>'Dis.', 'value'=>$salesInvoiceRow->discount_percentage]); 
 									echo $salesInvoiceRow->discount_percentage;
 									?>	
 								</td>
@@ -443,39 +470,40 @@ foreach($partyOptions as $partyOption)
 		if(val){ 
 			$(this).find('td:nth-child(1) input.id').attr({name:'sale_return_rows['+i+'][sales_invoice_row_id]',id:'sale_return_rows['+i+'][sales_invoice_row_id]'});
 			$(this).find('td:nth-child(1) input.attrGet').attr({name:'sale_return_rows['+i+'][item_id]',id:'sale_return_rows['+i+'][item_id]'});
-		  $(this).find('.quantity').attr({name:'sale_return_rows['+i+'][quantity]',id:'sale_return_rows['+i+'][quantity]'});
+			$(this).find('.quantity').attr({name:'sale_return_rows['+i+'][quantity]',id:'sale_return_rows['+i+'][quantity]'});
 		 
 			var max_qty=$(this).find('.returnQty').attr('max');
 			$(this).find('.rate').attr({name:'sale_return_rows['+i+'][rate]',id:'sale_return_rows['+i+'][rate]'});
-		  $(this).find('.discount').attr({name:'sale_return_rows['+i+'][discount_percentage]',id:'sale_return_rows['+i+'][discount_percentage]'});
+			$(this).find('.discount').attr({name:'sale_return_rows['+i+'][discount_percentage]',id:'sale_return_rows['+i+'][discount_percentage]'});
 		  
-		  $(this).find('.gstAmount').attr({name:'sale_return_rows['+i+'][taxable_value]',id:'sale_return_rows['+i+'][taxable_value]'});
+			$(this).find('.gstAmount').attr({name:'sale_return_rows['+i+'][taxable_value]',id:'sale_return_rows['+i+'][taxable_value]'});
 		  
-		  $(this).find('.gst_figure_id').attr({name:'sale_return_rows['+i+'][gst_figure_id]',id:'sale_return_rows['+i+'][gst_figure_id]'});
+			$(this).find('.gst_figure_id').attr({name:'sale_return_rows['+i+'][gst_figure_id]',id:'sale_return_rows['+i+'][gst_figure_id]'});
 		  
-		  $(this).find('.discountAmount').attr({name:'sale_return_rows['+i+'][net_amount]',id:'sale_return_rows['+i+'][net_amount]'});
-		  $(this).find('.gstValue').attr({name:'sale_return_rows['+i+'][gst_value]',id:'sale_return_rows['+i+'][gst_value]'});
-		$(this).find('.returnQty').attr({name:'sale_return_rows['+i+'][return_quantity]',id:'sale_return_rows['+i+'][return_quantity]'}).attr('max', max_qty).removeAttr('readonly');
+			$(this).find('.discountAmount').attr({name:'sale_return_rows['+i+'][net_amount]',id:'sale_return_rows['+i+'][net_amount]'});
+			$(this).find('.gstValue').attr({name:'sale_return_rows['+i+'][gst_value]',id:'sale_return_rows['+i+'][gst_value]'});
+			$(this).find('.returnQty').attr({name:'sale_return_rows['+i+'][return_quantity]',id:'sale_return_rows['+i+'][return_quantity]'}).attr('max', max_qty).removeAttr('readonly');
 		  
-		$(this).css('background-color','#fffcda');
-		i++;
-		}else{
+			$(this).css('background-color','#fffcda');
+			i++;
+			}else{
 			$(this).find('td:nth-child(1) input.id').attr({name:'q'});
 
 			$(this).find('td:nth-child(1) input.attrGet').attr({name:'q'});
 			$(this).find('.quantity').attr({name:'q'});
-		  $(this).find('.rate').attr({name:'q'});
-		  $(this).find('.discount').attr({name:'q'});
-		  
-		  $(this).find('.gstAmount').attr({name:'q'});
-		  
-		  $(this).find('.gst_figure_id').attr({name:'q'});
-		  
-		  $(this).find('.discountAmount').attr({name:'q'});
-		  $(this).find('.gstValue').attr({name:'q'});
-		  $(this).find('.returnQty').attr({name:'q' , readonly:'readonly'}).val(0);
-		$(this).css('background-color','#FFF');
-		}
+			  
+			$(this).find('.rate').attr({name:'q'});
+			$(this).find('.discount').attr({name:'q'});
+			  
+			$(this).find('.gstAmount').attr({name:'q'});
+			  
+			$(this).find('.gst_figure_id').attr({name:'q'});
+			  
+			$(this).find('.discountAmount').attr({name:'q'});
+			$(this).find('.gstValue').attr({name:'q'});
+			$(this).find('.returnQty').attr({name:'q' , readonly:'readonly'}).val(0);
+			$(this).css('background-color','#FFF');
+			}
 
 		});
 	}
@@ -544,7 +572,7 @@ foreach($partyOptions as $partyOption)
 			var exactgstvalue=0;		
 			$('#main_table tbody#main_tbody tr.main_tr').each(function()
 			{
-				var chkquanity1=$(this).find('.returnQty').attr('max');
+				var chkquanity1=$(this).find('.returnQty').attr('max');	
 				var chkquanity2=parseFloat($(this).closest('tr').find('.returnQty').val());
 
 				if(chkquanity2 != 0){
@@ -561,6 +589,7 @@ foreach($partyOptions as $partyOption)
 					}
 				}
 				
+				var gstExcluded=$(this).closest('tr').find('.gstExcluded').val();
 			    var outdata=$(this).closest('tr').find('.outStock').val();
 				if(!outdata){outdata=0;}
 				outOfStockValue=parseFloat(outOfStockValue)+parseFloat(outdata);
@@ -575,22 +604,46 @@ foreach($partyOptions as $partyOption)
 				if(!rate){rate=0;}
 				var totamount = quantity*rate;
 				$(this).find('.totamount').val(totamount);
-				  
+			
+				var discountp=$(this).find('.discount').val();
+			if(discountp)
+			{
 				var discount  = parseFloat($(this).find('.discount').val());
 				if(!discount){discount=0;}
 				var discountValue=(discount*totamount)/100;
 				var discountAmount=totamount-discountValue;
 				$(this).find('.discountAmount').val(discountAmount.toFixed(2));
-
 				var gst_ietmamount  = $(this).find('.gst_amount').val();
 				var discountAmount  = $(this).find('.discountAmount').val();
 				var item_gst_amount=discountAmount/quantity;
-				//console.log(item_gst_amount);
-				
 				discountValue=round(discountValue,2);
-				
 				$(this).find('.discountvalue').val(discountValue.toFixed(2));
+			}
+			else{
+				discountValue=0;
+				var discountAmount=totamount-discountValue;
+				$(this).find('.discountAmount').val(discountAmount.toFixed(2));
+				var gst_ietmamount  = $(this).find('.gst_amount').val();
+				var discountAmount  = $(this).find('.discountAmount').val();
+			}
+
+			if(gstExcluded==1){
+				var gst_figure_tax_percentage  = parseFloat($(this).find('.gst_figure_tax_percentage').val());
+				if(!gst_figure_tax_percentage){gst_figure_tax_percentage=0;}
+				var discountAmounts  = parseFloat($(this).find('.discountAmount').val());
+				if(!discountAmounts){discountAmounts=0;}
 				
+				var netValue=discountAmounts*(100+gst_figure_tax_percentage)/100;
+				if(!netValue){netValue=0;}
+				var netValue=round(netValue,2);
+			
+				$(this).find('.discountAmount').val(netValue);
+				gstValue = netValue-discountAmounts;
+				$(this).find('.gstValue').val(gstValue);
+				gstAmount = discountAmounts;
+				$(this).find('.gstAmount').val(gstAmount.toFixed(2));
+				
+			}else{
 				var gst_figure_tax_percentage  = parseFloat($(this).find('.gst_figure_tax_percentage').val());
 				if(!gst_figure_tax_percentage){gst_figure_tax_percentage=0;}
 				var discountAmount  = parseFloat($(this).find('.discountAmount').val());
@@ -601,11 +654,13 @@ foreach($partyOptions as $partyOption)
 	            var gstValue=(gstAmount*gst_figure_tax_percentage)/100;
 				$(this).find('.gstAmount').val(gstAmount.toFixed(2));
 				$(this).find('.gstValue').val(gstValue.toFixed(2));
-
+			}
+			
+			
+			
+			$(this).find('.discountvalue').val(discountValue.toFixed(2));
 				
 				
-				var gstValue  = parseFloat($(this).find('.gstValue').val());
-				var gstAmount  = parseFloat($(this).find('.gstAmount').val());
 				var is_interstate  = parseFloat($('#is_interstate').val());
 				if(is_interstate=='0')
 				{
@@ -709,7 +764,6 @@ foreach($partyOptions as $partyOption)
 			return false;
 		}
 	}
-
 	
 	";
 

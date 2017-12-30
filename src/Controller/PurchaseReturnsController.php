@@ -24,10 +24,25 @@ class PurchaseReturnsController extends AppController
 		$company_id=$this->Auth->User('session_company_id');
 		$location_id=$this->Auth->User('session_location_id');
 		$stateDetails=$this->Auth->User('session_company');
-        
-        $purchaseReturns = $this->paginate($this->PurchaseReturns->find()->where(['PurchaseReturns.company_id'=>$company_id]));
+		$search=$this->request->query('search');
+         $this->paginate = [
+            'contain' => ['Companies', 'PurchaseInvoices']
+        ];
+		if($search){
+        $purchaseReturns = $this->paginate($this->PurchaseReturns->find()->where(['PurchaseReturns.company_id'=>$company_id])->where([
+		'OR' => [
+            'PurchaseInvoices.voucher_no' => $search,
+            // ...
+            'PurchaseReturns.voucher_no' => $search,
+			//.....
+			'PurchaseReturns.transaction_date ' => date('Y-m-d',strtotime($search))
+		 ]]));
+		}
+		else {
+		 $purchaseReturns = $this->paginate($this->PurchaseReturns->find()->where(['PurchaseReturns.company_id'=>$company_id]));	
+		}
 		//pr( $purchaseReturns); exit;
-        $this->set(compact('purchaseReturns'));
+        $this->set(compact('purchaseReturns','search'));
         $this->set('_serialize', ['purchaseReturns']);
     }
 
@@ -47,7 +62,7 @@ class PurchaseReturnsController extends AppController
 		$stateDetails=$this->Auth->User('session_company');
 		$state_id=$stateDetails->state_id;
         $purchaseReturn = $this->PurchaseReturns->get($id, [
-            'contain' => (['PurchaseReturnRows'=>['Items'=>['FirstGstFigures']],'PurchaseInvoices'=>['PurchaseInvoiceRows'=>['Items'=>['FirstGstFigures']],'PurchaseLedgers','SupplierLedgers'=>['Suppliers']]])]);
+            'contain' => (['Companies'=>['States'],'PurchaseReturnRows'=>['Items'=>['FirstGstFigures']],'PurchaseInvoices'=>['PurchaseInvoiceRows'=>['Items'=>['FirstGstFigures']],'PurchaseLedgers','SupplierLedgers'=>['Suppliers']]])]);
 		$supplier_state_id=$purchaseReturn->purchase_invoice->supplier_ledger->supplier->state_id;
 	//	pr($purchaseReturn); exit;
         $this->set('purchaseReturn', $purchaseReturn);
@@ -131,6 +146,17 @@ class PurchaseReturnsController extends AppController
 					$this->PurchaseReturns->ItemLedgers->save($ItemLedger);
 				}
 				
+				//Accounting Entries for Supplier account//
+				$AccountingEntrie = $this->PurchaseReturns->AccountingEntries->newEntity(); 
+				$AccountingEntrie->ledger_id=$PurchaseInvoice->supplier_ledger_id;
+				$AccountingEntrie->debit=$total_amount;
+				$AccountingEntrie->credit=0;
+				$AccountingEntrie->transaction_date=$purchaseReturn->transaction_date;
+				$AccountingEntrie->company_id=$company_id;
+				$AccountingEntrie->purchase_return_id=$purchaseReturn->id;
+				$this->PurchaseReturns->AccountingEntries->save($AccountingEntrie);
+               
+				
 				//Accounting Entries for Purchase account//
 				$AccountingEntrie = $this->PurchaseReturns->AccountingEntries->newEntity(); 
 				$AccountingEntrie->ledger_id=$PurchaseInvoice->purchase_ledger_id;
@@ -140,19 +166,7 @@ class PurchaseReturnsController extends AppController
 				$AccountingEntrie->company_id=$company_id;
 				$AccountingEntrie->purchase_return_id=$purchaseReturn->id;
 				$this->PurchaseReturns->AccountingEntries->save($AccountingEntrie);
-			  
-			  
-			  //Accounting Entries for Supplier account//
-				$AccountingEntrie = $this->PurchaseReturns->AccountingEntries->newEntity(); 
-				$AccountingEntrie->ledger_id=$PurchaseInvoice->supplier_ledger_id;
-				$AccountingEntrie->debit=$total_amount;
-				$AccountingEntrie->credit=0;
-				$AccountingEntrie->transaction_date=$purchaseReturn->transaction_date;
-				$AccountingEntrie->company_id=$company_id;
-				$AccountingEntrie->purchase_return_id=$purchaseReturn->id;
-				$this->PurchaseReturns->AccountingEntries->save($AccountingEntrie);
-                $this->Flash->success(__('The purchase return has been saved.'));
-				
+			   $this->Flash->success(__('The purchase return has been saved.'));
 				//Accounting Entries for Round of Amount//
 				$AccountingEntrie = $this->PurchaseReturns->AccountingEntries->newEntity(); 
 				$RoundofLedgers = $this->PurchaseReturns->PurchaseInvoices->PurchaseInvoiceRows->Ledgers->find()->where(['Ledgers.round_off'=>1,'Ledgers.company_id'=>$company_id])->first(); 
@@ -289,6 +303,37 @@ class PurchaseReturnsController extends AppController
             $this->Flash->success(__('The purchase return has been deleted.'));
         } else {
             $this->Flash->error(__('The purchase return could not be deleted. Please, try again.'));
+        }
+
+        return $this->redirect(['action' => 'index']);
+    }
+	
+	public function cancel($id = null)
+    {
+		// $this->request->allowMethod(['post', 'delete']);
+        $purchaseReturn = $this->PurchaseReturns->get($id);
+		$company_id=$this->Auth->User('session_company_id');
+		//pr($salesInvoice);exit;
+		$purchaseReturn->status='cancel';
+        if ($this->PurchaseReturns->save($purchaseReturn)) {
+			
+				$deleteRefDetails = $this->PurchaseReturns->ReferenceDetails->query();
+				$deleteRef = $deleteRefDetails->delete()
+					->where(['ReferenceDetails.purchase_return_id' => $purchaseReturn->id])
+					->execute();
+				$deleteAccountEntries = $this->PurchaseReturns->AccountingEntries->query();
+				$result = $deleteAccountEntries->delete()
+				->where(['AccountingEntries.purchase_return_id' => $purchaseReturn->id])
+				->execute();
+			
+			$deleteItemLedger = $this->PurchaseReturns->ItemLedgers->query();
+				$deleteResult = $deleteItemLedger->delete()
+					->where(['ItemLedgers.purchase_return_id' => $purchaseReturn->id])
+					->execute();
+				
+            $this->Flash->success(__('The Purchase Return has been cancelled.'));
+        } else {
+            $this->Flash->error(__('The Purchase Return could not be cancelled. Please, try again.'));
         }
 
         return $this->redirect(['action' => 'index']);

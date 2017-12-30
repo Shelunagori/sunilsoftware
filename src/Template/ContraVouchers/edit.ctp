@@ -6,10 +6,14 @@ $this->set('title', 'Contra Voucher');
 
 $option_mode[]= ['value'=>'Cheque','text'=>'Cheque'];
 $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
+$option_mode[]= ['value'=>'Cash','text'=>'Cash'];
 ?>
 <style>
 .noBorder{
 	border:none;
+}
+.table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
+     vertical-align: top !important; 
 }
 </style>
 <div class="row">
@@ -101,7 +105,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 											<div class="window" style="margin:auto;">
 											<?php
 											if(!empty($contra_voucher_row->mode_of_payment)){
-												if($contra_voucher_row->mode_of_payment=='NEFT/RTGS')
+												if($contra_voucher_row->mode_of_payment=='NEFT/RTGS' || $contra_voucher_row->mode_of_payment=='Cash' )
 												{  
 													$style="display:none;";
 												}
@@ -146,7 +150,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 												   $style1="display:block;";
 											  }
 											?>
-											<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm  debitBox rightAligntextClass totalCalculation','placeholder'=>'Debit','value'=>$contra_voucher_row->debit,'style'=>@$style1]); ?>
+											<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm  debitBox rightAligntextClass numberOnly totalCalculation','placeholder'=>'Debit','value'=>$contra_voucher_row->debit,'style'=>@$style1]); ?>
 										
 										</td>
 										<td width="10%">
@@ -159,7 +163,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 												   $style2="display:block;";
 											  }
 										?>
-											<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm  creditBox rightAligntextClass totalCalculation','placeholder'=>'Credit','value'=>$contra_voucher_row->credit,'style'=>@$style2]); ?>
+											<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm  creditBox rightAligntextClass numberOnly totalCalculation','placeholder'=>'Credit','value'=>$contra_voucher_row->credit,'style'=>@$style2]); ?>
 										</td>
 										<td align="center"  width="10%">
 										<?php 
@@ -199,10 +203,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 	</div>
 </div>
 
-<?php
-$option_mode[]= ['value'=>'Cheque','text'=>'Cheque'];
-$option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
-?>
+
 <table id="sampleForBank" style="display:none;" width="100%">
 	<tbody>
 		<tr>
@@ -235,10 +236,10 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				<div class="window" style="margin:auto;"></div>
 			</td>
 			<td width="10%" style="vertical-align: top !important;">
-				<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm  debitBox rightAligntextClass totalCalculation','placeholder'=>'Debit']); ?>
+				<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm  debitBox rightAligntextClass numberOnly totalCalculation','placeholder'=>'Debit']); ?>
 			</td>
 			<td width="10%" style="vertical-align: top !important;">
-				<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm creditBox rightAligntextClass totalCalculation','placeholder'=>'Credit','style'=>'display:none;']); ?>	
+				<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm creditBox rightAligntextClass numberOnly totalCalculation','placeholder'=>'Credit','style'=>'display:none;']); ?>	
 			</td>
 			<td align="center"  width="10%" style="vertical-align: top !important;">
 				<a class="btn btn-danger delete-tr btn-xs" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
@@ -403,7 +404,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				var type=$(this).val();	
 				var currentRefRow=$(this).closest('tr');
 				var SelectedTr=$(this).closest('tr.MainTr');
-				if(type=='NEFT/RTGS'){
+				if(type=='NEFT/RTGS' || type=='Cash'){
 					currentRefRow.find('span.help-block-error').remove();
 					currentRefRow.find('td:nth-child(2) input').val('');
 					currentRefRow.find('td:nth-child(3) input').val('');
@@ -428,9 +429,6 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				$(this).closest('tr').remove();
 				renameMainRows();
 				calc();
-				var SelectedTr=$(this).closest('tr.MainTr');
-				renameBankRows(SelectedTr);
-				renameRefRows(SelectedTr);
 				
 			});
 			
