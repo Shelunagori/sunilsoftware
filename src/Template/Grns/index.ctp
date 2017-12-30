@@ -41,7 +41,9 @@ $this->set('title', 'GRNS');
 								<td><?= h($grn->transaction_date) ?></td>
 								<td class="actions">
 									<?= $this->Html->link(__('View'), ['action' => 'view', $grn->id]) ?>
+									<?php  if($grn->status=="Pending"){ ?>
 									<?= $this->Html->link(__('Edit'), ['action' => 'edit', $grn->id]) ?>
+									<?php } ?>
 									<?= $this->Html->link(__('Print-Barcodes'), ['action' => 'printBarcode', $grn->id]) ?>
 									
 									<?php  if($grn->status=="Pending"){ ?>

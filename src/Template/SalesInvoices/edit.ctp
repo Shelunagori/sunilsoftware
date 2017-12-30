@@ -125,7 +125,7 @@ foreach($partyOptions as $partyOption)
                                          $i=0;		
 								         foreach($salesInvoice->sales_invoice_rows as $salesInvoiceRow)
 									     {
-											if(@$salesInvoiceRow->quantity ==@$sales_return_qty[$salesInvoiceRow->item->id]){
+											if(@$salesInvoiceRow->quantity ==@$sales_return_qty[$salesInvoiceRow->id]){
 											$disable_class="disabledbutton";
 										}else{
 											$disable_class=""; 
@@ -154,7 +154,9 @@ foreach($partyOptions as $partyOption)
 										<span class="itemQty" style="color:red"></span>
 								</td>
 								<td>
-									<?php echo $this->Form->input('salesInvoiceRow.'.$i.'.quantity', ['type'=>'text','label' => false,'class' => 'form-control input-medium calculation quantity rightAligntextClass','id'=>'check','required'=>'required','placeholder'=>'Quantity', 'value'=>$salesInvoiceRow->quantity,'min'=>@$sales_return_qty[$salesInvoiceRow->item->id]]); ?>
+									<?php echo $this->Form->input('salesInvoiceRow.'.$i.'.quantity', ['type'=>'text','label' => false,'class' => 'form-control input-medium  quantity rightAligntextClass','id'=>'check','required'=>'required','placeholder'=>'Quantity', 'value'=>$salesInvoiceRow->quantity,'min'=>@$sales_return_qty[$salesInvoiceRow->id]]); 
+									//echo	@$sales_return_qty[$salesInvoiceRow->id];
+									?>
 								</td>
 								<td>
 									<?php echo $this->Form->input('salesInvoiceRow.'.$i.'.rate', ['label' => false,'class' => 'form-control input-sm calculation rate rightAligntextClass','required'=>'required','placeholder'=>'Rate','value'=>$salesInvoiceRow->rate, 'readonly'=>'readonly', 'tabindex'=>'-1']); ?>
@@ -558,6 +560,11 @@ foreach($partyOptions as $partyOption)
 		});
 	}
 	
+	$('.quantity').die().live('blur',function()
+	{ 
+		forward_total_amount();
+	});
+	
 	$('.calculation').die().live('keyup',function()
 	{
 		forward_total_amount();
@@ -629,6 +636,18 @@ foreach($partyOptions as $partyOption)
 			var convertDiscount=0;
 			$('#main_table tbody#main_tbody tr.main_tr').each(function()
 			{
+				var chkquanity1=$(this).find('.quantity ').attr('min');
+				var chkquanity2=parseFloat($(this).closest('tr').find('.quantity ').val());
+				
+				
+				if(chkquanity2 != 0){ 
+					if(chkquanity2 < chkquanity1)
+					{ 
+						alert('Please enter a value less than or equal to quantity '+chkquanity1);
+						$(this).closest('tr').find('.quantity').val(chkquanity1); 
+					}
+				}
+				
 				var outdata=$(this).closest('tr').find('.outStock').val();
 				if(!outdata){outdata=0;}
 				outOfStockValue=parseFloat(outOfStockValue)+parseFloat(outdata);

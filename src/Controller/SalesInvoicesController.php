@@ -428,20 +428,19 @@ public function edit($id = null)
 	$this->viewBuilder()->layout('index_layout');
         $salesInvoice = $this->SalesInvoices->get($id, [
             'contain' => (['SaleReturns'=>['SaleReturnRows' => function($q) {
-				return $q->select(['sale_return_id','item_id','total' => $q->func()->sum('SaleReturnRows.return_quantity')])->group('SaleReturnRows.item_id');
+				return $q->select(['sale_return_id','sales_invoice_row_id','item_id','total' => $q->func()->sum('SaleReturnRows.return_quantity')])->group('SaleReturnRows.sales_invoice_row_id');
 			}],'SalesInvoiceRows'=>['Items', 'GstFigures']])
         ]);
 		
 
 		$sales_return_qty=[];
-			foreach($salesInvoice->sale_returns as $sale_returns){
-				foreach($sale_returns->sale_return_rows as $sale_return_row){
-					$sales_return_qty[@$sale_return_row->item_id]=@$sales_return_qty[$sale_return_row->item_id]+$sale_return_row->total;
+			foreach($salesInvoice->sale_returns as $sale_returns){ 
+				foreach($sale_returns->sale_return_rows as $sale_return_row){ 
+					$sales_return_qty[@$sale_return_row->sales_invoice_row_id]=@$sales_return_qty[$sale_return_row->sales_invoice_row_id]+$sale_return_row->total;
 					
 				}
 			}
-//pr($sales_return_qty);
-		 //exit;
+
 		$company_id=$this->Auth->User('session_company_id');
 		$stateDetails=$this->Auth->User('session_company');
 		$location_id=$this->Auth->User('session_location_id');
@@ -1326,7 +1325,7 @@ public function salesInvoiceBill($id=null)
 		$sales_return="No";
 		if(!empty(@$invoice_no)){ 
 		$SalesInvoice = $this->SalesInvoices->find()
-						->where(['SalesInvoices.voucher_no' =>$invoice_no])
+						->where(['SalesInvoices.voucher_no' =>$invoice_no,'SalesInvoices.company_id'=>$company_id])
 						->contain(['Companies', 'PartyLedgers', 'SalesLedgers'])
 						->first();
 		//pr($SalesInvoice->party_ledger->name); 
