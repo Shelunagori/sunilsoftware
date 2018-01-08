@@ -1738,7 +1738,7 @@ public function edit($id = null)
 		$sales_return="No";
 		if(!empty(@$invoice_no)){ 
 		$SalesInvoice = $this->SalesInvoices->find()
-						->where(['SalesInvoices.voucher_no' =>$invoice_no])
+						->where(['SalesInvoices.voucher_no' =>$invoice_no,'SalesInvoices.company_id' => $company_id])
 						->contain(['Companies', 'PartyLedgers', 'SalesLedgers'])
 						->first();
 		//pr($SalesInvoice->party_ledger->name); 
