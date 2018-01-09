@@ -439,6 +439,112 @@ class SaleReturnsController extends AppController
         $this->set('_serialize', ['saleReturn']);
     }	
 	
+	public function reportFilter()
+    {
+		$this->viewBuilder()->layout('index_layout');
+		$company_id=$this->Auth->User('session_company_id');
+		  $partyParentGroups = $this->SaleReturns->SalesInvoices->SalesInvoiceRows->Ledgers->AccountingGroups->find()
+						->where(['AccountingGroups.company_id'=>$company_id, 'AccountingGroups.sale_invoice_party'=>'1']);
+		$partyGroups=[];
+		foreach($partyParentGroups as $partyParentGroup)
+		{
+			$accountingGroups = $this->SaleReturns->SalesInvoices->SalesInvoiceRows->Ledgers->AccountingGroups
+			->find('children', ['for' => $partyParentGroup->id])->toArray();
+			$partyGroups[]=$partyParentGroup->id;
+			foreach($accountingGroups as $accountingGroup){
+				$partyGroups[]=$accountingGroup->id;
+			}
+		}
+		if($partyGroups)
+		{  
+			$Partyledgers = $this->SaleReturns->SalesInvoices->SalesInvoiceRows->Ledgers->find()
+							->where(['Ledgers.accounting_group_id IN' =>$partyGroups,'Ledgers.company_id'=>$company_id])
+							->contain(['Customers']);
+        }
+		$partyOptions=[];
+		foreach($Partyledgers as $Partyledger){
+			$partyOptions[]=['text' =>$Partyledger->name, 'value' => $Partyledger->id ,'party_state_id'=>@$Partyledger->customer->state_id];
+		}
+		$this->set(compact('partyOptions'));
+    }
+	
+	public function report($id=null)
+    {
+		$status=$this->request->query('status'); 
+		if(!empty($status)){ 
+			$this->viewBuilder()->layout('excel_layout');	
+		}else{ 
+			$this->viewBuilder()->layout('index_layout');
+		}
+		
+		$company_id=$this->Auth->User('session_company_id');
+		$url=$this->request->here();
+		$url=parse_url($url,PHP_URL_QUERY);
+	    $from=$this->request->query('from_date');
+		$to=$this->request->query('to_date');
+		
+		$where=[];
+		$where1=[];
+		if(!empty($from)){ 
+			$from_date=date('Y-m-d', strtotime($from));
+		$where['SaleReturns.transaction_date >=']= $from_date;
+		}
+		if(!empty($to)){
+			$to_date=date('Y-m-d', strtotime($to));
+			$where['SaleReturns.transaction_date <='] = $to_date;
+		}
+		$party_ids=$this->request->query('party_ledger_id');
+		if(!empty($party_ids)){
+		$where['SaleReturns.party_ledger_id IN'] = $party_ids;
+		}
+		$invoice_no=$this->request->query('invoice_no');
+		if(!empty($invoice_no)){
+		$invoices_explode_commas=explode(',',$invoice_no);
+		
+		if($invoices_explode_commas){
+			$invoice_ids=[];
+			foreach($invoices_explode_commas as $invoices_explode_comma)
+			{
+				@$invoices_explode_dashs=explode('-',$invoices_explode_comma);
+				
+				$size=sizeOf($invoices_explode_dashs);
+				if($size==2){
+					$var1=$invoices_explode_dashs[0];
+					$var2=$invoices_explode_dashs[1];
+					for($i=$var1; $i<= $var2; $i++){
+						$invoice_ids[]=$i;
+					}
+				}else{
+					$invoice_ids[]=$invoices_explode_dashs[0];
+				}
+			}
+		}
+		$where1['SaleReturns.voucher_no IN'] = $invoice_ids;
+		$where1['SaleReturns.company_id'] = $company_id;
+		}
+		if(!empty($where)){
+		$saleReturns= $this->SaleReturns->find()->where(['SaleReturns.company_id'=>$company_id])->where($where)->orWhere($where1)
+		->contain(['Companies', 'PartyLedgers'=>['Customers'], 'SalesLedgers', 'SaleReturnRows'=>['Items', 'GstFigures']])
+        ->order(['voucher_no' => 'ASC']);
+		}
+		else{
+		$saleReturns = $this->SaleReturns->find()->where(['SaleReturns.company_id'=>$company_id])->where($where1)
+		->contain(['Companies', 'PartyLedgers'=>['Customers'], 'SalesLedgers', 'SaleReturnRows'=>['Items', 'GstFigures']])
+        ->order(['voucher_no' => 'ASC']);
+		}
+	
+		$this->set(compact('saleReturns', 'from', 'to','party_ids','invoice_no','url','status'));
+        $this->set('_serialize', ['saleReturns']);
+    }
+    /**
+     * View method
+     *
+     * @param string|null $id Sales Invoice id.
+     * @return \Cake\Http\Response|void
+     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
+     */
+   
+	
 	public function cancel($id = null)
     {
 		// $this->request->allowMethod(['post', 'delete']);

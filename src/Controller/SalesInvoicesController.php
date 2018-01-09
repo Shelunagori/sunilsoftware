@@ -150,6 +150,7 @@ class SalesInvoicesController extends AppController
 			}
 		}
 		$where1['SalesInvoices.voucher_no IN'] = $invoice_ids;
+		$where1['SalesInvoices.company_id'] = $company_id;
 		}
 		if(!empty($where)){
 		$salesInvoices = $this->SalesInvoices->find()->where(['SalesInvoices.company_id'=>$company_id])->where($where)->orWhere($where1)

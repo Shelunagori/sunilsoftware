@@ -579,7 +579,7 @@ class PurchaseInvoicesController extends AppController
 		{  
 			$Partyledgers = $this->PurchaseInvoices->PurchaseInvoiceRows->Ledgers->find()
 							->where(['Ledgers.accounting_group_id IN' =>$partyGroups,'Ledgers.company_id'=>$company_id])
-							->contain(['Customers']);
+							->contain(['Suppliers']);
         }
 		
 		$partyOptions=[];
@@ -599,7 +599,7 @@ class PurchaseInvoicesController extends AppController
 		else{
 			$receiptAccountLedgersName='0';
 		}
-			$partyOptions[]=['text' =>str_pad(@$Partyledger->supplier->supplier_id, 4, '0', STR_PAD_LEFT).' - '.$Partyledger->name, 'value' => $Partyledger->id ,'party_state_id'=>@$Partyledger->supplier->state_id, 'partyexist'=>$receiptAccountLedgersName, 'billToBillAccounting'=>$Partyledger->bill_to_bill_accounting];
+			$partyOptions[]=['text' =>str_pad(@$Partyledger->supplier->id, 4, '0', STR_PAD_LEFT).' - '.$Partyledger->name, 'value' => $Partyledger->id ,'party_state_id'=>@$Partyledger->supplier->state_id, 'partyexist'=>$receiptAccountLedgersName, 'billToBillAccounting'=>$Partyledger->bill_to_bill_accounting];
 		}
 		
 		$this->set(compact('partyOptions'));
@@ -665,6 +665,7 @@ class PurchaseInvoicesController extends AppController
 			}
 		}
 		$where1['PurchaseInvoices.voucher_no IN'] = $invoice_ids;
+		$where1['PurchaseInvoices.company_id'] = $company_id;
 		}
 		if(!empty($where)){
 		$purchaseInvoices = $this->PurchaseInvoices->find()->where(['PurchaseInvoices.company_id'=>$company_id])->where($where)->orWhere($where1)

@@ -3,7 +3,7 @@
 /**
  * @Author: PHP Poets IT Solutions Pvt. Ltd.
  */
-$this->set('title', 'Purchase Report');
+$this->set('title', 'Purchase Return Report');
 ?>
 	
 <style>
@@ -44,22 +44,22 @@ table td {
 			<div class="portlet-title">
 				<div class="caption">
 					<i class="icon-bar-chart font-green-sharp hide"></i>
-					<span class="caption-subject font-green-sharp bold ">Purchase Register</span>
+					<span class="caption-subject font-green-sharp bold ">Purchase Return Register</span>
 				</div>
 				<div class="actions">
-					<?php echo $this->Html->link( '<i class="fa fa-file-excel-o"></i> Excel', '/purchaseInvoices/Report/'.@$url_excel.'&status=excel',['class' =>'btn btn-sm green tooltips pull-right','target'=>'_blank','escape'=>false,'data-original-title'=>'Download as excel']); ?>
+					<?php echo $this->Html->link( '<i class="fa fa-file-excel-o"></i> Excel', '/purchaseReturns/Report/'.@$url_excel.'&status=excel',['class' =>'btn btn-sm green tooltips pull-right','target'=>'_blank','escape'=>false,'data-original-title'=>'Download as excel']); ?>
 				</div>
 			</div>
 		<?php } ?>
 			<div class="portlet-body table-responsive">
 				<?php 
-				if(!empty($purchaseInvoices->toArray()))
+				if(!empty($purchaseReturns->toArray()))
 				{
 				?>
 				<table class="table table-bordered table-hover table-condensed" width="100%" border="1">
 					<thead>
 						<tr>
-							<th scope="col" colspan="19" style="text-align:left";>Purchase Register According To  <?php if($from){ ?>Date From <?=$from ?><?php } ?><?php if($to){ ?>Date To <?=$to ?> <?php } ?><?php if($party_ids){ ?> Party <?php } ?><?php  if($invoice_no){ ?> Invoice No :<?=$invoice_no ?><?php } ?> </th>
+							<th scope="col" colspan="19" style="text-align:left";>Purchase Return Register According To  <?php if($from){ ?>Date From <?=$from ?><?php } ?><?php if($to){ ?>Date To <?=$to ?> <?php } ?><?php if($party_ids){ ?> Party <?php } ?><?php  if($invoice_no){ ?> Invoice No :<?=$invoice_no ?><?php } ?> </th>
 						</tr>
 						<tr>
 							<th scope="col" style="text-align:center";>Supplier Code</th>
@@ -94,8 +94,8 @@ table td {
 					$totalNet=0;
 					$totalTaxablevalue=0;
 					$totalDiscountPnf=0;
-					foreach($purchaseInvoices->toArray() as $data){
-					foreach($data->purchase_invoice_rows as $purchaseInvoicedata)
+					foreach($purchaseReturns->toArray() as $data){
+					foreach($data->purchase_return_rows as $purchaseInvoicedata)
 					{
 						$date = date('Y-m-d', strtotime($data->transaction_date));
 						$d = date_parse_from_format('Y-m-d',$date);
@@ -125,14 +125,14 @@ table td {
 							$field='SG';
 						}
 
-					    if($data->supplier_ledger->supplier_id==0 || $data->supplier_ledger->supplier_id=='')
+					    if($data->purchase_invoice->supplier_ledger->supplier_id==0 || $data->purchase_invoice->supplier_ledger->supplier_id=='')
 						{
 							$customerName='Cash';
 							$customerCode='-';
 						}
 						else{
-							$customerName=$data->supplier_ledger->name;
-							$customerCode=$data->supplier_ledger->supplier->id;
+							$customerName=$data->purchase_invoice->supplier_ledger->name;
+							$customerCode=$data->purchase_invoice->supplier_ledger->supplier->id;
 						}
 					
 						if($purchaseInvoicedata->discount_percentage>0)
@@ -159,11 +159,11 @@ table td {
 						
 						
 						
-						if($data->total_igst=='' || $data->total_igst==0)
+						if($data->purchase_invoice->supplier_ledger->supplier->state_id == $data->company->state_id)
 						{
 						    $purchaseInvoicedata->gst_value;
 							$gst=$purchaseInvoicedata->gst_value/2;
-						    $cgtax=$purchaseInvoicedata->gst_figure->tax_percentage/2;
+						    $cgtax=$purchaseInvoicedata->item->FirstGstFigures->tax_percentage/2;
 							$cgst=$gst;
 							$sgst=$gst;
 							$igst=0;
@@ -174,7 +174,7 @@ table td {
 							$cgst=0;
 							$sgst=0;
 							$igst=$purchaseInvoicedata->gst_value;
-							$itax=$purchaseInvoicedata->gst_figure->tax_percentage;
+							$itax=$purchaseInvoicedata->item->FirstGstFigures->tax_percentage;
 							$cgtax=0;
 						}
 						$totalCgst+=$cgst;
