@@ -669,15 +669,15 @@ class PurchaseInvoicesController extends AppController
 		}
 		if(!empty($where)){
 		$purchaseInvoices = $this->PurchaseInvoices->find()->where(['PurchaseInvoices.company_id'=>$company_id])->where($where)->orWhere($where1)
-		->contain(['Companies', 'SupplierLedgers'=>['Suppliers'], 'PurchaseLedgers', 'PurchaseInvoicerows'=>['Items', 'GstFigures']])
+		->contain(['Companies', 'SupplierLedgers'=>['Suppliers'], 'PurchaseLedgers', 'PurchaseInvoicerows'=>['Items'=>['FirstGstFigures']]])
         ->order(['voucher_no' => 'ASC']);
 		}
 		else{
 		$purchaseInvoices = $this->PurchaseInvoices->find()->where(['PurchaseInvoices.company_id'=>$company_id])->where($where1)
-		->contain(['Companies', 'SupplierLedgers'=>['Suppliers'], 'PurchaseLedgers', 'PurchaseInvoicerows'=>['Items', 'GstFigures']])
+		->contain(['Companies', 'SupplierLedgers'=>['Suppliers'], 'PurchaseLedgers', 'PurchaseInvoicerows'=>['Items'=>['FirstGstFigures']]])
         ->order(['voucher_no' => 'ASC']);
 		}
-	
+		//pr($purchaseInvoices->toArray());
 		
 		$this->set(compact('purchaseInvoices', 'from', 'to','party_ids','invoice_no','url','status'));
         $this->set('_serialize', ['purchaseInvoices']);

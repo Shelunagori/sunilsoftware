@@ -59,7 +59,7 @@ table td {
 				<table class="table table-bordered table-hover table-condensed" width="100%" border="1">
 					<thead>
 						<tr>
-							<th scope="col" colspan="19" style="text-align:left";>Purchase Register According To  <?php if($from){ ?>Date From <?=$from ?><?php } ?><?php if($to){ ?>Date To <?=$to ?> <?php } ?><?php if($party_ids){ ?> Party <?php } ?><?php  if($invoice_no){ ?> Invoice No :<?=$invoice_no ?><?php } ?> </th>
+							<th scope="col" colspan="21" style="text-align:left";>Purchase Register According To  <?php if($from){ ?>Date From <?=$from ?><?php } ?><?php if($to){ ?>Date To <?=$to ?> <?php } ?><?php if($party_ids){ ?> Party <?php } ?><?php  if($invoice_no){ ?> Invoice No :<?=$invoice_no ?><?php } ?> </th>
 						</tr>
 						<tr>
 							<th scope="col" style="text-align:center";>Supplier Code</th>
@@ -159,11 +159,11 @@ table td {
 						
 						
 						
-						if($data->total_igst=='' || $data->total_igst==0)
+						if($data->supplier_ledger->supplier->state_id == $data->company->state_id)
 						{
 						    $purchaseInvoicedata->gst_value;
 							$gst=$purchaseInvoicedata->gst_value/2;
-						    $cgtax=$purchaseInvoicedata->gst_figure->tax_percentage/2;
+						    $cgtax=$purchaseInvoicedata->gst_percentage/2;
 							$cgst=$gst;
 							$sgst=$gst;
 							$igst=0;
@@ -174,7 +174,7 @@ table td {
 							$cgst=0;
 							$sgst=0;
 							$igst=$purchaseInvoicedata->gst_value;
-							$itax=$purchaseInvoicedata->gst_figure->tax_percentage;
+							$itax=$purchaseInvoicedata->gst_percentage;
 							$cgtax=0;
 						}
 						$totalCgst+=$cgst;
