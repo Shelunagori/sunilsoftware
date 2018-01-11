@@ -36,7 +36,7 @@ $this->set('title', 'Report Setup');
 				<?php if (in_array("21", $userPages)){?>
 					<div class="col-md-6">
 						<div class="list-group">
-							<?php echo $this->Html->link('Sales Report', '/SalesInvoices/reportFilter',['escape' => false, 'class'=>'list-group-item']); ?>
+							<?php echo $this->Html->link('Sales Register', '/SalesInvoices/reportFilter',['escape' => false, 'class'=>'list-group-item']); ?>
 							</div>
 					</div>
 					<?php }?>
@@ -44,7 +44,26 @@ $this->set('title', 'Report Setup');
 					<?php if (in_array("83", $userPages)){?>
 					<div class="col-md-6">
 						<div class="list-group">
-							<?php echo $this->Html->link('Purchase Report', '/PurchaseInvoices/reportFilter',['escape' => false, 'class'=>'list-group-item']); ?>
+							<?php echo $this->Html->link('Purchase Register', '/PurchaseInvoices/reportFilter',['escape' => false, 'class'=>'list-group-item']); ?>
+							</div>
+					</div>
+					<?php }?>
+					
+					
+				</div>
+					<div class="row">
+				<?php if (in_array("85", $userPages)){?>
+					<div class="col-md-6">
+						<div class="list-group">
+							<?php echo $this->Html->link('Sales Return Register', '/SaleReturns/reportFilter',['escape' => false, 'class'=>'list-group-item']); ?>
+							</div>
+					</div>
+					<?php }?>
+					
+					<?php if (in_array("84", $userPages)){?>
+					<div class="col-md-6">
+						<div class="list-group">
+							<?php echo $this->Html->link('Purchase Return Register', '/PurchaseReturns/reportFilter',['escape' => false, 'class'=>'list-group-item']); ?>
 							</div>
 					</div>
 					<?php }?>
