@@ -294,7 +294,7 @@ class IntraLocationStockTransferVouchersController extends AppController
 				$available_stock=$dd->total_in;
 				$stock_issue=$dd->total_out;
 				@$remaining=number_format($available_stock-$stock_issue, 2);
-				if($remaining>0)
+				if($remaining>=0)
 				{
 				$itemOptions[]=['text'=>$dd->item->item_code.' '.$dd->item->name, 'value'=>$dd->item_id];
 				
