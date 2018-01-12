@@ -23,6 +23,7 @@ class GrnsController extends AppController
 		$this->viewBuilder()->layout('index_layout');
 		$company_id=$this->Auth->User('session_company_id');
 		$search=$this->request->query('search');
+		$location_id=$this->Auth->User('session_location_id');
 		$this->paginate = [
             'contain' => ['Companies','SupplierLedgers']
         ];
@@ -38,7 +39,38 @@ class GrnsController extends AppController
 		
         ]]));
 		
-        $this->set(compact('grns','search'));
+		$grnsDatas=$this->Grns->find()->contain(['GrnRows'])->where(['Grns.company_id'=>$company_id])->toArray();
+		
+		$grnToBeCreateVoucher=[];
+		foreach($grnsDatas as $grnsData){
+			foreach($grnsData->grn_rows as $grn_row){
+				$ItemLedger = $this->Grns->ItemLedgers->find()->where(['ItemLedgers.item_id'=>$grn_row->item_id,'ItemLedgers.location_id'=>$grnsData->location_id]); //pr($ItemLedger); exit;
+				$totalInCase = $ItemLedger->newExpr()
+					->addCase(
+						$ItemLedger->newExpr()->add(['status' => 'In']),
+						$ItemLedger->newExpr()->add(['quantity']),
+						'integer'
+					);
+				$totalOutCase = $ItemLedger->newExpr()
+					->addCase(
+						$ItemLedger->newExpr()->add(['status' => 'out']),
+						$ItemLedger->newExpr()->add(['quantity']),
+						'integer'
+					);
+				$ItemLedger->select([
+					'total_in' => $ItemLedger->func()->sum($totalInCase),
+					'total_out' => $ItemLedger->func()->sum($totalOutCase),'id','item_id'
+				]);
+				$ItemLedger=$ItemLedger->first();
+				$rem=$ItemLedger->total_in-$ItemLedger->total_out;
+				if($rem >0){
+					$grnToBeCreateVoucher[$grnsData->id]="yes";
+					break;
+				}
+			}
+		}
+		//pr($grnToBeCreateVoucher); exit;
+        $this->set(compact('grns','search','grnToBeCreateVoucher'));
         $this->set('_serialize', ['grns']);
     }
 

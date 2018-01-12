@@ -64,6 +64,10 @@ $this->set('title', 'GRNS');
 									<?php }else{ ?>
 										<?php  echo $grn->status; ?>
 									<?php } ?>
+									<?php  if(@$grnToBeCreateVoucher[@$grn->id]=='yes'){ ?>
+									<?= $this->Html->link(__('Create Stock Transfer'), ['controller'=>'IntraLocationStockTransferVouchers','action' => 'add', $grn->id]) ?>
+									<?php } ?>
+									
 									
 									
 									

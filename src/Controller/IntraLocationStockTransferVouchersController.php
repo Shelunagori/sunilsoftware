@@ -82,10 +82,15 @@ class IntraLocationStockTransferVouchersController extends AppController
      *
      * @return \Cake\Http\Response|null Redirects on successful add, renders view otherwise.
      */
-    public function add()
+    public function add($grn_id=null)
     {
 		$this->viewBuilder()->layout('index_layout');
+		if($grn_id){
+		 $grns = $this->IntraLocationStockTransferVouchers->Grns->get($grn_id, [
+            'contain' => ['GrnRows'=>['Items']]
+        ]);	
 		
+		}
 		$user_id=$this->Auth->User('id');
 		$company_id=$this->Auth->User('session_company_id');
 		$location_id=$this->Auth->User('session_location_id');
@@ -174,7 +179,7 @@ class IntraLocationStockTransferVouchersController extends AppController
 		->contain(['Items']);
         $itemLedgers[] = ($query);
 		}
-		$itemOptions=[];
+		$itemOptions=[];$item_array=[];
 		foreach($itemLedgers as $d)
 		{
 			foreach($d as $dd)
@@ -185,10 +190,11 @@ class IntraLocationStockTransferVouchersController extends AppController
 				if($remaining>0)
 				{
 				$itemOptions[]=['text'=>$dd->item->item_code.' '.$dd->item->name, 'value'=>$dd->item_id];
+				$item_array[]=$dd->item_id;
 				}
 			}
 		}
-        $this->set(compact('intraLocationStockTransferVoucher', 'companies', 'TransferFromLocations','TransferToLocations','items','voucher_no','itemOptions','location_id'));
+        $this->set(compact('intraLocationStockTransferVoucher', 'companies', 'TransferFromLocations','TransferToLocations','items','voucher_no','itemOptions','location_id','grn_id','grns','item_array'));
         $this->set('_serialize', ['intraLocationStockTransferVoucher']);
     }
 
@@ -280,7 +286,7 @@ class IntraLocationStockTransferVouchersController extends AppController
         $itemLedgers[] = ($query);
 		}
 		
-		$itemOptions=[];
+		$itemOptions=[]; 
 		foreach($itemLedgers as $d)
 		{
 			foreach($d as $dd)
@@ -291,6 +297,7 @@ class IntraLocationStockTransferVouchersController extends AppController
 				if($remaining>0)
 				{
 				$itemOptions[]=['text'=>$dd->item->item_code.' '.$dd->item->name, 'value'=>$dd->item_id];
+				
 				}
 			}
 		}

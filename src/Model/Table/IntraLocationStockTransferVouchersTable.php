@@ -46,7 +46,10 @@ class IntraLocationStockTransferVouchersTable extends Table
             'foreignKey' => 'location_id',
             'joinType' => 'INNER'
         ]);
-		
+		$this->belongsTo('Grns', [
+            'foreignKey' => 'grn_id',
+            'joinType' => 'INNER'
+        ]);
         $this->hasMany('IntraLocationStockTransferVoucherRows', [
             'foreignKey' => 'intra_location_stock_transfer_voucher_id',
 			'saveStrategy' => 'replace',

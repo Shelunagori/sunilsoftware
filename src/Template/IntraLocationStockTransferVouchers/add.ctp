@@ -39,6 +39,7 @@ $this->set('title', 'Create Inter Location stock Transfer Voucher');
 							<div class="form-group">
 								<label>Transfer To</label>
 								<?php echo $this->Form->control('transfer_to_location_id',['options'=>$TransferToLocations,'class'=>'form-control input-sm transfer_to','label'=>false,'empty'=>'--select--']); ?>
+								<input type="hidden" class="grn" value="<?=$grn_id ?>">
 							</div>
 						</div>
 					</div>
@@ -55,10 +56,34 @@ $this->set('title', 'Create Inter Location stock Transfer Voucher');
 									</tr>
 								</thead>
 								<tbody id='main_tbody' class="tab">
+									<?php if($grn_id){ 
+										
+								$i=0; foreach($grns->grn_rows as $grn_row)
+								{
+									//pr($grn_row->item_id); exit;
+									if(in_array($grn_row->item_id,@$item_array)) {?>
+									<tr class="main_tr" class="tab">
+									<td width="7%" align="center"><?php echo $i+1;?></td>
+									<td width="50%">
+									<input type="text" name="" class="outStock" value="0">
+				                    <input type="text" name="" class="totStock " value="0">
+										<?php echo $this->Form->control('item_id', ['options' => $itemOptions,'label' => false,'class' => 'form-control input-sm itemStock','required'=>'required','value'=>$grn_row->item_id]); 
+										?>
+										<span class="itemQty" style="color:red ;font-size:10px;"></span>
+										</td>
+									
+									<td width="25%" >
+										<?php echo $this->Form->input('quantity', ['label' => false,'class' => 'form-control input-sm rightAligntextClass numberOnly quantity','placeholder'=>'Quantity','value'=>$grn_row->quantity,'required']); ?>
+									</td>
+									<td align="center">
+										<a class="btn btn-danger delete-tr btn-xs" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
+									</td>	
+								</tr>
+								<?php } $i++; }?>	<?php } else {?>
 									<tr class="main_tr" class="tab">
 										
 									</tr>
-									
+									<?php } ?>
 								</tbody>
 								<tfoot>
 									<tr>
@@ -157,7 +182,39 @@ $this->set('title', 'Create Inter Location stock Transfer Voucher');
 <?php
 	$js="
 	$(document).ready(function() {
-	
+	//load_itemstock();
+		function load_itemstock()
+		{
+			$('#main_table tbody#main_tbody tr.main_tr').each(function(){ 
+				var itemQ=$(this);
+				var itemId=$(this).find('td:nth-child(2) select.itemStock option:selected').val();
+				var url='".$this->Url->build(["controller" => "IntraLocationStockTransferVouchers", "action" => "ajaxItemQuantity"])."';
+				url=url+'/'+itemId
+				$.ajax({
+					url: url,
+					type: 'GET'
+					//dataType: 'text'
+				}).done(function(response) {
+					var fetch=$.parseJSON(response);
+					alert(fetch);
+					var text=fetch.text;
+					var type=fetch.type;
+					var mainStock=fetch.mainStock;
+					itemQ.find('.itemQty').html(text);
+					itemQ.find('.totStock').val(mainStock);
+					itemQ.find('.quantity').val(mainStock);
+					if(type=='true')
+					{
+						itemQ.find('.outStock').val(1);
+					}
+					else{
+						itemQ.find('.outStock').val(0);
+					}
+				});	
+			});
+			rename_rows();
+		}
+		
 		$('.itemStock').die().live('change',function(){
 		var itemQ=$(this).closest('tr'); 
 		var itemId=$(this).val();
@@ -203,13 +260,24 @@ $this->set('title', 'Create Inter Location stock Transfer Voucher');
 
 			rename_rows();
 		}
-
-		add_row();
+		
+		var is_grn=$('.grn').val();
+		if(is_grn > 0){
+		
 		rename_rows();
+		load_itemstock();
+		}
+		else{
+		add_row();	
+		rename_rows();	
+		}
+		
+		
 
 		function rename_rows()
-		{
-			var i=0;
+		{	var is_grn=$('.grn').val();
+			if(is_grn > 0){
+			var i=1; }else{ var i=0;}
 			$('#main_table tbody#main_tbody tr.main_tr').each(function(){ 
 				
 				$(this).find('td:nth-child(1)').html(i);
