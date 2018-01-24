@@ -65,8 +65,8 @@ $this->set('title', 'Create Inter Location stock Transfer Voucher');
 									<tr class="main_tr" class="tab">
 									<td width="7%" align="center"><?php echo $i+1;?></td>
 									<td width="50%">
-									<input type="text" name="" class="outStock" value="0">
-				                    <input type="text" name="" class="totStock " value="0">
+									<input type="hidden" name="" class="outStock" value="0">
+				                    <input type="hidden" name="" class="totStock " value="0">
 										<?php echo $this->Form->control('item_id', ['options' => $itemOptions,'label' => false,'class' => 'form-control input-sm itemStock','required'=>'required','value'=>$grn_row->item_id]); 
 										?>
 										<span class="itemQty" style="color:red ;font-size:10px;"></span>
@@ -196,7 +196,6 @@ $this->set('title', 'Create Inter Location stock Transfer Voucher');
 					//dataType: 'text'
 				}).done(function(response) {
 					var fetch=$.parseJSON(response);
-					alert(fetch);
 					var text=fetch.text;
 					var type=fetch.type;
 					var mainStock=fetch.mainStock;
