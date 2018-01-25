@@ -63,6 +63,7 @@ $this->set('title', 'Create Inter Location stock Transfer Voucher');
 									<td width="50%">
 									<input type="hidden" name="" class="outStock" value="0">
 				                    <input type="hidden" name="" class="totStock " value="0">
+									
 										<?php echo $this->Form->control('item_id', ['options' => $itemOptions,'label' => false,'class' => 'form-control input-sm itemStock','required'=>'required','value'=>$intra_location_stock_transfer_voucher_row->item_id]); 
 										echo $this->Form->control('intra_location_stock_transfer_voucher_rows.'.$i.'.id', ['value'=>$intra_location_stock_transfer_voucher_row->id,'type'=>'hidden']);
 										?>
@@ -71,6 +72,7 @@ $this->set('title', 'Create Inter Location stock Transfer Voucher');
 									
 									<td width="25%" >
 										<?php echo $this->Form->input('quantity', ['label' => false,'class' => 'form-control input-sm rightAligntextClass numberOnly quantity','placeholder'=>'Quantity','value'=>$intra_location_stock_transfer_voucher_row->quantity,'required']); ?>
+										
 									</td>
 									<td align="center">
 										<a class="btn btn-danger delete-tr btn-xs" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
@@ -179,6 +181,7 @@ $this->set('title', 'Create Inter Location stock Transfer Voucher');
 	$('.itemStock').die().live('change',function(){
 		var itemQ=$(this).closest('tr');
 		var itemId=$(this).val();
+		var quantity=parseFloat($(this).find('td:nth-child(3) input.quantity').val());
 		var url='".$this->Url->build(["controller" => "IntraLocationStockTransferVouchers", "action" => "ajaxItemQuantity"])."';
 		url=url+'/'+itemId
 		$.ajax({
@@ -244,6 +247,8 @@ $this->set('title', 'Create Inter Location stock Transfer Voucher');
 	$('#main_table tbody#main_tbody tr.main_tr').each(function(){ 
 		var itemQ=$(this).closest('tr');
 		var itemId=$('option:selected', this).attr('value');
+		var quantity=parseFloat($(this).find('td:nth-child(3) input.quantity').val());
+			//alert(quantity);
 		var url='".$this->Url->build(["controller" => "IntraLocationStockTransferVouchers", "action" => "ajaxItemQuantity"])."';
 		url=url+'/'+itemId
 		$.ajax({
@@ -254,9 +259,9 @@ $this->set('title', 'Create Inter Location stock Transfer Voucher');
 			var fetch=$.parseJSON(response);
 			var text=fetch.text;
 			var type=fetch.type;
-			var mainStock=fetch.mainStock;
+			var mainStock=parseFloat(fetch.mainStock);
 			itemQ.find('.itemQty').html(text);
-			itemQ.find('.totStock').val(mainStock);
+			itemQ.find('.totStock').val(mainStock+quantity);
 			if(type=='true')
 			{
 				itemQ.find('.outStock').val(1);
@@ -270,6 +275,7 @@ $this->set('title', 'Create Inter Location stock Transfer Voucher');
 
 	function checkValidation() 
 	{  
+		
 		var transfer_from  = $('.transfer_from').val();
 			var transfer_to = $('.transfer_to').val();
 			if(transfer_from == transfer_to)
@@ -293,6 +299,7 @@ $this->set('title', 'Create Inter Location stock Transfer Voucher');
 		$('#main_table tbody#main_tbody tr.main_tr').each(function()
 		{
 			var item_id=$(this).find('td:nth-child(2) select.itemStock option:selected').val();
+			
 			if(StockInput[item_id]>StockDB[item_id]){
 				c=0;
 			}

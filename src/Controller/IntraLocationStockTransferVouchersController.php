@@ -454,8 +454,6 @@ class IntraLocationStockTransferVouchersController extends AppController
         $itemLedgers = ($query);
 		
 		
-		
-		
 		if($itemLedgers->toArray())
 		{
 			  foreach($itemLedgers as $itemLedger){
