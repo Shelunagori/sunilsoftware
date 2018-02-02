@@ -73,7 +73,7 @@ $this->set('title', 'Profit & Loss Statement');
 											<?php foreach($groupForPrint as $groupForPrintRow){ 
 												if(($groupForPrintRow['balance']>0) or ($groupForPrintRow['balance']==0 && $groupForPrintRow['nature']==4)){
 													if($groupForPrintRow['name']=="Indirect Expenses"){
-														@$IE+=abs($groupForPrintRow['balance']);
+													
 													} else{?>
 												<tr>
 													<td><?php echo $groupForPrintRow['name']; ?></td>
@@ -106,7 +106,6 @@ $this->set('title', 'Profit & Loss Statement');
 											<?php foreach($groupForPrint as $groupForPrintRow){ 
 												if(($groupForPrintRow['balance']<0) or ($groupForPrintRow['balance']==0 && $groupForPrintRow['nature']==3)){ 
 												if($groupForPrintRow['name']=="Indirect Incomes" ||$groupForPrintRow['name']=="Direct Incomes"){
-														@$DE+=abs($groupForPrintRow['balance']);
 													} else{
 												?>
 												<tr>
@@ -143,7 +142,7 @@ $this->set('title', 'Profit & Loss Statement');
 											<tr>
 												<td>Gross Profit</td>
 												<td align="right">
-													<?php echo $this->Money->moneyFormatIndia($totalDiff+@$IE); $LeftTotal+=$totalDiff; ?>
+													<?php echo $this->Money->moneyFormatIndia($totalDiff); $LeftTotal+=$totalDiff; ?>
 												</td>
 											</tr>
 										</tbody>
@@ -157,7 +156,7 @@ $this->set('title', 'Profit & Loss Statement');
 											<tr>
 												<td>Gross Loss</td>
 												<td align="right">
-													<?php echo $this->Money->moneyFormatIndia(abs($totalDiff+abs(@$DE))); $RightTotal+=abs($totalDiff); ?>
+													<?php echo $this->Money->moneyFormatIndia(abs($totalDiff)); $RightTotal+=abs($totalDiff); ?>
 												</td>
 											</tr>
 										</tbody>

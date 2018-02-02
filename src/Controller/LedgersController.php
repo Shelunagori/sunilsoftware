@@ -255,54 +255,52 @@ class LedgersController extends AppController
 			 $toDate    = $this->Ledgers->AccountingEntries->find()->order(['AccountingEntries.transaction_date'=>'DESC'])->First();
 			@$to_date   = date("Y-m-d",strtotime($toDate->transaction_date));
 		}
-		//if($toDate){
-			$query = $this->Ledgers->AccountingEntries->find();
-				$CaseDebitOpeningBalance = $query->newExpr()
-					->addCase(
-						$query->newExpr()->add(['transaction_date <'=>$from_date]),
-						$query->newExpr()->add(['debit']),
-						'decimal'
-					);
-				$CaseCreditOpeningBalance = $query->newExpr()
-					->addCase(
-						$query->newExpr()->add(['transaction_date <'=>$from_date]),
-						$query->newExpr()->add(['credit']),
-						'decimal'
-					);
-				$CaseDebitTransaction = $query->newExpr()
-					->addCase(
-						$query->newExpr()->add(['transaction_date >='=>$from_date,'transaction_date <='=>$to_date]),
-						$query->newExpr()->add(['debit']),
-						'decimal'
-					);
-				$CaseCreditTransaction = $query->newExpr()
-					->addCase(
-						$query->newExpr()->add(['transaction_date >='=>$from_date,'transaction_date <='=>$to_date]),
-						$query->newExpr()->add(['credit']),
-						'decimal'
-					);
-				$query->select([
-					'debit_opening_balance' => $query->func()->sum($CaseDebitOpeningBalance),
-					'credit_opening_balance' => $query->func()->sum($CaseCreditOpeningBalance),
-					'debit_transaction' => $query->func()->sum($CaseDebitTransaction),
-					'credit_transaction' => $query->func()->sum($CaseCreditTransaction),'id','ledger_id'
-				])
+		
+		$AccountingGroups=$this->Ledgers->AccountingEntries->Ledgers->AccountingGroups->find()->where(['AccountingGroups.nature_of_group_id IN'=>[1,2,3,4],'AccountingGroups.company_id'=>$company_id]);
+		
+		$Groups=[];
+		foreach($AccountingGroups as $AccountingGroup){
+			$Groups[$AccountingGroup->id]['ids'][]=$AccountingGroup->id;
+			$Groups[$AccountingGroup->id]['name']=$AccountingGroup->name;
+			$Groups[$AccountingGroup->id]['nature']=$AccountingGroup->nature_of_group_id;
+			$accountingChildGroups = $this->Ledgers->AccountingEntries->Ledgers->AccountingGroups->find('children', ['for' => $AccountingGroup->id]);
+			foreach($accountingChildGroups as $accountingChildGroup){
+				$Groups[$AccountingGroup->id]['ids'][]=$accountingChildGroup->id;
+			}
+		}
+		$AllGroups=[];
+		foreach($Groups as $mainGroups){
+			foreach($mainGroups['ids'] as $subGroup){
+				$AllGroups[]=$subGroup;
+			}
+		}
+		
+		$query=$this->Ledgers->AccountingEntries->find();
+		$query->select(['ledger_id','totalDebit' => $query->func()->sum('AccountingEntries.debit'),'totalCredit' => $query->func()->sum('AccountingEntries.credit')])
+				->group('AccountingEntries.ledger_id')
 				->where(['AccountingEntries.company_id'=>$company_id])
-				->group('ledger_id')
-				->autoFields(true)
-				->contain(['Ledgers']);
-				$TrialBalances = ($query);
-			
-				
-				$debitAmount = $this->Ledgers->Companies->ItemLedgers->find();
-				$debitAmount->select(['total_debit' => $debitAmount->func()->sum('ItemLedgers.amount')])
-							->where(['ItemLedgers.is_opening_balance'=> 'yes','company_id' => $company_id]);
-				
-				$totalDebit  = $debitAmount->first()->total_debit;
-			//pr($query->toArray()); exit;
+				->contain(['Ledgers'=>function($q){
+					return $q->select(['Ledgers.accounting_group_id','Ledgers.id']);
+				}]);
+		$query->matching('Ledgers', function ($q) use($AllGroups){
+			return $q->where(['Ledgers.accounting_group_id IN' => $AllGroups]);
+		});
+		$balanceOfLedgers=$query;
 		
+		$groupForPrint=[];
+		foreach($balanceOfLedgers as $balanceOfLedger){
+			foreach($Groups as $primaryGroup=>$Group){
+				if(in_array($balanceOfLedger->ledger->accounting_group_id,$Group['ids'])){
+					@$groupForPrint[$primaryGroup]['balance']+=$balanceOfLedger->totalDebit-$balanceOfLedger->totalCredit;
+				}else{
+					@$groupForPrint[$primaryGroup]['balance']+=0;
+				}
+				@$groupForPrint[$primaryGroup]['name']=$Group['name'];
+				@$groupForPrint[$primaryGroup]['nature']=$Group['nature'];
+			}
+		}
 		
-		
+		pr($groupForPrint); exit;
 		$this->set(compact('ledger','from_date','to_date','TrialBalances','totalDebit','status','url'));
         $this->set('_serialize', ['ledger']);
     }

@@ -16,10 +16,10 @@ $this->set('title', 'Profit & Loss Statement');
 				<form method="get">
 						<div class="row">
 							<div class="col-md-3">
-								<?php echo $this->Form->control('from_date',['class'=>'form-control input-sm date-picker','data-date-format'=>'dd-mm-yyyy', 'label'=>false,'placeholder'=>'DD-MM-YYYY','type'=>'text','data-date-start-date'=>@$coreVariable[fyValidFrom],'data-date-end-date'=>@$coreVariable[fyValidTo],'value'=>date('d-m-Y',strtotime($from_date)),'required'=>'required']); ?>
+								<?php echo $this->Form->control('from_date',['class'=>'form-control input-sm date-picker from_date','data-date-format'=>'dd-mm-yyyy', 'label'=>false,'placeholder'=>'DD-MM-YYYY','type'=>'text','data-date-start-date'=>@$coreVariable[fyValidFrom],'data-date-end-date'=>@$coreVariable[fyValidTo],'value'=>date('d-m-Y',strtotime($from_date)),'required'=>'required']); ?>
 							</div>
 							<div class="col-md-3">
-								<?php echo $this->Form->control('to_date',['class'=>'form-control input-sm date-picker','data-date-format'=>'dd-mm-yyyy', 'label'=>false,'placeholder'=>'DD-MM-YYYY','type'=>'text','data-date-start-date'=>@$coreVariable[fyValidFrom],'data-date-end-date'=>@$coreVariable[fyValidTo],'value'=>date('d-m-Y',strtotime($to_date)),'required'=>'required']); ?>
+								<?php echo $this->Form->control('to_date',['class'=>'form-control input-sm date-picker to_date','data-date-format'=>'dd-mm-yyyy', 'label'=>false,'placeholder'=>'DD-MM-YYYY','type'=>'text','data-date-start-date'=>@$coreVariable[fyValidFrom],'data-date-end-date'=>@$coreVariable[fyValidTo],'value'=>date('d-m-Y',strtotime($to_date)),'required'=>'required']); ?>
 							</div>
 							<div class="col-md-3">
 								<span class="input-group-btn">
@@ -72,10 +72,14 @@ $this->set('title', 'Profit & Loss Statement');
 													</td>
 												</tr>
 											<?php } ?>
-											<?php foreach($groupForPrint as $groupForPrintRow){ 
+											<?php foreach($groupForPrint as $key=>$groupForPrintRow){ 
 												if(($groupForPrintRow['balance']>0) or ($groupForPrintRow['balance']==0 && $groupForPrintRow['nature']==4)){ ?>
 												<tr>
-													<td><?php echo $groupForPrintRow['name']; ?></td>
+													<td>
+													<a href="#" role='button' status='close' class="group_name" group_id='<?php  echo $key; ?>' style='color:black;'>
+														<?php echo $groupForPrintRow['name']; ?>
+															 </a>
+													</td>
 													<td align="right">
 														<?php if($groupForPrintRow['balance']!=0){
 															echo $this->Money->moneyFormatIndia(abs($groupForPrintRow['balance']));
@@ -102,10 +106,14 @@ $this->set('title', 'Profit & Loss Statement');
 													</td>
 												</tr>
 											<?php } ?>
-											<?php foreach($groupForPrint as $groupForPrintRow){ 
+											<?php foreach($groupForPrint as $key=>$groupForPrintRow){ 
 												if(($groupForPrintRow['balance']<0) or ($groupForPrintRow['balance']==0 && $groupForPrintRow['nature']==3)){ ?>
 												<tr>
-													<td><?php echo $groupForPrintRow['name']; ?></td>
+													<td>
+													<a href="#" role='button' status='close' class="group_name" group_id='<?php  echo $key; ?>' style='color:black;'>
+														<?php echo $groupForPrintRow['name']; ?>
+															 </a>
+													</td>
 													<td align="right">
 														<?php if($groupForPrintRow['balance']!=0){
 															echo $this->Money->moneyFormatIndia(abs($groupForPrintRow['balance'])); 
@@ -136,7 +144,7 @@ $this->set('title', 'Profit & Loss Statement');
 									<table width="100%">
 										<tbody>
 											<tr>
-												<td>Gross Profit</td>
+												<td>Net Profit</td>
 												<td align="right">
 													<?php echo $this->Money->moneyFormatIndia($totalDiff); $LeftTotal+=$totalDiff; ?>
 												</td>
@@ -150,7 +158,7 @@ $this->set('title', 'Profit & Loss Statement');
 									<table width="100%">
 										<tbody>
 											<tr>
-												<td>Gross Loss</td>
+												<td>Net Loss</td>
 												<td align="right">
 													<?php echo $this->Money->moneyFormatIndia(abs($totalDiff)); $RightTotal+=abs($totalDiff); ?>
 												</td>
@@ -249,6 +257,32 @@ $this->set('title', 'Profit & Loss Statement');
 <?php
 	$js="
 		$(document).ready(function() {
+				$('.group_name').die().live('click',function(e){
+				   var current_obj=$(this);
+				   var group_id=$(this).attr('group_id');
+					if(current_obj.attr('status') == 'open')
+					{
+						$('tr.row_for_'+group_id+'').remove();
+						current_obj.attr('status','close');
+						$('table > tbody > tr > td> a').removeClass('group_a');
+						$('table > tbody > tr > td> span').removeClass('group_a');
+					} else{  
+						var from_date = $('.from_date').val();
+						var to_date = $('.to_date').val(); 
+						var url='".$this->Url->build(['controller'=>'AccountingEntries','action'=>'firstSubGroupsPnl']) ."';
+						url=url+'/'+group_id +'/'+from_date+'/'+to_date, 
+						$.ajax({
+							url: url,
+						}).done(function(response) { 
+							current_obj.attr('status','open');
+							 current_obj.addClass('group_a');
+							current_obj.closest('tr').find('span').addClass('group_a');
+							var a='<tr><td colspan=2>'+response+'</td></tr>';
+							$(a).insertAfter(current_obj.closest('tr'));
+						});	
+					}  
+		  
+			});	
 			ComponentsPickers.init();	
 		});
 	";
