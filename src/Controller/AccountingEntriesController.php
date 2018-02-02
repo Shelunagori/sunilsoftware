@@ -144,6 +144,64 @@ class AccountingEntriesController extends AppController
 		$this->set(compact('from_date','to_date', 'groupForPrint', 'closingValue', 'openingValue'));
 		
     }
+
+	public function TradingReport()
+    {
+		$this->viewBuilder()->layout('index_layout');
+        $company_id=$this->Auth->User('session_company_id');
+		$from_date=$this->request->query('from_date');
+		$to_date=$this->request->query('to_date');
+		$from_date = date("Y-m-d",strtotime($from_date));
+		$to_date= date("Y-m-d",strtotime($to_date));
+		
+		$AccountingGroups=$this->AccountingEntries->Ledgers->AccountingGroups->find()
+		->where(['AccountingGroups.nature_of_group_id IN'=>[3,4],'AccountingGroups.company_id'=>$company_id]);
+		$Groups=[];
+		foreach($AccountingGroups as $AccountingGroup){
+			$Groups[$AccountingGroup->id]['ids'][]=$AccountingGroup->id;
+			$Groups[$AccountingGroup->id]['name']=$AccountingGroup->name;
+			$Groups[$AccountingGroup->id]['nature']=$AccountingGroup->nature_of_group_id;
+			$accountingChildGroups = $this->AccountingEntries->Ledgers->AccountingGroups->find('children', ['for' => $AccountingGroup->id]);
+			foreach($accountingChildGroups as $accountingChildGroup){
+				$Groups[$AccountingGroup->id]['ids'][]=$accountingChildGroup->id;
+			}
+		}
+		$AllGroups=[];
+		foreach($Groups as $mainGroups){
+			foreach($mainGroups['ids'] as $subGroup){
+				$AllGroups[]=$subGroup;
+			}
+		}
+		
+		$query=$this->AccountingEntries->find();
+		$query->select(['ledger_id','totalDebit' => $query->func()->sum('AccountingEntries.debit'),'totalCredit' => $query->func()->sum('AccountingEntries.credit')])
+				->group('AccountingEntries.ledger_id')
+				->where(['AccountingEntries.company_id'=>$company_id,'AccountingEntries.transaction_date >='=>$from_date, 'AccountingEntries.transaction_date <='=>$to_date])
+				->contain(['Ledgers'=>function($q){
+					return $q->select(['Ledgers.accounting_group_id','Ledgers.id']);
+				}]);
+		$query->matching('Ledgers', function ($q) use($AllGroups){
+			return $q->where(['Ledgers.accounting_group_id IN' => $AllGroups]);
+		});
+		$balanceOfLedgers=$query;
+		$groupForPrint=[];
+		foreach($balanceOfLedgers as $balanceOfLedger){
+			foreach($Groups as $primaryGroup=>$Group){
+				if(in_array($balanceOfLedger->ledger->accounting_group_id,$Group['ids'])){
+					@$groupForPrint[$primaryGroup]['balance']+=$balanceOfLedger->totalDebit-$balanceOfLedger->totalCredit;
+				}else{
+					@$groupForPrint[$primaryGroup]['balance']+=0;
+				}
+				@$groupForPrint[$primaryGroup]['name']=$Group['name'];
+				@$groupForPrint[$primaryGroup]['nature']=$Group['nature'];
+			}
+		}
+		//pr($groupForPrint); exit;
+		$openingValue= $this->StockValuationWithDate($from_date);
+		$closingValue= $this->StockValuationWithDate2($to_date);
+		$this->set(compact('from_date','to_date', 'groupForPrint', 'closingValue', 'openingValue'));
+		
+    }
 	
 	public function BalanceSheet()
     {
