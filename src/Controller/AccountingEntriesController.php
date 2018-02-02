@@ -574,6 +574,93 @@ class AccountingEntriesController extends AppController
 
         return $this->redirect(['action' => 'index']);
     }
+
+	public function firstSubGroupsPnl($group_id,$from_date,$to_date)
+	{ 
+		//$this->viewBuilder()->layout('index_layout');
+        $company_id=$this->Auth->User('session_company_id');
+		//$from_date=$this->request->query('from_date');
+		//$to_date=$this->request->query('to_date'); pr($from_date); exit;
+		$from_date = date("Y-m-d",strtotime($from_date));
+		$to_date= date("Y-m-d",strtotime($to_date));
+		$AccountLedgers = $this->AccountingEntries->Ledgers->exists(['accounting_group_id' => $group_id]);
+		$status="Parent";
+		if($AccountLedgers==1){
+			$status="Child";
+			$AccountingGroups=$this->AccountingEntries->Ledgers->find()->where(['Ledgers.accounting_group_id '=>$group_id,'Ledgers.company_id'=>$company_id]);
+			$Groups=[]; $ledgerData=[];
+			foreach($AccountingGroups as $AccountingGroup){
+				$Groups[$AccountingGroup->id]['ids'][]=$AccountingGroup->id;
+				$Groups[$AccountingGroup->id]['name']=$AccountingGroup->name;
+				$ledgerData[$AccountingGroup->id]=$AccountingGroup->name;
+				
+			}
+			$AllGroups=[];
+			foreach($Groups as $mainGroups){
+				foreach($mainGroups['ids'] as $subGroup){
+					$AllGroups[]=$subGroup; 
+				}
+			} $groupForPrint=[];
+			foreach($AllGroups as $AllGroup){ 
+				
+			$query=$this->AccountingEntries->find()->where(['AccountingEntries.ledger_id'=>$AllGroup]);  
+					$query->select(['ledger_id','totalDebit' => $query->func()->sum('AccountingEntries.debit'),'totalCredit' => $query->func()->sum('AccountingEntries.credit')])
+					->group('AccountingEntries.ledger_id')
+					->where(['AccountingEntries.ledger_id'=>$AllGroup, 'AccountingEntries.transaction_date >='=>$from_date, 'AccountingEntries.transaction_date <='=>$to_date,'AccountingEntries.company_id'=>$company_id])->first(); 
+					//pr(@$query->first()['totalDebit']); 
+					@$groupForPrint[$AllGroup]['balance']+=@$query->first()['totalDebit']-@$query->first()['totalCredit'];
+			}
+			 //pr($ledgerData); exit;
+		
+	}else{
+		$AccountingGroups=$this->AccountingEntries->Ledgers->AccountingGroups->find()->where(['AccountingGroups.parent_id '=>$group_id,'AccountingGroups.company_id'=>$company_id]);
+		$Groups=[];
+		foreach($AccountingGroups as $AccountingGroup){
+			$Groups[$AccountingGroup->id]['ids'][]=$AccountingGroup->id;
+			$Groups[$AccountingGroup->id]['name']=$AccountingGroup->name;
+			$Groups[$AccountingGroup->id]['nature']=$AccountingGroup->nature_of_group_id;
+			$accountingChildGroups = $this->AccountingEntries->Ledgers->AccountingGroups->find('children', ['for' => $AccountingGroup->id]);
+			foreach($accountingChildGroups as $accountingChildGroup){
+				$Groups[$AccountingGroup->id]['ids'][]=$accountingChildGroup->id;
+			}
+		}
+		$AllGroups=[];
+		foreach($Groups as $mainGroups){
+			foreach($mainGroups['ids'] as $subGroup){
+				$AllGroups[]=$subGroup;
+			}
+		}
+		
+		$query=$this->AccountingEntries->find();
+		$query->select(['ledger_id','totalDebit' => $query->func()->sum('AccountingEntries.debit'),'totalCredit' => $query->func()->sum('AccountingEntries.credit')])
+				->group('AccountingEntries.ledger_id')
+				->where(['AccountingEntries.company_id'=>$company_id])
+				->contain(['Ledgers'=>function($q){
+					return $q->select(['Ledgers.accounting_group_id','Ledgers.id']);
+				}]);
+		$query->matching('Ledgers', function ($q) use($AllGroups){
+			return $q->where(['Ledgers.accounting_group_id IN' => $AllGroups]);
+		});
+		$balanceOfLedgers=$query;
+		
+
+		//pr($balanceOfLedgers->toArray()); exit;
+		$groupForPrint=[];
+		foreach($balanceOfLedgers as $balanceOfLedger){
+			foreach($Groups as $primaryGroup=>$Group){
+				if(in_array($balanceOfLedger->ledger->accounting_group_id,$Group['ids'])){
+					@$groupForPrint[$primaryGroup]['balance']+=$balanceOfLedger->totalDebit-$balanceOfLedger->totalCredit;
+				}else{
+					@$groupForPrint[$primaryGroup]['balance']+=0;
+				}
+				@$groupForPrint[$primaryGroup]['name']=$Group['name'];
+				@$groupForPrint[$primaryGroup]['nature']=$Group['nature'];
+			}
+		}
+}
+
+		$this->set(compact('from_date','to_date', 'groupForPrint', 'closingValue', 'openingValue','status','ledgerData'));
+	}
 	
 	
 }
