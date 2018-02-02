@@ -606,7 +606,8 @@ $this->set('title', 'Create Sales Invoice');
 					$(this).closest('tr').find('.gst_figure_tax_name').val(second_gst_figure_tax_name);
 				}
 				$(this).find('.discountAmount').val(netValue);
-				gstValue = netValue-amountAfterDicsount;
+				gstValue1 = round((netValue-amountAfterDicsount)/2,2);
+				gstValue=gstValue1+gstValue1;
 				$(this).find('.gstValue').val(gstValue);
 				gstAmount = amountAfterDicsount;
 				
@@ -637,8 +638,8 @@ $this->set('title', 'Create Sales Invoice');
 				if(!TaxableValue){TaxableValue=0;}
 				var TaxableValue=round(TaxableValue,2);
 				$(this).find('.gstAmount').val(TaxableValue);
-				
-				gstValue = amountAfterDicsount-TaxableValue;
+				gstValue1 = round((amountAfterDicsount-TaxableValue)/2,2);
+				gstValue=gstValue1+gstValue1;
 				gstAmount = TaxableValue;
 				$(this).find('.gstValue').val(gstValue);
 			}

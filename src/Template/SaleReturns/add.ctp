@@ -638,7 +638,8 @@ foreach($partyOptions as $partyOption)
 				var netValue=round(netValue,2);
 			
 				$(this).find('.discountAmount').val(netValue);
-				gstValue = netValue-discountAmounts;
+				gstValue1 = round((netValue-discountAmounts)/2,2);
+				gstValue=gstValue1+gstValue1;
 				$(this).find('.gstValue').val(gstValue);
 				gstAmount = discountAmounts;
 				$(this).find('.gstAmount').val(gstAmount.toFixed(2));
@@ -651,7 +652,9 @@ foreach($partyOptions as $partyOption)
 			    var divideValue=100;
 				var divideval=divideValue+gst_figure_tax_percentage;
 				var gstAmount=(discountAmount*100)/divideval;
-	            var gstValue=(gstAmount*gst_figure_tax_percentage)/100;
+	            var gstValue1=round((gstAmount*gst_figure_tax_percentage)/100,2);
+				var gstValue1=round(gstValue1/2,2);
+				var gstValue=gstValue1+gstValue1;
 				$(this).find('.gstAmount').val(gstAmount.toFixed(2));
 				$(this).find('.gstValue').val(gstValue.toFixed(2));
 			}

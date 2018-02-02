@@ -778,7 +778,8 @@ foreach($partyOptions as $partyOption)
 					$(this).closest('tr').find('.gst_figure_tax_name').val(second_gst_figure_tax_name);
 				}
 				$(this).find('.discountAmount').val(netValue);
-				gstValue = netValue-amountAfterDicsount;
+				gstValue1 = round((netValue-amountAfterDicsount)/2,2);
+				gstValue=gstValue1+gstValue1;
 				$(this).find('.gstValue').val(gstValue);
 				gstAmount = amountAfterDicsount;
 				
@@ -794,7 +795,8 @@ foreach($partyOptions as $partyOption)
 					$(this).closest('tr').find('.gst_figure_tax_percentage').val(first_gst_figure_tax_percentage);
 					$(this).closest('tr').find('.gst_figure_tax_name').val(first_gst_figure_tax_name);
 					
-					var TaxableValue=amountAfterDicsount/(100+first_gst_figure_tax_percentage)*100;
+					
+				var TaxableValue=amountAfterDicsount/(100+first_gst_figure_tax_percentage)*100;
 				}else if(netValuePerQty>gstComparableAmount){
 					var second_gst_figure_tax_percentage=parseFloat($('option:selected', this).attr('SecondGstFigure'));
 					var second_gst_figure_tax_name=$('option:selected', this).attr('SecondGstFigure');
@@ -803,14 +805,14 @@ foreach($partyOptions as $partyOption)
 					$(this).closest('tr').find('.gst_figure_id').val(second_gst_figure_id);
 					$(this).closest('tr').find('.gst_figure_tax_percentage').val(second_gst_figure_tax_percentage);
 					$(this).closest('tr').find('.gst_figure_tax_name').val(second_gst_figure_tax_name);
-					
 					var TaxableValue=amountAfterDicsount/(100+second_gst_figure_tax_percentage)*100;
 				}
 				if(!TaxableValue){TaxableValue=0;}
 				var TaxableValue=round(TaxableValue,2);
 				$(this).find('.gstAmount').val(TaxableValue);
 				
-				gstValue = amountAfterDicsount-TaxableValue;
+				gstValue1 = round((amountAfterDicsount-TaxableValue)/2,2);
+				gstValue=gstValue1+gstValue1;
 				gstAmount = TaxableValue;
 				$(this).find('.gstValue').val(gstValue);
 			}
