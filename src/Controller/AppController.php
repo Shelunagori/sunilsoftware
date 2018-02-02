@@ -207,7 +207,8 @@ class AppController extends Controller
 		
 		$this->loadModel('ItemLedgers');
 		$where=['ItemLedgers.company_id'=>$company_id,'ItemLedgers.transaction_date <='=>$date];
-		$ItemLedgers=$this->ItemLedgers->find()->where($where)->order(['transaction_date'=>'ASC']);
+		$ItemLedgers=$this->ItemLedgers->find()->where($where)->where(['intra_location_stock_transfer_voucher_id IS NULL'])->order(['transaction_date'=>'ASC']);
+		
 		$stock=[];
 		
 		foreach($ItemLedgers as $ItemLedger){
@@ -215,8 +216,10 @@ class AppController extends Controller
 				for($inc=0;$inc<$ItemLedger->quantity;$inc++){
 					$stock[$ItemLedger->item_id][]=$ItemLedger->rate;
 				}
+
 			}
 		}
+		
 		foreach($ItemLedgers as $ItemLedger){
 			if($ItemLedger->status=='out'){
 				if(sizeof(@$stock[$ItemLedger->item_id])>0){
