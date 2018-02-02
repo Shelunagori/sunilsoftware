@@ -77,7 +77,7 @@ $this->set('title', 'Day Book');
 				<?php } ?>
 				<?php 
 				
-				if(!empty($day_book))
+				if(!empty($ledger_data))
 				{
 				?>
 					<table class="table table-bordered table-hover table-condensed" width="100%" border="1">
@@ -94,9 +94,9 @@ $this->set('title', 'Day Book');
 						</thead>
 						<tbody>
 						<?php 
-						if(!empty($day_book))
+						if(!empty($ledger_data))
 						{
-							foreach($day_book as $paymentLedgers)
+							foreach($ledger_data as $paymentLedgers)
 							{  
 								foreach($paymentLedgers as $paymentLedger)
 										{

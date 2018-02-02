@@ -636,10 +636,83 @@ class LedgersController extends AppController
 		$data->hlink='ContraVouchers';
 		$data->haction='Edit';
 		}
-		
-		$day_book=array_merge([$salesInvoiceLedgers->toArray(),$purchaseInvoiceLedgers->toArray(),$paymentLedgers->toArray(),$receiptLedgers->toArray(),$creditNoteLedgers->toArray(),$debitNoteLedgers->toArray(),$journalVoucherLedgers->toArray(),$saleReturnLedgers->toArray(),$salesVoucherLedgers->toArray(),$purchaseVoucherLedgers->toArray(),$purchaseReturnLedgers->toArray(),$contraLedgers->toArray()]);
-		
-		$this->set(compact('day_book','from_date','to_date','url','status'));
+		$i=0;
+		foreach($salesInvoiceLedgers as $salesInvoiceLedger)
+		{
+			$data_date=strtotime($salesInvoiceLedger->transaction_date);
+			$ledger_data[$data_date][$i]=$salesInvoiceLedger;
+			$i++;
+		}
+		foreach($purchaseInvoiceLedgers as $purchaseInvoiceLedger)
+		{
+			$data_date=strtotime($purchaseInvoiceLedger->transaction_date);
+			$ledger_data[$data_date][$i]=$purchaseInvoiceLedger;
+			$i++;
+		}
+		foreach($paymentLedgers as $paymentLedger)
+		{
+			$data_date=strtotime($paymentLedger->transaction_date);
+			$ledger_data[$data_date][$i]=$paymentLedger;
+			$i++;
+		}
+		foreach($receiptLedgers as $receiptLedger)
+		{
+			$data_date=strtotime($receiptLedger->transaction_date);
+			$ledger_data[$data_date][$i]=$receiptLedger;
+			$i++;
+		}
+		foreach($creditNoteLedgers as $creditNoteLedger)
+		{
+			$data_date=strtotime($creditNoteLedger->transaction_date);
+			$ledger_data[$data_date][$i]=$creditNoteLedger;
+			$i++;
+		}
+		foreach($debitNoteLedgers as $debitNoteLedger)
+		{
+			$data_date=strtotime($debitNoteLedger->transaction_date);
+			$ledger_data[$data_date][$i]=$debitNoteLedger;
+			$i++;
+		}
+		foreach($journalVoucherLedgers as $journalVoucherLedger)
+		{
+			$data_date=strtotime($journalVoucherLedger->transaction_date);
+			$ledger_data[$data_date][$i]=$journalVoucherLedger;
+			$i++;
+		}
+		foreach($saleReturnLedgers as $saleReturnLedger)
+		{
+			$data_date=strtotime($saleReturnLedger->transaction_date);
+			$ledger_data[$data_date][$i]=$saleReturnLedger;
+			$i++;
+		}
+		foreach($salesVoucherLedgers as $salesVoucherLedger)
+		{
+			$data_date=strtotime($salesVoucherLedger->transaction_date);
+			$ledger_data[$data_date][$i]=$salesVoucherLedger;
+			$i++;
+		}
+		foreach($purchaseVoucherLedgers as $purchaseVoucherLedger)
+		{
+			$data_date=strtotime($purchaseVoucherLedger->transaction_date);
+			$ledger_data[$data_date][$i]=$purchaseVoucherLedger;
+			$i++;
+		}
+		foreach($purchaseReturnLedgers as $purchaseReturnLedger)
+		{
+			$data_date=strtotime($purchaseReturnLedger->transaction_date);
+			$ledger_data[$data_date][$i]=$purchaseReturnLedger;
+			$i++;
+		}
+		foreach($contraLedgers as $contraLedger)
+		{
+			$data_date=strtotime($contraLedger->transaction_date);
+			$ledger_data[$data_date][$i]=$contraLedger;
+			$i++;
+		}
+		ksort($ledger_data);
+		/*$day_book=array_merge([$salesInvoiceLedgers->toArray(),$purchaseInvoiceLedgers->toArray(),$paymentLedgers->toArray(),$receiptLedgers->toArray(),$creditNoteLedgers->toArray(),$debitNoteLedgers->toArray(),$journalVoucherLedgers->toArray(),$saleReturnLedgers->toArray(),$salesVoucherLedgers->toArray(),$purchaseVoucherLedgers->toArray(),$purchaseReturnLedgers->toArray(),$contraLedgers->toArray()]);*/
+		//pr($ledger_data);exit;
+		$this->set(compact('ledger_data','from_date','to_date','url','status'));
         $this->set('_serialize', ['day_book']);
     }
 	
