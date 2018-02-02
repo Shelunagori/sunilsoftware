@@ -70,9 +70,10 @@ class AccountingGroupsController extends AppController
         if ($this->request->is('post')) {
             $accountingGroup = $this->AccountingGroups->patchEntity($accountingGroup, $this->request->getData());
 			$accountingGroup->company_id = $company_id;
+			//pr($accountingGroup); exit;
             if ($this->AccountingGroups->save($accountingGroup)) {
                 $this->Flash->success(__('The accounting group has been saved.'));
-
+//pr($accountingGroup); exit;
                 return $this->redirect(['action' => 'add']);
             }
             $this->Flash->error(__('The accounting group could not be saved. Please, try again.'));

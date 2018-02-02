@@ -98,7 +98,7 @@ $this->set('title', 'Balance Sheet');
 													<td align="right">
 														<?php 
 														echo $this->Money->moneyFormatIndia($closingValue); 
-														$RightTotal+=$closingValue; 
+														$RightTotal+=abs($closingValue); 
 														?>
 													</td>
 												</tr>
@@ -135,7 +135,7 @@ $this->set('title', 'Balance Sheet');
 												<td align="right">
 													<?php 
 													echo $this->Money->moneyFormatIndia(abs($GrossProfit)); 
-													$RightTotal+=$GrossProfit;
+													$RightTotal+=abs($GrossProfit);
 													?>
 												</td>
 											</tr>

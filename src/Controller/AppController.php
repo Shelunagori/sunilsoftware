@@ -207,7 +207,7 @@ class AppController extends Controller
 		
 		$this->loadModel('ItemLedgers');
 		$where=['ItemLedgers.company_id'=>$company_id,'ItemLedgers.transaction_date <='=>$date];
-		$ItemLedgers=$this->ItemLedgers->find()->where($where);
+		$ItemLedgers=$this->ItemLedgers->find()->where($where)->order(['transaction_date'=>'ASC']);
 		$stock=[];
 		
 		foreach($ItemLedgers as $ItemLedger){

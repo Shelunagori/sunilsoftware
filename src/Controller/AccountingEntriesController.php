@@ -138,6 +138,7 @@ class AccountingEntriesController extends AppController
 				@$groupForPrint[$primaryGroup]['nature']=$Group['nature'];
 			}
 		}
+		//pr($groupForPrint); exit;
 		$openingValue= $this->StockValuationWithDate($from_date);
 		$closingValue= $this->StockValuationWithDate2($to_date);
 		$this->set(compact('from_date','to_date', 'groupForPrint', 'closingValue', 'openingValue'));
@@ -195,6 +196,7 @@ class AccountingEntriesController extends AppController
 				@$groupForPrint[$primaryGroup]['nature']=$Group['nature'];
 			}
 		}
+		//pr($groupForPrint); exit;
 		$GrossProfit= $this->GrossProfit($from_date,$to_date);
 		$closingValue= $this->StockValuationWithDate2($to_date);
 		$differenceInOpeningBalance= $this->differenceInOpeningBalance();
