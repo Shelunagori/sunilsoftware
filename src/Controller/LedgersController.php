@@ -258,7 +258,7 @@ class LedgersController extends AppController
 		
 		$AccountingGroups=$this->Ledgers->AccountingEntries->Ledgers->AccountingGroups->find()->where(['AccountingGroups.nature_of_group_id IN'=>[1,2,3,4],'AccountingGroups.company_id'=>$company_id]);
 		
-		$Groups=[];
+		$Groups=[]; $ledgerData=[];
 		foreach($AccountingGroups as $AccountingGroup){
 			$Groups[$AccountingGroup->id]['ids'][]=$AccountingGroup->id;
 			$Groups[$AccountingGroup->id]['name']=$AccountingGroup->name;
@@ -266,6 +266,7 @@ class LedgersController extends AppController
 			$accountingChildGroups = $this->Ledgers->AccountingEntries->Ledgers->AccountingGroups->find('children', ['for' => $AccountingGroup->id]);
 			foreach($accountingChildGroups as $accountingChildGroup){
 				$Groups[$AccountingGroup->id]['ids'][]=$accountingChildGroup->id;
+				//$ledgerData[$AccountingGroup->id]=$AccountingGroup->name;
 			}
 		}
 		$AllGroups=[];
@@ -274,11 +275,10 @@ class LedgersController extends AppController
 				$AllGroups[]=$subGroup;
 			}
 		}
-		
 		$query=$this->Ledgers->AccountingEntries->find();
 		$query->select(['ledger_id','totalDebit' => $query->func()->sum('AccountingEntries.debit'),'totalCredit' => $query->func()->sum('AccountingEntries.credit')])
 				->group('AccountingEntries.ledger_id')
-				->where(['AccountingEntries.company_id'=>$company_id])
+				->where(['AccountingEntries.company_id'=>$company_id, 'AccountingEntries.transaction_date <='=>$to_date])
 				->contain(['Ledgers'=>function($q){
 					return $q->select(['Ledgers.accounting_group_id','Ledgers.id']);
 				}]);
@@ -286,22 +286,68 @@ class LedgersController extends AppController
 			return $q->where(['Ledgers.accounting_group_id IN' => $AllGroups]);
 		});
 		$balanceOfLedgers=$query;
-		
-		$groupForPrint=[];
+		$ClosingBalanceForPrint=[];
 		foreach($balanceOfLedgers as $balanceOfLedger){
 			foreach($Groups as $primaryGroup=>$Group){
 				if(in_array($balanceOfLedger->ledger->accounting_group_id,$Group['ids'])){
-					@$groupForPrint[$primaryGroup]['balance']+=$balanceOfLedger->totalDebit-$balanceOfLedger->totalCredit;
+					@$ClosingBalanceForPrint[$primaryGroup]['balance']+=$balanceOfLedger->totalDebit-$balanceOfLedger->totalCredit;
 				}else{
-					@$groupForPrint[$primaryGroup]['balance']+=0;
+					@$ClosingBalanceForPrint[$primaryGroup]['balance']+=0;
 				}
-				@$groupForPrint[$primaryGroup]['name']=$Group['name'];
-				@$groupForPrint[$primaryGroup]['nature']=$Group['nature'];
+				@$ClosingBalanceForPrint[$primaryGroup]['name']=$Group['name'];
+				@$ClosingBalanceForPrint[$primaryGroup]['nature']=$Group['nature'];
 			}
-		}
+		} 
 		
-		pr($groupForPrint); exit;
-		$this->set(compact('ledger','from_date','to_date','TrialBalances','totalDebit','status','url'));
+		$query1=$this->Ledgers->AccountingEntries->find();
+		$query1->select(['ledger_id','totalDebit' => $query1->func()->sum('AccountingEntries.debit'),'totalCredit' => $query1->func()->sum('AccountingEntries.credit')])
+				->group('AccountingEntries.ledger_id')
+				->where(['AccountingEntries.company_id'=>$company_id, 'AccountingEntries.transaction_date <='=>$from_date])
+				->contain(['Ledgers'=>function($q){
+					return $q->select(['Ledgers.accounting_group_id','Ledgers.id']);
+				}]);
+		$query1->matching('Ledgers', function ($q) use($AllGroups){
+			return $q->where(['Ledgers.accounting_group_id IN' => $AllGroups]);
+		});
+		$balanceOfLedgers=$query1;
+		$OpeningBalanceForPrint=[];
+		foreach($balanceOfLedgers as $balanceOfLedger){
+			foreach($Groups as $primaryGroup=>$Group){
+				if(in_array($balanceOfLedger->ledger->accounting_group_id,$Group['ids'])){
+					@$OpeningBalanceForPrint[$primaryGroup]['balance']+=$balanceOfLedger->totalDebit-$balanceOfLedger->totalCredit;
+				}else{
+					@$OpeningBalanceForPrint[$primaryGroup]['balance']+=0;
+				}
+			}
+		} 
+
+		$query2=$this->Ledgers->AccountingEntries->find();
+		$query2->select(['ledger_id','totalDebit' => $query2->func()->sum('AccountingEntries.debit'),'totalCredit' => $query2->func()->sum('AccountingEntries.credit')])
+				->group('AccountingEntries.ledger_id')
+				->where(['AccountingEntries.company_id'=>$company_id, 'AccountingEntries.transaction_date >'=>$from_date, 'AccountingEntries.transaction_date <='=>$to_date])
+				->contain(['Ledgers'=>function($q){
+					return $q->select(['Ledgers.accounting_group_id','Ledgers.id']);
+				}]);
+		$query2->matching('Ledgers', function ($q) use($AllGroups){
+			return $q->where(['Ledgers.accounting_group_id IN' => $AllGroups]);
+		});
+		$balanceOfLedgers=$query2;
+		$TransactionsDr=[];
+		$TransactionsCr=[];
+		foreach($balanceOfLedgers as $balanceOfLedger){
+			foreach($Groups as $primaryGroup=>$Group){
+				if(in_array($balanceOfLedger->ledger->accounting_group_id,$Group['ids'])){
+					@$TransactionsDr[$primaryGroup]['balance']+=$balanceOfLedger->totalDebit;
+					@$TransactionsCr[$primaryGroup]['balance']+=$balanceOfLedger->totalCredit;
+				}else{
+					@$OpeningBalanceForPrint[$primaryGroup]['balance']+=0;
+				}
+			}
+		} 
+		//pr($TransactionsCr); 
+		//pr($TransactionsDr); exit;
+		
+		$this->set(compact('ledger','from_date','to_date','TrialBalances','totalDebit','status','url','ClosingBalanceForPrint','OpeningBalanceForPrint','TransactionsCr','TransactionsDr'));
         $this->set('_serialize', ['ledger']);
     }
 	

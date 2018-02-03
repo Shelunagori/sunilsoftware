@@ -53,7 +53,7 @@ $this->set('title', 'Trial balance report');
 							{
 								$from_date = date("d-m-Y",strtotime(@$from_date));
 							}
-							echo $this->Form->control('from_date',['class'=>'form-control input-sm date-picker','data-date-format'=>'dd-mm-yyyy','label'=>false,'placeholder'=>'DD-MM-YYYY','type'=>'text','value'=>@$from_date,'data-date-start-date'=>@$coreVariable[fyValidFrom],'data-date-end-date'=>@$coreVariable[fyValidTo]]); ?>
+							echo $this->Form->control('from_date',['class'=>'form-control input-sm date-picker from_date','data-date-format '=>'dd-mm-yyyy','label'=>false,'placeholder'=>'DD-MM-YYYY','type'=>'text','value'=>@$from_date,'data-date-start-date'=>@$coreVariable[fyValidFrom],'data-date-end-date'=>@$coreVariable[fyValidTo]]); ?>
 						</div>
 					</div>
 					<div class="col-md-3">
@@ -68,7 +68,7 @@ $this->set('title', 'Trial balance report');
 							{
 								$to_date = date("d-m-Y",strtotime(@$to_date));
 							}
-							echo $this->Form->control('to_date',['class'=>'form-control input-sm date-picker','data-date-format'=>'dd-mm-yyyy','label'=>false,'placeholder'=>'DD-MM-YYYY','type'=>'text','value'=>@$to_date,'data-date-start-date'=>@$coreVariable[fyValidFrom],'data-date-end-date'=>@$coreVariable[fyValidTo]]); ?>
+							echo $this->Form->control('to_date',['class'=>'form-control input-sm date-picker to_date','data-date-format'=>'dd-mm-yyyy','label'=>false,'placeholder'=>'DD-MM-YYYY','type'=>'text','value'=>@$to_date,'data-date-start-date'=>@$coreVariable[fyValidFrom],'data-date-end-date'=>@$coreVariable[fyValidTo]]); ?>
 						</div>
 					</div>
 					<div class="col-md-2" >
@@ -80,16 +80,16 @@ $this->set('title', 'Trial balance report');
 				</div>
 				<?php 
 				}
-				if(!empty($TrialBalances))
+				if(!empty($ClosingBalanceForPrint))
 				{
 				?>
 				<table class="table table-bordered table-hover table-condensed" width="100%">
 					<thead>
 						<tr>
-							<th scope="col"></th>
-							<th scope="col" colspan="2" style="text-align:center";>Opening Balance</th>
-							<th scope="col" colspan="2" style="text-align:center";>Transactions</th>
-							<th scope="col" colspan="2" style="text-align:center";>Closing balance</th>
+							<th scope="col" width="25%"></th>
+							<th width="25%" scope="col" colspan="2" style="text-align:center";>Opening Balance</th>
+							<th width="25%" scope="col" colspan="2" style="text-align:center";>Transactions</th>
+							<th width="25%" scope="col" colspan="2" style="text-align:center";>Closing balance</th>
 						</tr>
 						<tr>
 							<th scope="col">Ledgers</th>
@@ -111,280 +111,146 @@ $this->set('title', 'Trial balance report');
 							$closingBalanceCreditTotal=0;
 							$total1=0;
 							$total2=0;
-							foreach($TrialBalances as  $TrialBalance)
-							{ 
+							foreach($ClosingBalanceForPrint as $key=>$ClosingBalance)
+							{ //pr(@$OpeningBalanceForPrint[$key]['balance']);
 								    $closing_credit=0;
 									$closing_debit=0;
 							?>
 									<tr>
-										<td scope="col"><?php echo @$TrialBalance->ledger->name;?></td>
+										<td style="width:200px"><a href="#" role='button' status='close' class="group_name" child='no' parent='yes' group_id='<?php  echo $key; ?>' style='color:black;'>
+														<?php echo $ClosingBalance['name']; ?>
+															 </a>
+													</td>
+										<?php if(@$OpeningBalanceForPrint[$key]['balance'] > 0){ ?>
 										<td scope="col" align="right">
 										<?php
-										    echo $this->Money->moneyFormatIndia($TrialBalance->debit_opening_balance);
-											$closing_debit +=round($TrialBalance->debit_opening_balance,2);
-											$openingBalanceDebitTotal +=round($TrialBalance->debit_opening_balance,2);
-										?>
-										</td>
-										<td scope="col" align="right">
-										<?php 
-											$closing_credit +=round($TrialBalance->credit_opening_balance,2);
-											$openingBalanceCreditTotal +=round($TrialBalance->credit_opening_balance,2);
-											echo $this->Money->moneyFormatIndia($TrialBalance->credit_opening_balance);
-										?>
-										</td>
-										<td scope="col" align="right">
-										<?php
-											$closing_debit +=round($TrialBalance->debit_transaction,2);
-											$transactionDebitTotal +=round($TrialBalance->debit_transaction,2);
-											echo $this->Money->moneyFormatIndia($TrialBalance->debit_transaction);
-										?>
-										</td>
-										<td scope="col" align="right">
-										<?php 
-											$closing_credit +=round($TrialBalance->credit_transaction,2);
-											$transactionCreditTotal +=round($TrialBalance->credit_transaction,2);
-										    echo $this->Money->moneyFormatIndia($TrialBalance->credit_transaction);
-										?>
-										</td>
-										<td scope="col" align="right">
-										<?php
-											echo $this->Money->moneyFormatIndia(@$closing_debit);
+										
+											echo $this->Money->moneyFormatIndia(abs($OpeningBalanceForPrint[$key]['balance']));
 											$closingBalanceDebitTotal +=round($closing_debit,2);
 										?>
 										</td>
+										<td scope="col" align="right"></td>
+										<?php } else{ ?>
+										<td scope="col" align="right"></td>
 										<td scope="col" align="right">
-										<?php 
-											echo $this->Money->moneyFormatIndia(@$closing_credit);
-											$closingBalanceCreditTotal +=round($closing_credit,2);
+										<?php
+										
+											echo $this->Money->moneyFormatIndia(abs(@$OpeningBalanceForPrint[$key]['balance']));
+											$closingBalanceDebitTotal +=round($closing_debit,2);
 										?>
 										</td>
+										<?php }?>
+										<td scope="col" align="right">
+										<?php echo $this->Money->moneyFormatIndia(abs(@$TransactionsDr[$key]['balance'])); ?>
+										</td>
+										<td scope="col" align="right">
+										<?php echo $this->Money->moneyFormatIndia(abs(@$TransactionsCr[$key]['balance'])); ?>
+										</td>
+										<?php if(@$ClosingBalance['balance'] > 0){ ?>
+										<td scope="col" align="right">
+										<?php
+										
+											echo $this->Money->moneyFormatIndia(abs($ClosingBalance['balance']));
+											$closingBalanceDebitTotal +=round($closing_debit,2);
+										?>
+										</td>
+										<td scope="col" align="right"></td>
+										<?php } else{ ?>
+										<td scope="col" align="right"></td>
+										<td scope="col" align="right">
+										<?php
+										
+											echo $this->Money->moneyFormatIndia(abs($ClosingBalance['balance']));
+											$closingBalanceDebitTotal +=round($closing_debit,2);
+										?>
+										</td>
+										<?php }?>
 									</tr>
-						<?php 
-								
-							}
-						?>
+						<?php } ?>
 					</tbody>
 					<tfoot>
 						<tr>
 							<th scope="col">Total</th>
 							<th scope="col" style="text-align:right";>
-							<?php 
-								if(!empty($openingBalanceDebitTotal))
-								{
-									echo $this->Money->moneyFormatIndia(@$openingBalanceDebitTotal);
-									$total1 =@$openingBalanceDebitTotal;
-								}
-							?>
+							
 							</th>
 							<th scope="col" style="text-align:right";>
-							<?php 
-								if(!empty($openingBalanceCreditTotal))
-								{
-									echo $this->Money->moneyFormatIndia(@$openingBalanceCreditTotal);
-									$total2 =@$openingBalanceCreditTotal;
-								}
-							?>
+							
 							</th>
 							<th scope="col" style="text-align:right";>
-							<?php 
-								if(!empty($transactionDebitTotal))
-								{
-									echo $this->Money->moneyFormatIndia(@$transactionDebitTotal);
-									@$total3 =@$transactionDebitTotal;
-								}				
-							?>
+							
 							</th>
 							<th scope="col" style="text-align:right";>
-							<?php
-								if(!empty($transactionCreditTotal))
-								{
-									echo $this->Money->moneyFormatIndia(@$transactionCreditTotal);
-									$total4 =@$transactionCreditTotal;
-								}
-							?>
+							
 							</th>
 							<th scope="col" style="text-align:right";>
-							<?php 
-								if(!empty($closingBalanceDebitTotal))
-								{
-									echo $this->Money->moneyFormatIndia(@$closingBalanceDebitTotal);
-									$total5 =@$closingBalanceDebitTotal;
-								}
-							?>
+							
 							</th>
 							<th scope="col" style="text-align:right";>
-							<?php 
-								if(!empty($closingBalanceCreditTotal))
-								{
-									echo $this->Money->moneyFormatIndia(@$closingBalanceCreditTotal);
-									$total6 =@$closingBalanceCreditTotal;
-								}
-							?>
+							
 							</th>
 						</tr>
 						<tr>
 							<th scope="col" >Closing Stock</th>
 							<th style="text-align:right";>
-								<?php 
 								
-								if(@$coreVariable['fyValidFrom']<$from_date)
-								{
-									if($totalDebit>0)
-									{ 
-									   echo $this->Money->moneyFormatIndia(@$totalDebit);
-											$openingBalanceDebitTotal +=round($totalDebit,2);
-											$total1 +=$totalDebit;
-									}
-								} 
-								?>
 							</th>
 							<th style="text-align:right";>
-								<?php 
-								 if(@$coreVariable['fyValidFrom']<$from_date)
-								{
-									if($totalDebit<0)
-									{
-									   echo $this->Money->moneyFormatIndia(@$totalDebit);
-									   $openingBalanceCreditTotal +=round($totalDebit,2);
-									   $total2 +=$totalDebit;
-									}
-									
-								} 
-								?>
+								
 							</th>
 							<th style="text-align:right";>
-								<?php 
-								  if(@$coreVariable[fyValidFrom]>$from_date && @$coreVariable[fyValidFrom]<$to_date || @$coreVariable[fyValidFrom]==$from_date || @$coreVariable[fyValidFrom]==$to_date)
-								  { 
-									if($totalDebit>0)
-									{
-										echo $this->Money->moneyFormatIndia(@$totalDebit);
-										$transactionDebitTotal +=round($totalDebit,2);
-										@$total3 +=$totalDebit;
-									}
-									
-								  } 
-								?>
+								
 							</th>
 							<th style="text-align:right";>
-								<?php 
-								if(@$coreVariable[fyValidFrom]>$from_date && @$coreVariable[fyValidFrom]<$to_date || @$coreVariable[fyValidFrom]==$from_date || @$coreVariable[fyValidFrom]==$to_date)
-								{
-									if($totalDebit<0)
-									{
-										echo $this->Money->moneyFormatIndia(@$totalDebit);
-										$transactionCreditTotal +=round($totalDebit,2);
-										$total4 +=$totalDebit;
-									}
-									
-								} 
-								?>
+								
 							</th>
 							<th style="text-align:right";>
-								<?php 
-								  if(@$coreVariable[fyValidFrom]>$from_date && @$coreVariable[fyValidFrom]<$to_date || @$coreVariable[fyValidFrom]==$from_date || @$coreVariable[fyValidFrom]==$to_date)
-								  { 
-									if($totalDebit>0)
-									{
-										echo $this->Money->moneyFormatIndia(@$totalDebit);
-										//$transactionDebitTotal +=round($totalDebit,2);
-										@$total5 +=$totalDebit;
-									}
-									
-								  } 
-								?>
+								
 							</th>
 							<th style="text-align:right";></th>
 						</tr>
 						<tr style="color:red;">
 							<th scope="col">Diffrence of opening balance</th>
 							<th scope="col" style="text-align:right";>
-							<?php 
-							   if(@$coreVariable[fyValidFrom]<$from_date)
-								{ 
-									if($openingBalanceDebitTotal>@$openingBalanceCreditTotal)
-									{
-										$cedit_diff = $openingBalanceDebitTotal-@$openingBalanceCreditTotal;
-									}
-									if(@$openingBalanceCreditTotal>$openingBalanceDebitTotal)
-									{
-										$debit_diff =@$openingBalanceCreditTotal-$openingBalanceDebitTotal;
-									}
-									echo $this->Money->moneyFormatIndia(@$debit_diff);
-								}
-							?>
+							
 							</th>
 							<th scope="col" style="text-align:right";>
-							<?php 
-								if(@$coreVariable[fyValidFrom]<$from_date)
-								{
-									echo $this->Money->moneyFormatIndia(@$cedit_diff);
-								}
-							?>
+							
 							</th>
 							<th style="text-align:right";>
-							<?php 
-							   if(@$coreVariable[fyValidFrom]>$from_date && @$coreVariable[fyValidFrom]<$to_date || @$coreVariable[fyValidFrom]==$from_date || @$coreVariable[fyValidFrom]==$to_date)
-								{ 
-									if($transactionDebitTotal>$transactionCreditTotal)
-									{
-										$cedit_diff1 =$transactionDebitTotal-$transactionCreditTotal; 
-									}
-									if($transactionDebitTotal<$transactionCreditTotal)
-									{
-										$debit_diff1=$transactionCreditTotal-$transactionDebitTotal;
-									}
-									echo $this->Money->moneyFormatIndia(round(@$debit_diff1,2));
-								}
-							?>
+							
 							</th>
 							<th style="text-align:right";>
-							<?php 
-								if(@$coreVariable[fyValidFrom]>$from_date && @$coreVariable[fyValidFrom]<$to_date || @$coreVariable[fyValidFrom]==$from_date || @$coreVariable[fyValidFrom]==$to_date)
-								{
-									echo $this->Money->moneyFormatIndia(round(@$cedit_diff1,2));
-								}
-							?>
+							
 							</th>
 							<th></th>
 							<th scope="col" style="text-align:right";>
-							<?php 
-								if(@$coreVariable[fyValidFrom]>$from_date && @$coreVariable[fyValidFrom]<$to_date || @$coreVariable[fyValidFrom]==$from_date || @$coreVariable[fyValidFrom]==$to_date)
-								{
-									echo $this->Money->moneyFormatIndia(round(@$cedit_diff1,2));
-								}
-							?></th>
+							</th>
 						</tr>
 						<tr>
 							<th scope="col">Total</th>
 							<th scope="col" style="text-align:right";>
 							<?php 
-								echo $this->Money->moneyFormatIndia(@$total1+@$debit_diff);
 							?>
 							</th>
 							<th scope="col" style="text-align:right";>
 							<?php 
-								echo $this->Money->moneyFormatIndia(@$total2+@$cedit_diff);
 							?>
 							</th>
 							<th scope="col" style="text-align:right";>
 							<?php 
-								echo $this->Money->moneyFormatIndia(@$total3+@$debit_diff1);
 							?>
 							</th>
 							<th scope="col" style="text-align:right";>
 							<?php
-								echo $this->Money->moneyFormatIndia(@$total4+@$cedit_diff1);
 							?>
 							</th>
 							<th scope="col" style="text-align:right";>
 							<?php 
-								echo $this->Money->moneyFormatIndia(@$total5);
 							?>
 							</th>
 							<th scope="col" style="text-align:right";>
 							<?php 
-								echo $this->Money->moneyFormatIndia(@$total6+@$cedit_diff1);
 							?>
 							</th>
 						</tr>
@@ -447,6 +313,44 @@ $this->set('title', 'Trial balance report');
 <?php
 	$js="
 	$(document).ready(function() {
+			$('.group_name').die().live('click',function(e){
+				   var current_obj=$(this);
+				   var group_id=$(this).attr('group_id');
+				   var child=$(this).attr('child');
+				   var status=$(this).attr('status');
+				   var parent=$(this).attr('parent');
+					if(child == 'yes' && status=='open' && parent=='no')
+					{
+						current_obj.attr('status','open');
+						current_obj.attr('child','no');
+						current_obj.closest('tr').next().remove();
+						
+					}else if(status=='open' && parent=='yes')
+					{ 
+						current_obj.attr('status','close');
+						current_obj.attr('child','no');
+						current_obj.closest('tr').next().remove();
+						
+						
+					} else{  
+						var from_date = $('.from_date').val();
+						var to_date = $('.to_date').val(); 
+						var url='".$this->Url->build(['controller'=>'AccountingEntries','action'=>'firstSubGroupsTb']) ."';
+						url=url+'/'+group_id +'/'+from_date+'/'+to_date, 
+						$.ajax({
+							url: url,
+						}).done(function(response) { 
+							current_obj.attr('status','open');
+							current_obj.attr('child','yes');
+							 current_obj.addClass('group_a');
+							
+							current_obj.closest('tr').find('span').addClass('group_a');
+							var a='<tr class=append_tr row_for_'+group_id+'><td colspan=7>'+response+'</td></tr>';
+							$(a).insertAfter(current_obj.closest('tr'));
+						});	
+					}  
+		  
+			});	
          ComponentsPickers.init();
 	})";
 
