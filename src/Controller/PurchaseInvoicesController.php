@@ -64,6 +64,24 @@ class PurchaseInvoicesController extends AppController
        
         $this->set('_serialize', ['purchaseInvoice']);
     }
+	
+	public function DateUpdate()
+	{
+		$company_id=$this->Auth->User('session_company_id');
+		$PurchaseInvoices = $this->PurchaseInvoices->find();
+		foreach($PurchaseInvoices as $PurchaseInvoice){
+			$AccountSecondSubgroupsexists = $this->PurchaseInvoices->ReferenceDetails->exists(['purchase_invoice_id' => $PurchaseInvoice->id,'company_id'=>$company_id]);
+			if($AccountSecondSubgroupsexists==1){
+			
+			$query = $this->PurchaseInvoices->ReferenceDetails->query();
+				$query->update()
+					->set(['transaction_date'=>$PurchaseInvoice->transaction_date])
+					->where(['purchase_invoice_id' => $PurchaseInvoice->id])
+					->execute();
+			}
+			//pr($PurchaseInvoice); exit;
+		}  exit;
+	}
 
     /**
      * Add method
