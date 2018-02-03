@@ -42,7 +42,7 @@ class PurchaseInvoicesTable extends Table
             'foreignKey' => 'company_id',
             'joinType' => 'INNER'
         ]);
-		
+		 $this->belongsTo('ReferenceDetails');
        $this->belongsTo('SupplierLedgers', [
 			'className' => 'Ledgers',
             'foreignKey' => 'supplier_ledger_id',

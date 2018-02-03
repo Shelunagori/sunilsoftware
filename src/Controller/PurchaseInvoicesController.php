@@ -407,7 +407,7 @@ class PurchaseInvoicesController extends AppController
 				//Refrence Details For Party/Supplier  //
 				
 				$Ledgers = $this->PurchaseInvoices->PurchaseInvoiceRows->Ledgers->get($purchaseInvoice->supplier_ledger_id);
-				if($Ledgers->bill_to_bill_accounting=="yes"){
+				if($Ledgers->bill_to_bill_accounting=="yes"){ 
 					$ReferenceDetail = $this->PurchaseInvoices->ReferenceDetails->newEntity(); 
 					$ReferenceDetail->ledger_id=$purchaseInvoice->supplier_ledger_id;
 					$ReferenceDetail->credit=$purchaseInvoice->total_amount;
@@ -416,7 +416,7 @@ class PurchaseInvoicesController extends AppController
 					$ReferenceDetail->company_id=$company_id;
 					$ReferenceDetail->type='New Ref';
 					$ReferenceDetail->ref_name='PI'.$purchaseInvoice->voucher_no;
-					$ReferenceDetail->purchase_invoice_id=$purchaseInvoice->id;
+					$ReferenceDetail->purchase_invoice_id=$purchaseInvoice->id; //pr($ReferenceDetail); exit;
 					$this->PurchaseInvoices->ReferenceDetails->save($ReferenceDetail);
 				}
 				  

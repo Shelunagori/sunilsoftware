@@ -869,14 +869,15 @@ class LedgersController extends AppController
 		foreach($ledgerAccounts as $ledgerAccount)
 		{
 			$ledgerAccountids[]=$ledgerAccount->id;
-		}
+		} 
 		$reference_details = $this->Ledgers->ReferenceDetails->find()->contain(['Ledgers'])->where(['ReferenceDetails.company_id'=>$company_id, 'ReferenceDetails.type != ' => 'On Account']);
+		
 		$reference_details->select(['total_debit' => $reference_details->func()->sum('ReferenceDetails.debit'),'total_credit' => $reference_details->func()->sum('ReferenceDetails.credit')])
 		->where(['ReferenceDetails.ledger_id IN '=> $ledgerAccountids,'ReferenceDetails.transaction_date <=' => $run_time_date])
 		->group(['ReferenceDetails.ref_name','ReferenceDetails.ledger_id'])
 		->autoFields(true);		 
 		
-		//pr($reference_details->toArray()); exit;
+		
 		$this->set(compact('reference_details','run_time_date','url','status'));
         $this->set('_serialize', ['reference_details']);
 		
