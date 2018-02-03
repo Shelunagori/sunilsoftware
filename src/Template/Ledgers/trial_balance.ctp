@@ -126,17 +126,17 @@ $this->set('title', 'Trial balance report');
 										<?php
 										
 											echo $this->Money->moneyFormatIndia(abs($OpeningBalanceForPrint[$key]['balance']));
-											$closingBalanceDebitTotal +=round($closing_debit,2);
+											$openingBalanceDebitTotal +=abs($OpeningBalanceForPrint[$key]['balance']);
 										?>
 										</td>
-										<td scope="col" align="right"></td>
+										<td scope="col" align="right">-</td>
 										<?php } else{ ?>
-										<td scope="col" align="right"></td>
+										<td scope="col" align="right">-</td>
 										<td scope="col" align="right">
 										<?php
 										
 											echo $this->Money->moneyFormatIndia(abs(@$OpeningBalanceForPrint[$key]['balance']));
-											$closingBalanceDebitTotal +=round($closing_debit,2);
+											$openingBalanceCreditTotal +=abs($OpeningBalanceForPrint[$key]['balance']);
 										?>
 										</td>
 										<?php }?>
@@ -151,17 +151,17 @@ $this->set('title', 'Trial balance report');
 										<?php
 										
 											echo $this->Money->moneyFormatIndia(abs($ClosingBalance['balance']));
-											$closingBalanceDebitTotal +=round($closing_debit,2);
+											$closingBalanceDebitTotal+=abs($ClosingBalance['balance']);
 										?>
 										</td>
-										<td scope="col" align="right"></td>
+										<td scope="col" align="right">-</td>
 										<?php } else{ ?>
-										<td scope="col" align="right"></td>
+										<td scope="col" align="right">-</td>
 										<td scope="col" align="right">
 										<?php
 										
 											echo $this->Money->moneyFormatIndia(abs($ClosingBalance['balance']));
-											$closingBalanceDebitTotal +=round($closing_debit,2);
+											$closingBalanceCreditTotal +=abs($ClosingBalance['balance']);
 										?>
 										</td>
 										<?php }?>
@@ -169,88 +169,43 @@ $this->set('title', 'Trial balance report');
 						<?php } ?>
 					</tbody>
 					<tfoot>
+						
 						<tr>
-							<th scope="col">Total</th>
-							<th scope="col" style="text-align:right";>
 							
-							</th>
-							<th scope="col" style="text-align:right";>
-							
-							</th>
-							<th scope="col" style="text-align:right";>
-							
-							</th>
-							<th scope="col" style="text-align:right";>
-							
-							</th>
-							<th scope="col" style="text-align:right";>
-							
-							</th>
-							<th scope="col" style="text-align:right";>
-							
-							</th>
-						</tr>
-						<tr>
-							<th scope="col" >Closing Stock</th>
-							<th style="text-align:right";>
-								
-							</th>
-							<th style="text-align:right";>
-								
-							</th>
-							<th style="text-align:right";>
-								
-							</th>
-							<th style="text-align:right";>
-								
-							</th>
-							<th style="text-align:right";>
-								
+							<th colspan="5" style="text-align:left";>Opening Stock</th>
+							<th  style="text-align:right";>
+								<?php echo $openingValue; ?>
 							</th>
 							<th style="text-align:right";></th>
 						</tr>
 						<tr style="color:red;">
-							<th scope="col">Diffrence of opening balance</th>
-							<th scope="col" style="text-align:right";>
+							<th colspan="5" style="text-align:left";>Diffrence of opening balance</th>
 							
-							</th>
-							<th scope="col" style="text-align:right";>
+								<?php if($openingBalanceDebitTotal>@$openingBalanceCreditTotal)
+									{
+										$cedit_diff = $openingBalanceDebitTotal-@$openingBalanceCreditTotal;?>
+										<th  style="text-align:right";>
+										</th>
+										<th style="text-align:right";><?php echo $this->Money->moneyFormatIndia(@$cedit_diff); ?></th>
+										
+								<?php } else {  
+									 ?>
+										
+										<th style="text-align:right";><?php echo $this->Money->moneyFormatIndia(@$cedit_diff); ?></th>
+										<th  style="text-align:right";>
+										</th>
+								<?php } ?>
 							
-							</th>
-							<th style="text-align:right";>
-							
-							</th>
-							<th style="text-align:right";>
-							
-							</th>
-							<th></th>
-							<th scope="col" style="text-align:right";>
-							</th>
 						</tr>
 						<tr>
-							<th scope="col">Total</th>
+							<th colspan="5" style="text-align:left";>Total</th>
+							
 							<th scope="col" style="text-align:right";>
-							<?php 
+							<?php echo $closingBalanceDebitTotal;
 							?>
 							</th>
 							<th scope="col" style="text-align:right";>
-							<?php 
-							?>
-							</th>
-							<th scope="col" style="text-align:right";>
-							<?php 
-							?>
-							</th>
-							<th scope="col" style="text-align:right";>
-							<?php
-							?>
-							</th>
-							<th scope="col" style="text-align:right";>
-							<?php 
-							?>
-							</th>
-							<th scope="col" style="text-align:right";>
-							<?php 
+							<?php echo $closingBalanceCreditTotal;
 							?>
 							</th>
 						</tr>

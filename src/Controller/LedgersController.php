@@ -344,10 +344,9 @@ class LedgersController extends AppController
 				}
 			}
 		} 
-		//pr($TransactionsCr); 
-		//pr($TransactionsDr); exit;
-		
-		$this->set(compact('ledger','from_date','to_date','TrialBalances','totalDebit','status','url','ClosingBalanceForPrint','OpeningBalanceForPrint','TransactionsCr','TransactionsDr'));
+		//$closingValue= $this->StockValuationWithDate2($to_date);
+		$openingValue= $this->StockValuationWithDate($from_date);
+		$this->set(compact('ledger','from_date','to_date','TrialBalances','totalDebit','status','url','ClosingBalanceForPrint','OpeningBalanceForPrint','TransactionsCr','TransactionsDr','openingValue'));
         $this->set('_serialize', ['ledger']);
     }
 	
