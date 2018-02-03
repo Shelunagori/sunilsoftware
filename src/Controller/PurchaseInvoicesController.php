@@ -669,17 +669,26 @@ class PurchaseInvoicesController extends AppController
 		}
 		if(!empty($where)){
 		$purchaseInvoices = $this->PurchaseInvoices->find()->where(['PurchaseInvoices.company_id'=>$company_id])->where($where)->orWhere($where1)
-		->contain(['Companies', 'SupplierLedgers'=>['Suppliers'], 'PurchaseLedgers', 'PurchaseInvoicerows'=>['Items'=>['FirstGstFigures']]])
+		->contain(['Companies', 'SupplierLedgers'=>['Suppliers'], 'PurchaseLedgers', 'PurchaseInvoicerows'=>['Items'=>['Sizes','FirstGstFigures']]])
         ->order(['voucher_no' => 'ASC']);
 		}
 		else{
 		$purchaseInvoices = $this->PurchaseInvoices->find()->where(['PurchaseInvoices.company_id'=>$company_id])->where($where1)
-		->contain(['Companies', 'SupplierLedgers'=>['Suppliers'], 'PurchaseLedgers', 'PurchaseInvoicerows'=>['Items'=>['FirstGstFigures']]])
+		->contain(['Companies', 'SupplierLedgers'=>['Suppliers'], 'PurchaseLedgers', 'PurchaseInvoicerows'=>['Items'=>['Sizes','FirstGstFigures']]])
         ->order(['voucher_no' => 'ASC']);
 		}
+		
+		$i=0; 
+		foreach($purchaseInvoices as $purchaseInvoice)
+		{ 
+			$data_date=strtotime($purchaseInvoice->transaction_date);
+			$PurchaseInvoices[$data_date][$i]=$purchaseInvoice;
+			$i++;
+		}
+		ksort($PurchaseInvoices);
 		//pr($purchaseInvoices->toArray());
 		
-		$this->set(compact('purchaseInvoices', 'from', 'to','party_ids','invoice_no','url','status'));
+		$this->set(compact('PurchaseInvoices', 'from', 'to','party_ids','invoice_no','url','status'));
         $this->set('_serialize', ['purchaseInvoices']);
     } 
 }

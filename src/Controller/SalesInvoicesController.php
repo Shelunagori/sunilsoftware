@@ -154,19 +154,26 @@ class SalesInvoicesController extends AppController
 		}
 		if(!empty($where)){
 		$salesInvoices = $this->SalesInvoices->find()->where(['SalesInvoices.company_id'=>$company_id])->where($where)->orWhere($where1)
-		->contain(['Companies', 'PartyLedgers'=>['Customers'], 'SalesLedgers', 'SalesInvoiceRows'=>['Items', 'GstFigures']])
+		->contain(['Companies', 'PartyLedgers'=>['Customers'], 'SalesLedgers', 'SalesInvoiceRows'=>['Items'=>['Sizes'], 'GstFigures']])
         ->order(['voucher_no' => 'ASC']);
 		}
 		else{
 		$salesInvoices = $this->SalesInvoices->find()->where(['SalesInvoices.company_id'=>$company_id])->where($where1)
-		->contain(['Companies', 'PartyLedgers'=>['Customers'], 'SalesLedgers', 'SalesInvoiceRows'=>['Items', 'GstFigures']])
+		->contain(['Companies', 'PartyLedgers'=>['Customers'], 'SalesLedgers', 'SalesInvoiceRows'=>['Items'=>['Sizes'], 'GstFigures']])
         ->order(['voucher_no' => 'ASC']);
 		}
-	
-		//pr($salesInvoices->toArray());
+		$i=0; 
+		foreach($salesInvoices as $salesInvoice)
+		{ 
+			$data_date=strtotime($salesInvoice->transaction_date);
+			$SalesInvoices[$data_date][$i]=$salesInvoice;
+			$i++;
+		}
+		ksort($SalesInvoices);
+		//pr($SalesInvoices);
 		//exit;
 		
-		$this->set(compact('salesInvoices', 'from', 'to','party_ids','invoice_no','url','status'));
+		$this->set(compact('SalesInvoices', 'from', 'to','party_ids','invoice_no','url','status'));
         $this->set('_serialize', ['salesInvoices']);
     }
     /**

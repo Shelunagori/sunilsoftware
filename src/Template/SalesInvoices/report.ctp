@@ -53,13 +53,13 @@ table td {
 		<?php } ?>
 			<div class="portlet-body table-responsive">
 				<?php 
-				if(!empty($salesInvoices->toArray()))
+				if(!empty($SalesInvoices))
 				{
 				?>
 				<table class="table table-bordered table-hover table-condensed" width="100%" border="1">
 					<thead>
 						<tr>
-							<th scope="col" colspan="19" style="text-align:left";>Sales Register According To  <?php if($from){ ?>Date From <?=$from ?><?php } ?><?php if($to){ ?>Date To <?=$to ?> <?php } ?><?php if($party_ids){ ?> Party <?php } ?><?php  if($invoice_no){ ?> Invoice No :<?=$invoice_no ?><?php } ?> </th>
+							<th scope="col" colspan="20" style="text-align:left";>Sales Register According To  <?php if($from){ ?>Date From <?=$from ?><?php } ?><?php if($to){ ?>Date To <?=$to ?> <?php } ?><?php if($party_ids){ ?> Party <?php } ?><?php  if($invoice_no){ ?> Invoice No :<?=$invoice_no ?><?php } ?> </th>
 						</tr>
 						<tr>
 							<th scope="col" style="text-align:center";>Customer Code</th>
@@ -69,6 +69,7 @@ table td {
 							<th scope="col" style="text-align:center";>HSN Code</th>
 							<th scope="col" style="text-align:center";>Item Code</th>
 							<th scope="col" style="text-align:center";>Item Name</th>
+							<th scope="col" style="text-align:center";>Size</th>
 							<th scope="col" style="text-align:center";>Quantity</th>
 							<th scope="col" style="text-align:center";>Rate Per Unit</th>
 							<th scope="col" style="text-align:center";>Discount %</th>
@@ -85,13 +86,22 @@ table td {
 					</thead>
 					<tbody>
 					<?php 
+					$total_qty=0;
 					$totalDiscount=0;
 					$totalCgst=0;
 					$totalSgst=0;
 					$totalIgst=0;
 					$totalNet=0;
 					$totalTaxablevalue=0;
-					foreach($salesInvoices->toArray() as $data){
+					foreach($SalesInvoices as $salesInvoices){
+					$total_qty_datewise=0;
+					$totalDiscount_datewise=0;
+					$totalCgst_datewise=0;
+					$totalSgst_datewise=0;
+					$totalIgst_datewise=0;
+					$totalNet_datewise=0;
+					$totalTaxablevalue_datewise=0;
+					foreach($salesInvoices as $data){
 					foreach($data->sales_invoice_rows as $salesInvoicedata)
 					{
 						$date = date('Y-m-d', strtotime($data->transaction_date));
@@ -136,17 +146,17 @@ table td {
 						{
 						   $salesInvoicedata->discount_percentage;
 						   $totrate=$salesInvoicedata->quantity*$salesInvoicedata->rate;
-						   $dis=$totrate*$salesInvoicedata->discount_percentage/100;
+						   $dis=round($totrate*$salesInvoicedata->discount_percentage/100,2);
 						}
 						else{
 						   $dis=0;
 						}
 						$totalDiscount+=$dis;
-						
+						$totalDiscount_datewise+=$dis;
 						if($data->total_igst=='' || $data->total_igst==0)
 						{
 						    $salesInvoicedata->gst_value;
-							$gst=$salesInvoicedata->gst_value/2;
+							$gst=round($salesInvoicedata->gst_value/2,2);
 						    $cgtax=$salesInvoicedata->gst_figure->tax_percentage/2;
 							$cgst=$gst;
 							$sgst=$gst;
@@ -166,6 +176,14 @@ table td {
 						$totalIgst+=$igst;
 						$totalNet+=$salesInvoicedata->net_amount;
 						$totalTaxablevalue+=$salesInvoicedata->taxable_value;
+						$total_qty+=$salesInvoicedata->quantity;
+						
+						$totalCgst_datewise+=$cgst;
+						$totalSgst_datewise+=$sgst;
+						$totalIgst_datewise+=$igst;
+						$totalNet_datewise+=$salesInvoicedata->net_amount;
+						$totalTaxablevalue_datewise+=$salesInvoicedata->taxable_value;
+						$total_qty_datewise+=$salesInvoicedata->quantity;
 					?>
 					<tr>
 					<td><?=$customerCode?></td>
@@ -175,6 +193,7 @@ table td {
 					<td><?=$salesInvoicedata->item->hsn_code?></td>
 					<td><?=$salesInvoicedata->item->item_code?></td>
 					<td><?=$salesInvoicedata->item->name?></td>
+					<td><?=@$salesInvoicedata->item->size->name ?></td>
 					<td class="rightAligntextClass"><?=$salesInvoicedata->quantity?></td>
 					<td class="rightAligntextClass"><?=$this->Money->moneyFormatIndia($salesInvoicedata->rate)?></td>
 					<td class="rightAligntextClass">
@@ -220,8 +239,41 @@ table td {
 					<td class="rightAligntextClass"><?=$this->Money->moneyFormatIndia($salesInvoicedata->net_amount)?></td>
 					</tr>
 					<?php }}?>
-					<tr>
-					<td colspan="10" align="right"><b>&nbsp;</b></td>
+					<tr style="background-color:#BCC6CC"><td colspan="8" align="right"><b>Total</b></td>
+					<td class="rightAligntextClass"><b>
+					<?php echo $total_qty_datewise;?>
+					</b></td><td></td><td></td>
+					<td class="rightAligntextClass"><b>
+					<?php if($totalDiscount_datewise==0){?>
+					<?php echo '';?> <?php }else{ ?>
+					<?php echo $this->Money->moneyFormatIndia($totalDiscount_datewise);?><?php }?>
+					</b></td>
+					<td class="rightAligntextClass"><b><?=$this->Money->moneyFormatIndia($totalTaxablevalue_datewise)?></b></td>
+					<td></td>
+					<td class="rightAligntextClass"><b>
+					<?php if($totalCgst_datewise==0){?>
+					<?php echo '';?> <?php }else{ ?>
+					<?php echo $totalCgst_datewise;?><?php }?>
+					</b></td>
+					<td></td>
+					<td class="rightAligntextClass"><b>
+					<?php if($totalSgst_datewise==0){?>
+					<?php echo '';?> <?php }else{ ?>
+					<?php echo $totalSgst_datewise;?><?php }?>
+					</b></td>
+					<td></td>
+					<td class="rightAligntextClass"><b>
+					<?php if($totalIgst_datewise==0){?>
+					<?php echo '';?> <?php }else{ ?>
+					<?php echo $totalIgstv;?><?php }?>
+					</b></td>
+					<td class="rightAligntextClass"><b><?=$this->Money->moneyFormatIndia($totalNet_datewise)?></b></td></tr>
+					<?php } ?>
+					<tr style="background-color:#E5E4E2;">
+					<td colspan="8" align="right"><b>Total</b></td>
+					<td class="rightAligntextClass"><b>
+					<?php echo $total_qty;?>
+					</b></td><td></td><td></td>
 					<td class="rightAligntextClass"><b>
 					<?php if($totalDiscount==0){?>
 					<?php echo '';?> <?php }else{ ?>

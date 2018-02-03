@@ -482,9 +482,12 @@ class LedgersController extends AppController
 			@$opening_balance_type='';	
 			}
 		$opening_balance=round($opening_balance,2);
-		$AccountingLedgers=$this->Ledgers->AccountingEntries->find()->where(['AccountingEntries.company_id'=>$company_id])->contain(['Ledgers','PurchaseVouchers','SalesInvoices','SaleReturns','Payments','SalesVouchers','Receipts','JournalVouchers','ContraVouchers','CreditNotes','DebitNotes','JournalVouchers','PurchaseInvoices','PurchaseReturns'])->where($where)
-		->autoFields(true);
+		 $AccountingLedgers=$this->Ledgers->AccountingEntries->find()->select(['total_credit_sum'=>'SUM(AccountingEntries.credit)','total_debit_sum'=>'SUM(AccountingEntries.debit)'])->where(['AccountingEntries.company_id'=>$company_id])->contain(['Ledgers','PurchaseVouchers','SalesInvoices','SaleReturns','Payments','SalesVouchers','Receipts','JournalVouchers','ContraVouchers','CreditNotes','DebitNotes','JournalVouchers','PurchaseInvoices','PurchaseReturns'])->where($where)->group(['AccountingEntries.ledger_id','AccountingEntries.purchase_voucher_id','AccountingEntries.sales_invoice_id','AccountingEntries.sale_return_id','AccountingEntries.purchase_invoice_id','AccountingEntries.purchase_return_id','AccountingEntries.receipt_id','AccountingEntries.payment_id','AccountingEntries.credit_note_id','AccountingEntries.debit_note_id','AccountingEntries.sales_voucher_id','AccountingEntries.journal_voucher_id','AccountingEntries.contra_voucher_id'])
+		->autoFields(true); 
 		}
+		/*$AccountingLedgers=$this->Ledgers->AccountingEntries->find()->where(['AccountingEntries.company_id'=>$company_id])->contain(['Ledgers','PurchaseVouchers','SalesInvoices','SaleReturns','Payments','SalesVouchers','Receipts','JournalVouchers','ContraVouchers','CreditNotes','DebitNotes','JournalVouchers','PurchaseInvoices','PurchaseReturns'])->where($where)
+		->autoFields(true);
+		} */
 		//pr($AccountingLedgers->toArray());exit;
 		$ledgers = $this->Ledgers->find('list')->where(['company_id'=>$company_id]);
 		$this->set(compact('accountLedger','ledgers','opening_balance_type','opening_balance','openingBalance_credit1','closingBalance_credit1','AccountingLedgers','from_date','to_date','voucher_type','voucher_no','ledger_id','url','status'));
@@ -680,6 +683,7 @@ class LedgersController extends AppController
 		$data->haction='Edit';
 		}
 		$i=0;
+		$ledger_data=[];
 		foreach($salesInvoiceLedgers as $salesInvoiceLedger)
 		{
 			$data_date=strtotime($salesInvoiceLedger->transaction_date);

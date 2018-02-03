@@ -77,7 +77,7 @@ $this->set('title', 'Day Book');
 				<?php } ?>
 				<?php 
 				
-				if(!empty($ledger_data))
+				if(!empty(@$ledger_data))
 				{
 				?>
 					<table class="table table-bordered table-hover table-condensed" width="100%" border="1">

@@ -210,10 +210,10 @@ $this->set('title', 'Account Ledger report');
 								<td class="rightAligntextClass"><?php echo $url_link; ?></td>
 								<td style="text-align:right";>
 								<?php 
-									if(!empty($AccountingLedger->debit))
+									if(!empty($AccountingLedger->total_debit_sum))
 									{
-										echo $AccountingLedger->debit; 
-										$total_debit +=round($AccountingLedger->debit,2);
+										echo $AccountingLedger->total_debit_sum; 
+										$total_debit +=round($AccountingLedger->total_debit_sum,2);
 									}
 									else
 									{
@@ -223,10 +223,10 @@ $this->set('title', 'Account Ledger report');
 								</td>
 								<td style="text-align:right";>
 								<?php 
-									if(!empty($AccountingLedger->credit))
+									if(!empty($AccountingLedger->total_credit_sum))
 									{
-										echo $this->Money->moneyFormatIndia($AccountingLedger->credit); 
-										$total_credit +=round($AccountingLedger->credit,2);
+										echo $this->Money->moneyFormatIndia($AccountingLedger->total_credit_sum); 
+										$total_credit +=round($AccountingLedger->total_credit_sum,2);
 									}else
 									{
 										echo "-";

@@ -192,7 +192,7 @@ if($supplier_state_id== $state_id){
 										?>	
 									</td>
 									<td  width="7%" align="center">
-										<?php echo $this->Form->input('q', ['style'=>'text-align:right','label' => false,'class' => 'form-control input-sm numberOnly roundOff','placeholder'=>'','type'=>'text']);
+										<?php echo $this->Form->input('q', ['style'=>'text-align:right','label' => false,'class' => 'form-control input-sm roundOff','placeholder'=>'','type'=>'text']);
 										?>	
 									</td>
 									<td  width="20%" align="center">

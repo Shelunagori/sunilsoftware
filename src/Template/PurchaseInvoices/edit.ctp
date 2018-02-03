@@ -144,7 +144,7 @@ if($supplier_state_id== $state_id){
 										?>	
 									</td>
 									<td  width="7%" align="center">
-										<?php echo $this->Form->input('q', ['label' => false,'class' => 'form-control input-sm numberOnly roundOff','placeholder'=>'','style'=>'text-align:right','type'=>'text','value'=>$purchase_invoice_row->round_off]);
+										<?php echo $this->Form->input('q', ['label' => false,'class' => 'form-control input-sm roundOff','placeholder'=>'','style'=>'text-align:right','type'=>'text','value'=>$purchase_invoice_row->round_off]);
 										?>	
 									</td>
 									<td  width="10%" align="center">
