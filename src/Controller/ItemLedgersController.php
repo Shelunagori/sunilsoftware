@@ -159,24 +159,58 @@ class ItemLedgersController extends AppController
 		$locations=$this->ItemLedgers->Locations->find()->where(['Locations.company_id'=>$company_id]);
 		$stockGroups = $this->ItemLedgers->Items->StockGroups->find()
 		->where(['StockGroups.company_id'=>$company_id,'StockGroups.parent_id IS NULL']);
-		$stock_report=[]; //pr($stockGroups->toArray()); exit;
+		$stock_report=[];
 		foreach($stockGroups as $stockGroup)
 		{
 			$childGroups=[];$total_rate_stock=0;$total_qty=0;
 			$childStockGroups = $this->ItemLedgers->Items->StockGroups
-			->find('children', ['for' => $stockGroup->id])->toArray(); 
+			->find('children', ['for' => $stockGroup->id])->toArray();
 			$childGroups[]=$stockGroup->id;
 			foreach($childStockGroups as $childStockGroup){
 				$childGroups[]=$childStockGroup->id;
 			}
-			//pr($childGroups); 
 			if($childGroups){
-			$location_stocks=$this->stockReportGroupQty($to_date,$childGroups); //pr($location_stocks); exit;
+			$location_stocks=$this->stockReportGroupQty($to_date,$childGroups);
 			@$stock_quantity[$stockGroup->id]=$location_stocks;
 			}
 			
-		}exit;
-	//	pr($stockGroups->toArray());  exit;
+			
+			
+			/* $items=$this->ItemLedgers->Items->find()->where(['Items.company_id'=>$company_id,'Items.stock_group_id IN'=>$childGroups]);
+			$stock_item=[];
+			foreach($items as $item){
+				$q=0;
+				$total_rate=0;
+				//$item_id[]=$item->id;
+				$result_stock=$this->stockReportQtyRate($to_date,$item->id);
+				if(sizeof($result_stock[$item->id]>0))
+				{ 
+					foreach($result_stock[$item->id] as $stock_rate){
+					
+					@$total_rate+=$stock_rate;
+					 @$q++;
+					}
+					@$avg_rate=$total_rate/$q;
+					@$avg_qty=$q;
+					
+				} 	
+				@$total_rate_stock+=round($avg_rate,2);
+				@$total_qty+=$avg_qty;
+				$stock_total_rate[$stockGroup->id]=$total_rate_stock;
+				$stock_total_qty[$stockGroup->id]=$total_qty;
+			} */
+		
+		}
+		
+		$items_main=$this->ItemLedgers->Items->find()->where(['Items.company_id'=>$company_id,'Items.stock_group_id'=>0]);
+		foreach($items_main as $data){
+		$stock_quantity[]=$this->stockReportItemQty($to_date = null, $data->id);
+		pr($stock_quantity);
+		}
+		 exit;
+		//pr($items_main->toArray());
+		//exit;
+		
         $this->set(compact('itemLedgers','status','url','stockGroups','stock_total_rate','stock_quantity','locations','result_stocks','items_main'));
         $this->set('_serialize', ['itemLedgers']);
     }
@@ -184,54 +218,11 @@ class ItemLedgersController extends AppController
 	public function stockReportGroupQty($to_date = null, $childGroups = null){
 		$company_id=$this->Auth->User('session_company_id');
 		$locations=$this->ItemLedgers->Locations->find()->where(['Locations.company_id'=>$company_id]);
-		$closingValue=[];$closingStock=[];
-		foreach($childGroups as $childGroup){ 
-		$items=$this->ItemLedgers->Items->find()->where(['Items.stock_group_id'=>@$childGroup]);   pr($items->toArray()); exit;
-			if(!empty($items)){  pr($childGroup); exit;
-				foreach($items as $item){  //pr($item); exit; 
-				$ItemLedgers=$this->ItemLedgers->find()->where(['item_id'=>$item->id])->order(['transaction_date'=>'ASC']);
-				
-				$stock=[];$location=[];
-				foreach($ItemLedgers as $ItemLedger){
-					if($ItemLedger->status=="in"){
-						for($inc=0;$inc<$ItemLedger->quantity;$inc++){
-							$stock[$ItemLedger->item_id][]=$ItemLedger->rate;
-							$location[$ItemLedger->location_id][]=$ItemLedger->quantity;
-							
-						}
-
-					}
-				}
-				 pr($location); exit;
-				foreach($ItemLedgers as $ItemLedger){
-					if($ItemLedger->status=='out'){
-						if(sizeof(@$stock[$ItemLedger->item_id])>0){
-							$stock[$ItemLedger->item_id] = array_slice($stock[$ItemLedger->item_id], $ItemLedger->quantity); 
-							$location[$ItemLedger->location_id] = array_slice($location[$ItemLedger->location_id], $ItemLedger->quantity); 
-						}
-					}
-				}
-				
-				foreach($stock as $key=>$stockRow){ $i=0;
-					foreach($stockRow as $stockRowRate){ 
-						@$closingValue[$childGroup][]=@$childGroup;
-						@$closingValue[$childGroup]['amt']+=@$stockRowRate;
-						@$closingValue[$childGroup]['stock']=++$i;
-					} 
-				}  
-				foreach($location as $key1=>$datas){ $j=0;
-					foreach($datas as $loc){ //pr($key1); 
-						@$closingValue[$childGroup][$key1]+=@++$j;
-						
-					} 
-				}
-				
-				}
-			}
-		} exit;	
-	//	pr($closingValue); exit;
-		return $closingValue;
-		
+		foreach($childGroups as $childGroup){
+		$items=$this->ItemLedgers->Items->find()->where(['Items.company_id'=>$company_id,'Items.stock_group_id'=>$childGroup->id]);	
+		}
+		foreach($items as $item)
+		@$item_stocks[]=$this->stockReportItemQty($to_date,$item->id`);
 		
 	}
 	
