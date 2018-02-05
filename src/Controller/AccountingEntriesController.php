@@ -126,11 +126,14 @@ class AccountingEntriesController extends AppController
 			return $q->where(['Ledgers.accounting_group_id IN' => $AllGroups]);
 		});
 		$balanceOfLedgers=$query;
-		$groupForPrint=[];
+		$groupForPrint=[]; $d=[]; $c=[]; 
 		foreach($balanceOfLedgers as $balanceOfLedger){
 			foreach($Groups as $primaryGroup=>$Group){
 				if(in_array($balanceOfLedger->ledger->accounting_group_id,$Group['ids'])){
-					@$groupForPrint[$primaryGroup]['balance']+=$balanceOfLedger->totalDebit-$balanceOfLedger->totalCredit;
+					@$groupForPrint[$primaryGroup]['balance']+=$balanceOfLedger->totalDebit-abs($balanceOfLedger->totalCredit);
+					////$d[$primaryGroup]=$balanceOfLedger->totalDebit;
+					//$c[$primaryGroup]=$balanceOfLedger->totalCredit;
+					
 				}else{
 					@$groupForPrint[$primaryGroup]['balance']+=0;
 				}
@@ -138,6 +141,7 @@ class AccountingEntriesController extends AppController
 				@$groupForPrint[$primaryGroup]['nature']=$Group['nature'];
 			}
 		}
+		//pr($c); 
 		//pr($groupForPrint); exit;
 		$openingValue= $this->StockValuationWithDate($from_date);
 		$closingValue= $this->StockValuationWithDate2($to_date);
@@ -188,7 +192,7 @@ class AccountingEntriesController extends AppController
 		foreach($balanceOfLedgers as $balanceOfLedger){
 			foreach($Groups as $primaryGroup=>$Group){
 				if(in_array($balanceOfLedger->ledger->accounting_group_id,$Group['ids'])){
-					@$groupForPrint[$primaryGroup]['balance']+=$balanceOfLedger->totalDebit-$balanceOfLedger->totalCredit;
+					@$groupForPrint[$primaryGroup]['balance']+=$balanceOfLedger->totalDebit-abs($balanceOfLedger->totalCredit);
 				}else{
 					@$groupForPrint[$primaryGroup]['balance']+=0;
 				}
@@ -246,7 +250,7 @@ class AccountingEntriesController extends AppController
 		foreach($balanceOfLedgers as $balanceOfLedger){
 			foreach($Groups as $primaryGroup=>$Group){
 				if(in_array($balanceOfLedger->ledger->accounting_group_id,$Group['ids'])){
-					@$groupForPrint[$primaryGroup]['balance']+=$balanceOfLedger->totalDebit-$balanceOfLedger->totalCredit;
+					@$groupForPrint[$primaryGroup]['balance']+=$balanceOfLedger->totalDebit-abs($balanceOfLedger->totalCredit);
 				}else{
 					@$groupForPrint[$primaryGroup]['balance']+=0;
 				}

@@ -271,7 +271,7 @@ class AppController extends Controller
 		$totalDr=0; $totalCr=0;
 		foreach($balanceOfLedgers as $balanceOfLedger){
 			$totalDr+=$balanceOfLedger->totalDebit;
-			$totalCr+=$balanceOfLedger->totalCredit;
+			$totalCr+=abs($balanceOfLedger->totalCredit);
 		}
 		
 		$company_id=$this->Auth->User('session_company_id');

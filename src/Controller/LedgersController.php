@@ -290,7 +290,7 @@ class LedgersController extends AppController
 		foreach($balanceOfLedgers as $balanceOfLedger){
 			foreach($Groups as $primaryGroup=>$Group){
 				if(in_array($balanceOfLedger->ledger->accounting_group_id,$Group['ids'])){
-					@$ClosingBalanceForPrint[$primaryGroup]['balance']+=$balanceOfLedger->totalDebit-$balanceOfLedger->totalCredit;
+					@$ClosingBalanceForPrint[$primaryGroup]['balance']+=$balanceOfLedger->totalDebit-abs($balanceOfLedger->totalCredit);
 				}else{
 					@$ClosingBalanceForPrint[$primaryGroup]['balance']+=0;
 				}

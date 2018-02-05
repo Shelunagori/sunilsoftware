@@ -205,7 +205,7 @@ $this->set('title', 'Trial balance report');
 							?>
 							</th>
 							<th scope="col" style="text-align:right";>
-							<?php echo $closingBalanceCreditTotal;
+							<?php echo $closingBalanceCreditTotal+abs($cedit_diff);
 							?>
 							</th>
 						</tr>
