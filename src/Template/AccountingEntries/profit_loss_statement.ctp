@@ -31,25 +31,25 @@ $this->set('title', 'Profit & Loss Statement');
 				<?php if($from_date){ 
 				$LeftTotal=0; $RightTotal=0; ?>
 				<div class="row">
-					<table class="table table-bordered">
+					<table style="margin-top:20px" class="table table-bordered">
 						<thead>
 							<tr style="background-color: #c4ffbd;">
-								<td>
+								<td width="50%">
 									<table width="100%">
 										<tbody>
 											<tr>
 												<td><b>Particulars</b></td>
-												<td align="right"><b>Balance</b></td>
+												<td align="right"><b>Amount</b></td>
 											</tr>
 										</tbody>
 									</table>
 								</td>
-								<td>
+								<td width="50%">
 									<table width="100%">
 										<tbody>
 											<tr>
 												<td><b>Particulars</b></td>
-												<td align="right"><b>Balance</b></td>
+												<td align="right"><b>Amount</b></td>
 											</tr>
 										</tbody>
 									</table>
@@ -73,13 +73,14 @@ $this->set('title', 'Profit & Loss Statement');
 												</tr>
 											<?php } ?>
 											<?php foreach($groupForPrint as $key=>$groupForPrintRow){ 
-												if(($groupForPrintRow['balance']>0) or ($groupForPrintRow['balance']==0 && $groupForPrintRow['nature']==4)){ ?>
+												if(($groupForPrintRow['balance']>0) or ($groupForPrintRow['balance']==0 && $groupForPrintRow['nature']==4)){
+													if($groupForPrintRow['name']=="Indirect Expenses"){
+													
+													} else{?>
 												<tr>
-													<td>
-													<a href="#" role='button' status='close' class="group_name" child='no' parent='yes' group_id='<?php  echo $key; ?>' style='color:black;'>
+													<td><a href="#" role='button' status='close' class="group_name" child='no' parent='yes' group_id='<?php  echo $key; ?>' style='color:black;'>
 														<?php echo $groupForPrintRow['name']; ?>
-															 </a>
-													</td>
+															 </a></td>
 													<td align="right">
 														<?php if($groupForPrintRow['balance']!=0){
 															echo $this->Money->moneyFormatIndia(abs($groupForPrintRow['balance']));
@@ -87,7 +88,7 @@ $this->set('title', 'Profit & Loss Statement');
 														} ?>
 													</td>
 												</tr>
-												<?php } ?>
+												<?php } } ?>
 											<?php } ?>
 										</tbody>
 									</table>
@@ -106,14 +107,15 @@ $this->set('title', 'Profit & Loss Statement');
 													</td>
 												</tr>
 											<?php } ?>
-											<?php foreach($groupForPrint as $key=>$groupForPrintRow){ 
-												if(($groupForPrintRow['balance']<0) or ($groupForPrintRow['balance']==0 && $groupForPrintRow['nature']==3)){ ?>
+											<?php foreach($groupForPrint as $groupForPrintRow){ 
+												if(($groupForPrintRow['balance']<0) or ($groupForPrintRow['balance']==0 && $groupForPrintRow['nature']==3)){ 
+												if($groupForPrintRow['name']=="Indirect Incomes" ||$groupForPrintRow['name']=="Direct Incomes"){
+													} else{
+												?>
 												<tr>
-													<td>
-													<a href="#" role='button' status='close' class="group_name" child='no' parent='yes' group_id='<?php  echo $key; ?>' style='color:black;'>
+													<td><a href="#" role='button' status='close' class="group_name" child='no' parent='yes' group_id='<?php  echo $key; ?>' style='color:black;'>
 														<?php echo $groupForPrintRow['name']; ?>
-															 </a>
-													</td>
+															 </a></td>
 													<td align="right">
 														<?php if($groupForPrintRow['balance']!=0){
 															echo $this->Money->moneyFormatIndia(abs($groupForPrintRow['balance'])); 
@@ -121,7 +123,7 @@ $this->set('title', 'Profit & Loss Statement');
 														} ?>
 													</td>
 												</tr>
-												<?php } ?>
+												<?php } } ?>
 											<?php } ?>
 												<tr>
 													<td>Closing Stock</td>
@@ -136,7 +138,7 @@ $this->set('title', 'Profit & Loss Statement');
 									</table>
 								</td>
 							</tr>
-							<tr>
+							<tr >
 								<td>
 									<?php 
 									$totalDiff=$RightTotal-$LeftTotal;
@@ -144,7 +146,7 @@ $this->set('title', 'Profit & Loss Statement');
 									<table width="100%">
 										<tbody>
 											<tr>
-												<td>Net Profit</td>
+												<td>Gross Profit</td>
 												<td align="right">
 													<?php echo $this->Money->moneyFormatIndia($totalDiff); $LeftTotal+=$totalDiff; ?>
 												</td>
@@ -158,7 +160,7 @@ $this->set('title', 'Profit & Loss Statement');
 									<table width="100%">
 										<tbody>
 											<tr>
-												<td>Net Loss</td>
+												<td>Gross Loss</td>
 												<td align="right">
 													<?php echo $this->Money->moneyFormatIndia(abs($totalDiff)); $RightTotal+=abs($totalDiff); ?>
 												</td>
@@ -168,6 +170,9 @@ $this->set('title', 'Profit & Loss Statement');
 									<?php } ?>
 								</td>
 							</tr>
+							
+							
+							
 						</tbody>
 						<tfoot>
 							<tr>
@@ -187,6 +192,160 @@ $this->set('title', 'Profit & Loss Statement');
 											<tr>
 												<td><b>Total</b></td>
 												<td align="right"><b><?php echo $this->Money->moneyFormatIndia($RightTotal); ?></b></td>
+											</tr>
+										</tbody>
+									</table>
+								</td>
+							</tr>
+						</tfoot>
+					</table>
+					<?php $LeftpnlTotal=0;  $RightpnlTotal=0;  ?>
+					<table class="table table-bordered">
+						<thead>
+							<tr style="background-color: #c4ffbd;">
+								<td width="50%">
+									<table width="100%">
+										<tbody>
+											<tr>
+												<td><b>Particulars</b></td>
+												<td align="right"><b>Balance</b></td>
+											</tr>
+										</tbody>
+									</table>
+								</td>
+								<td width="50%">
+									<table width="100%">
+										<tbody>
+											<tr>
+												<td><b>Particulars</b></td>
+												<td align="right"><b>Balance</b></td>
+											</tr>
+										</tbody>
+									</table>
+								</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>
+									<table width="100%">
+										<tbody>
+											<?php if($totalDiff < 0){ ?>
+												<tr>
+													<td>Gross Loss</td>
+													<td align="right">
+														<?php echo $this->Money->moneyFormatIndia(abs($totalDiff)); $LeftpnlTotal+=abs($totalDiff); ?>
+													</td>
+												</tr>
+											<?php } ?>
+											<?php foreach($groupForPrint as $key=>$groupForPrintRow){ 
+												if(($groupForPrintRow['balance']>0) or ($groupForPrintRow['balance']==0 && $groupForPrintRow['nature']==4)){
+												if($groupForPrintRow['name']=="Indirect Expenses"){
+													?>
+												<tr>
+													<td>
+													<a href="#" role='button' status='close' class="group_name" child='no' parent='yes' group_id='<?php  echo $key; ?>' style='color:black;'>
+														<?php echo $groupForPrintRow['name']; ?>
+															 </a>
+													</td>
+													<td align="right">
+														<?php if($groupForPrintRow['balance']!=0){
+															echo $this->Money->moneyFormatIndia(abs($groupForPrintRow['balance']));
+															$LeftpnlTotal+=abs($groupForPrintRow['balance']);
+														} ?>
+													</td>
+												</tr>
+											<?php }} ?>
+											<?php } ?>
+										</tbody>
+									</table>
+								</td>
+								<td>
+									<table width="100%">
+										<tbody>
+											<?php if($totalDiff > 0){ ?>
+												<tr>
+													<td>Gross Profit</td>
+													<td align="right">
+														<?php echo $this->Money->moneyFormatIndia(abs($totalDiff)); $RightpnlTotal+=abs($totalDiff); ?>
+													</td>
+												</tr>
+											<?php } ?>
+											<?php foreach($groupForPrint as $key=>$groupForPrintRow){ 
+												if(($groupForPrintRow['balance']<0) or ($groupForPrintRow['balance']==0 && $groupForPrintRow['nature']==3)){
+												if($groupForPrintRow['name']=="Indirect Incomes" ||$groupForPrintRow['name']=="Direct Incomes"){
+													?>
+												<tr>
+													<td>
+													<a href="#" role='button' status='close' class="group_name" child='no' parent='yes' group_id='<?php  echo $key; ?>' style='color:black;'>
+														<?php echo $groupForPrintRow['name']; ?>
+															 </a>
+													</td>
+													<td align="right">
+														<?php if($groupForPrintRow['balance']!=0){
+															echo $this->Money->moneyFormatIndia(abs($groupForPrintRow['balance'])); 
+															$RightpnlTotal+=abs($groupForPrintRow['balance']); 
+														} ?>
+													</td>
+												</tr>
+												<?php } } ?>
+											<?php } ?>
+												
+										</tbody>
+									</table>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<?php 
+									$totalDiff=$RightpnlTotal-$LeftpnlTotal;
+									if($totalDiff>=0){ ?>
+									<table width="100%">
+										<tbody>
+											<tr>
+												<td>Net Profit</td>
+												<td align="right">
+													<?php echo $this->Money->moneyFormatIndia($totalDiff); $LeftpnlTotal+=$totalDiff; ?>
+												</td>
+											</tr>
+										</tbody>
+									</table>
+									<?php } ?>
+								</td>
+								<td>
+									<?php if($totalDiff<0){ ?>
+									<table width="100%">
+										<tbody>
+											<tr>
+												<td>Net Loss</td>
+												<td align="right">
+													<?php echo $this->Money->moneyFormatIndia(abs($totalDiff)); $RightpnlTotal+=abs($totalDiff); ?>
+												</td>
+											</tr>
+										</tbody>
+									</table>
+									<?php } ?>
+								</td>
+							</tr>
+						</tbody>
+						<tfoot>
+							<tr>
+								<td>
+									<table width="100%">
+										<tbody>
+											<tr>
+												<td><b>Total</b></td>
+												<td align="right"><b><?php echo $this->Money->moneyFormatIndia($LeftpnlTotal); ?></b></td>
+											</tr>
+										</tbody>
+									</table>
+								</td>
+								<td>
+									<table width="100%">
+										<tbody>
+											<tr>
+												<td><b>Total</b></td>
+												<td align="right"><b><?php echo $this->Money->moneyFormatIndia($RightpnlTotal); ?></b></td>
 											</tr>
 										</tbody>
 									</table>
@@ -257,7 +416,7 @@ $this->set('title', 'Profit & Loss Statement');
 <?php
 	$js="
 		$(document).ready(function() {
-				$('.group_name').die().live('click',function(e){
+					$('.group_name').die().live('click',function(e){
 				   var current_obj=$(this);
 				   var group_id=$(this).attr('group_id');
 				   var child=$(this).attr('child');

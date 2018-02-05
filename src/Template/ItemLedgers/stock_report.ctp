@@ -75,33 +75,25 @@ $this->set('title', 'Sales Return Report');
 						<tbody><?php $sno = 1; 
 							
 								  foreach ($stockGroups as $stockGroup): 
+								  //$amt=$stock_quantity[$stockGroup->id]['amt'];
+								 // $stock=$stock_quantity[$stockGroup->id]['stock'];
+								  
+								  pr($stock_quantity); exit;
 								  ?>
 									<tr >
 											<td><?php echo $stockGroup->name; ?></td>
 											<?php foreach ($locations as $location){ ?>
-											<td><?php echo $stock_quantity[$location->id][$stockGroup->id]; ?></td>
+											<td><?php //echo $stock_quantity[$location->id][$stockGroup->id]; ?></td>
 											<?php } ?>
-											<td></td>
-											<td></td>
-											<td></td>
+											
+											<td><?php echo $stock; ?></td>
+											<td><?php echo $amt/$stock; ?></td>
+											<td><?php echo $amt; ?></td>
 										
 											
 										</tr>
 								  <?php  endforeach ?>
-								<?php  foreach ($items_main as $item_main):  ?>
-								<tr >
-											<td><?php echo $item_main->name; ?></td>
-											<?php foreach ($locations as $location){ ?>
-											<td></td>
-											<?php } ?>
-											<td></td>
-											<td></td>
-											<td></td>
-										
-											
-										</tr>
-								  <?php  endforeach ?>
-								 
+								
 						</tbody>
 					</table>
 				</div>				
