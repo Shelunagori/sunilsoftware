@@ -9,7 +9,7 @@ $this->set('title', 'Profit & Loss Statement');
 		<div class="portlet light bordered">
 			<div class="portlet-title">
 				<div class="caption">
-					<i class="fa fa-cogs"></i>Profit & Loss Statement
+					<i class="fa fa-cogs"></i>Trading Report & Profit and Loss Statement
 				</div>
 			</div>
 			<div class="portlet-body">
