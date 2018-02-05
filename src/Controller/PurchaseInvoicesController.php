@@ -168,7 +168,7 @@ class PurchaseInvoicesController extends AppController
 					$AccountingEntrie->debit=abs($purchaseInvoice->total_round_amount);
 					$AccountingEntrie->credit=0;
 				}else{
-					$AccountingEntrie->credit=$purchaseInvoice->total_round_amount;
+					$AccountingEntrie->credit=abs($purchaseInvoice->total_round_amount);
 					$AccountingEntrie->debit=0;
 				}
 				if($purchaseInvoice->total_round_amount != 0){
@@ -368,7 +368,7 @@ class PurchaseInvoicesController extends AppController
 					$AccountingEntrie->debit=abs($purchaseInvoice->total_round_amount);
 					$AccountingEntrie->credit=0;
 				}else{
-					$AccountingEntrie->credit=$purchaseInvoice->total_round_amount;
+					$AccountingEntrie->credit=abs($purchaseInvoice->total_round_amount);
 					$AccountingEntrie->debit=0;
 				}
 				if($purchaseInvoice->total_round_amount != 0){

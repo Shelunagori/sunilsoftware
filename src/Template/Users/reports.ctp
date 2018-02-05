@@ -60,7 +60,7 @@ $this->set('title', 'Report Setup');
 					</div>
 					<?php }?>
 					
-					<?php if (in_array("84", $userPages)){?>
+					<?php if (in_array("86", $userPages)){?>
 					<div class="col-md-6">
 						<div class="list-group">
 							<?php echo $this->Html->link('Purchase Return Register', '/PurchaseReturns/reportFilter',['escape' => false, 'class'=>'list-group-item']); ?>
@@ -116,6 +116,17 @@ $this->set('title', 'Report Setup');
 							</div>
 					</div>
 					<?php }?>
+				</div>
+				
+				<div class="row">
+				<?php if (in_array("84", $userPages)){?>
+					<div class="col-md-6">
+						<div class="list-group">
+							<?php echo $this->Html->link('Trading Report', '/accounting-entries/TradingReport?from_date='.@$coreVariable["fyValidFrom"].'&to_date='.@$coreVariable["fyValidTo"],['escape' => false, 'class'=>'list-group-item']); ?>
+							</div>
+					</div>
+					<?php } ?>
+					
 				</div>
 			</div>
 		</div>
