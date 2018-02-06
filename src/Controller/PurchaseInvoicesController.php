@@ -705,8 +705,9 @@ class PurchaseInvoicesController extends AppController
 		}
 		ksort($PurchaseInvoices);
 		//pr($purchaseInvoices->toArray());
+		$companies=$this->PurchaseInvoices->Companies->find()->contain(['States'])->where(['Companies.id'=>$company_id])->first();
 		
-		$this->set(compact('PurchaseInvoices', 'from', 'to','party_ids','invoice_no','url','status'));
+		$this->set(compact('companies','PurchaseInvoices', 'from', 'to','party_ids','invoice_no','url','status'));
         $this->set('_serialize', ['purchaseInvoices']);
     } 
 }

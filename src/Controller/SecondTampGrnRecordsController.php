@@ -422,7 +422,36 @@ class SecondTampGrnRecordsController extends AppController
 				}else{
 					$stock_id=0;
 				}
+				if(!empty($SecondTampGrnRecord->stock_sub_group_name)){
+					
+						$stock1=$this->SecondTampGrnRecords->Companies->Items->StockGroups->find()
+						->where(['StockGroups.name LIKE'=>'%'.trim($SecondTampGrnRecord->stock_sub_group_name).'%', 'StockGroups.company_id'=>$company_id])
+						->first();
+						if($stock1){
+						$query = $this->SecondTampGrnRecords->query();
+						$query->update()
+							->set(['stock_sub_group_id' => $stock1->id,
+							'stock_group_id' =>  $stock1->parent_id
+							])
+							->where(['SecondTampGrnRecords.id' =>$SecondTampGrnRecord->id])
+							->execute();
+						$stock_sub_group_id= $stock1->id;
+						}
+						else 
+						{
+						$stock_entry1 = $this->SecondTampGrnRecords->Companies->Items->StockGroups->newEntity();
+						$stock_entry1->name = $SecondTampGrnRecord->stock_sub_group_name;
+						if(!empty($stock_id)){
+						$stock_entry1->parent_id = $stock_id;
+						}
+						$stock_entry1->company_id = $company_id;
+						$result_entry1=$this->SecondTampGrnRecords->Companies->Items->StockGroups->save($stock_entry1);
+						$stock_sub_group_id =$result_entry1->id;
+						}
 				
+				}else{
+					$stock_sub_group_id=$stock_id;
+				}
 				if(!empty($SecondTampGrnRecord->provided_shade)){
 					$shade=$this->SecondTampGrnRecords->Companies->Items->Shades->find()
 						->where(['Shades.name LIKE'=>'%'.trim($SecondTampGrnRecord->provided_shade).'%', 'Shades.company_id'=>$company_id])
@@ -557,7 +586,7 @@ class SecondTampGrnRecordsController extends AppController
 				$item->shade_id=$shade_id;
 				$item->size_id=$size_id;
 				$item->description=$SecondTampGrnRecord->description;
-				$item->stock_group_id=$stock_id;
+				$item->stock_group_id=$stock_sub_group_id;
 				$item->sales_rate_update_on=date("Y-m-d",strtotime($transaction_date));
 				$item->location_id=$location_id;
 				//$item->item_code=strtoupper($SecondTampGrnRecord->item_code);

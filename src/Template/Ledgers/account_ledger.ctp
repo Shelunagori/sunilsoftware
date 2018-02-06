@@ -22,6 +22,9 @@ $this->set('title', 'Account Ledger report');
 	header ("Content-type: application/vnd.ms-excel");
 	header ("Content-Disposition: attachment; filename=".$filename.".xls");
 	header ("Content-Description: Generated Report" ); 
+	echo '<table border="1"><tr style="font-size:14px;"><td colspan="5" align="center" style="text-align:center;">'.$companies->name .'<br/>' .$companies->address .',<br/>'. $companies->state->name .'</span><br/>
+				<span> <i class="fa fa-phone" aria-hidden="true"></i>'.  $companies->phone_no . ' | Mobile : '. $companies->mobile .'<br/> GSTIN NO:'.
+				$companies->gstin .'</span></td></tr></table>';
 	}
 
  

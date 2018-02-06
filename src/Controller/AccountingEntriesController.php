@@ -519,7 +519,9 @@ class AccountingEntriesController extends AppController
 		foreach($Bankledgers as $Bankledger){
 		$bankOptions[]=['text' =>@$Bankledger->name, 'value' => $Bankledger->id];
 		}
-		$this->set(compact('from_date','to_date','ledger_id','bankOptions','AccountingEntries','url','status'));
+		
+		$companies=$this->AccountingEntries->Companies->find()->contain(['States'])->where(['Companies.id'=>$company_id])->first();
+		$this->set(compact('companies','from_date','to_date','ledger_id','bankOptions','AccountingEntries','url','status'));
 	}
     /**
      * View method

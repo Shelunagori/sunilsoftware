@@ -32,6 +32,9 @@ table td {
 	header ("Content-type: application/vnd.ms-excel");
 	header ("Content-Disposition: attachment; filename=".$filename.".xls");
 	header ("Content-Description: Generated Report" ); 
+	echo '<table border="1"><tr style="font-size:14px;"><td colspan="20" align="center" style="text-align:center;">'.$companies->name .'<br/>' .$companies->address .',<br/>'. $companies->state->name .'</span><br/>
+				<span> <i class="fa fa-phone" aria-hidden="true"></i>'.  $companies->phone_no . ' | Mobile : '. $companies->mobile .'<br/> GSTIN NO:'.
+				$companies->gstin .'</span></td></tr></table>';
 	}
 
  ?>
@@ -265,7 +268,7 @@ table td {
 					<td class="rightAligntextClass"><b>
 					<?php if($totalIgst_datewise==0){?>
 					<?php echo '';?> <?php }else{ ?>
-					<?php echo $totalIgstv;?><?php }?>
+					<?php echo $totalIgst;?><?php }?>
 					</b></td>
 					<td class="rightAligntextClass"><b><?=$this->Money->moneyFormatIndia($totalNet_datewise)?></b></td></tr>
 					<?php } ?>

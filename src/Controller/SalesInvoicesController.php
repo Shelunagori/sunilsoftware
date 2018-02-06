@@ -173,7 +173,8 @@ class SalesInvoicesController extends AppController
 		//pr($SalesInvoices);
 		//exit;
 		
-		$this->set(compact('SalesInvoices', 'from', 'to','party_ids','invoice_no','url','status'));
+		$companies=$this->SalesInvoices->Companies->find()->contain(['States'])->where(['Companies.id'=>$company_id])->first();
+		$this->set(compact('companies','SalesInvoices', 'from', 'to','party_ids','invoice_no','url','status'));
         $this->set('_serialize', ['salesInvoices']);
     }
     /**

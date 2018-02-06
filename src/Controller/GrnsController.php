@@ -469,6 +469,7 @@ class GrnsController extends AppController
 							$second_tamp_grn_records->provided_size = @$data[13];
 							$second_tamp_grn_records->description = @$data[14];
 							$second_tamp_grn_records->stock_group = @$data[15];
+							$second_tamp_grn_records->stock_sub_group_name = @$data[16];
 							$second_tamp_grn_records->processed      = 'no'; 
 							$second_tamp_grn_records->user_id        = $user_id;
 							$second_tamp_grn_records->company_id = $company_id;

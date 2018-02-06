@@ -346,7 +346,8 @@ class LedgersController extends AppController
 		} 
 		//$closingValue= $this->StockValuationWithDate2($to_date);
 		$openingValue= $this->StockValuationWithDate($from_date);
-		$this->set(compact('ledger','from_date','to_date','TrialBalances','totalDebit','status','url','ClosingBalanceForPrint','OpeningBalanceForPrint','TransactionsCr','TransactionsDr','openingValue'));
+		$companies=$this->Ledgers->Companies->find()->contain(['States'])->where(['Companies.id'=>$company_id])->first();
+		$this->set(compact('companies','ledger','from_date','to_date','TrialBalances','totalDebit','status','url','ClosingBalanceForPrint','OpeningBalanceForPrint','TransactionsCr','TransactionsDr','openingValue'));
         $this->set('_serialize', ['ledger']);
     }
 	
@@ -490,7 +491,8 @@ class LedgersController extends AppController
 		} */
 		//pr($AccountingLedgers->toArray());exit;
 		$ledgers = $this->Ledgers->find('list')->where(['company_id'=>$company_id]);
-		$this->set(compact('accountLedger','ledgers','opening_balance_type','opening_balance','openingBalance_credit1','closingBalance_credit1','AccountingLedgers','from_date','to_date','voucher_type','voucher_no','ledger_id','url','status'));
+		$companies=$this->Ledgers->Companies->find()->contain(['States'])->where(['Companies.id'=>$company_id])->first();
+		$this->set(compact('companies','accountLedger','ledgers','opening_balance_type','opening_balance','openingBalance_credit1','closingBalance_credit1','AccountingLedgers','from_date','to_date','voucher_type','voucher_no','ledger_id','url','status'));
         $this->set('_serialize', ['ledger']);
     }
 	public function dayBook($id = null)
@@ -759,7 +761,9 @@ class LedgersController extends AppController
 		ksort($ledger_data);
 		/*$day_book=array_merge([$salesInvoiceLedgers->toArray(),$purchaseInvoiceLedgers->toArray(),$paymentLedgers->toArray(),$receiptLedgers->toArray(),$creditNoteLedgers->toArray(),$debitNoteLedgers->toArray(),$journalVoucherLedgers->toArray(),$saleReturnLedgers->toArray(),$salesVoucherLedgers->toArray(),$purchaseVoucherLedgers->toArray(),$purchaseReturnLedgers->toArray(),$contraLedgers->toArray()]);*/
 		//pr($ledger_data);exit;
-		$this->set(compact('ledger_data','from_date','to_date','url','status'));
+		
+		$companies=$this->Ledgers->Companies->find()->contain(['States'])->where(['Companies.id'=>$company_id])->first();
+		$this->set(compact('companies','ledger_data','from_date','to_date','url','status'));
         $this->set('_serialize', ['day_book']);
     }
 	
@@ -809,9 +813,9 @@ class LedgersController extends AppController
 		->group(['ReferenceDetails.ref_name','ReferenceDetails.ledger_id'])
 		
 		->autoFields(true);		 
-		
+		$companies=$this->Ledgers->ReferenceDetails->Companies->find()->contain(['States'])->where(['Companies.id'=>$company_id])->first();
 		//pr($reference_details->toArray()); exit;
-		$this->set(compact('reference_details','run_time_date','url','status'));
+		$this->set(compact('companies','reference_details','run_time_date','url','status'));
         $this->set('_serialize', ['reference_details']);
 		
 	/* 	$reference_details = $this->Ledgers->ReferenceDetails->find()
@@ -880,9 +884,9 @@ class LedgersController extends AppController
 		->where(['ReferenceDetails.ledger_id IN '=> $ledgerAccountids,'ReferenceDetails.transaction_date <=' => $run_time_date])
 		->group(['ReferenceDetails.ref_name','ReferenceDetails.ledger_id'])
 		->autoFields(true);		 
+		$companies=$this->Ledgers->ReferenceDetails->Companies->find()->contain(['States'])->where(['Companies.id'=>$company_id])->first();
 		
-		
-		$this->set(compact('reference_details','run_time_date','url','status'));
+		$this->set(compact('reference_details','run_time_date','url','status','companies'));
         $this->set('_serialize', ['reference_details']);
 		
 	}
