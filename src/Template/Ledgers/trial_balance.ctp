@@ -204,12 +204,10 @@ $this->set('title', 'Trial balance report');
 							<th colspan="5" style="text-align:left";>Total</th>
 							
 							<th scope="col" style="text-align:right";>
-							<?php echo $closingBalanceDebitTotal;
-							?>
+							<?php echo $this->Money->moneyFormatIndia(@$closingBalanceDebitTotal); ?>
 							</th>
 							<th scope="col" style="text-align:right";>
-							<?php echo $closingBalanceCreditTotal;
-							?>
+							<?php echo $this->Money->moneyFormatIndia(round(@$closingBalanceCreditTotal,2)); ?>
 							</th>
 						</tr>
 					</tfoot>

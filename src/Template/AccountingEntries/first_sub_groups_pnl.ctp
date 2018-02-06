@@ -6,7 +6,7 @@
 		<?php  if($t!=0){ ?>
 		<tr>
 			<td>
-				<a href="#" role='button' status='close' class="group_name" group_id='<?php  echo $key; ?>' style='color:black;'>
+				<a href="#" role='button' child='yes' status='close' parent='no' class="group_name" group_id='<?php  echo $key; ?>' style='color:black;'>
 				<?php echo $groupForPrintRow['name']; ?>
 					 </a>  
 				

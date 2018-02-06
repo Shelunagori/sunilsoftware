@@ -66,7 +66,7 @@ $this->set('title', 'Balance Sheet');
 												if(($groupForPrintRow['balance']<0)){ ?>
 												<tr>
 													<td>
-													<a href="#" role='button' status='close' class="group_name" group_id='<?php  echo $key; ?>' style='color:black;'>
+													<a href="#" role='button' status='close' class="group_name" child='no' parent='yes' group_id='<?php  echo $key; ?>' style='color:black;'>
 														<?php echo $groupForPrintRow['name']; ?>
 															 </a>
 													</td>
@@ -89,7 +89,7 @@ $this->set('title', 'Balance Sheet');
 												if(($groupForPrintRow['balance']>0)){ ?>
 												<tr>
 													<td>
-													<a href="#" role='button' status='close' class="group_name" group_id='<?php  echo $key; ?>' style='color:black;'>
+													<a href="#" role='button' status='close' class="group_name" child='no' parent='yes' group_id='<?php  echo $key; ?>' style='color:black;'>
 														<?php echo $groupForPrintRow['name']; ?>
 															 </a>
 													</td>
@@ -284,12 +284,22 @@ $this->set('title', 'Balance Sheet');
 			$('.group_name').die().live('click',function(e){
 				   var current_obj=$(this);
 				   var group_id=$(this).attr('group_id');
-					if(current_obj.attr('status') == 'open')
+				   var child=$(this).attr('child');
+				   var status=$(this).attr('status');
+				   var parent=$(this).attr('parent');
+					if(child == 'yes' && status=='open' && parent=='no')
 					{
-						$('tr.row_for_'+group_id+'').remove();
+						current_obj.attr('status','open');
+						current_obj.attr('child','no');
+						current_obj.closest('tr').next().remove();
+						
+					}else if(status=='open' && parent=='yes')
+					{ 
 						current_obj.attr('status','close');
-						$('table > tbody > tr > td> a').removeClass('group_a');
-						$('table > tbody > tr > td> span').removeClass('group_a');
+						current_obj.attr('child','no');
+						current_obj.closest('tr').next().remove();
+						
+						
 					} else{  
 						var from_date = $('.from_date').val();
 						var to_date = $('.to_date').val(); 
@@ -299,6 +309,7 @@ $this->set('title', 'Balance Sheet');
 							url: url,
 						}).done(function(response) { 
 							current_obj.attr('status','open');
+							current_obj.attr('child','yes');
 							 current_obj.addClass('group_a');
 							current_obj.closest('tr').find('span').addClass('group_a');
 							var a='<tr><td colspan=2>'+response+'</td></tr>';
