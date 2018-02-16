@@ -34,18 +34,25 @@ $this->set('title', 'Purchase Vouchers');
 							<tr>
 								<th scope="col" class="actions"><?= __('Sr') ?></th>
 								<th scope="col"><?= $this->Paginator->sort('voucher_no') ?></th>
+								<th scope="col"><?= $this->Paginator->sort('Party') ?></th>
+								<th scope="col"><?= $this->Paginator->sort('amount') ?></th>
 								<th scope="col"><?= $this->Paginator->sort('transaction_date') ?></th>
 								<th scope="col"><?= $this->Paginator->sort('supplier_invoice_no') ?></th>
 								<th scope="col"><?= $this->Paginator->sort('supplier_invoice_date') ?></th>
-								<th scope="col"><?= $this->Paginator->sort('status') ?></th>
+								
 								<th scope="col" class="actions"><?= __('Actions') ?></th>
 							</tr>
 						</thead>
 						<tbody>
-							<?php foreach ($purchaseVouchers as $purchaseVoucher): ?>
-							<tr>
+							<?php foreach ($purchaseVouchers as $purchaseVoucher): 
+							 if($purchaseVoucher->status == 'cancel') { ?>
+							 <tr style="background-color:#FE5E5E ;">
+							<?php } else { ?>
+							<tr> <?php } ?>
 								<td><?= h(++$page_no) ?></td>
 								<td><?= h(str_pad($purchaseVoucher->voucher_no, 4, '0', STR_PAD_LEFT)) ?></td>
+								<td> <?= h($purchaseVoucher->purchase_voucher_rows[0]->ledger->name); ?></td>
+								<td> <?= h($purchaseVoucher->purchase_voucher_rows[0]->credit); ?></td>
 								<td><?= h($purchaseVoucher->transaction_date) ?></td>
 								<td><?= h($purchaseVoucher->supplier_invoice_no) ?></td>
 								<td><?php  if(!empty($purchaseVoucher->supplier_invoice_date))
@@ -54,15 +61,14 @@ $this->set('title', 'Purchase Vouchers');
 										   }
 									?>
 								</td>
-								<td><?= h($purchaseVoucher->status) ?></td>
+								
 								<td class="actions">
 									<?= $this->Html->link(__('View'), ['action' => 'view', $purchaseVoucher->id]) ?>
 									<?php if($purchaseVoucher->status != 'cancel'){ ?>
 									<?php if (in_array("33", $userPages)){?>
 									<?= $this->Html->link(__('Edit'), ['action' => 'edit', $purchaseVoucher->id]) ?>
 									<?php }?>
-									
-										<?= $this->Form->postLink(__('Cancel'), ['action' => 'cancel', $purchaseVoucher->id], ['style'=>'color:red;','confirm' => __('Are you sure you want to cancel # {0}?',h(str_pad($purchaseVoucher->voucher_no, 3, '0', STR_PAD_LEFT)))]) ?>
+									<?= $this->Form->postLink(__('Cancel'), ['action' => 'cancel', $purchaseVoucher->id], ['confirm' => __('Are you sure you want to cancel # {0}?',h(str_pad($purchaseVoucher->voucher_no, 3, '0', STR_PAD_LEFT)))]) ?>
 									<?php } ?>
 								</td>
 							</tr>
