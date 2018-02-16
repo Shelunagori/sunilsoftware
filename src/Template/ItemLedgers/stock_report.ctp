@@ -4,8 +4,8 @@
  * @Author: PHP Poets IT Solutions Pvt. Ltd.
  */ 
  //pr($reference_details->toArray());
- //exit;
-$this->set('title', 'Sales Return Report');
+//pr($remaining);exit;
+$this->set('title', 'Stock Report');
 ?>
 
 <?php
@@ -24,6 +24,9 @@ $this->set('title', 'Sales Return Report');
 	header ("Content-type: application/vnd.ms-excel");
 	header ("Content-Disposition: attachment; filename=".$filename.".xls");
 	header ("Content-Description: Generated Report" ); 
+	echo '<table border="1"><tr style="font-size:14px;"><td colspan="9" align="center" style="text-align:center;">'.$companies->name .'<br/>' .$companies->address .',<br/>'. $companies->state->name .'</span><br/>
+				<span> <i class="fa fa-phone" aria-hidden="true"></i>'.  $companies->phone_no . ' | Mobile : '. $companies->mobile .'<br/> GSTIN NO:'.
+				$companies->gstin .'</span></td></tr></table>';
 	}
 
  ?>
@@ -37,62 +40,77 @@ $this->set('title', 'Sales Return Report');
 					<span class="caption-subject font-green-sharp bold ">Stock Report</span>
 				</div>
 				<div class="actions">
-					<?php echo $this->Html->link( '<i class="fa fa-file-excel-o"></i> Excel', '/ItemLedgers/SalesReturnReport/'.@$url_excel.'&status=excel',['class' =>'btn btn-sm green tooltips pull-right','target'=>'_blank','escape'=>false,'data-original-title'=>'Download as excel']); ?>
+					<?php echo $this->Html->link( '<i class="fa fa-file-excel-o"></i> Excel', '/ItemLedgers/StockReport/'.@$url_excel.'&status=excel',['class' =>'btn btn-sm green tooltips pull-right','target'=>'_blank','escape'=>false,'data-original-title'=>'Download as excel']); ?>
 				</div>
 			</div>
 			<div class="portlet-body">
-			<!--<div class="row">
-			<?= $this->Form->create('salesReturn',['type' => 'get']) ?>
-				<div class="col-md-12">
-					<div class="col-md-3">
-						<div class="form-group">
-							<?php if($run_time_date){ echo $this->Form->control('run_time_date',['class'=>'form-control input-sm date-picker','data-date-format'=>'dd-mm-yyyy', 'label'=>false,'placeholder'=>'DD-MM-YYYY','type'=>'text','data-date-start-date'=>@$coreVariable[fyValidFrom],'data-date-end-date'=>@$coreVariable[fyValidTo],'value'=>date('d-m-Y',strtotime($run_time_date)),'required'=>'required']); }
-							else{ echo $this->Form->control('run_time_date',['class'=>'form-control input-sm date-picker','data-date-format'=>'dd-mm-yyyy', 'label'=>false,'placeholder'=>'DD-MM-YYYY','type'=>'text','data-date-start-date'=>@$coreVariable[fyValidFrom],'data-date-end-date'=>@$coreVariable[fyValidTo],'value'=>date('d-m-Y'),'required'=>'required']);} ?>
+			<form method="get">
+						<div class="row">
+							<div class="col-md-3">
+								<div class="form-group">
+								<label>Stock Group</label>
+									<?php echo $this->Form->control('stock_group_id',['class'=>'form-control input-sm select2me stock_group','label'=>false,'empty'=>'-Stock Group-', 'options' => $stockGroups, 'value'=> $stock_group_id]); ?>
+								</div>
+							</div>
+							<div class="col-md-3 " id="account_sub_group_div">
+								<div class="form-group">
+								<label>Stock Sub Group</label>
+									<?php echo $this->Form->control('stock_subgroup_id',['class'=>'form-control input-sm select2me stock_sub_group','label'=>false,'empty'=>'-Stock Group-', 'options' => $stockSubgroups, 'value'=>$stock_sub_group_id ]); ?>
+								</div>
+							</div>
+							<div class="col-md-3">
+								<div class="form-group">
+									<label>To Date</label>
+									<?php echo $this->Form->control('to_date',['class'=>'form-control input-sm date-picker to_date','data-date-format'=>'dd-mm-yyyy', 'label'=>false,'placeholder'=>'DD-MM-YYYY','type'=>'text','data-date-start-date'=>@$coreVariable[fyValidFrom],'data-date-end-date'=>@$coreVariable[fyValidTo],'value'=>date('d-m-Y',strtotime($to_date))]); ?></div>
+								</div>
+							
+							<div class="col-md-2" >
+								<div class="form-group" style="padding-top:22px;"> 
+									<button type="submit" class="btn btn-xs blue input-sm srch"> Go</button>
+								</div>
 						</div>
-					</div>
-					<div class="col-md-2">
-						<?= $this->Form->button(__('Go'),['class'=>'btn btn-success submit']) ?>
-					</div>
-				</div>
-			<?= $this->Form->end() ?>	
-			</div> -->
+						</div>
+				</form>
 			<?php } ?>
+			<br/>
 				<div class="table-responsive">
 					<table class="table table-bordered table-hover table-condensed" border="1">
 						<thead>
 							<tr>
+							<th> SNo</th>
 								<th scope="col"> Particulars </th>
-								<?php foreach ($locations as $location){ ?>
-								<th scope="col"><?php echo $location->name; ?></th>
-								
-								<?php } ?>
+								<th scope="col">Stock Group</th>
+								<th scope="col">Size</th>
+								<th scope="col">Shade</th>
 								<th scope="col">Quantity</th>
-								<th scope="col">Rate</th>
-								<th scope="col">Value</th>
+								<th scope="col">Sales Rate</th>
+								<th scope="col">Purchase Rate</th>
+								<th scope="col">Closing Stock Value</th>
 								
 							</tr>
 						</thead>
 						<tbody><?php $sno = 1; 
 							
-								  foreach ($stockGroups as $stockGroup): 
-								  //$amt=$stock_quantity[$stockGroup->id]['amt'];
-								 // $stock=$stock_quantity[$stockGroup->id]['stock'];
-								  
-								  pr($stock_quantity); exit;
-								  ?>
+								  foreach ($Items as $Item): 
+								  //pr($Item); exit;
+								 if(@$remaining[$Item->id]>0){
+								?>
 									<tr >
-											<td><?php echo $stockGroup->name; ?></td>
-											<?php foreach ($locations as $location){ ?>
-											<td><?php //echo $stock_quantity[$location->id][$stockGroup->id]; ?></td>
-											<?php } ?>
-											
-											<td><?php echo $stock; ?></td>
-											<td><?php echo $amt/$stock; ?></td>
-											<td><?php echo $amt; ?></td>
+											<td><?php echo $sno++; ?></td>
+											<td><?php echo $Item->name; ?></td>
+											<td><?php if(@$Item->stock_group_id) { echo @$Item->stock_group->name; } else{ echo 'Primary'; }?></td>
+											<td><?php if(@$Item->size_id) { echo @$Item->size->name; } else { echo '-'; } ?></td>
+											<td><?php if(@$Item->shade_id){ echo @$Item->shade->name;  } else { echo '-'; } ?></td>
+											<td align="right"><?php echo @$remaining[$Item->id]; ?></td>
+											<td align="right"><?php echo @$Item->sales_rate; ?></td>
+											<td align="right"><?php echo @$unit_rate[$Item->id]/$remaining[$Item->id]; ?></td>
+											<td align="right"><?php echo @$unit_rate[$Item->id]; ?></td><?php
+											@$closing_stock+= @$unit_rate[$Item->id]; ?>
 										
 											
 										</tr>
-								  <?php  endforeach ?>
+								 <?php  } endforeach ?>
+								 <tr><td colspan="8" align="right">Closing Stock</td><td align="right"><?=@$closing_stock ?></td></tr>
 								
 						</tbody>
 					</table>
@@ -158,7 +176,24 @@ $this->set('title', 'Sales Return Report');
 <!-- END PAGE LEVEL SCRIPTS -->
 <?php
 	$js="
-	
+	$(document).ready(function() {
+		
+		$('.stock_group').on('change',function() {
+			
+			$('#account_sub_group_div').html('Loading...');
+			var stockGroupId=$(this).val();
+			
+			var url='".$this->Url->build(['controller'=>'StockGroups','action'=>'stockSubGroup']) ."';
+			url=url+'/'+stockGroupId,
+			$.ajax({
+				url: url,
+				type: 'GET',
+			}).done(function(response) {
+				$('#account_sub_group_div').html(response);
+				$('.stock_sub_group').select2();
+			});
+		});
 	ComponentsPickers.init();
+	});
 	";
 echo $this->Html->scriptBlock($js, array('block' => 'scriptBottom'));  ?>

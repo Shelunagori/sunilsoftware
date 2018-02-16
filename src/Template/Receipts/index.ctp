@@ -35,9 +35,10 @@ $this->set('title', 'Receipt List');
 							<tr>
 								<th scope="col"><?= __('Sr') ?></th>
 								<th scope="col"><?= $this->Paginator->sort('voucher_no') ?></th>
+								<th scope="col"><?= $this->Paginator->sort('Party') ?></th>
 								<th scope="col"><?= $this->Paginator->sort('transaction_date') ?></th>
+								<th scope="col"><?= $this->Paginator->sort('Amount') ?></th>
 								<th scope="col"><?= $this->Paginator->sort('Narration') ?></th>
-								<th scope="col"><?= $this->Paginator->sort('Status') ?></th>
 								<th scope="col" class="actions"><?= __('Actions') ?></th>
 							</tr>
 						</thead>
@@ -45,26 +46,26 @@ $this->set('title', 'Receipt List');
 							<?php foreach ($receipts as $receipt): 
 							
 							$date=$receipt->transaction_date;
-							$transaction_date=date('Y-m-d',strtotime($date));
-							?>
-							<tr>
+							$transaction_date=date('d-m-Y',strtotime($date));
+							if($receipt->status == 'cancel') { ?>
+							 <tr style="background-color:#FE5E5E ;">
+							<?php } else { ?>
+							<tr> <?php } ?>
 								<td><?= h(++$page_no) ?></td>
 								<td><?= h(str_pad($receipt->voucher_no, 4, '0', STR_PAD_LEFT)) ?></td>
+								<td><?= h($receipt->receipt_rows[0]->ledger->name) ?></td>
 								<td><?= h($transaction_date) ?></td>
+								<td class=""><?= h($receipt->receipt_rows[0]->credit) ?></td>
 								<td class=""><?= h($receipt->narration) ?></td>
-								<td class=""><?= h($receipt->status) ?></td>
 								<td class="actions">
 								<?= $this->Html->link(__('View'), ['action' => 'view', $receipt->id]) ?>
-								
-								
-							
 								<?php if($receipt->sales_invoice_id==0){?>
 									<?php if ($receipt->status !='cancel'){?>
 								<?php if (in_array("42", $userPages)){?>
 									<?= $this->Html->link(__('Edit'), ['action' => 'edit', $receipt->id]) ?>
 									<?php }?>
 									
-									<?= $this->Form->postLink(__('Cancel'), ['action' => 'cancel', $receipt->id], ['style'=>'color:red;','confirm' => __('Are you sure you want to cancel # {0}?',h(str_pad($receipt->voucher_no, 3, '0', STR_PAD_LEFT)))]) ?>&nbsp;&nbsp;
+									<?= $this->Form->postLink(__('Cancel'), ['action' => 'cancel', $receipt->id], ['confirm' => __('Are you sure you want to cancel # {0}?',h(str_pad($receipt->voucher_no, 3, '0', STR_PAD_LEFT)))]) ?>&nbsp;&nbsp;
 									<?php }?>
 									<?php }?>
 								</td>

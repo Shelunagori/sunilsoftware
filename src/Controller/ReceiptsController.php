@@ -25,7 +25,7 @@ class ReceiptsController extends AppController
 	$company_id=$this->Auth->User('session_company_id');
 	$search=$this->request->query('search');
         $this->paginate = [
-            'contain' => ['Companies']
+            'contain' => ['Companies','ReceiptRows'=>['Ledgers']]
         ];
 		if($search){
         $receipts = $this->paginate($this->Receipts->find()->where(['Receipts.company_id'=>$company_id])->where([

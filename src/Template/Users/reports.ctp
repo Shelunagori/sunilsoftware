@@ -6,7 +6,7 @@ $this->set('title', 'Report Setup');
 ?>
 
 <div class="row">
-	<div class="col-md-6">
+	<div class="col-md-8">
 		<div class="portlet light ">
 			<div class="portlet-title">
 				<div class="caption">
@@ -52,7 +52,7 @@ $this->set('title', 'Report Setup');
 					
 				</div>
 					<div class="row">
-				<?php if (in_array("85", $userPages)){?>
+				<?php if (in_array("87", $userPages)){?>
 					<div class="col-md-6">
 						<div class="list-group">
 							<?php echo $this->Html->link('Sales Return Register', '/SaleReturns/reportFilter',['escape' => false, 'class'=>'list-group-item']); ?>
@@ -117,17 +117,16 @@ $this->set('title', 'Report Setup');
 					</div>
 					<?php }?>
 				</div>
-				
 				<div class="row">
-				<?php if (in_array("84", $userPages)){?>
+				<?php if (in_array("85", $userPages)){?>
 					<div class="col-md-6">
 						<div class="list-group">
-							<?php echo $this->Html->link('Trading Report', '/accounting-entries/TradingReport?from_date='.@$coreVariable["fyValidFrom"].'&to_date='.@$coreVariable["fyValidTo"],['escape' => false, 'class'=>'list-group-item']); ?>
+							<?php echo $this->Html->link('Stock Report', '/ItemLedgers/stock_report',['escape' => false, 'class'=>'list-group-item']); ?>
 							</div>
 					</div>
 					<?php } ?>
-					
 				</div>
+				
 			</div>
 		</div>
 	</div>

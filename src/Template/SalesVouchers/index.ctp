@@ -35,27 +35,33 @@ $this->set('title', 'Sales Voucher List');
 							<tr>
 								<th scope="col"><?= __('Sr') ?></th>
 								<th scope="col"><?= $this->Paginator->sort('voucher_no') ?></th>
+								<th scope="col"><?= $this->Paginator->sort('party') ?></th>
 								<th scope="col"><?= $this->Paginator->sort('transaction_date') ?></th>
 								<th scope="col"><?= $this->Paginator->sort('reference_no') ?></th>
-								<th scope="col"><?= $this->Paginator->sort('status') ?></th>
+								<th scope="col"><?= $this->Paginator->sort('amount') ?></th>
+								
 								<th scope="col" class="actions"><?= __('Actions') ?></th>
 							</tr>
 						</thead>
 						<tbody>
-							<?php foreach ($salesVouchers as $salesVoucher): ?>
-								<tr>
+							<?php foreach ($salesVouchers as $salesVoucher): 
+								if($salesVoucher->status == 'cancel') { ?>
+							 <tr style="background-color:#FE5E5E ;">
+							<?php } else { ?>
+							<tr> <?php } ?>
 									<td><?= h(++$page_no) ?></td>
 									<td><?= h(str_pad($salesVoucher->voucher_no, 4, '0', STR_PAD_LEFT)) ?></td>
+									<td> <?= h($salesVoucher->sales_voucher_rows[0]->ledger->name); ?></td>
 									<td><?= h(date("d-m-Y",strtotime($salesVoucher->transaction_date))) ?></td>
 									<td><?= h($salesVoucher->reference_no) ?></td>
-									<td><?= h($salesVoucher->status) ?></td>
+									<td><?= h($salesVoucher->sales_voucher_rows[0]->debit) ?></td>
 									<td class="actions">
 										<?= $this->Html->link(__('View'), ['action' => 'view', $salesVoucher->id]) ?>
 										<?php if($salesVoucher->status != 'cancel'){ ?>
 										<?php if (in_array("30", $userPages)){?>
 										<?= $this->Html->link(__('Edit'), ['action' => 'edit', $salesVoucher->id]) ?>
 										<?php }?>
-										<?= $this->Form->postLink(__('Cancel'), ['action' => 'cancel', $salesVoucher->id], ['style'=>'color:red;','confirm' => __('Are you sure you want to cancel # {0}?',h(str_pad($salesVoucher->voucher_no, 3, '0', STR_PAD_LEFT)))]) ?>
+										<?= $this->Form->postLink(__('Cancel'), ['action' => 'cancel', $salesVoucher->id], ['confirm' => __('Are you sure you want to cancel # {0}?',h(str_pad($salesVoucher->voucher_no, 3, '0', STR_PAD_LEFT)))]) ?>
 									<?php } ?>
 									</td>
 								</tr>

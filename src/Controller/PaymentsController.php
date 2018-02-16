@@ -25,7 +25,7 @@ class PaymentsController extends AppController
 		$company_id=$this->Auth->User('session_company_id');
 		$search=$this->request->query('search');
         $this->paginate = [
-            'contain' => ['Companies']
+            'contain' => ['Companies', 'PaymentRows'=>['Ledgers']]
         ];
 		if($search){
         $payments = $this->paginate($this->Payments->find()->where(['Payments.company_id'=>$company_id])->where([

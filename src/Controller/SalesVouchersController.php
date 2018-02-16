@@ -24,7 +24,7 @@ class SalesVouchersController extends AppController
 		$company_id=$this->Auth->User('session_company_id');
 		$search=$this->request->query('search');
         $this->paginate = [
-            'contain' => ['Companies']
+            'contain' => ['Companies','SalesVoucherRows'=>'Ledgers']
         ];
         $salesVouchers = $this->paginate($this->SalesVouchers->find()->where(['SalesVouchers.company_id'=>$company_id])->where([
 		'OR' => [
@@ -34,6 +34,8 @@ class SalesVouchersController extends AppController
 			//...
 			'SalesVouchers.transaction_date ' => date('Y-m-d',strtotime($search))
 		 ]]));
+		// pr($salesVouchers->toArray());
+		 //exit;
 
         $this->set(compact('salesVouchers','search'));
         $this->set('_serialize', ['salesVouchers']);

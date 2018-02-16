@@ -24,7 +24,7 @@ class CreditNotesController extends AppController
 		$company_id=$this->Auth->User('session_company_id');
 		$search=$this->request->query('search');
         $this->paginate = [
-            'contain' => ['Companies']
+            'contain' => ['Companies','CreditNoteRows'=>['Ledgers']]
         ];
 		if($search){
         $creditNotes = $this->paginate($this->CreditNotes->find()->where(['CreditNotes.company_id'=>$company_id])->where([

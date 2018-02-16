@@ -463,6 +463,12 @@ class SecondTampGrnRecordsController extends AppController
 							->where(['SecondTampGrnRecords.id' =>$SecondTampGrnRecord->id])
 							->execute();
 						$shade_id= $shade->id;
+					}else{
+						$shade_entry = $this->SecondTampGrnRecords->Companies->Items->Shades->newEntity();
+						$shade_entry->name = $SecondTampGrnRecord->provided_shade;
+						$shade_entry->company_id = $company_id;
+						$result_shade_entry=$this->SecondTampGrnRecords->Companies->Items->Shades->save($shade_entry);
+						$shade_id =$result_shade_entry->id;
 					}
 				}else{
 					$shade_id=0;
@@ -481,6 +487,12 @@ class SecondTampGrnRecordsController extends AppController
 							->where(['SecondTampGrnRecords.id' =>$SecondTampGrnRecord->id])
 							->execute();
 						$size_id= $size->id;
+					} else {
+						$size_entry = $this->SecondTampGrnRecords->Companies->Items->Sizes->newEntity();
+						$size_entry->name = $SecondTampGrnRecord->provided_size;
+						$size_entry->company_id = $company_id;
+						$result_size_entry=$this->SecondTampGrnRecords->Companies->Items->Sizes->save($size_entry);
+						$size_id =$result_size_entry->id;
 					}
 				}else{
 					$size_id=0;

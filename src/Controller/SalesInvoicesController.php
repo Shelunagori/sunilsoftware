@@ -1738,24 +1738,43 @@ public function edit($id = null)
 
         return $this->redirect(['action' => 'index']);
     }
-	public function saleReturnIndex($id = null)
+	public function saleReturnIndex($id = null,$item_code = null)
     {
 		$this->viewBuilder()->layout('index_layout');
 		$company_id=$this->Auth->User('session_company_id');
 		$stateDetails=$this->Auth->User('session_company');
 		@$invoice_no=$this->request->query('invoice_no');
+		@$item_code=$this->request->query('item_code');
 		$sales_return="No";
 		if(!empty(@$invoice_no)){ 
-		$SalesInvoice = $this->SalesInvoices->find()
+		$SalesInvoices = $this->SalesInvoices->find()
 						->where(['SalesInvoices.voucher_no' =>$invoice_no,'SalesInvoices.company_id' => $company_id])
-						->contain(['Companies', 'PartyLedgers', 'SalesLedgers'])
-						->first();
+						->contain(['Companies', 'PartyLedgers', 'SalesLedgers']);
+						
 		//pr($SalesInvoice->party_ledger->name); 
 		
 		$sales_return="Yes";
 		}	
+		if(!empty($item_code)){
+			$items = $this->SalesInvoices->SalesInvoiceRows->Items->find()->select(['id'])
+					->where(['Items.company_id'=>$company_id,'Items.item_code'=>$item_code])->first();
+				$item_id=$items->id;
+			/* $SalesInvoice = $this->SalesInvoices->find()
+						->where(['SalesInvoices.company_id' => $company_id])
+						->contain(['SalesInvoiceRowsInner'=>function($q) use($item_id){
+							return $q->where(['SalesInvoiceRowsInner.item_id' =>$item_id]);
+						}]); */
+			$SalesInvoices = $this->SalesInvoices->find()
+			->contain(['Companies', 'PartyLedgers', 'SalesLedgers','SalesInvoiceRows'])
+									->matching(
+										'SalesInvoiceRows.Items', function ($q) use($item_id) {
+											return $q->where(['SalesInvoiceRows.item_id' =>$item_id]);
+										})
+									->where(['SalesInvoices.company_id' => $company_id]);
+			$sales_return="Yes";
+		}
 
-		$this->set(compact('sales_return','SalesInvoice'));
+		$this->set(compact('sales_return','SalesInvoices'));
 		//exit;
 	}
 	

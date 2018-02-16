@@ -24,7 +24,7 @@ class ContraVouchersController extends AppController
 		$company_id=$this->Auth->User('session_company_id');
 		$search=$this->request->query('search');
         $this->paginate = [
-            'contain' => ['Companies']
+            'contain' => ['Companies','ContraVoucherRows'=>'Ledgers']
         ];
 		if($search){
 		$contraVouchers = $this->paginate($this->ContraVouchers->find()->where(['ContraVouchers.company_id'=>$company_id])->where([

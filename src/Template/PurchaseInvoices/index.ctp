@@ -29,7 +29,7 @@ $this->set('title', 'Purchase Invoice List');
 			</div>
 			<div class="portlet-body">
 				<div class="table-responsive">
-					<?php $page_no=$this->Paginator->current('SalesInvoices');
+					<?php $page_no=$this->Paginator->current('PurchaseInvoices');
 					 $page_no=($page_no-1)*20; ?>
 					<table class="table table-bordered table-hover table-condensed">
 						<thead>
@@ -43,7 +43,7 @@ $this->set('title', 'Purchase Invoice List');
 							</tr>
 						</thead>
 						<tbody>
-							<?php foreach ($purchaseInvoices as $purchaseInvoice): ?>
+							<?php $i =0; foreach ($purchaseInvoices as $purchaseInvoice): ?>
 							<tr>
 								<td><?= h(++$page_no) ?></td>
 								<td><?= h('#'.str_pad($purchaseInvoice->voucher_no, 4, '0', STR_PAD_LEFT)) ?></td>

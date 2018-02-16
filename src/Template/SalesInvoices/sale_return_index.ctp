@@ -11,12 +11,20 @@ $this->set('title', 'Create Sales Invoice');
 			<input type="text" name="invoice_no" class="form-control input-sm" placeholder="Invoice No" value="">
 			
 		</div>
+		<div class="col-md-1" align="center">
+			OR
+		</div> 
+		<div class="col-md-3">
+			<input type="text" name="item_code" class="form-control input-sm" placeholder="Item Code" value="">
+			
+		</div>
 		<div class="col-md-1" align="left">
 			<button type="submit" class="go btn blue-madison input-sm">Go</button>
 		</div> 
 	</div>
 </form>
-<?php if(!empty($SalesInvoice) && $sales_return=="Yes") {?>
+<br/>
+<?php if(!empty($SalesInvoices) && $sales_return=="Yes") {?>
 <div class="row">
 	<div class="col-md-12">
 		<div class="portlet light ">
@@ -41,6 +49,7 @@ $this->set('title', 'Create Sales Invoice');
 							</tr>
 						</thead>
 						<tbody>
+						<?php foreach($SalesInvoices as $SalesInvoice){ ?>
 							<tr>
 								<td><?= h(++$page_no) ?></td>
 								<td><?= h('#'.str_pad($SalesInvoice->voucher_no, 4, '0', STR_PAD_LEFT)) ?></td>
@@ -53,6 +62,7 @@ $this->set('title', 'Create Sales Invoice');
 									
 								</td>
 							</tr>
+						<?php }?>
 						</tbody>
 					</table>
 				</div>

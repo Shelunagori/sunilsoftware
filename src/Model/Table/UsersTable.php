@@ -35,13 +35,16 @@ class UsersTable extends Table
         $this->setTable('users');
         $this->setDisplayField('name');
         $this->setPrimaryKey('id');
-
+		$this->belongsTo('SalesInvoices');
+		$this->belongsTo('PurchaseInvoices');
         $this->hasMany('CompanyUsers', [
             'foreignKey' => 'user_id'
         ]);
 		 $this->hasMany('UserRights', [
             'foreignKey' => 'user_id'
         ]);
+		 
+		 
     }
 
     /**

@@ -24,7 +24,7 @@ class JournalVouchersController extends AppController
 		$company_id=$this->Auth->User('session_company_id');
 		$search=$this->request->query('search');
         $this->paginate = [
-            'contain' => ['Companies']
+            'contain' => ['Companies','JournalVoucherRows'=>['Ledgers']]
         ];
 		if($search){
         $journalVouchers = $this->paginate($this->JournalVouchers->find()->where(['JournalVouchers.company_id'=>$company_id])->where([
@@ -34,6 +34,7 @@ class JournalVouchersController extends AppController
 			'JournalVouchers.reference_no LIKE' => '%'.$search.'%',
 				//...
 			'JournalVouchers.transaction_date ' => date('Y-m-d',strtotime($search))
+
 		 ]]));
 		} else {
         $journalVouchers = $this->paginate($this->JournalVouchers->find()->where(['JournalVouchers.company_id'=>$company_id]));

@@ -28,33 +28,38 @@ $this->set('title', 'Payment Voucher List');
 			</div>
 			<div class="portlet-body">
 				<div class="table-responsive">
-					<?php $page_no=$this->Paginator->current('payments');
+					<?php $page_no=$this->Paginator->current('Payments');
 					 $page_no=($page_no-1)*20; ?>
 					<table class="table table-bordered table-hover table-condensed">
 						<thead>
 							<tr>
 								<th scope="col"><?= __('Sr') ?></th>
 								<th scope="col"><?= $this->Paginator->sort('voucher_no') ?></th>
+								<th scope="col"><?= $this->Paginator->sort('Party') ?></th>
 								<th scope="col"><?= $this->Paginator->sort('transaction_date') ?></th>
-								<th scope="col"><?= $this->Paginator->sort('Status') ?></th>
+								<th scope="col"><?= $this->Paginator->sort('Amount') ?></th>
 								<th scope="col" class="actions"><?= __('Actions') ?></th>
 							</tr>
 						</thead>
 						<tbody>
-							<?php foreach ($payments as $payment): ?>
-								<tr>
+							<?php foreach ($payments as $payment): 
+							if($payment->status == 'cancel') { ?>
+							 <tr style="background-color:#FE5E5E ;">
+							<?php } else { ?>
+							<tr> <?php } ?>
 									<td><?= h(++$page_no) ?></td>
 									<td><?= h(str_pad($payment->voucher_no, 4, '0', STR_PAD_LEFT)) ?></td>
+									<td><?= h($payment->payment_rows[0]->ledger->name) ?></td>
 									<td><?= h(date("d-m-Y",strtotime($payment->transaction_date))) ?></td>
-									<td class=""><?= h($payment->status) ?></td>
+									<td class=""><?= h($payment->payment_rows[0]->debit) ?></td>
 									<td class="actions">
 										<?= $this->Html->link(__('View'), ['action' => 'view', $payment->id]) ?>
 										<?php if ($payment->status!='cancel'){?>
 										<?php if (in_array("45", $userPages)){?>
 										<?= $this->Html->link(__('Edit'), ['action' => 'edit', $payment->id]) ?>
 										<?php }?>
-										&nbsp;&nbsp;
-									<?= $this->Form->postLink(__('Cancel'), ['action' => 'cancel', $payment->id], ['style'=>'color:red;','confirm' => __('Are you sure you want to cancel # {0}?',h(str_pad($payment->voucher_no, 3, '0', STR_PAD_LEFT)))]) ?>&nbsp;&nbsp;
+										
+									<?= $this->Form->postLink(__('Cancel'), ['action' => 'cancel', $payment->id], ['confirm' => __('Are you sure you want to cancel # {0}?',h(str_pad($payment->voucher_no, 3, '0', STR_PAD_LEFT)))]) ?>&nbsp;&nbsp;
 									<?php }?>
 										
 										<!-- <?= $this->Form->postLink(__('Delete'), ['action' => 'delete', $payment->id], ['confirm' => __('Are you sure you want to delete # {0}?', $payment->id)]) ?> -->

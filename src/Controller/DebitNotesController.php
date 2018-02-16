@@ -24,7 +24,7 @@ class DebitNotesController extends AppController
 	$company_id=$this->Auth->User('session_company_id');
 	$search=$this->request->query('search');
         $this->paginate = [
-            'contain' => ['Companies']
+            'contain' => ['Companies','DebitNoteRows'=>['Ledgers']]
         ];
 		if($search){
         $debitNotes = $this->paginate($this->DebitNotes->find()->where(['DebitNotes.company_id'=>$company_id])->where([

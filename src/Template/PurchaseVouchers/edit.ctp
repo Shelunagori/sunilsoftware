@@ -681,6 +681,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 						windowContainer.html('<table width=90% class=refTbl><tbody></tbody><tfoot><tr style=border-top:double#a5a1a1><td colspan=2></td><td valign=top>$total_input</td><td valign=top>$total_type</td></tr></tfoot></table><a role=button class=addRefRow>Add Row</a>');
 						AddRefRow(SelectedTr);
 					}
+					calculation(SelectedTr);
 					
 				}
 			  });
@@ -820,6 +821,7 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 					}
 					i++;
 				});
+				
 				var total_type=SelectedTr.find('td:nth-child(2) div.window table.refTbl tfoot tr td:nth-child(3) input.total_type').val();
 				if(total_type=='Dr'){
 					eqlClass=eqlClassDr;
@@ -866,11 +868,11 @@ $option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 				
 					if(Dr_Cr=='Dr'){
 						total_debit=total_debit+amt;
-						console.log(total_debit);
+						//console.log(total_debit);
 					}
 					else if(Dr_Cr=='Cr'){
 						total_credit=total_credit+amt;
-						console.log(total_credit);
+						//console.log(total_credit);
 					}
 					
 					if(total_debit>total_credit)

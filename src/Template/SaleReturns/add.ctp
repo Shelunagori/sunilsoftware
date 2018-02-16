@@ -173,7 +173,7 @@ foreach($partyOptions as $partyOption)
 										<input type="hidden" name="" class="is_gst_excluded calculation gstExcluded" value="<?php echo $salesInvoiceRow->is_gst_excluded;?>">
 
 										<?php
-										echo $salesInvoiceRow->item->name;
+										echo $salesInvoiceRow->item->item_code .' '. $salesInvoiceRow->item->name;
 										echo $this->Form->input('q', ['value'=>$salesInvoiceRow->id,'type'=>'hidden']);
 										?>
 								</td>

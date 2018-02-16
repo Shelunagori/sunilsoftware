@@ -261,7 +261,9 @@ $option_ref[]= ['value'=>'On Account','text'=>'On Account'];
 				renameRefRows();
 				calculation();
 			});
-		
+		$('.cr_dr').die().live('change',function(){
+			renameRefRows();
+		});
 		$('.bill_to_bill_accounting').die().live('change',function(){
 			var bill_accounting=$('option:selected', this).val();
 			if(bill_accounting=='no'){ 

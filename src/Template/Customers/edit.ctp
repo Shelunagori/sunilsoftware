@@ -404,7 +404,9 @@ $this->set('title', 'Edit Customer');
 		$('.addRefRow').die().live('click',function(){
 				AddRefRow();
 			});
-			
+		$('.cr_dr').die().live('change',function(){
+			renameRefRows();
+		});
 		function AddRefRow(){
 			
 			var refTr=$('#sampleForRef tbody tr').clone();

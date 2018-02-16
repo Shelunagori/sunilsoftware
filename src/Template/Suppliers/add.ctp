@@ -348,14 +348,19 @@ $option_ref[]= ['value'=>'On Account','text'=>'On Account'];
 				}
 				renameRefRows();
 		});
+		
+		$('.cr_dr').die().live('change',function(){
+			renameRefRows();
+		});
 		$('.balance').live('blur',function()
 		{
+			
 			var main_amt=$(this).val();
 			var bill_accounting=$('.bill_to_bill_accounting option:selected').val();
 			
 			if(main_amt>0 && bill_accounting=='yes'){
 				$('.window').show();
-				AddRefRow();
+				AddRefRow();`
 				}else{
 				$('div.window table tbody').find('tr').remove();
 				$('div.window table.refTbl tfoot tr td:nth-child(2) input.total').rules('remove', 'equalTo');

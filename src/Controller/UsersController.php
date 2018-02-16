@@ -161,5 +161,23 @@ class UsersController extends AppController
     public function dashboard()
     {
         $this->viewBuilder()->layout('index_layout');
+		$company_id=$this->Auth->User('session_company_id');
+		$query=$this->Users->SalesInvoices->find();
+		$salesInvoice=$this->Users->SalesInvoices->find()->select(['total_sale'=>$query->func()->sum('SalesInvoices.amount_after_tax')])->where(['SalesInvoices.company_id'=>$company_id])->first();
+		$total_sale=$salesInvoice->total_sale;
+		$salesInvoice1=$this->Users->SalesInvoices->find()->where(['SalesInvoices.company_id'=>$company_id]);
+		$total_invoice=$salesInvoice1->count();
+		$query1=$this->Users->PurchaseInvoices->find()->where(['PurchaseInvoices.company_id'=>$company_id]);
+		//$purchaseInvoices=$query1->contain(['PurchaseInvoiceRows'=>function ($q){
+		//return $q->select(['PurchaseInvoiceRows.purchase_invoice_id','total_purchase'=>'SUM(net_amount)']); }]);
+		//pr($purchaseInvoices->toArray());
+		//exit;
+		//$purchaseInvoice=$this->Users->PurchaseInvoices->PurchaseInvoiceRows->find()->select(['total_purchase'=>$query->func()->sum('PurchaseInvoiceRows.net_amount')])->where(['PurchaseInvoices.company_id'=>$company_id])->first();
+		
+		//$total_purchase=$purchaseInvoice->total_purchase;
+		$purchaseInvoice1=$this->Users->PurchaseInvoices->find()->where(['PurchaseInvoices.company_id'=>$company_id]);
+		$total_invoice1=$purchaseInvoice1->count();
+		  $this->set(compact('total_invoice','total_sale','total_purchase','total_invoice1'));
+		
     }
 }

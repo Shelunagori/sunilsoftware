@@ -124,9 +124,18 @@ class StockGroupsController extends AppController
         } else {
             $this->Flash->error(__('The stock group could not be deleted. Please, try again.'));
         }
-
-        return $this->redirect(['action' => 'index']);
+		return $this->redirect(['action' => 'index']);
     }
+	
+	 public function stockSubGroup($id = null)
+    { 
+		$this->viewBuilder()->layout('');
+		$company_id=$this->Auth->User('session_company_id');
+        //$stockGroup = $this->StockGroups->get($id);
+		$stockSubgroups=$this->StockGroups->find('list')->where(['StockGroups.company_id'=>$company_id,'StockGroups.parent_id' => $id]); //pr($stockSubgroups); exit;
+		$this->set(compact('stockSubgroups'));
+    }
+	
 	
 	public function summary(){
 		$stockGroupId = $this->request->query('stock-group-id');

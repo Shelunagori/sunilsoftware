@@ -24,7 +24,7 @@ class PurchaseVouchersController extends AppController
 		$company_id=$this->Auth->User('session_company_id');
 		$search=$this->request->query('search');
 		$this->paginate = [
-            'contain' => []
+            'contain' => ['PurchaseVoucherRows'=>'Ledgers']
         ];
         $purchaseVouchers = $this->paginate($this->PurchaseVouchers->find()->where(['PurchaseVouchers.company_id'=>$company_id])->where([
 		'OR' => [
@@ -36,7 +36,8 @@ class PurchaseVouchersController extends AppController
 			//...
 			'PurchaseVouchers.supplier_invoice_date ' => date('Y-m-d',strtotime($search))
 		 ]]));
-
+		//pr($purchaseVouchers)->toArray();
+		//exit;
         $this->set(compact('purchaseVouchers','search'));
         $this->set('_serialize', ['purchaseVouchers']);
     }
