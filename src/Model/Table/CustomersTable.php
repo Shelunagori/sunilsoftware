@@ -45,6 +45,11 @@ class CustomersTable extends Table
             'foreignKey' => 'city_id',
             'joinType' => 'INNER'
         ]);
+		$this->belongsTo('LeftCities', [
+			'className' => 'Cities',
+            'foreignKey' => 'city_id',
+            'joinType' => 'LEFT'
+        ]);
        $this->hasOne('Ledgers', [
             'foreignKey' => 'customer_id'
         ]);

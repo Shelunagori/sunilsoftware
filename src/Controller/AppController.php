@@ -41,7 +41,8 @@ class AppController extends Controller
     public function initialize()
     {
         parent::initialize();
-
+		set_time_limit(0);
+		ini_set('memory_limit', '3072M');
 		
 		FrozenTime::setToStringFormat('dd-MM-yyyy hh:mm a');  // For any immutable DateTime
 		FrozenDate::setToStringFormat('dd-MM-yyyy');  // For any immutable Date

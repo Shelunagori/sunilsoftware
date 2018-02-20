@@ -187,6 +187,35 @@ $this->set('title', 'Create Sales Invoice');
 							<?php echo $this->Form->input('amount_after_tax', ['label' => false,'class' => 'form-control input-sm amount_after_tax rightAligntextClass','required'=>'required', 'readonly'=>'readonly','placeholder'=>'', 'tabindex'=>'-1']); ?>	
 							</td>
 						</tr>
+						<tr>
+							<td colspan="4">
+									<input type="hidden" class="min_amount" name="min_amount" value="<?php echo $min_amount; ?>" >
+									<div class="radio-list" id="privileges_customer" style="display:none">
+									 <b>Do you want to create Privileges Customer</b>
+										<div class="radio-inline" style="padding-left: 0px;">
+											<?php echo $this->Form->radio(
+											'privilages_customer_type',
+											[
+												['value' => 'yes', 'text' => 'Yes','class' => ''],
+												['value' => 'no', 'text' => 'No','class' => '']
+											],['value'=>'no']
+											); ?>
+										</div>
+                                    </div>
+									<input type="hidden" id="points" name="points">
+									<input type="text" id="is_mobile_no" name="is_mobile_no">
+							</td>
+							
+							<td colspan="2" >
+							<div class ="show_mobile" style="display:none">
+							 Mobile:
+							<?php echo $this->Form->input('mobile_no', ['label' => false,'class' => 'form-control input-sm mobile_no rightAligntextClass','placeholder'=>'', 'tabindex'=>'-1']); ?>	</div>
+							</td>
+							
+							<td colspan="2"><div class ="show_customer" style="display:none">Customer Name :
+							<?php echo $this->Form->input('customer_name', ['label' => false,'class' => 'form-control input-sm customer_name rightAligntextClass','placeholder'=>'', 'tabindex'=>'-1']); ?></div>	
+							</td>
+						</tr>
 					</tfoot>
 					</table>
 				   </div>
@@ -297,6 +326,35 @@ $this->set('title', 'Create Sales Invoice');
 <?php
 	$js="
 	$(document).ready(function() {
+		
+		$('input[name=privilages_customer_type]').on('click', function(){
+			var type=$(this).val();
+			if(type == 'yes'){
+				$('.show_mobile').show();
+				$('.show_customer').show();
+			}
+			else{
+				$('.show_mobile').hide();
+				$('.show_customer').hide();
+			}
+		}
+		);
+		$('.mobile_no').die().live('blur',function()
+		{
+		var mobile_no=$(this).val();
+		
+		var url='".$this->Url->build(["controller" => "Ledgers", "action" => "checkLedger"])."';
+			url=url+'/'+mobile_no
+			alert(url);
+			$.ajax({
+				url: url,
+				type: 'GET'
+				//dataType: 'text'
+			}).done(function(response) {
+				$('#is_mobile_no').val(response);
+			});
+		});
+		
 		$('.attrGet').die().live('change',function(){ 
 		var itemQ=$(this).closest('tr');
 			var gst_amount=$('option:selected', this).attr('gst_amount');
@@ -446,6 +504,7 @@ $this->set('title', 'Create Sales Invoice');
 				$('#is_interstate').val('0');
 			}
 			//$(this).closest('tr').find('.output_igst_ledger_id').val(output_igst_ledger_id);
+			forward_total_amount();
 		});
 		
 		$('.delete-tr').die().live('click',function() 
@@ -644,9 +703,7 @@ $this->set('title', 'Create Sales Invoice');
 				$(this).find('.gstValue').val(gstValue);
 			}
 			
-			
 			var is_interstate  = parseFloat($('#is_interstate').val());
-			
 			if(is_interstate=='0')
 			{
 			     exactgstvalue=round(gstValue/2,2);
@@ -695,8 +752,10 @@ $this->set('title', 'Create Sales Invoice');
 		$('.isRoundofType').val(isRoundofType);
 		$('.outOfStock').val(outOfStockValue);
 		$('.toalDiscount').val(totDiscounts);
+		
 		rename_rows();
 	}
+	
 	
 	$('.discalculation').die().live('blur',function()
 	{
@@ -763,9 +822,37 @@ $this->set('title', 'Create Sales Invoice');
 				c=0;
 			}
 		});
+		
+		
 		if(c==0){
 			alert('Error: Stock is going in minus.');
 			return false;
+		}
+		var partyexist=$('select[name=party_ledger_id] :selected').attr('partyexist');
+		var is_privilage= $('select[name=party_ledger_id] :selected').attr('privilege_customer');
+		var amount_after_tax=$('.amount_after_tax').val();
+		var minimum_amount=$('.min_amount').val();
+		if((amount_after_tax >= minimum_amount) && (is_privilage!='yes') && (partyexist==0)){
+			$('#privileges_customer').show();
+		}else{
+			$('#privileges_customer').hide();
+			$('.mobile_no').val('');
+			$('.customer_name').val('');
+			$('.show_mobile').hide();
+			$('.show_customer').hide();
+			$('#is_mobile_no').val('false');
+		}
+		var is_mobile_no=$('#is_mobile_no').val();
+		if(is_mobile_no=='true')
+		{
+			$('.mobile_no').val('');
+			$('.customer_name').val('');
+			//$('.show_mobile').hide();
+			//$('.show_customer').hide();
+			alert('Mobile No already exist select in Party Ledger');
+			return false;
+			$('#privileges_customer').hide();
+			
 		}
 		if(confirm('Are you sure you want to submit!'))
 		{

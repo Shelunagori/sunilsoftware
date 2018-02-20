@@ -60,6 +60,19 @@ class LedgersController extends AppController
      *
      * @return \Cake\Http\Response|null Redirects on successful add, renders view otherwise.
      */
+	public function checkLedger($mobile_no = null)
+	{ 
+		$this->viewBuilder()->layout('index_layout');	
+		 $ledger = $this->Ledgers->find()->select(['name'])->where(['Ledgers.name LIKE'=> '%'. $mobile_no .'%'])->first();
+		if($ledger){
+			echo "true";
+		 }
+		else{  //pr($ledger); exit; 
+			 echo "false"; 
+		}
+        exit;
+	}
+	 
     public function add()
     {
 		$this->viewBuilder()->layout('index_layout');

@@ -96,7 +96,7 @@ $this->set('title', 'Sales Invoice Bill');
 	</tr>
 	<tr>
 		<td colspan="4" style="font-size:14px;">City: 
-		<?=@$data->partyDetails->city->name?></td>
+		<?=@$data->partyDetails->left_city->name?></td>
 	</tr>
 	<tr>
 		<td colspan="4" style="font-size:14px;">State: 

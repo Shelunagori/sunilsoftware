@@ -206,7 +206,9 @@ class SalesInvoicesController extends AppController
 		$company_id=$this->Auth->User('session_company_id');
 		$location_id=$this->Auth->User('session_location_id');
 		$stateDetails=$this->Auth->User('session_company');
+		//pr($stateDetails); exit;
 		$state_id=$stateDetails->state_id;
+		//$city_id=$stateDetails->city_id;
 		$due_days=0;
 		$roundOffId = $this->SalesInvoices->SalesInvoiceRows->Ledgers->find()
 		->where(['Ledgers.company_id'=>$company_id, 'Ledgers.round_off'=>1])->first();
@@ -223,6 +225,7 @@ class SalesInvoicesController extends AppController
 		    $transaction_date=date('Y-m-d', strtotime($this->request->data['transaction_date']));
 			$due_days=$this->request->data['due_days']; 
             $salesInvoice = $this->SalesInvoices->patchEntity($salesInvoice, $this->request->getData());
+			//pr($salesInvoice); exit;
             $salesInvoice->transaction_date=$transaction_date;
 			$Voucher_no = $this->SalesInvoices->find()->select(['voucher_no'])->where(['SalesInvoices.company_id'=>$company_id])->order(['voucher_no' => 'DESC'])->first();
 			if($Voucher_no){
@@ -240,8 +243,42 @@ class SalesInvoicesController extends AppController
 			}else{
 				$salesInvoice->receipt_amount=0;
 			}
+		
+			if (!empty($salesInvoice->mobile_no)){
+				
+			$customerEntry = $this->SalesInvoices->Customers->newEntity();
+			$customerEntry->name                  = $salesInvoice->customer_name;
+			$customerEntry->state_id			  = $state_id;
+			//$customerEntry->city_id			      = $city_id;
+			$customerEntry->company_id            = $company_id;
+			$customerEntry->mobile                = $salesInvoice->mobile_no;
+			$customerEntry->is_privilage_customer = 'yes'; 
 			
-		   if ($this->SalesInvoices->save($salesInvoice)) {
+			if($this->SalesInvoices->Customers->save($customerEntry))
+			{
+				$query=$this->SalesInvoices->Customers->query();
+						$result = $query->update()
+						->set(['customer_id' => $customerEntry->id])
+						->where(['id' => $customerEntry->id])
+						->execute();
+				//Create Ledger//
+				$SundryDebtor = $this->SalesInvoices->Customers->Ledgers->AccountingGroups->find()->where(['customer'=>1,'company_id'=>$company_id])->first();
+				$accounting_group_id=$SundryDebtor->id;
+				$ledger = $this->SalesInvoices->Customers->Ledgers->newEntity();
+				$ledger->name = $salesInvoice->mobile_no .' '. $salesInvoice->customer_name;
+				$ledger->accounting_group_id = $accounting_group_id;
+				$ledger->company_id =$company_id;
+				$ledger->customer_id=$customerEntry->id;
+				$ledger->bill_to_bill_accounting='no';
+				
+				if($this->SalesInvoices->Customers->Ledgers->save($ledger)){
+					$salesInvoice->party_ledger_id = $ledger->id;
+				}
+			
+			}
+			}
+			
+			if ($this->SalesInvoices->save($salesInvoice)) {
 				
 				if($salesInvoice->invoice_receipt_type=='cash' && $salesInvoice->invoiceReceiptTd==1)
 				{
@@ -582,7 +619,7 @@ class SalesInvoicesController extends AppController
 		else{
 			$receiptAccountLedgersName='0';
 		}
-			$partyOptions[]=['text' =>str_pad(@$Partyledger->customer->customer_id, 4, '0', STR_PAD_LEFT).' - '.$Partyledger->name, 'value' => $Partyledger->id ,'party_state_id'=>@$Partyledger->customer->state_id, 'partyexist'=>$receiptAccountLedgersName, 'billToBillAccounting'=>$Partyledger->bill_to_bill_accounting,'default_days'=>$Partyledger->default_credit_days];
+			$partyOptions[]=['text' =>str_pad(@$Partyledger->customer->customer_id, 4, '0', STR_PAD_LEFT).' - '.$Partyledger->name, 'value' => $Partyledger->id ,'party_state_id'=>@$Partyledger->customer->state_id, 'partyexist'=>$receiptAccountLedgersName, 'billToBillAccounting'=>$Partyledger->bill_to_bill_accounting,'default_days'=>$Partyledger->default_credit_days,'privilege_customer'=>@$Partyledger->customer->is_privilage_customer];
 		}
 		
 		$accountLedgers = $this->SalesInvoices->SalesInvoiceRows->Ledgers->AccountingGroups->find()->where(['AccountingGroups.sale_invoice_sales_account'=>1,'AccountingGroups.company_id'=>$company_id])->first();
@@ -608,7 +645,10 @@ class SalesInvoicesController extends AppController
 						
 		$CashPartyLedgers = $this->SalesInvoices->SalesInvoiceRows->Ledgers->find()
 							->where(['Ledgers.cash ' =>1,'Ledgers.company_id'=>$company_id])->first();
-		$this->set(compact('salesInvoice', 'companies', 'customerOptions', 'gstFigures', 'voucher_no','company_id','itemOptions','state_id', 'partyOptions', 'Accountledgers', 'location_id', 'CashPartyLedgers'));
+							
+		$MinimumPrivilageAmounts=$this->SalesInvoices->MinimumPrivilageAmounts->find()->where(['company_id'=>$company_id])->first();
+		$min_amount=$MinimumPrivilageAmounts->amount;
+		$this->set(compact('salesInvoice', 'companies', 'customerOptions', 'gstFigures', 'voucher_no','company_id','itemOptions','state_id', 'partyOptions', 'Accountledgers', 'location_id', 'CashPartyLedgers','min_amount'));
         $this->set('_serialize', ['salesInvoice']);
     }	
 
@@ -1440,12 +1480,15 @@ public function edit($id = null)
 		
 			$partyDetail= $this->SalesInvoices->SalesInvoiceRows->Ledgers->find()
 			->where(['id'=>$data->party_ledger_id])->first();
+			
 		    $partyCustomerid=$partyDetail->customer_id;
+			
 			if($partyCustomerid>0)
 			{
 				$partyDetails= $this->SalesInvoices->Customers->find()
 				->where(['Customers.id'=>$partyCustomerid])
-				->contain(['States', 'Cities'])->first();
+				->contain(['States', 'LeftCities'])->first();
+				//pr($partyDetails); exit;
 				$data->partyDetails=$partyDetails;
 			}
 			else

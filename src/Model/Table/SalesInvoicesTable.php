@@ -43,7 +43,9 @@ class SalesInvoicesTable extends Table
             'foreignKey' => 'company_id',
             'joinType' => 'INNER'
         ]);
-        $this->belongsTo('Customers', [
+		$this->belongsTo('MinimumPrivilageAmounts');
+		
+		 $this->belongsTo('Customers', [
             'foreignKey' => 'customer_id',
             'joinType' => 'INNER'
         ]);
