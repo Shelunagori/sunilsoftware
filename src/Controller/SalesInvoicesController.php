@@ -206,13 +206,37 @@ class SalesInvoicesController extends AppController
 		$company_id=$this->Auth->User('session_company_id');
 		$location_id=$this->Auth->User('session_location_id');
 		$stateDetails=$this->Auth->User('session_company');
-		//pr($stateDetails); exit;
+		$financialYear_id=$this->Auth->User('financialYear_id');
+		//pr($this->Auth->User()); exit;
 		$state_id=$stateDetails->state_id;
 		//$city_id=$stateDetails->city_id;
+		$FinancialYearData=$this->SalesInvoices->Companies->FinancialYears->get($financialYear_id);
+		//$date = explode("-", $FinancialYear->fy_from);
+		/* $date=date('Y-m-d',strtotime($FinancialYear->fy_from));
+		//pr($date);
+		// $date = date('Y-m-d'); 
+		$d = date_parse_from_format('Y-m-d',$date);
+		$yr=$d["year"];$year= substr($yr, -2);
+		if($d["month"]=='01' || $d["month"]=='02' || $d["month"]=='03')
+		{
+		  $startYear=$year-1;
+		  $endYear=$year;
+		  $financialyear=$startYear.'-'.$endYear;
+		}
+		else
+		{
+		  $startYear=$year;
+		  $endYear=$year+1;
+		  $financialyear=$startYear.'-'.$endYear;
+		} */
+	
+		
+		//pr($financialyear); exit;
 		$due_days=0;
 		$roundOffId = $this->SalesInvoices->SalesInvoiceRows->Ledgers->find()
 		->where(['Ledgers.company_id'=>$company_id, 'Ledgers.round_off'=>1])->first();
-		$Voucher_no = $this->SalesInvoices->find()->select(['voucher_no'])->where(['SalesInvoices.company_id'=>$company_id])->order(['voucher_no' => 'DESC'])->first();
+		$Voucher_no = $this->SalesInvoices->find()->select(['voucher_no'])->where(['SalesInvoices.company_id'=>$company_id,'SalesInvoices.financial_year_id'=>$financialYear_id])->order(['voucher_no' => 'DESC'])->first();
+		
 		if($Voucher_no)
 		{
 			$voucher_no=$Voucher_no->voucher_no+1;
@@ -220,14 +244,18 @@ class SalesInvoicesController extends AppController
 		else
 		{
 			$voucher_no=1;
-		} 		
+		} 	
+			
+		//pr($voucher_no); exit;
         if ($this->request->is('post')) {
 		    $transaction_date=date('Y-m-d', strtotime($this->request->data['transaction_date']));
 			$due_days=$this->request->data['due_days']; 
             $salesInvoice = $this->SalesInvoices->patchEntity($salesInvoice, $this->request->getData());
-			//pr($salesInvoice); exit;
+			
             $salesInvoice->transaction_date=$transaction_date;
-			$Voucher_no = $this->SalesInvoices->find()->select(['voucher_no'])->where(['SalesInvoices.company_id'=>$company_id])->order(['voucher_no' => 'DESC'])->first();
+            $salesInvoice->financial_year_id=$financialYear_id;
+			//pr($salesInvoice); exit;
+			$Voucher_no = $this->SalesInvoices->find()->select(['voucher_no'])->where(['SalesInvoices.company_id'=>$company_id,'SalesInvoices.financial_year_id'=>$financialYear_id])->order(['voucher_no' => 'DESC'])->first();
 			if($Voucher_no){
 				$voucher_no=$Voucher_no->voucher_no+1;
 			}else{
@@ -648,7 +676,7 @@ class SalesInvoicesController extends AppController
 							
 		$MinimumPrivilageAmounts=$this->SalesInvoices->MinimumPrivilageAmounts->find()->where(['company_id'=>$company_id])->first();
 		$min_amount=$MinimumPrivilageAmounts->amount;
-		$this->set(compact('salesInvoice', 'companies', 'customerOptions', 'gstFigures', 'voucher_no','company_id','itemOptions','state_id', 'partyOptions', 'Accountledgers', 'location_id', 'CashPartyLedgers','min_amount'));
+		$this->set(compact('salesInvoice', 'companies', 'customerOptions', 'gstFigures', 'voucher_no','company_id','itemOptions','state_id', 'partyOptions', 'Accountledgers', 'location_id', 'CashPartyLedgers','min_amount','FinancialYearData'));
         $this->set('_serialize', ['salesInvoice']);
     }	
 
@@ -673,11 +701,12 @@ public function edit($id = null)
 		$company_id=$this->Auth->User('session_company_id');
 		$stateDetails=$this->Auth->User('session_company');
 		$location_id=$this->Auth->User('session_location_id');
+		$financialYear_id=$this->Auth->User('financialYear_id');
 		$state_id=$stateDetails->state_id;
 		$due_days=0;
 		$roundOffId = $this->SalesInvoices->SalesInvoiceRows->Ledgers->find()
 		->where(['Ledgers.company_id'=>$company_id, 'Ledgers.round_off'=>1])->first();
-		$Voucher_no = $this->SalesInvoices->find()->select(['voucher_no'])->where(['company_id'=>$company_id])->order(['voucher_no' => 'DESC'])->first();
+		$Voucher_no = $this->SalesInvoices->find()->select(['voucher_no'])->where(['SalesInvoices.company_id'=>$company_id,'SalesInvoices.financial_year_id'=>$financialYear_id])->order(['voucher_no' => 'DESC'])->first();
 		if($Voucher_no)
 		{
 			$voucher_no=$Voucher_no->voucher_no+1;

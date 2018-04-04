@@ -44,7 +44,8 @@ $this->set('title', 'Create Sales Invoice');
 								
 								<?php
 								//echo $coreVariable['company_name']; exit;
-								    $date = date('Y-m-d');
+								    //$date = date('Y-m-d');
+									$date=date('Y-m-d',strtotime($FinancialYearData->fy_from));
 									$d = date_parse_from_format('Y-m-d',$date);
 									$yr=$d["year"];$year= substr($yr, -2);
 									if($d["month"]=='01' || $d["month"]=='02' || $d["month"]=='03')

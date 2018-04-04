@@ -56,7 +56,10 @@ class UsersController extends AppController
 				$user->id=$userid;
 				$user->location_name=$location_name;
                 $this->Auth->setUser($user);
-				return $this->redirect(['controller'=>'Users','action' => 'Dashboard']);
+				
+				//pr($user->session_company); exit;
+				return $this->redirect(['action' => 'selectCompanyYear']);
+				//return $this->redirect(['controller'=>'Users','action' => 'Dashboard']);
             }
             $this->Flash->error(__('Invalid Username or Password'));
         }
@@ -64,6 +67,37 @@ class UsersController extends AppController
         $this->set(compact('user'));
     }
 
+	public function selectCompanyYear($financialYear_id=null)
+    {
+			$this->viewBuilder()->layout('login');
+			$company_id=$this->Auth->User('session_company_id');
+			
+			$financialYears = $this->paginate($this->Users->FinancialYears->find()->where(['company_id'=>$company_id,'status' =>'Open']));
+			$user=$this->Auth->User();
+			 if(!empty($financialYear_id)){
+				
+			$this->request->allowMethod(['post', 'delete']);
+			$user->financialYear_id=$financialYear_id;
+			return $this->redirect(['controller'=>'Users','action' => 'Dashboard']);
+			}
+			/*$financialYears = $this->paginate($this->FinancialYears->find()->where(['company_id'=>$st_company_id,'status' =>'Open']));
+			
+			$count=0;
+			foreach($financialYears as $data){
+					$count++;
+			}
+				if($count==1){
+					foreach($financialYears as $financialYear){
+						$this->request->session()->write('st_year_id',$financialYear->id);
+						break;
+					}
+					return $this->redirect('/Dashboard');
+				} */
+			
+			$this->set(compact('financialYears'));
+			$this->set('_serialize', ['financialYears']);
+    }
+	
     /**
      * Index method
      *

@@ -37,6 +37,7 @@ class UsersTable extends Table
         $this->setPrimaryKey('id');
 		$this->belongsTo('SalesInvoices');
 		$this->belongsTo('PurchaseInvoices');
+		$this->belongsTo('FinancialYears');
         $this->hasMany('CompanyUsers', [
             'foreignKey' => 'user_id'
         ]);
