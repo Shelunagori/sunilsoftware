@@ -105,7 +105,7 @@ class ReceiptsController extends AppController
 				}
 			
                 $this->Flash->success(__('The receipt has been saved.'));
-                return $this->redirect(['action' => 'index']);
+                return $this->redirect(['action' => 'add']);
             }
             $this->Flash->error(__('The receipt could not be saved. Please, try again.'));
         }

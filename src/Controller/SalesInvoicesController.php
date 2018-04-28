@@ -1798,6 +1798,128 @@ public function edit($id = null)
      * @return \Cake\Http\Response|null Redirects to index.
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
+	 
+	public function salesInvoiceReturns($id=null){
+		$ids = $this->request->query('id');
+		$company_id=$this->Auth->User('session_company_id');
+		$location_id=$this->Auth->User('session_location_id');
+		$stateDetails=$this->Auth->User('session_company');
+		$financialYear_id=$this->Auth->User('financialYear_id');
+		$state_id=$stateDetails->state_id;
+		$this->viewBuilder()->layout('index_layout');
+		$salesInvoice = $this->SalesInvoices->get($id, [
+            'contain' => (['PartyLedgers','SalesInvoiceRows'=>['Items', 'GstFigures']])
+        ]);
+		
+		
+		
+		 $partyParentGroups = $this->SalesInvoices->SalesInvoiceRows->Ledgers->AccountingGroups->find()
+						->where(['AccountingGroups.company_id'=>$company_id, 'AccountingGroups.sale_invoice_party'=>'1']);
+		$partyGroups=[];
+		foreach($partyParentGroups as $partyParentGroup)
+		{
+			$accountingGroups = $this->SalesInvoices->SalesInvoiceRows->Ledgers->AccountingGroups
+			->find('children', ['for' => $partyParentGroup->id])->toArray();
+			$partyGroups[]=$partyParentGroup->id;
+			foreach($accountingGroups as $accountingGroup){
+				$partyGroups[]=$accountingGroup->id;
+			}
+		}
+		if($partyGroups)
+		{  
+			$Partyledgers = $this->SalesInvoices->SalesInvoiceRows->Ledgers->find()
+							->where(['Ledgers.accounting_group_id IN' =>$partyGroups,'Ledgers.company_id'=>$company_id])
+							->contain(['Customers']);
+        }
+		$partyOptions=[];
+		foreach($Partyledgers as $Partyledger){
+		
+		$receiptAccountLedgers = $this->SalesInvoices->SalesInvoiceRows->Ledgers->AccountingGroups->find()
+		->where(['AccountingGroups.id'=>$Partyledger->accounting_group_id,'AccountingGroups.customer'=>1])
+		->orWhere(['AccountingGroups.id'=>$Partyledger->accounting_group_id,'AccountingGroups.supplier'=>1])->first();
+		
+		if($receiptAccountLedgers)
+		{
+			$receiptAccountLedgersName='1';
+		}
+		else{
+			$receiptAccountLedgersName='0';
+		}
+		
+			$partyOptions[]=['text' =>str_pad(@$Partyledger->customer->customer_id, 4, '0', STR_PAD_LEFT).' - '.$Partyledger->name, 'value' => $Partyledger->id ,'party_state_id'=>@$Partyledger->customer->state_id, 'partyexist'=>$receiptAccountLedgersName, 'billToBillAccounting'=>$Partyledger->bill_to_bill_accounting,'default_days'=>$Partyledger->default_credit_days];
+		}
+		$gstFigures = $this->SalesInvoices->GstFigures->find('list')
+						->where(['company_id'=>$company_id]);
+						
+		$companies = $this->SalesInvoices->Companies->find('list');
+        $customers = $this->SalesInvoices->Customers->find('list')->where(['company_id'=>$company_id]);
+        $gstFigures = $this->SalesInvoices->GstFigures->find('list')->where(['company_id'=>$company_id]);
+		$accountLedgers = $this->SalesInvoices->SalesInvoiceRows->Ledgers->AccountingGroups->find()->where(['AccountingGroups.sale_invoice_sales_account'=>1,'AccountingGroups.company_id'=>$company_id])->first();
+		$accountingGroups2 = $this->SalesInvoices->SalesInvoiceRows->Ledgers->AccountingGroups
+		->find('children', ['for' => $accountLedgers->id])
+		->find('List')->toArray();
+		$accountingGroups2[$accountLedgers->id]=$accountLedgers->name;
+		ksort($accountingGroups2);
+		if($accountingGroups2)
+		{   
+			$account_ids="";
+			foreach($accountingGroups2 as $key=>$accountingGroup)
+			{
+				$account_ids .=$key.',';
+			}
+			$account_ids = explode(",",trim($account_ids,','));
+			$Accountledgers = $this->SalesInvoices->SalesInvoiceRows->Ledgers->find('list')->where(['Ledgers.accounting_group_id IN' =>$account_ids]);
+        }
+		$items = $this->SalesInvoices->SalesInvoiceRows->Items->find()
+					->where(['Items.company_id'=>$company_id])
+					->contain(['FirstGstFigures', 'SecondGstFigures', 'Units']);
+		$itemLedgers=[];
+		foreach($items->toArray() as $data)
+		{
+			$itemId=$data->id;
+			$query = $this->SalesInvoices->SalesInvoiceRows->Items->ItemLedgers->find()
+			->where(['ItemLedgers.item_id' => $itemId, 'ItemLedgers.company_id' => $company_id]);
+			$totalInCase = $query->newExpr()
+			->addCase(
+				$query->newExpr()->add(['status' => 'In']),
+				$query->newExpr()->add(['quantity']),
+				'integer'
+			);
+		$totalOutCase = $query->newExpr()
+			->addCase(
+				$query->newExpr()->add(['status' => 'out']),
+				$query->newExpr()->add(['quantity']),
+				'integer'
+			);
+		$query->select([
+			'total_in' => $query->func()->sum($totalInCase),
+			'total_out' => $query->func()->sum($totalOutCase),'id','item_id'
+		])
+		->where(['ItemLedgers.item_id' => $itemId, 'ItemLedgers.company_id' => $company_id, 'ItemLedgers.location_id' => $location_id])
+		->group('item_id')
+		->autoFields(true)
+		->contain(['Items'=>['FirstGstFigures', 'SecondGstFigures', 'Units']]);
+        $itemLedgers[] = ($query);
+		}
+		$itemOptions=[];
+		foreach($itemLedgers as $d)
+		{
+			foreach($d as $dd)
+			{
+				$available_stock=$dd->total_in;
+				$stock_issue=$dd->total_out;
+				@$remaining=number_format($available_stock-$stock_issue, 2);
+				if($remaining>0)
+				{
+				$itemOptions[]=['text'=>$dd->item->item_code.' '.$dd->item->name, 'value'=>$dd->item_id];
+				}
+			}
+		}
+		//pr($itemOptions);exit;
+		$this->set(compact('salesInvoice','partyOptions','gstFigures','companies','customers','gstFigures','company_id','location_id','stateDetails','financialYear_id','state_id','accountLedgers','Accountledgers','itemOptions'));
+        $this->set('_serialize', ['salesInvoice']);
+		
+	} 
     public function delete($id = null)
     {
         $this->request->allowMethod(['post', 'delete']);

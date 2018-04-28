@@ -102,7 +102,7 @@ class ContraVouchersController extends AppController
 				}
                 $this->Flash->success(__('The contra voucher has been saved.'));
 
-                return $this->redirect(['action' => 'index']);
+                return $this->redirect(['action' => 'add']);
             }
             $this->Flash->error(__('The contra voucher could not be saved. Please, try again.'));
         }

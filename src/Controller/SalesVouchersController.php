@@ -118,7 +118,7 @@ class SalesVouchersController extends AppController
 				}
                 $this->Flash->success(__('The sales voucher has been saved.'));
 
-                return $this->redirect(['action' => 'index']);
+                return $this->redirect(['action' => 'add']);
             }
             $this->Flash->error(__('The sales voucher could not be saved. Please, try again.'));
         }

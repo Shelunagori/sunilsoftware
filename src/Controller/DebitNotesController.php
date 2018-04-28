@@ -106,7 +106,7 @@ class DebitNotesController extends AppController
 				}
 			
                 $this->Flash->success(__('The Debit Note Note has been saved.'));
-                return $this->redirect(['action' => 'index']);
+                return $this->redirect(['action' => 'add']);
             }
             $this->Flash->error(__('The Debit Note Note could not be saved. Please, try again.'));
         }

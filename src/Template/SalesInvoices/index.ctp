@@ -99,6 +99,7 @@ $this->set('title', 'Sales Invoice List');
 									<?php if (in_array("4", $userPages)){?>
 									<?= $this->Html->link(__('Edit'), ['action' => 'edit', $salesInvoice->id]) ?><?php }?>&nbsp;&nbsp;
 									<?= $this->Html->link(__('View Bill'), ['action' => 'sales_invoice_bill', $salesInvoice->id],['escape'=>false,'target'=>'_blank']) ?>&nbsp;&nbsp;
+									<?= $this->Html->link(__('Edit & Sales Return'), ['action' => 'salesInvoiceReturns', $salesInvoice->id],['escape'=>false,'target'=>'_blank']) ?>&nbsp;&nbsp;
 									<!-- <?php if($salesInvoice->status != 'cancel'){ ?>
 									<?= $this->Form->postLink('<i class="fa fa-r"></i>Delete ', ['action' => 'cancel', $salesInvoice->id], ['style'=>'color:red;','confirm' => __('Are you sure you want to cancel # {0}?',h(str_pad($salesInvoice->voucher_no, 3, '0', STR_PAD_LEFT)))]) ?> <?php }?>-->
 								</td>
